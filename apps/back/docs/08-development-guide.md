@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - Node.js 20+ (LTS)
-- npm or pnpm
-- Supabase CLI (`npx supabase init`)
+- pnpm 9+ (`npm install -g pnpm`)
+- Supabase CLI
 - Git
 
 ## Getting Started
@@ -14,24 +14,28 @@
 git clone <repo-url>
 cd service
 
-# Install dependencies
-npm install
+# Install all dependencies (monorepo-wide)
+pnpm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Fill in Supabase URL, anon key, service role key, Stripe keys, etc.
+# Fill in Supabase, Stripe, etc.
 
-# Start Supabase locally (PostgreSQL, Auth, Storage, Realtime)
+# Start Supabase locally
 npx supabase start
 
-# Run database migrations
-npm run db:migrate
+# Run database migrations (from back app)
+pnpm --filter back db:migrate
 
 # Seed development data
-npm run db:seed
+pnpm --filter back db:seed
 
-# Start the development server
-npm run dev
+# Start all apps in development
+pnpm dev
+
+# Or start individual apps:
+pnpm --filter back dev      # Admin dashboard at localhost:3000
+pnpm --filter front dev     # Public sites at localhost:3001
 ```
 
 ## Environment Variables
@@ -58,24 +62,44 @@ TWILIO_PHONE_NUMBER=
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Website Builder (optional — for custom domain provisioning)
+VERCEL_API_TOKEN=            # Vercel API token for domain management
+VERCEL_PROJECT_ID=           # The FRONT project ID on Vercel
+VERCEL_TEAM_ID=              # (optional) Vercel team ID
+
+# FRONT app
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
+NEXT_PUBLIC_BACK_URL=http://localhost:3000
 ```
 
 ## Project Scripts
 
 ```json
+// Root package.json
+{
+  "dev": "turbo dev",
+  "build": "turbo build",
+  "lint": "turbo lint",
+  "typecheck": "turbo typecheck"
+}
+
+// apps/back/package.json
 {
   "dev": "next dev",
   "build": "next build",
-  "start": "next start",
-  "lint": "next lint",
   "typecheck": "tsc --noEmit",
   "db:generate": "drizzle-kit generate",
   "db:migrate": "drizzle-kit migrate",
   "db:push": "drizzle-kit push",
-  "db:studio": "drizzle-kit studio",
-  "db:seed": "tsx src/lib/db/seed.ts",
-  "test": "vitest",
-  "test:e2e": "playwright test"
+  "db:studio": "drizzle-kit studio"
+}
+
+// apps/front/package.json
+{
+  "dev": "next dev --port 3001",
+  "build": "next build",
+  "typecheck": "tsc --noEmit"
 }
 ```
 
@@ -167,12 +191,10 @@ export async function POST(req: NextRequest) {
 ### Service Layer
 
 ```typescript
-// src/lib/services/customers.ts
-// Business logic shared between server actions and API routes
-
+// apps/back/src/lib/services/customers.ts
 import { db } from '@/lib/db';
-import { customers } from '@/lib/db/schema';
-import { UserContext } from '@/lib/auth';
+import { customers } from '@fieldservice/shared/db/schema';
+import type { UserContext } from '@/lib/auth';
 
 export async function createCustomer(ctx: UserContext, input: CreateCustomerInput) {
   assertPermission(ctx, 'customers', 'create');
@@ -187,6 +209,21 @@ export async function createCustomer(ctx: UserContext, input: CreateCustomerInpu
   return customer;
 }
 ```
+
+## Working with the Shared Package
+
+The `@fieldservice/shared` package (`packages/shared/`) contains code shared between apps:
+
+- **Database schema** (`db/schema/`) — All Drizzle schema definitions. Both apps import from here.
+- **Types** (`types/`) — Shared TypeScript types (UserContext, SiteTheme, SectionContent, etc.)
+- **Templates** (`templates/`) — Website starter templates (HVAC, Plumbing, General)
+
+To add new shared code:
+1. Add files to `packages/shared/src/`
+2. Export from `packages/shared/src/index.ts` or add a new export path in `package.json`
+3. Import in apps using `@fieldservice/shared` or `@fieldservice/shared/db/schema`
+
+The shared package uses TypeScript path mapping — no build step required. Changes are picked up immediately in dev mode.
 
 ## Testing Strategy
 
@@ -224,16 +261,16 @@ on: [push, pull_request]
 
 jobs:
   check:
-    - npm ci
-    - npm run lint
-    - npm run typecheck
-    - npm run test
-    - npm run build
+    - pnpm install
+    - pnpm lint
+    - pnpm typecheck
+    - pnpm test
+    - pnpm build
 
   e2e:
     - Start test Supabase
     - Run migrations
-    - npm run test:e2e
+    - pnpm test:e2e
 
   deploy:
     - Vercel auto-deploys from main (production) and PRs (preview)
@@ -242,22 +279,20 @@ jobs:
 ## Database Migrations Workflow
 
 ```bash
-# 1. Modify schema files in src/lib/db/schema/
-# 2. Generate migration
-npm run db:generate
+# 1. Modify schema files in packages/shared/src/db/schema/
+# 2. Generate migration (from back app, which has drizzle.config.ts)
+pnpm --filter back db:generate
 
-# 3. Review generated SQL in src/lib/db/migrations/
+# 3. Review generated SQL
 # 4. Apply migration locally
-npm run db:migrate
+pnpm --filter back db:migrate
 
 # 5. Test
-npm run test
+pnpm typecheck
 
 # 6. Commit migration files
 git add .
-git commit -m "Add equipment table"
-
-# 7. Migrations run automatically on deploy via Supabase CLI
+git commit -m "Add site_settings table"
 ```
 
 ## Error Handling

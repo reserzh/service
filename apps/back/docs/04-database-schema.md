@@ -29,6 +29,13 @@ tenants
   │     └── invoices
   │           ├── invoice_line_items
   │           └── payments
+  ├── site_settings
+  ├── site_pages
+  │     └── site_sections
+  ├── site_media
+  ├── site_domains
+  ├── service_catalog
+  ├── booking_requests
   └── settings / configurations
 ```
 
@@ -414,9 +421,189 @@ Job numbers, estimate numbers, and invoice numbers are tenant-scoped sequential 
 
 Number generation uses `SELECT ... FOR UPDATE` to prevent race conditions.
 
+## Website / CMS Tables
+
+These tables power the tenant-facing website builder and online booking system. All follow the same patterns: `tenant_id` isolation, UUID primary keys, `created_at`/`updated_at` timestamps.
+
+### Entity Relationship
+
+```
+tenants
+  └── site_settings (one per tenant)
+  └── site_pages
+  │     └── site_sections (ordered blocks within a page)
+  └── site_media
+  └── site_domains
+  └── service_catalog
+  └── booking_requests
+        ├── → service_catalog (optional)
+        ├── → customers (when converted)
+        └── → jobs (when converted)
+```
+
+### New Enums
+
+```
+pageStatusEnum = ["draft", "published", "archived"]
+sectionTypeEnum = ["hero", "services", "about", "testimonials", "gallery", "contact_form", "booking_widget", "cta_banner", "faq", "team", "map", "custom_html", "features", "pricing"]
+domainStatusEnum = ["pending_verification", "active", "failed", "removed"]
+bookingStatusEnum = ["pending", "confirmed", "canceled"]
+```
+
+### site_settings
+
+Per-tenant website configuration. One row per tenant.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants, unique |
+| is_published | boolean | Master toggle for site visibility |
+| subdomain_slug | varchar(100) | Auto-set from tenants.slug |
+| theme | jsonb | `{ primaryColor, secondaryColor, accentColor, fontHeading, fontBody, borderRadius, style? }` |
+| branding | jsonb | `{ logoUrl?, faviconUrl?, businessName, tagline?, phone?, email? }` |
+| seo_defaults | jsonb | `{ title?, description?, ogImage?, keywords? }` |
+| social_links | jsonb | `{ facebook?, instagram?, google?, yelp?, nextdoor? }` |
+| analytics | jsonb | `{ googleAnalyticsId?, facebookPixelId? }` |
+| custom_css | text | nullable, custom CSS overrides |
+| template_id | varchar(50) | Which starter template was used |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+
+### site_pages
+
+CMS pages for tenant websites.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| slug | varchar(255) | URL path, e.g., `about`, `services` |
+| title | varchar(255) | |
+| status | pageStatusEnum | draft, published, archived |
+| is_homepage | boolean | Only one per tenant |
+| seo | jsonb | `{ title?, description?, ogImage?, noIndex? }` |
+| sort_order | integer | For navigation ordering |
+| show_in_nav | boolean | Show in site navigation |
+| nav_label | varchar(100) | Override for nav display text |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+| published_at | timestamptz | nullable |
+
+**Indexes:** `(tenant_id, slug)` unique, `(tenant_id, status)`
+
+### site_sections
+
+Block-based content sections within pages. Each section has a type that determines which component renders it and what the content JSON structure looks like.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| page_id | uuid | FK → site_pages |
+| type | sectionTypeEnum | Which section component to render |
+| content | jsonb | Section-specific structured content (varies by type) |
+| settings | jsonb | Display settings: `{ backgroundColor?, textColor?, paddingY?, paddingX?, maxWidth?, fullWidth? }` |
+| sort_order | integer | Position on page |
+| is_visible | boolean | Toggle visibility without deleting |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+
+**Indexes:** `(tenant_id, page_id)`
+
+### site_media
+
+Media library for tenant website images.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| filename | varchar(255) | |
+| storage_path | text | Supabase Storage path |
+| url | text | Public URL |
+| mime_type | varchar(100) | nullable |
+| size_bytes | integer | nullable |
+| alt_text | varchar(255) | nullable |
+| created_at | timestamptz | |
+
+**Indexes:** `(tenant_id)`
+
+### site_domains
+
+Custom domain mappings for tenant websites.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| domain | varchar(255) | e.g., `joesplumbing.com`, unique |
+| status | domainStatusEnum | pending_verification → active |
+| verification_token | varchar(255) | DNS TXT record value |
+| verified_at | timestamptz | nullable |
+| is_primary | boolean | Canonical URL domain |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+
+**Indexes:** `(tenant_id)`, unique `(domain)`
+
+### service_catalog
+
+Public-facing service listings displayed on tenant websites.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| name | varchar(255) | e.g., "AC Repair" |
+| slug | varchar(255) | URL-friendly name |
+| description | text | Rich description |
+| short_description | varchar(500) | For cards/listings |
+| icon | varchar(50) | Lucide icon name |
+| image_url | text | nullable |
+| price_display | varchar(100) | e.g., "Starting at $89", "Call for quote" |
+| is_bookable | boolean | Can end-customers book online? |
+| estimated_duration | integer | Minutes |
+| sort_order | integer | |
+| is_active | boolean | |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+
+**Indexes:** `(tenant_id, slug)` unique, `(tenant_id, is_active)`
+
+### booking_requests
+
+Online booking submissions from public tenant websites.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | PK |
+| tenant_id | uuid | FK → tenants |
+| service_id | uuid | nullable FK → service_catalog |
+| status | bookingStatusEnum | pending, confirmed, canceled |
+| first_name | varchar(100) | |
+| last_name | varchar(100) | |
+| email | varchar(255) | |
+| phone | varchar(50) | |
+| address_line1 | varchar(255) | |
+| address_line2 | varchar(255) | nullable |
+| city | varchar(100) | |
+| state | varchar(50) | |
+| zip | varchar(20) | |
+| preferred_date | date | |
+| preferred_time_slot | varchar(50) | morning, afternoon, evening |
+| message | text | nullable, additional details |
+| converted_job_id | uuid | nullable FK → jobs, set when converted |
+| converted_customer_id | uuid | nullable FK → customers, set when converted |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
+
+**Indexes:** `(tenant_id, status)`, `(tenant_id, created_at)`
+
 ## Notes on Drizzle Schema
 
-- All tables defined in `src/lib/db/schema/` with one file per logical group
+- Schema files now live in `packages/shared/src/db/schema/` (not `src/lib/db/schema/`), with one file per logical group
+- Both `apps/back` and `apps/front` import schema from `@fieldservice/shared`
 - Enums defined as `pgEnum` for type safety
 - Relations defined using Drizzle's `relations()` API
 - All `tenant_id` columns indexed and included in composite indexes

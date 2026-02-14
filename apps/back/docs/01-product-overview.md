@@ -10,11 +10,11 @@ A modern, multi-tenant field service management (FSM) platform for residential a
 
 | Role | Description |
 |---|---|
-| **Company Admin / Owner** | Manages company settings, users, billing, reporting |
+| **Company Admin / Owner** | Manages company settings, users, billing, reporting, and website content |
 | **Office Manager / Dispatcher** | Schedules jobs, dispatches techs, manages customers, handles estimates and invoices |
 | **CSR (Customer Service Rep)** | Books calls, creates customers, handles inbound requests |
 | **Field Technician** | Views schedule, updates job status, captures photos/signatures, collects payments (primarily mobile) |
-| **Customer** | Receives estimates, approves work, pays invoices, books service (via portal/booking widget) |
+| **End-Customer** | Visits the tenant's public website to browse services, book appointments online, submit contact requests, receive estimates, approve work, and pay invoices |
 
 ## Market Opportunity
 
@@ -36,7 +36,8 @@ A modern, multi-tenant field service management (FSM) platform for residential a
 
 1. **Modern UI/UX** - Clean, intuitive interface built with modern design principles; no training manual needed
 2. **Fast Onboarding** - Companies operational within hours, not weeks
-3. **API-First Architecture** - Clean REST API powering both web and future mobile app
+3. **API-First Architecture** - Clean REST API powering the admin dashboard, mobile app, and public-facing tenant websites
 4. **Multi-Tenant SaaS** - Single codebase serving all companies with proper data isolation
 5. **Real-Time** - Live dispatch board, instant status updates, real-time notifications
-6. **Mobile-First Mindset** - Web app is responsive; native mobile app planned for field techs
+6. **Mobile-First Mindset** - Web app is responsive; native mobile app in development with React Native/Expo for field techs
+7. **Built-In Website Builder** - Tenants get a professional public website with online booking, service catalog, and custom domain support — no third-party website or booking tool needed

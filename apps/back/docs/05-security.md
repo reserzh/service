@@ -47,6 +47,7 @@
 | Invoices | Full | Full | Read | Read | - |
 | Payments | Full | Full | - | - | Collect only |
 | Reports | Full | Full | Limited | - | Own stats |
+| Website / CMS | Full | Full | - | - | - |
 
 ### Implementation
 
@@ -105,6 +106,17 @@ CREATE POLICY tenant_isolation ON customers
 - All API endpoints extract `tenant_id` from the authenticated session (never from request body/params)
 - ID parameters in URLs are validated to belong to the current tenant
 - Foreign key references are validated within tenant scope
+
+## Public Site Security
+
+The FRONT app serves public tenant websites without authentication. Security considerations:
+
+- **No admin data exposed**: Public queries only return published pages, active services, and visible sections
+- **Tenant isolation in public queries**: All queries filter by resolved `tenant_id` from middleware
+- **Rate limiting**: Booking submission endpoints are rate-limited to prevent abuse
+- **Input validation**: Booking form data validated with Zod schemas server-side
+- **Custom domain verification**: DNS TXT record verification before domain activation
+- **No direct DB writes from FRONT**: Write operations (bookings) go through validated API routes
 
 ## Input Validation & Sanitization
 
@@ -235,9 +247,9 @@ All of these actions are recorded in the `activity_log` table:
 
 ## Dependency Security
 
-- `npm audit` in CI/CD pipeline
+- `pnpm audit` in CI/CD pipeline
 - Dependabot or Renovate for automated dependency updates
-- Lock file (`package-lock.json`) committed and verified
+- Lock file (`pnpm-lock.yaml`) committed and verified
 - No `eval()`, `Function()`, or dynamic `require()` / `import()`
 
 ## Incident Response

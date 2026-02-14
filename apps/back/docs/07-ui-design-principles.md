@@ -99,6 +99,19 @@ Using shadcn/ui theme with custom brand colors:
 - Detail view with line items, totals, action buttons
 - Preview mode (see what customer sees)
 
+### Website Builder (CMS)
+
+The website management section lets tenants build and manage their public-facing website.
+
+- **Overview page**: Site status (published/draft), preview link, subdomain URL, quick stats
+- **Pages list**: All CMS pages with status badges, reorderable, create/edit/delete
+- **Page editor**: Section list (reorderable), section type picker, content forms per section type
+- **Theme editor**: Color pickers (primary, secondary, accent), font selectors, border radius, branding (business name, tagline, phone, email), SEO defaults, social links, custom CSS
+- **Services catalog**: Manage public-facing service listings with descriptions, pricing display, booking toggle
+- **Domains**: Custom domain management with DNS verification instructions
+- **Media library**: Grid of uploaded images with upload/delete
+- **Bookings**: List of online booking requests with status, ability to convert to job
+
 ## Component Library (shadcn/ui)
 
 Key components we'll use extensively:
@@ -141,6 +154,14 @@ Sidebar (collapsible):
 ├── Estimates
 ├── Invoices
 ├── Reports
+├── Website
+│   ├── Overview
+│   ├── Pages
+│   ├── Theme & Branding
+│   ├── Services
+│   ├── Domains
+│   ├── Media Library
+│   └── Bookings
 └── Settings
     ├── Company Profile
     ├── Team Members
@@ -161,3 +182,14 @@ Top bar:
 - Empty states with helpful illustrations and CTAs ("No customers yet. Add your first customer.")
 - Error states with clear messages and retry actions
 - Optimistic updates for immediate feedback
+
+## Public Website Design (FRONT App)
+
+The FRONT app renders tenant websites for their end-customers. Key design principles:
+
+- **Theme-driven**: All styling uses CSS custom properties (`--color-primary`, `--color-secondary`, etc.) set from the tenant's theme configuration
+- **No UI framework**: Uses plain Tailwind CSS (no shadcn/ui) for lighter weight and faster loading
+- **Responsive**: Mobile-first responsive design for all section types
+- **14 Section Types**: hero, services grid, about, testimonials, gallery, contact form, booking widget, CTA banner, FAQ, team, map, features, pricing, custom HTML
+- **Performance**: Server-side rendered with edge caching, minimal client-side JavaScript
+- **Accessibility**: Semantic HTML, proper heading hierarchy, form labels, ARIA attributes

@@ -82,6 +82,31 @@ The minimum feature set required for a service company to operate day-to-day.
 - Notification preferences
 - User management (invite, roles, deactivate)
 
+### 1.10 Website Builder / CMS
+- Block-based page editor with 14 section types (hero, services, about, testimonials, gallery, contact_form, booking_widget, cta_banner, faq, team, map, features, pricing, custom_html)
+- Per-tenant theming (colors, fonts, border radius) via CSS custom properties
+- Branding settings (business name, tagline, logo, phone, email)
+- SEO defaults and per-page SEO settings
+- Social links
+- Custom CSS overrides
+- 3 industry starter templates (HVAC, Plumbing, General)
+- Page management (create, edit, publish, reorder, navigation control)
+- Media library for image management
+- Service catalog (public-facing service listings with descriptions, pricing, booking)
+
+### 1.11 Online Booking
+- Multi-step booking form on tenant's public website
+- Service selection, date/time preference, contact details
+- Booking request management in admin dashboard
+- Status tracking (pending, confirmed, canceled)
+- Convert booking to job + customer
+
+### 1.12 Custom Domains
+- Subdomain provisioning ({slug}.yourplatform.com)
+- Custom domain support with DNS verification (TXT records)
+- Automatic SSL via Vercel Domains API
+- Domain management UI in admin dashboard
+
 ---
 
 ## Phase 2: Growth (Months 3-6 Post-Launch)
@@ -109,14 +134,7 @@ Features customers will expect shortly after adoption.
 - Review request after job completion
 - Configurable message templates
 
-### 2.4 Online Booking
-- Embeddable booking widget for company websites
-- Customer self-service appointment scheduling
-- Availability-aware time slot selection
-- Service type selection
-- Automatic job creation from bookings
-
-### 2.5 Service Agreements / Memberships
+### 2.4 Service Agreements / Memberships
 - Create maintenance agreement plans (e.g., "Gold Plan: 2 tune-ups/year")
 - Track agreement status, renewal dates, and visits used
 - Automated recurring billing
@@ -124,7 +142,7 @@ Features customers will expect shortly after adoption.
 - Schedule maintenance visits from agreements
 - Member pricing / discounts
 
-### 2.6 Customer Portal
+### 2.5 Customer Portal
 - Branded self-service portal per company
 - Customers view job history and upcoming appointments
 - Approve/decline estimates online
@@ -174,7 +192,7 @@ Features customers will expect shortly after adoption.
 - Predictive scheduling based on historical data
 
 ### 4.2 Native Mobile App (Technician)
-- iOS and Android native apps
+- iOS and Android apps (React Native / Expo) — in development
 - Offline-first with background sync
 - Push notifications for new dispatches
 - Camera integration for photos/video

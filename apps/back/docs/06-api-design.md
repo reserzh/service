@@ -2,11 +2,12 @@
 
 ## Overview
 
-The API serves two consumers:
-1. **Next.js Web App** — Uses Server Actions for mutations, direct DB queries in Server Components for reads
-2. **Future Mobile App** — Uses REST API endpoints (`/api/v1/*`)
+The API serves three consumers:
+1. **BACK Web App** — Uses Server Actions for mutations, direct DB queries in Server Components for reads
+2. **FRONT Public Sites** — Uses direct DB reads (via the shared package) for published content, POST to BACK API for bookings
+3. **Mobile App** — Uses REST API endpoints (`/api/v1/*`)
 
-Both share the same **service layer** for business logic, ensuring consistent behavior.
+All three share the same **service layer** for business logic, ensuring consistent behavior.
 
 ## REST API Conventions
 
@@ -227,6 +228,63 @@ Full-text search across relevant fields.
 | PATCH | /api/v1/settings | Update company settings |
 | POST | /api/v1/settings/logo | Upload company logo |
 
+### Website / CMS (Authenticated)
+
+Admin endpoints for managing tenant websites. Requires `website` permission (admin and office_manager roles).
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/v1/website/settings | Get site settings (theme, branding, SEO, social) |
+| PATCH | /api/v1/website/settings | Update site settings |
+| GET | /api/v1/website/pages | List all CMS pages |
+| POST | /api/v1/website/pages | Create a new page |
+| GET | /api/v1/website/pages/:id | Get page details |
+| PATCH | /api/v1/website/pages/:id | Update a page |
+| DELETE | /api/v1/website/pages/:id | Delete a page |
+| POST | /api/v1/website/pages/:id/publish | Publish a page |
+| GET | /api/v1/website/pages/:id/sections | List sections for a page |
+| POST | /api/v1/website/pages/:id/sections | Add a section to a page |
+| POST | /api/v1/website/pages/:id/sections/reorder | Reorder sections |
+| PATCH | /api/v1/website/sections/:id | Update a section |
+| DELETE | /api/v1/website/sections/:id | Delete a section |
+| GET | /api/v1/website/media | List media library |
+| POST | /api/v1/website/media | Upload media |
+| DELETE | /api/v1/website/media/:id | Delete media |
+| GET | /api/v1/website/services | List service catalog |
+| POST | /api/v1/website/services | Create a service |
+| GET | /api/v1/website/services/:id | Get service details |
+| PATCH | /api/v1/website/services/:id | Update a service |
+| DELETE | /api/v1/website/services/:id | Delete a service |
+| GET | /api/v1/website/domains | List custom domains |
+| POST | /api/v1/website/domains | Add a custom domain |
+| DELETE | /api/v1/website/domains/:id | Remove a custom domain |
+| POST | /api/v1/website/domains/:id/verify | Verify domain DNS |
+| GET | /api/v1/website/templates | List available starter templates |
+| POST | /api/v1/website/templates | Apply a starter template |
+
+### Bookings (Authenticated)
+
+Admin endpoints for managing booking requests from public websites.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/v1/bookings | List booking requests (filterable by status) |
+| GET | /api/v1/bookings/:id | Get booking request details |
+| PATCH | /api/v1/bookings/:id/status | Update booking status |
+| POST | /api/v1/bookings/:id/convert | Convert booking to job + customer |
+
+### Public Site API (No Authentication)
+
+These endpoints serve the public-facing tenant websites. No auth required but rate-limited.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/v1/public/site?domain={domain} | Resolve tenant by domain/subdomain, get site settings + nav |
+| GET | /api/v1/public/site/:tenantId/pages | List published pages |
+| GET | /api/v1/public/site/:tenantId/pages/:slug | Get page with sections |
+| GET | /api/v1/public/site/:tenantId/services | List active services |
+| POST | /api/v1/public/site/:tenantId/bookings | Submit a booking request |
+
 ## Webhooks (Inbound)
 
 ### Stripe Webhooks
@@ -250,7 +308,7 @@ Channels the web/mobile app subscribes to:
 | `tenant:{tenantId}:notifications:{userId}` | INSERT | User notifications |
 | `tenant:{tenantId}:schedule` | UPDATE | Schedule changes |
 
-## Mobile App Considerations
+## Mobile App & FRONT App Considerations
 
 The REST API is designed with mobile in mind:
 
@@ -261,3 +319,5 @@ The REST API is designed with mobile in mind:
 5. **Push Notifications**: Webhook/Supabase Realtime to trigger push via FCM/APNs
 6. **Photo Upload**: Multipart form data with compression metadata
 7. **Signature Capture**: Base64 encoded PNG in request body (small files)
+
+**Public Site (FRONT App):** The FRONT app uses direct database queries (via the shared package) for reading published content — this avoids the overhead of HTTP calls for SSR. For write operations (booking submissions), it calls the BACK API. Tenant resolution happens in middleware using subdomain/custom domain headers.

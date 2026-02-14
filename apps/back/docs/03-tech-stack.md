@@ -4,6 +4,7 @@
 
 | Layer | Technology | Rationale |
 |---|---|---|
+| **Build System** | Turborepo + pnpm workspaces | Monorepo with shared code across apps, parallel builds, dependency caching |
 | **Framework** | Next.js 15 (App Router) | Full-stack React framework, SSR/SSG, API routes, middleware, great Vercel integration |
 | **UI Components** | shadcn/ui + Tailwind CSS v4 | Beautiful, accessible, customizable components. Not a dependency — code lives in your project |
 | **Database** | PostgreSQL (Supabase) | Battle-tested relational DB, excellent for multi-tenant SaaS, row-level security |
@@ -14,6 +15,7 @@
 | **Payments** | Stripe Connect | Multi-tenant payment processing, each company gets their own Stripe account |
 | **Email/SMS** | Resend (email) + Twilio (SMS) | Transactional emails and SMS for notifications, estimates, invoices |
 | **Hosting** | Vercel | Zero-config Next.js deployment, edge functions, preview deployments |
+| **Mobile** | React Native / Expo | Cross-platform iOS and Android from a single codebase, shared types with web apps |
 | **Monitoring** | Sentry | Error tracking, performance monitoring |
 | **Analytics** | PostHog (self-serve) | Product analytics, feature flags, session replay |
 
@@ -33,109 +35,96 @@ We use a **shared database with a `tenant_id` column** on every table. This is t
 2. **Database Layer**: PostgreSQL Row-Level Security (RLS) policies as a second line of defense
 3. **API Layer**: Middleware extracts tenant from authenticated user session and injects into request context
 
-### API Design: Server Actions + REST API
+### API Design: Server Actions + REST API + Direct DB
 
-- **Server Actions** (Next.js) for web app mutations — simpler, less boilerplate, built-in progressive enhancement
-- **REST API routes** (`/api/v1/*`) for operations that the future mobile app will consume
-- Both layers share the same service/business logic layer — no duplication
-- API versioning from day one (`/api/v1/`) for future mobile app compatibility
+Three apps consume data in different ways:
+
+- **BACK app** (admin dashboard): Server Actions for mutations, REST API routes (`/api/v1/*`) for mobile app consumption
+- **FRONT app** (public tenant sites): Direct DB queries via shared Drizzle schema for fast, cacheable reads
+- **MOBILE app** (React Native): REST API (`/api/v1/*`) served by the BACK app
+
+All three share the same Drizzle schema and TypeScript types from `@fieldservice/shared`. The BACK app's service layer contains business logic shared by server actions and REST API routes — no duplication.
 
 ```
-┌─────────────────────────────────────────────┐
-│                  Clients                     │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  │
-│  │  Web App  │  │ Mobile   │  │ Webhooks  │  │
-│  │ (Next.js) │  │ (Future) │  │ (3rd pty) │  │
-│  └────┬─────┘  └────┬─────┘  └─────┬─────┘  │
-│       │              │              │         │
-│  Server Actions   REST API      REST API     │
-│       │              │              │         │
-│       └──────┬───────┴──────┬───────┘         │
-│              │              │                 │
-│      ┌───────▼──────┐ ┌────▼─────┐           │
-│      │   Service    │ │   Auth   │           │
-│      │    Layer     │ │Middleware│           │
-│      └───────┬──────┘ └──────────┘           │
-│              │                               │
-│      ┌───────▼──────┐                        │
-│      │   Drizzle    │                        │
-│      │     ORM      │                        │
-│      └───────┬──────┘                        │
-│              │                               │
-│      ┌───────▼──────┐                        │
-│      │  PostgreSQL  │                        │
-│      │  (Supabase)  │                        │
-│      └──────────────┘                        │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                       Monorepo                               │
+│                                                              │
+│  ┌────────────┐  ┌────────────┐  ┌───────────┐             │
+│  │  BACK App  │  │ FRONT App  │  │  MOBILE   │             │
+│  │ (Dashboard)│  │(Public Web)│  │(React     │             │
+│  │ Next.js 15 │  │ Next.js 16 │  │ Native)   │             │
+│  └─────┬──────┘  └─────┬──────┘  └─────┬─────┘             │
+│        │               │               │                    │
+│   Server Actions   Direct DB      REST API                  │
+│   + REST API       Queries       (/api/v1/*)                │
+│        │               │               │                    │
+│        └───────┬───────┴───────┬───────┘                    │
+│                │               │                            │
+│       ┌────────▼──────┐  ┌────▼──────┐                     │
+│       │@fieldservice/ │  │   Auth    │                      │
+│       │   shared      │  │Middleware │                      │
+│       │(schema,types) │  │          │                      │
+│       └────────┬──────┘  └───────────┘                     │
+│                │                                            │
+│       ┌────────▼──────┐                                    │
+│       │  PostgreSQL   │                                    │
+│       │  (Supabase)   │                                    │
+│       └───────────────┘                                    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Project Structure
 
 ```
-src/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Auth pages (login, register, forgot password)
-│   │   ├── login/
-│   │   ├── register/
-│   │   └── forgot-password/
-│   ├── (dashboard)/              # Authenticated app pages
-│   │   ├── layout.tsx            # Dashboard shell (sidebar, topbar)
-│   │   ├── page.tsx              # Dashboard home / overview
-│   │   ├── customers/
-│   │   ├── schedule/
-│   │   ├── dispatch/
-│   │   ├── jobs/
-│   │   ├── estimates/
-│   │   ├── invoices/
-│   │   ├── reports/
-│   │   └── settings/
-│   ├── api/
-│   │   └── v1/                   # Versioned REST API for mobile app
-│   │       ├── customers/
-│   │       ├── jobs/
-│   │       ├── estimates/
-│   │       ├── invoices/
-│   │       └── ...
-│   ├── layout.tsx                # Root layout
-│   └── page.tsx                  # Landing/marketing page
-├── components/
-│   ├── ui/                       # shadcn/ui components
-│   ├── forms/                    # Reusable form components
-│   ├── layout/                   # Shell, sidebar, topbar
-│   └── features/                 # Feature-specific components
-│       ├── customers/
-│       ├── scheduling/
-│       ├── jobs/
-│       ├── estimates/
-│       ├── invoices/
-│       └── ...
-├── lib/
-│   ├── db/
-│   │   ├── schema/               # Drizzle schema definitions
-│   │   ├── migrations/           # Generated migrations
-│   │   ├── index.ts              # DB client
-│   │   └── seed.ts               # Seed data for development
-│   ├── auth/                     # Auth utilities
-│   ├── services/                 # Business logic (shared by server actions + API)
-│   │   ├── customers.ts
-│   │   ├── jobs.ts
-│   │   ├── estimates.ts
-│   │   ├── invoices.ts
-│   │   └── ...
-│   ├── api/                      # API utilities (validation, error handling)
-│   ├── stripe/                   # Stripe integration
-│   ├── email/                    # Email sending (Resend)
-│   ├── sms/                      # SMS sending (Twilio)
-│   ├── storage/                  # Supabase Storage utilities
-│   └── utils/                    # General utilities
-├── actions/                      # Next.js Server Actions
-│   ├── customers.ts
-│   ├── jobs.ts
-│   ├── estimates.ts
-│   └── ...
-├── hooks/                        # Custom React hooks
-├── types/                        # TypeScript type definitions
-└── middleware.ts                  # Next.js middleware (auth, tenant resolution)
+/SERVICE/
+├── turbo.json                    # Turborepo config
+├── pnpm-workspace.yaml           # Workspace definitions
+├── package.json                  # Root scripts
+├── apps/
+│   ├── back/                     # Admin Dashboard (Next.js 15)
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── (auth)/       # Login, register
+│   │   │   │   ├── (dashboard)/  # All admin pages
+│   │   │   │   │   ├── customers/
+│   │   │   │   │   ├── jobs/
+│   │   │   │   │   ├── schedule/
+│   │   │   │   │   ├── dispatch/
+│   │   │   │   │   ├── estimates/
+│   │   │   │   │   ├── invoices/
+│   │   │   │   │   ├── reports/
+│   │   │   │   │   ├── website/  # CMS / Website Builder
+│   │   │   │   │   └── settings/
+│   │   │   │   └── api/v1/       # REST API
+│   │   │   ├── components/
+│   │   │   ├── lib/
+│   │   │   │   ├── services/     # Business logic layer
+│   │   │   │   ├── auth/         # Auth + RBAC
+│   │   │   │   └── db/           # DB connection (imports from shared)
+│   │   │   └── actions/          # Server Actions
+│   │   └── docs/                 # This documentation
+│   └── front/                    # Public Tenant Websites (Next.js 16)
+│       └── src/
+│           ├── app/
+│           │   ├── [slug]/       # Dynamic CMS pages
+│           │   ├── book/         # Online booking flow
+│           │   └── api/booking/  # Booking submission endpoint
+│           ├── components/
+│           │   ├── sections/     # 14 section renderers
+│           │   ├── site-header.tsx
+│           │   └── site-footer.tsx
+│           ├── lib/
+│           │   ├── tenant.ts     # Multi-tenant resolution + LRU cache
+│           │   ├── queries.ts    # Cached DB queries
+│           │   └── db.ts         # DB connection (imports from shared)
+│           └── middleware.ts      # Subdomain/custom domain routing
+├── packages/
+│   └── shared/                   # Shared code
+│       └── src/
+│           ├── db/schema/        # ALL Drizzle schema definitions
+│           ├── types/            # Shared TypeScript types
+│           └── templates/        # Starter website templates
+└── MOBILE/                       # React Native / Expo app (planned)
 ```
 
 ### Database: PostgreSQL via Supabase
@@ -190,9 +179,10 @@ All files are private by default, accessed through signed URLs with expiration.
 ### Deployment
 
 ```
-Vercel (Next.js app)
-├── Production: main branch auto-deploy
-├── Staging: staging branch auto-deploy
+Vercel
+├── BACK: app.yourdomain.com (admin dashboard)
+├── FRONT: *.yourdomain.com (tenant public sites)
+│   └── Custom domains via Vercel Domains API
 ├── Preview: PR-based preview deployments
 └── Environment: Edge + Serverless functions
 
