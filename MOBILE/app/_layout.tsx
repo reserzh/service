@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useAuthInit } from "@/hooks/useAuth";
+import { setupNotificationHandler } from "@/lib/notifications";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,12 @@ const queryClient = new QueryClient({
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   useAuthInit();
+
+  useEffect(() => {
+    const cleanup = setupNotificationHandler();
+    return cleanup;
+  }, []);
+
   return <>{children}</>;
 }
 

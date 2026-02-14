@@ -90,4 +90,40 @@ export const api = {
   delete(path: string): Promise<void> {
     return request<void>(path, { method: "DELETE" });
   },
+
+  async upload<T>(path: string, formData: FormData): Promise<T> {
+    const token = await getAccessToken();
+
+    const headers: HeadersInit = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // Let fetch set Content-Type with boundary for multipart
+    };
+
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errorBody: ApiErrorResponse;
+      try {
+        errorBody = await response.json();
+      } catch {
+        throw new ApiError(
+          response.status,
+          "UNKNOWN",
+          `Upload failed with status ${response.status}`
+        );
+      }
+      throw new ApiError(
+        response.status,
+        errorBody.error.code,
+        errorBody.error.message,
+        errorBody.error.details
+      );
+    }
+
+    return response.json();
+  },
 };

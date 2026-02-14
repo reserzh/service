@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createApiClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { users } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
@@ -57,7 +57,7 @@ export async function requireAuth(): Promise<UserContext> {
  * Returns null if not authenticated (caller handles 401 response).
  */
 export async function requireApiAuth(req: NextRequest): Promise<UserContext> {
-  const supabase = await createClient();
+  const supabase = await createApiClient(req);
 
   const {
     data: { user },

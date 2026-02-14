@@ -61,6 +61,27 @@ export const notifications = fieldserviceSchema.table(
   ]
 );
 
+// Push Tokens (for mobile push notifications)
+export const pushTokens = fieldserviceSchema.table(
+  "push_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull(),
+    platform: varchar("platform", { length: 10 }).notNull(), // "ios" | "android"
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("push_tokens_user_idx").on(table.tenantId, table.userId),
+    index("push_tokens_token_idx").on(table.token),
+  ]
+);
+
 // Tenant Sequences (for job numbers, invoice numbers, etc.)
 export const tenantSequences = fieldserviceSchema.table(
   "tenant_sequences",

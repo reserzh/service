@@ -19,10 +19,17 @@ import {
   ChevronRight,
   Plus,
   Send,
+  Camera,
+  PenTool,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 import { useJob, useUpdateJobStatus, useAddJobNote } from "@/hooks/useJobs";
+import { PhotoGrid } from "@/components/job/PhotoGrid";
+import { PhotoCapture } from "@/components/job/PhotoCapture";
+import { SignatureList } from "@/components/job/SignatureList";
+import { SignatureModal } from "@/components/job/SignatureModal";
+import { DistanceBadge } from "@/components/job/DistanceBadge";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -43,6 +50,7 @@ export default function JobDetailScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const job = data?.data;
 
@@ -206,11 +214,17 @@ export default function JobDetailScreen() {
                 Access: {job.property.accessNotes}
               </Text>
             )}
-            <NavigateButton
-              address={address}
-              latitude={job.property.latitude}
-              longitude={job.property.longitude}
-            />
+            <View className="flex-row items-center gap-3">
+              <NavigateButton
+                address={address}
+                latitude={job.property.latitude}
+                longitude={job.property.longitude}
+              />
+              <DistanceBadge
+                latitude={job.property.latitude}
+                longitude={job.property.longitude}
+              />
+            </View>
           </Card>
         </View>
 
@@ -338,6 +352,58 @@ export default function JobDetailScreen() {
           </Card>
         </View>
 
+        {/* Photos */}
+        <View className="px-4 mb-3">
+          <Card>
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Photos
+                </Text>
+                {job.photos.length > 0 && (
+                  <Badge
+                    label={String(job.photos.length)}
+                    bgClass="bg-blue-100"
+                    textClass="text-blue-700"
+                    size="sm"
+                  />
+                )}
+              </View>
+              <PhotoCapture jobId={job.id} />
+            </View>
+            <PhotoGrid photos={job.photos} jobId={job.id} />
+          </Card>
+        </View>
+
+        {/* Signatures */}
+        <View className="px-4 mb-3">
+          <Card>
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  Signatures
+                </Text>
+                {job.signatures.length > 0 && (
+                  <Badge
+                    label={String(job.signatures.length)}
+                    bgClass="bg-emerald-100"
+                    textClass="text-emerald-700"
+                    size="sm"
+                  />
+                )}
+              </View>
+              <Button
+                title="Capture"
+                variant="outline"
+                size="sm"
+                onPress={() => setShowSignatureModal(true)}
+                icon={<PenTool size={14} color="#3b82f6" />}
+              />
+            </View>
+            <SignatureList signatures={job.signatures} />
+          </Card>
+        </View>
+
         {/* Description */}
         {job.description && (
           <View className="px-4 mb-3">
@@ -394,6 +460,13 @@ export default function JobDetailScreen() {
           </Pressable>
         </View>
       )}
+
+      {/* Signature Modal */}
+      <SignatureModal
+        jobId={job.id}
+        visible={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+      />
     </View>
   );
 }

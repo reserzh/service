@@ -37,11 +37,13 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/register") ||
     request.nextUrl.pathname.startsWith("/forgot-password");
 
+  const isApiRoute = request.nextUrl.pathname.startsWith("/api/v1/");
+
   const isPublicPage =
     request.nextUrl.pathname === "/" ||
     request.nextUrl.pathname.startsWith("/api/webhooks");
 
-  if (!user && !isAuthPage && !isPublicPage) {
+  if (!user && !isAuthPage && !isPublicPage && !isApiRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);

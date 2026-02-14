@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth";
 import { api } from "@/api/client";
+import { registerForPushNotifications, savePushToken, removePushToken } from "@/lib/notifications";
 import type { UserContext, ApiResponse } from "@/types/models";
 
 export function useAuthInit() {
@@ -84,6 +85,12 @@ export function useSignIn() {
       password,
     });
     if (error) throw error;
+
+    // Register push token after successful sign-in
+    registerForPushNotifications().then((token) => {
+      if (token) savePushToken(token);
+    });
+
     return data;
   };
 }
@@ -92,6 +99,8 @@ export function useSignOut() {
   const { signOut } = useAuthStore();
 
   return async () => {
+    // Remove push token before signing out
+    await removePushToken();
     await supabase.auth.signOut();
     signOut();
   };
