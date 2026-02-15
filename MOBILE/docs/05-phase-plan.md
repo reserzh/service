@@ -6,9 +6,9 @@
 |-------|--------|-------------|
 | Phase 1 | **COMPLETE** | Project setup, auth, navigation, base UI |
 | Phase 2 | **COMPLETE** | Core job management screens |
-| Phase 3 | NOT STARTED | Schedule polish, customers, estimate creation form |
-| Phase 4 | NOT STARTED | Native features (camera, signatures, GPS, push) |
-| Phase 5 | NOT STARTED | Polish, offline support, production readiness |
+| Phase 3 | **COMPLETE** | Schedule polish, customers, estimate creation form |
+| Phase 4 | **COMPLETE** | Native features (camera, signatures, GPS, push) |
+| Phase 5 | **COMPLETE** | Polish, offline support, production readiness |
 
 ---
 
@@ -45,9 +45,9 @@ What was done:
 
 ---
 
-## Phase 3: Schedule Polish, Customers, Estimates - NOT STARTED
+## Phase 3: Schedule Polish, Customers, Estimates - COMPLETE
 
-What needs to be done:
+What was done:
 1. **Create Estimate form** (`app/(tabs)/more/estimates/create.tsx`) - Currently a placeholder
    - Multi-step form: select customer → select property → add options with line items → review → submit
    - Use `useCreateEstimate()` hook (already built)
@@ -59,7 +59,7 @@ What needs to be done:
 4. **Invoices** - Add invoice endpoints + hooks + list/detail screens under More tab
    - Backend has full invoice API already (`/api/v1/invoices/*`)
 
-## Phase 4: Native Features - NOT STARTED
+## Phase 4: Native Features - COMPLETE
 
 ### Camera / Photos
 - Use `expo-image-picker` for capture from camera or gallery
@@ -100,48 +100,54 @@ What needs to be done:
 - `POST /api/v1/users/me/push-token` - Register push notification token
 - `GET /api/v1/users/me` - Get current user profile
 
-## Phase 5: Polish & Production Readiness - NOT STARTED
+## Phase 5: Polish & Production Readiness - COMPLETE
 
+What was done:
 1. **Animations**
-   - Page transition animations with react-native-reanimated
-   - Animated status badge transitions
-   - Custom pull-to-refresh animation
-   - Swipe gestures on job cards (swipe to start / navigate)
-   - Tab bar micro-animations
+   - `AnimatedListItem` component with FadeInDown + staggered delay by index
+   - Applied to all 6 list screens (home, jobs, schedule, customers, estimates, invoices)
+   - Staggered FadeInDown on home stat cards and job detail card sections
+   - `slide_from_right` screen transitions on jobs and more stacks
+   - `AnimatedTabIcon` with spring scale animation on tab focus
 
-2. **Haptic feedback**
-   - Already on status changes and button presses
-   - Add to: filter chip selection, pull-to-refresh, swipe actions
+2. **Offline support**
+   - MMKV storage instance (`src/lib/mmkv.ts`) for query cache persistence
+   - TanStack Query sync persister adapter (`src/lib/queryPersister.ts`)
+   - `PersistQueryClientProvider` replaces `QueryClientProvider` in root layout
+   - `onlineManager` synced with NetInfo for automatic online/offline detection
+   - `useNetworkStatus` hook for connectivity state
+   - Animated amber `OfflineBanner` with enter/exit transitions
+   - `gcTime` bumped to 24 hours for offline data retention
 
-3. **Loading states**
-   - Skeleton screens already implemented for lists
-   - Add shimmer animation refinement
+3. **Error handling**
+   - Global `ErrorBoundary` (class component) wrapping root layout
+   - `ErrorFallback` full-screen error UI with retry button
+   - `QueryErrorState` inline error state for failed list queries
+   - Applied to all 6 list screens and 2 detail screens (jobs, customers)
 
-4. **Empty states**
-   - Already implemented with EmptyState component
-   - Could add custom illustrations
+4. **Dark mode fixes**
+   - Tab bar uses `useColorScheme()` for dynamic bg/border/tint colors
+   - Stack headers in jobs and more layouts use dark mode colors
+   - All screens verified with `dark:` NativeWind classes
 
-5. **Offline support**
-   - TanStack Query `gcTime` / `staleTime` tuning
-   - `react-native-mmkv` as TanStack Query persister (package already installed)
-   - "Offline" banner when no connectivity
-   - Queue mutations when offline, flush when online
+5. **EAS Build configuration**
+   - `eas.json` with development (simulator), preview (internal), production (auto-increment) profiles
+   - `expo-updates` plugin added to app.json with runtime version policy
+   - `API_BASE_URL` in constants.ts supports `EXPO_PUBLIC_API_BASE_URL` env var override
 
-6. **Dark mode**
-   - NativeWind `dark:` classes already used throughout
-   - Verify all screens look good in dark mode
-   - System theme detection already enabled (`userInterfaceStyle: "automatic"` in app.json)
+New packages added:
+- `@react-native-community/netinfo` - Network connectivity detection
+- `expo-updates` - OTA updates support
+- `@tanstack/query-sync-storage-persister` - Sync storage persister for TanStack Query
+- `@tanstack/react-query-persist-client` - Persist client provider for TanStack Query
 
-7. **Error handling**
-   - Global error boundary component
-   - API error toasts (already implemented)
-   - Retry buttons on failed loads
-
-8. **App icon & splash screen**
-   - Custom icon design
-   - Splash screen with app logo (currently using placeholder)
-
-9. **EAS Build configuration**
-   - `eas.json` for development, preview, and production builds
-   - TestFlight (iOS) + Internal Testing (Android) setup
-   - OTA updates with `expo-updates`
+New files:
+- `src/lib/mmkv.ts` - MMKV storage instance
+- `src/lib/queryPersister.ts` - MMKV adapter for TanStack Query
+- `src/hooks/useNetworkStatus.ts` - NetInfo connectivity hook
+- `src/components/common/OfflineBanner.tsx` - Animated offline indicator
+- `src/components/common/ErrorBoundary.tsx` - React error boundary
+- `src/components/common/ErrorFallback.tsx` - Full-screen error UI
+- `src/components/common/QueryErrorState.tsx` - Inline query error state
+- `src/components/ui/AnimatedListItem.tsx` - Reusable list item animation wrapper
+- `eas.json` - EAS build profiles

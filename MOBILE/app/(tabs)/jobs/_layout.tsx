@@ -1,8 +1,21 @@
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
 
 export default function JobsLayout() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  const headerColors = {
+    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+    tintColor: isDark ? "#f8fafc" : "#0f172a",
+  };
+
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "slide_from_right",
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="[id]"
@@ -10,8 +23,8 @@ export default function JobsLayout() {
           headerShown: true,
           title: "Job Details",
           headerBackTitle: "Jobs",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
+          headerStyle: { backgroundColor: headerColors.backgroundColor },
+          headerTintColor: headerColors.tintColor,
           headerTitleStyle: { fontWeight: "600" },
         }}
       />

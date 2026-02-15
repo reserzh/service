@@ -15,6 +15,7 @@ import { useJobs } from "@/hooks/useJobs";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorFallback } from "@/components/common/ErrorFallback";
 import { Avatar } from "@/components/ui/Avatar";
 import { JobStatusBadge } from "@/components/job/JobStatusBadge";
 import { NavigateButton } from "@/components/common/NavigateButton";
@@ -23,11 +24,15 @@ import type { Property, Equipment, Job, JobStatus } from "@/types/models";
 
 export default function CustomerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data, isLoading } = useCustomer(id);
+  const { data, isLoading, isError, refetch } = useCustomer(id);
   const customer = data?.data;
 
   const { data: jobsData } = useJobs({ customerId: id, pageSize: 10 });
   const jobs = jobsData?.data ?? [];
+
+  if (isError) {
+    return <ErrorFallback message="Failed to load customer details" onRetry={() => refetch()} />;
+  }
 
   if (isLoading || !customer) {
     return <LoadingScreen />;

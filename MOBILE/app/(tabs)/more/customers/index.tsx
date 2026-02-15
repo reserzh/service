@@ -6,6 +6,8 @@ import { useCustomers } from "@/hooks/useCustomers";
 import { SearchBar } from "@/components/common/SearchBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
 import { Avatar } from "@/components/ui/Avatar";
 import { getInitials, formatPhone } from "@/lib/format";
 
@@ -13,7 +15,7 @@ export default function CustomerListScreen() {
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, refetch } = useCustomers({
+  const { data, isLoading, isError, refetch } = useCustomers({
     search: search || undefined,
     pageSize: 50,
   });
@@ -43,7 +45,8 @@ export default function CustomerListScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
+          <AnimatedListItem index={index}>
           <Pressable
             onPress={() => router.push(`/(tabs)/more/customers/${item.id}`)}
             className="flex-row items-center gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
@@ -68,6 +71,7 @@ export default function CustomerListScreen() {
             </View>
             <ChevronRight size={18} color="#94a3b8" />
           </Pressable>
+          </AnimatedListItem>
         )}
         ListEmptyComponent={
           isLoading ? (
@@ -82,6 +86,8 @@ export default function CustomerListScreen() {
                 </View>
               ))}
             </View>
+          ) : isError ? (
+            <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
               title="No customers found"

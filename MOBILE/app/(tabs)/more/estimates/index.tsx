@@ -8,6 +8,8 @@ import { FilterChips } from "@/components/common/FilterChips";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
 import { ESTIMATE_STATUS_COLORS } from "@/lib/colors";
 import { ESTIMATE_STATUS_LABELS } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
@@ -25,7 +27,7 @@ export default function EstimateListScreen() {
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, refetch } = useEstimates({
+  const { data, isLoading, isError, refetch } = useEstimates({
     search: search || undefined,
     status: filter === "all" ? undefined : filter,
     pageSize: 50,
@@ -53,9 +55,10 @@ export default function EstimateListScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const colors = ESTIMATE_STATUS_COLORS[item.status as EstimateStatus];
           return (
+            <AnimatedListItem index={index}>
             <Pressable
               onPress={() => router.push(`/(tabs)/more/estimates/${item.id}`)}
               className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
@@ -82,6 +85,7 @@ export default function EstimateListScreen() {
                 </Text>
               </View>
             </Pressable>
+            </AnimatedListItem>
           );
         }}
         ListEmptyComponent={
@@ -95,6 +99,8 @@ export default function EstimateListScreen() {
                 </View>
               ))}
             </View>
+          ) : isError ? (
+            <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
               title="No estimates"

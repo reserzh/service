@@ -1,8 +1,24 @@
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
 
 export default function MoreLayout() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  const headerStyle = {
+    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+  };
+  const headerTintColor = isDark ? "#f8fafc" : "#0f172a";
+
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "slide_from_right",
+        headerTintColor,
+        headerTitleStyle: { fontWeight: "600" as const },
+        headerStyle,
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="customers/index"
@@ -10,9 +26,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Customers",
           headerBackTitle: "More",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -21,9 +34,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Customer",
           headerBackTitle: "Customers",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -32,9 +42,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Estimates",
           headerBackTitle: "More",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -43,9 +50,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Estimate",
           headerBackTitle: "Estimates",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -54,9 +58,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "New Estimate",
           headerBackTitle: "Estimates",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -65,9 +66,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Invoices",
           headerBackTitle: "More",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -76,9 +74,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Invoice",
           headerBackTitle: "Invoices",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
       <Stack.Screen
@@ -87,9 +82,6 @@ export default function MoreLayout() {
           headerShown: true,
           title: "Profile",
           headerBackTitle: "More",
-          headerStyle: { backgroundColor: "#f8fafc" },
-          headerTintColor: "#0f172a",
-          headerTitleStyle: { fontWeight: "600" },
         }}
       />
     </Stack>

@@ -7,6 +7,8 @@ import { FilterChips } from "@/components/common/FilterChips";
 import { InvoiceStatusBadge } from "@/components/invoice/InvoiceStatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
 import { formatCurrency, formatDate, formatCustomerName } from "@/lib/format";
 import type { InvoiceStatus, InvoiceListItem } from "@/types/models";
 
@@ -23,7 +25,7 @@ export default function InvoiceListScreen() {
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, refetch } = useInvoices({
+  const { data, isLoading, isError, refetch } = useInvoices({
     search: search || undefined,
     status: filter === "all" ? undefined : filter,
     pageSize: 50,
@@ -37,7 +39,7 @@ export default function InvoiceListScreen() {
     setRefreshing(false);
   }, [refetch]);
 
-  const renderItem = ({ item }: { item: InvoiceListItem }) => {
+  const renderItem = ({ item, index }: { item: InvoiceListItem; index: number }) => {
     const customerName = formatCustomerName({
       firstName: item.customerFirstName,
       lastName: item.customerLastName,
@@ -47,6 +49,7 @@ export default function InvoiceListScreen() {
     const hasPartialPayment = balanceDue > 0 && balanceDue < total;
 
     return (
+      <AnimatedListItem index={index}>
       <Pressable
         onPress={() => router.push(`/(tabs)/more/invoices/${item.id}`)}
         className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
@@ -76,6 +79,7 @@ export default function InvoiceListScreen() {
           </View>
         </View>
       </Pressable>
+      </AnimatedListItem>
     );
   };
 
@@ -105,6 +109,8 @@ export default function InvoiceListScreen() {
                 </View>
               ))}
             </View>
+          ) : isError ? (
+            <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
               title="No invoices"

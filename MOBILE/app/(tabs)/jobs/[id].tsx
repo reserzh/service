@@ -34,6 +34,8 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorFallback } from "@/components/common/ErrorFallback";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { JobStatusBadge } from "@/components/job/JobStatusBadge";
 import { JobPriorityBadge } from "@/components/job/JobPriorityBadge";
 import { NavigateButton } from "@/components/common/NavigateButton";
@@ -44,7 +46,7 @@ import type { JobStatus } from "@/types/models";
 
 export default function JobDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data, isLoading, refetch } = useJob(id);
+  const { data, isLoading, isError, refetch } = useJob(id);
   const updateStatus = useUpdateJobStatus();
   const addNote = useAddJobNote();
   const [refreshing, setRefreshing] = useState(false);
@@ -119,6 +121,10 @@ export default function JobDetailScreen() {
     Linking.openURL(`tel:${phone}`);
   };
 
+  if (isError) {
+    return <ErrorFallback message="Failed to load job details" onRetry={() => refetch()} />;
+  }
+
   if (isLoading || !job) {
     return <LoadingScreen />;
   }
@@ -170,7 +176,7 @@ export default function JobDetailScreen() {
         )}
 
         {/* Customer Card */}
-        <View className="px-4 mb-3">
+        <Animated.View className="px-4 mb-3" entering={FadeInDown.delay(0).duration(400).springify()}>
           <Card>
             <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
               Customer
@@ -195,10 +201,10 @@ export default function JobDetailScreen() {
               </Pressable>
             </View>
           </Card>
-        </View>
+        </Animated.View>
 
         {/* Property / Address Card */}
-        <View className="px-4 mb-3">
+        <Animated.View className="px-4 mb-3" entering={FadeInDown.delay(80).duration(400).springify()}>
           <Card>
             <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
               Location
@@ -226,10 +232,10 @@ export default function JobDetailScreen() {
               />
             </View>
           </Card>
-        </View>
+        </Animated.View>
 
         {/* Line Items */}
-        <View className="px-4 mb-3">
+        <Animated.View className="px-4 mb-3" entering={FadeInDown.delay(160).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -265,7 +271,7 @@ export default function JobDetailScreen() {
               <Text className="text-sm text-slate-400 italic">No line items yet</Text>
             )}
           </Card>
-        </View>
+        </Animated.View>
 
         {/* Notes */}
         <View className="px-4 mb-3">

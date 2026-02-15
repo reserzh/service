@@ -23,6 +23,8 @@ import { JobCard } from "@/components/job/JobCard";
 import { JobStatusBadge } from "@/components/job/JobStatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
 import { formatTime } from "@/lib/format";
 import { JOB_STATUS_COLORS } from "@/lib/colors";
 import type { Job, JobStatus } from "@/types/models";
@@ -59,7 +61,7 @@ export default function ScheduleScreen() {
     };
   }, [selectedDate, viewMode]);
 
-  const { data, isLoading, refetch } = useSchedule({
+  const { data, isLoading, isError, refetch } = useSchedule({
     ...dateRange,
     technicianId: user?.userId,
   });
@@ -250,13 +252,15 @@ export default function ScheduleScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
-          renderItem={({ item }) => (
-            <View className="mb-3">
-              <JobCard
-                job={item}
-                onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
-              />
-            </View>
+          renderItem={({ item, index }) => (
+            <AnimatedListItem index={index}>
+              <View className="mb-3">
+                <JobCard
+                  job={item}
+                  onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
+                />
+              </View>
+            </AnimatedListItem>
           )}
           ListEmptyComponent={
             isLoading ? (
@@ -268,6 +272,8 @@ export default function ScheduleScreen() {
                   </View>
                 ))}
               </View>
+            ) : isError ? (
+              <QueryErrorState onRetry={() => refetch()} />
             ) : (
               <EmptyState
                 title="No jobs scheduled"

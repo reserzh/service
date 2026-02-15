@@ -10,6 +10,9 @@ import { JobCard } from "@/components/job/JobCard";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function HomeScreen() {
   const { user } = useAuthStore();
@@ -28,7 +31,7 @@ export default function HomeScreen() {
     [today]
   );
 
-  const { data, isLoading, refetch } = useJobs(params);
+  const { data, isLoading, isError, refetch } = useJobs(params);
   const jobs = data?.data ?? [];
 
   const stats = useMemo(() => {
@@ -65,24 +68,30 @@ export default function HomeScreen() {
 
             {/* Stats */}
             <View className="flex-row gap-3 mb-5">
-              <StatCard
-                icon={<ClipboardList size={20} color="#3b82f6" />}
-                label="Today's Jobs"
-                value={stats.total}
-                bgClass="bg-blue-50 dark:bg-blue-950"
-              />
-              <StatCard
-                icon={<Play size={20} color="#f59e0b" />}
-                label="In Progress"
-                value={stats.inProgress}
-                bgClass="bg-amber-50 dark:bg-amber-950"
-              />
-              <StatCard
-                icon={<CheckCircle2 size={20} color="#10b981" />}
-                label="Completed"
-                value={stats.completed}
-                bgClass="bg-emerald-50 dark:bg-emerald-950"
-              />
+              <Animated.View className="flex-1" entering={FadeInDown.delay(0).duration(400).springify()}>
+                <StatCard
+                  icon={<ClipboardList size={20} color="#3b82f6" />}
+                  label="Today's Jobs"
+                  value={stats.total}
+                  bgClass="bg-blue-50 dark:bg-blue-950"
+                />
+              </Animated.View>
+              <Animated.View className="flex-1" entering={FadeInDown.delay(80).duration(400).springify()}>
+                <StatCard
+                  icon={<Play size={20} color="#f59e0b" />}
+                  label="In Progress"
+                  value={stats.inProgress}
+                  bgClass="bg-amber-50 dark:bg-amber-950"
+                />
+              </Animated.View>
+              <Animated.View className="flex-1" entering={FadeInDown.delay(160).duration(400).springify()}>
+                <StatCard
+                  icon={<CheckCircle2 size={20} color="#10b981" />}
+                  label="Completed"
+                  value={stats.completed}
+                  bgClass="bg-emerald-50 dark:bg-emerald-950"
+                />
+              </Animated.View>
             </View>
 
             {/* Section header */}
@@ -91,13 +100,15 @@ export default function HomeScreen() {
             </Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <View className="mb-3">
-            <JobCard
-              job={item}
-              onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
-            />
-          </View>
+        renderItem={({ item, index }) => (
+          <AnimatedListItem index={index}>
+            <View className="mb-3">
+              <JobCard
+                job={item}
+                onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
+              />
+            </View>
+          </AnimatedListItem>
         )}
         ListEmptyComponent={
           isLoading ? (
@@ -110,6 +121,8 @@ export default function HomeScreen() {
                 </View>
               ))}
             </View>
+          ) : isError ? (
+            <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
               title="No jobs today"
@@ -134,7 +147,7 @@ function StatCard({
   bgClass: string;
 }) {
   return (
-    <View className={`flex-1 rounded-2xl p-3 ${bgClass}`}>
+    <View className={`rounded-2xl p-3 ${bgClass}`}>
       <View className="mb-2">{icon}</View>
       <Text className="text-2xl font-bold text-slate-900 dark:text-white">
         {value}

@@ -8,6 +8,8 @@ import { SearchBar } from "@/components/common/SearchBar";
 import { FilterChips } from "@/components/common/FilterChips";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
 
 const FILTERS = [
   { key: "active", label: "Active" },
@@ -37,7 +39,7 @@ export default function JobListScreen() {
     [filter, search]
   );
 
-  const { data, isLoading, refetch } = useJobs(params);
+  const { data, isLoading, isError, refetch } = useJobs(params);
   const jobs = data?.data ?? [];
 
   const handleRefresh = useCallback(async () => {
@@ -66,13 +68,15 @@ export default function JobListScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        renderItem={({ item }) => (
-          <View className="mb-3">
-            <JobCard
-              job={item}
-              onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
-            />
-          </View>
+        renderItem={({ item, index }) => (
+          <AnimatedListItem index={index}>
+            <View className="mb-3">
+              <JobCard
+                job={item}
+                onPress={() => router.push(`/(tabs)/jobs/${item.id}`)}
+              />
+            </View>
+          </AnimatedListItem>
         )}
         ListEmptyComponent={
           isLoading ? (
@@ -85,6 +89,8 @@ export default function JobListScreen() {
                 </View>
               ))}
             </View>
+          ) : isError ? (
+            <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
               title="No jobs found"
