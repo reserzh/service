@@ -5,12 +5,16 @@ import * as schema from "@fieldservice/shared/db/schema";
 const TENANT_ID = "d7add4c5-68cd-4a33-b835-e9383eeecd7e";
 const ADMIN_ID = "6cc91fa8-c7db-4fc8-afa5-34160bf42ab0";
 
-// Supabase local dev defaults
-const SUPABASE_URL = "http://localhost:54321";
-const SERVICE_ROLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+// Supabase local dev — set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local
+// or run: npx supabase status to get values after `supabase start`
+const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://localhost:54331";
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+if (!SERVICE_ROLE_KEY) {
+  console.error("SUPABASE_SERVICE_ROLE_KEY is required. Set it in .env.local or pass as env var.");
+  process.exit(1);
+}
 
-const client = postgres("postgresql://postgres:postgres@localhost:54322/postgres", {
+const client = postgres(process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:54332/postgres", {
   prepare: false,
 });
 const db = drizzle(client, { schema });
@@ -51,8 +55,44 @@ async function createAuthUser(email: string, password: string): Promise<string> 
 async function seed() {
   console.log("Seeding FieldService Pro...\n");
 
+  // --- Tenant ---
+  console.log("Creating tenant...");
+  await db
+    .insert(schema.tenants)
+    .values({
+      id: TENANT_ID,
+      name: "Comfort Pro HVAC",
+      slug: "comfort-pro",
+      email: "info@comfortprohvac.com",
+      subscriptionStatus: "active",
+      subscriptionPlan: "professional",
+    })
+    .onConflictDoNothing();
+  console.log("  Comfort Pro HVAC");
+
+  // --- Admin user (create auth user first) ---
+  console.log("\nCreating admin user...");
+  const adminAuthId = await createAuthUser("admin@test.com", "password123");
+  await db
+    .insert(schema.users)
+    .values({
+      id: adminAuthId,
+      tenantId: TENANT_ID,
+      email: "admin@test.com",
+      firstName: "Admin",
+      lastName: "User",
+      role: "admin",
+      isActive: true,
+      canBeDispatched: false,
+    })
+    .onConflictDoNothing();
+  console.log("  Admin User (admin)");
+
+  // Override ADMIN_ID with actual auth ID for foreign keys
+  const effectiveAdminId = adminAuthId;
+
   // --- Users (create auth users first, then app users) ---
-  console.log("Creating users...");
+  console.log("\nCreating users...");
 
   const techUsers = [
     { email: "mike.johnson@test.com", firstName: "Mike", lastName: "Johnson", role: "technician" as const, color: "#ef4444", hourlyRate: "85.00" },
@@ -65,7 +105,7 @@ async function seed() {
     { email: "dave.dispatcher@test.com", firstName: "Dave", lastName: "Thompson", role: "dispatcher" as const, color: "#06b6d4" },
   ];
 
-  const userIds: Record<string, string> = { "admin@test.com": ADMIN_ID };
+  const userIds: Record<string, string> = { "admin@test.com": effectiveAdminId };
 
   for (const u of [...techUsers, ...officeUsers]) {
     const authId = await createAuthUser(u.email, "password123");
@@ -112,7 +152,7 @@ async function seed() {
   for (const c of customersData) {
     const [row] = await db
       .insert(schema.customers)
-      .values({ tenantId: TENANT_ID, createdBy: ADMIN_ID, ...c })
+      .values({ tenantId: TENANT_ID, createdBy: effectiveAdminId, ...c })
       .returning({ id: schema.customers.id });
     customerIds.push(row.id);
     console.log(`  ${c.firstName} ${c.lastName}${c.companyName ? ` (${c.companyName})` : ""}`);
@@ -298,7 +338,7 @@ async function seed() {
   for (const j of jobsData) {
     await db.insert(schema.jobs).values({
       tenantId: TENANT_ID,
-      createdBy: ADMIN_ID,
+      createdBy: effectiveAdminId,
       ...j,
     });
     const statusIcon = { completed: "✓", in_progress: "►", dispatched: "→", scheduled: "○", new: "•", canceled: "✗" }[j.status];
@@ -344,7 +384,7 @@ async function seed() {
     { jobId: jobIdMap["JOB-0001"], userId: mikeId, content: "System is 5 years old - in decent shape overall. Recommend annual maintenance to prevent future issues.", isInternal: true },
     { jobId: jobIdMap["JOB-0002"], userId: sarahId, content: "Defrost control board was malfunctioning causing the heat pump to stay in cooling mode. Replaced board and tested through full defrost cycle. Operating normally.", isInternal: false },
     { jobId: jobIdMap["JOB-0003"], userId: carlosId, content: "Inducer motor seized - replaced along with ignitor which was cracked. Both RTUs inspected, unit 2 is fine. Recommend scheduling maintenance for both units.", isInternal: false },
-    { jobId: jobIdMap["JOB-0003"], userId: ADMIN_ID, content: "High priority client - medical office. Always try to schedule same-day for them.", isInternal: true },
+    { jobId: jobIdMap["JOB-0003"], userId: effectiveAdminId, content: "High priority client - medical office. Always try to schedule same-day for them.", isInternal: true },
     { jobId: jobIdMap["JOB-0004"], userId: mikeId, content: "Starting tune-up. Coils are dirty, will need extra cleaning time.", isInternal: false },
   ];
 
@@ -363,7 +403,7 @@ async function seed() {
       estimateNumber: "EST-0001",
       customerId: customerIds[7],
       propertyId: propertyIds[7],
-      createdBy: ADMIN_ID,
+      createdBy: effectiveAdminId,
       status: "sent",
       summary: "Full HVAC system replacement - 3 ton",
       notes: "Replacing existing 15-year-old Goodman system with new high-efficiency Carrier Infinity series.",
@@ -427,7 +467,7 @@ async function seed() {
       estimateNumber: "EST-0002",
       customerId: customerIds[2],
       propertyId: propertyIds[2],
-      createdBy: ADMIN_ID,
+      createdBy: effectiveAdminId,
       status: "approved",
       summary: "Water heater replacement - tankless upgrade",
       notes: "Replacing failing 50-gallon tank water heater with Rinnai tankless unit.",
@@ -466,7 +506,7 @@ async function seed() {
     estimateNumber: "EST-0003",
     customerId: customerIds[11],
     propertyId: propertyIds[13],
-    createdBy: ADMIN_ID,
+    createdBy: effectiveAdminId,
     status: "draft",
     summary: "Commercial HVAC maintenance contract - annual",
     notes: "Quarterly maintenance visits for daycare HVAC system. Includes filter changes and seasonal tune-ups.",
@@ -484,7 +524,7 @@ async function seed() {
       invoiceNumber: "INV-0001",
       customerId: customerIds[0],
       jobId: jobIdMap["JOB-0001"],
-      createdBy: ADMIN_ID,
+      createdBy: effectiveAdminId,
       status: "paid",
       dueDate: daysAgo(0).toISOString().split("T")[0],
       subtotal: "484.00",
@@ -524,7 +564,7 @@ async function seed() {
       invoiceNumber: "INV-0002",
       customerId: customerIds[9],
       jobId: jobIdMap["JOB-0003"],
-      createdBy: ADMIN_ID,
+      createdBy: effectiveAdminId,
       status: "sent",
       dueDate: daysFromNow(15).toISOString().split("T")[0],
       subtotal: "1250.00",
