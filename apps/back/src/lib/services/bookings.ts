@@ -164,7 +164,7 @@ export async function convertToJob(ctx: UserContext, bookingId: string) {
     const [svc] = await db
       .select({ name: serviceCatalog.name })
       .from(serviceCatalog)
-      .where(eq(serviceCatalog.id, booking.serviceId))
+      .where(and(eq(serviceCatalog.id, booking.serviceId), eq(serviceCatalog.tenantId, ctx.tenantId)))
       .limit(1);
     if (svc) serviceName = svc.name;
   }
@@ -197,7 +197,7 @@ export async function convertToJob(ctx: UserContext, bookingId: string) {
       status: "confirmed",
       updatedAt: new Date(),
     })
-    .where(eq(bookingRequests.id, bookingId));
+    .where(and(eq(bookingRequests.id, bookingId), eq(bookingRequests.tenantId, ctx.tenantId)));
 
   await logActivity(ctx, "website", bookingId, "booking_converted", {
     jobId: job.id,

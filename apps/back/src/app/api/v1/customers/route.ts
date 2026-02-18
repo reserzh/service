@@ -32,10 +32,10 @@ export async function GET(req: NextRequest) {
 
     const result = await listCustomers(ctx, {
       page: url.searchParams.get("page")
-        ? parseInt(url.searchParams.get("page")!)
+        ? parseInt(url.searchParams.get("page")!, 10)
         : undefined,
       pageSize: url.searchParams.get("pageSize")
-        ? parseInt(url.searchParams.get("pageSize")!)
+        ? parseInt(url.searchParams.get("pageSize")!, 10)
         : undefined,
       search: url.searchParams.get("search") || undefined,
       type: (url.searchParams.get("type") as "residential" | "commercial") || undefined,

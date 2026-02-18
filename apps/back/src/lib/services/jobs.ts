@@ -90,7 +90,7 @@ const validTransitions: Record<JobStatus, JobStatus[]> = {
   new: ["scheduled", "canceled"],
   scheduled: ["dispatched", "new", "canceled"],
   dispatched: ["in_progress", "scheduled", "canceled"],
-  in_progress: ["completed", "dispatched"],
+  in_progress: ["completed", "dispatched", "canceled"],
   completed: [],
   canceled: ["new"],
 };
@@ -248,11 +248,11 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
     photos,
     signatures,
   ] = await Promise.all([
-    db.select().from(customers).where(eq(customers.id, job.customerId)).limit(1).then((r) => r[0]),
-    db.select().from(properties).where(eq(properties.id, job.propertyId)).limit(1).then((r) => r[0]),
+    db.select().from(customers).where(and(eq(customers.id, job.customerId), eq(customers.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
+    db.select().from(properties).where(and(eq(properties.id, job.propertyId), eq(properties.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     job.assignedTo
       ? db.select({ id: users.id, firstName: users.firstName, lastName: users.lastName, color: users.color, phone: users.phone })
-          .from(users).where(eq(users.id, job.assignedTo)).limit(1).then((r) => r[0])
+          .from(users).where(and(eq(users.id, job.assignedTo), eq(users.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
       : null,
     db.select().from(jobLineItems)
       .where(and(eq(jobLineItems.jobId, jobId), eq(jobLineItems.tenantId, ctx.tenantId)))
@@ -579,7 +579,7 @@ export async function updateJobLineItem(
       type: input.type ?? existing.type,
       updatedAt: new Date(),
     })
-    .where(eq(jobLineItems.id, itemId))
+    .where(and(eq(jobLineItems.id, itemId), eq(jobLineItems.tenantId, ctx.tenantId)))
     .returning();
 
   await recalculateJobTotal(ctx.tenantId, jobId);
@@ -613,7 +613,7 @@ async function recalculateJobTotal(tenantId: string, jobId: string) {
   await db
     .update(jobs)
     .set({ totalAmount: result[0].sum, updatedAt: new Date() })
-    .where(eq(jobs.id, jobId));
+    .where(and(eq(jobs.id, jobId), eq(jobs.tenantId, tenantId)));
 }
 
 // ---------- Notes ----------

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { bookingRequests } from "@fieldservice/shared/db/schema";
+import { bookingRequests, tenants } from "@fieldservice/shared/db/schema";
+import { eq } from "drizzle-orm";
 import { handleApiError } from "@/lib/api/errors";
 
 const bookingSchema = z.object({
@@ -26,6 +27,17 @@ export async function POST(
 ) {
   try {
     const { tenantId } = await params;
+
+    // Validate tenant exists
+    const [tenant] = await db
+      .select({ id: tenants.id })
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
+    if (!tenant) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     const body = await req.json();
     const parsed = bookingSchema.parse(body);
 

@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { showToast } from "@/lib/toast";
 
 const initialState: CustomerActionState = {};
@@ -32,7 +32,14 @@ export function CreateCustomerDialog({ children }: { children: React.ReactNode }
   const [state, formAction, isPending] = useActionState(createCustomerAction, initialState);
   const router = useRouter();
 
+  const lastProcessedRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Generate a key to track whether we've already processed this state
+    const stateKey = state.success ? `success-${state.customerId}` : state.error ? `error-${state.error}` : null;
+    if (!stateKey || stateKey === lastProcessedRef.current) return;
+    lastProcessedRef.current = stateKey;
+
     if (state.success && state.customerId) {
       showToast.created("Customer");
       setOpen(false);

@@ -198,9 +198,9 @@ export async function getInvoiceWithRelations(ctx: UserContext, invoiceId: strin
   const invoice = await getInvoice(ctx, invoiceId);
 
   const [customer, createdByUser, lineItems, paymentList] = await Promise.all([
-    db.select().from(customers).where(eq(customers.id, invoice.customerId)).limit(1).then((r) => r[0]),
+    db.select().from(customers).where(and(eq(customers.id, invoice.customerId), eq(customers.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     db.select({ id: users.id, firstName: users.firstName, lastName: users.lastName })
-      .from(users).where(eq(users.id, invoice.createdBy)).limit(1).then((r) => r[0]),
+      .from(users).where(and(eq(users.id, invoice.createdBy), eq(users.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     db.select().from(invoiceLineItems)
       .where(and(eq(invoiceLineItems.invoiceId, invoiceId), eq(invoiceLineItems.tenantId, ctx.tenantId)))
       .orderBy(asc(invoiceLineItems.sortOrder)),
@@ -212,13 +212,13 @@ export async function getInvoiceWithRelations(ctx: UserContext, invoiceId: strin
   // Fetch linked job if exists
   const linkedJob = invoice.jobId
     ? await db.select({ id: jobs.id, jobNumber: jobs.jobNumber, summary: jobs.summary, status: jobs.status })
-        .from(jobs).where(eq(jobs.id, invoice.jobId)).limit(1).then((r) => r[0])
+        .from(jobs).where(and(eq(jobs.id, invoice.jobId), eq(jobs.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
     : null;
 
   // Fetch linked estimate if exists
   const linkedEstimate = invoice.estimateId
     ? await db.select({ id: estimates.id, estimateNumber: estimates.estimateNumber, summary: estimates.summary, status: estimates.status })
-        .from(estimates).where(eq(estimates.id, invoice.estimateId)).limit(1).then((r) => r[0])
+        .from(estimates).where(and(eq(estimates.id, invoice.estimateId), eq(estimates.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
     : null;
 
   return {
@@ -425,7 +425,7 @@ async function recalculateInvoiceTotals(tenantId: string, invoiceId: string) {
   const [invoice] = await db
     .select({ taxRate: invoices.taxRate, amountPaid: invoices.amountPaid })
     .from(invoices)
-    .where(eq(invoices.id, invoiceId))
+    .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, tenantId)))
     .limit(1);
 
   const result = await db
@@ -449,7 +449,7 @@ async function recalculateInvoiceTotals(tenantId: string, invoiceId: string) {
       balanceDue: String(balanceDue),
       updatedAt: new Date(),
     })
-    .where(eq(invoices.id, invoiceId));
+    .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, tenantId)));
 }
 
 // ---------- Status transitions ----------
@@ -465,7 +465,7 @@ export async function sendInvoice(ctx: UserContext, invoiceId: string) {
   const [updated] = await db
     .update(invoices)
     .set({ status: "sent", sentAt: new Date(), updatedAt: new Date() })
-    .where(eq(invoices.id, invoiceId))
+    .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "sent");
@@ -487,7 +487,7 @@ export async function voidInvoice(ctx: UserContext, invoiceId: string) {
   const [updated] = await db
     .update(invoices)
     .set({ status: "void", updatedAt: new Date() })
-    .where(eq(invoices.id, invoiceId))
+    .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "voided");
@@ -540,7 +540,7 @@ export async function recordPayment(ctx: UserContext, invoiceId: string, input: 
         paidAt: newBalanceDue <= 0 ? new Date() : null,
         updatedAt: new Date(),
       })
-      .where(eq(invoices.id, invoiceId));
+      .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)));
 
     return payment;
   });

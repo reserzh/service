@@ -1,5 +1,3 @@
-"use server";
-
 import { db } from "@/lib/db";
 import {
   siteSettings,
@@ -470,7 +468,7 @@ export async function verifyDomain(ctx: UserContext, domainId: string) {
     const [failed] = await db
       .update(siteDomains)
       .set({ status: "failed", updatedAt: new Date() })
-      .where(eq(siteDomains.id, domainId))
+      .where(and(eq(siteDomains.id, domainId), eq(siteDomains.tenantId, ctx.tenantId)))
       .returning();
     throw new Error(`DNS verification failed for ${failed.domain}. Please ensure the TXT record is set.`);
   }
@@ -482,7 +480,7 @@ export async function verifyDomain(ctx: UserContext, domainId: string) {
       verifiedAt: new Date(),
       updatedAt: new Date(),
     })
-    .where(eq(siteDomains.id, domainId))
+    .where(and(eq(siteDomains.id, domainId), eq(siteDomains.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "website", updated.id, "domain_verified", { domain: updated.domain });

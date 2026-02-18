@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       page: Number(url.searchParams.get("page") || "1"),
       pageSize: Number(url.searchParams.get("pageSize") || "25"),
       search: url.searchParams.get("search") || undefined,
-      status: url.searchParams.get("status")?.split(",") as any || undefined,
+      status: url.searchParams.get("status")?.split(",") as ("draft" | "sent" | "viewed" | "approved" | "declined" | "expired")[] || undefined,
       customerId: url.searchParams.get("customerId") || undefined,
       sort: url.searchParams.get("sort") || undefined,
       order: (url.searchParams.get("order") as "asc" | "desc") || undefined,

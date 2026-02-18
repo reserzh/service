@@ -4,8 +4,9 @@ import { requireApiAuth } from "@/lib/auth";
 import { handleApiError } from "@/lib/api/errors";
 import { applyTemplate, listTemplates } from "@/lib/services/template-applicator";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    await requireApiAuth(req);
     const templateList = listTemplates();
     return NextResponse.json({ data: templateList });
   } catch (error) {

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       page: Number(url.searchParams.get("page") || "1"),
       pageSize: Number(url.searchParams.get("pageSize") || "50"),
       search: url.searchParams.get("search") || undefined,
-      role: url.searchParams.get("role") as any || undefined,
+      role: url.searchParams.get("role") as "admin" | "office_manager" | "dispatcher" | "csr" | "technician" || undefined,
       includeInactive: url.searchParams.get("includeInactive") === "true",
     });
 

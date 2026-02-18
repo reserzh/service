@@ -41,8 +41,8 @@ export async function GET(req: NextRequest) {
       : undefined;
 
     const result = await listJobs(ctx, {
-      page: url.searchParams.get("page") ? parseInt(url.searchParams.get("page")!) : undefined,
-      pageSize: url.searchParams.get("pageSize") ? parseInt(url.searchParams.get("pageSize")!) : undefined,
+      page: url.searchParams.get("page") ? parseInt(url.searchParams.get("page")!, 10) : undefined,
+      pageSize: url.searchParams.get("pageSize") ? parseInt(url.searchParams.get("pageSize")!, 10) : undefined,
       search: url.searchParams.get("search") || undefined,
       status,
       priority: (url.searchParams.get("priority") as "low" | "normal" | "high" | "emergency") || undefined,

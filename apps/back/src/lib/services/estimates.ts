@@ -178,10 +178,10 @@ export async function getEstimateWithRelations(ctx: UserContext, estimateId: str
   const estimate = await getEstimate(ctx, estimateId);
 
   const [customer, property, createdByUser, options] = await Promise.all([
-    db.select().from(customers).where(eq(customers.id, estimate.customerId)).limit(1).then((r) => r[0]),
-    db.select().from(properties).where(eq(properties.id, estimate.propertyId)).limit(1).then((r) => r[0]),
+    db.select().from(customers).where(and(eq(customers.id, estimate.customerId), eq(customers.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
+    db.select().from(properties).where(and(eq(properties.id, estimate.propertyId), eq(properties.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     db.select({ id: users.id, firstName: users.firstName, lastName: users.lastName })
-      .from(users).where(eq(users.id, estimate.createdBy)).limit(1).then((r) => r[0]),
+      .from(users).where(and(eq(users.id, estimate.createdBy), eq(users.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     db.select().from(estimateOptions)
       .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)))
       .orderBy(asc(estimateOptions.sortOrder)),
@@ -206,7 +206,7 @@ export async function getEstimateWithRelations(ctx: UserContext, estimateId: str
   // Fetch linked job if exists
   const linkedJob = estimate.jobId
     ? await db.select({ id: jobs.id, jobNumber: jobs.jobNumber, summary: jobs.summary, status: jobs.status })
-        .from(jobs).where(eq(jobs.id, estimate.jobId)).limit(1).then((r) => r[0])
+        .from(jobs).where(and(eq(jobs.id, estimate.jobId), eq(jobs.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
     : null;
 
   return {
@@ -369,7 +369,7 @@ export async function sendEstimate(ctx: UserContext, estimateId: string) {
   const [updated] = await db
     .update(estimates)
     .set({ status: "sent", sentAt: new Date(), updatedAt: new Date() })
-    .where(eq(estimates.id, estimateId))
+    .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "estimate", estimateId, "sent");
@@ -408,7 +408,7 @@ export async function approveEstimate(ctx: UserContext, estimateId: string, opti
       totalAmount: option.total,
       updatedAt: new Date(),
     })
-    .where(eq(estimates.id, estimateId))
+    .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "estimate", estimateId, "approved", { optionId, optionName: option.name });
@@ -426,7 +426,7 @@ export async function declineEstimate(ctx: UserContext, estimateId: string) {
   const [updated] = await db
     .update(estimates)
     .set({ status: "declined", updatedAt: new Date() })
-    .where(eq(estimates.id, estimateId))
+    .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)))
     .returning();
 
   await logActivity(ctx, "estimate", estimateId, "declined");
@@ -511,6 +511,15 @@ export async function deleteEstimateOption(ctx: UserContext, estimateId: string,
 }
 
 async function recalculateEstimateTotal(tenantId: string, estimateId: string) {
+  // Only recalculate for draft estimates — approved estimates have locked totals
+  const [estimate] = await db
+    .select({ status: estimates.status })
+    .from(estimates)
+    .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, tenantId)))
+    .limit(1);
+
+  if (estimate && estimate.status !== "draft") return;
+
   const result = await db
     .select({ max: sql<string>`coalesce(max(${estimateOptions.total}::numeric), 0)` })
     .from(estimateOptions)
@@ -519,7 +528,7 @@ async function recalculateEstimateTotal(tenantId: string, estimateId: string) {
   await db
     .update(estimates)
     .set({ totalAmount: result[0].max, updatedAt: new Date() })
-    .where(eq(estimates.id, estimateId));
+    .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, tenantId)));
 }
 
 // ---------- Convert estimate to invoice ----------

@@ -24,6 +24,8 @@ import { assertPermission } from "@/lib/auth/permissions";
 // ==================== Dashboard Stats ====================
 
 export async function getDashboardStats(ctx: UserContext) {
+  assertPermission(ctx, "reports", "read");
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
@@ -160,6 +162,8 @@ export async function getDashboardStats(ctx: UserContext) {
 // ==================== Recent Activity ====================
 
 export async function getRecentActivity(ctx: UserContext, limit: number = 10) {
+  assertPermission(ctx, "reports", "read");
+
   const data = await db
     .select({
       id: activityLog.id,

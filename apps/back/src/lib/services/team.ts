@@ -44,11 +44,12 @@ export async function listTeamMembers(ctx: UserContext, params: ListTeamParams =
 
   const {
     page = 1,
-    pageSize = 50,
+    pageSize: rawPageSize = 50,
     search,
     role,
     includeInactive = false,
   } = params;
+  const pageSize = Math.min(Math.max(rawPageSize, 1), 100);
   const offset = (page - 1) * pageSize;
 
   const conditions: ReturnType<typeof eq>[] = [eq(users.tenantId, ctx.tenantId)];
