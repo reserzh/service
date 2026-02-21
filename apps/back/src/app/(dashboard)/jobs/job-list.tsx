@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Filter, Wrench } from "lucide-react";
+import { Search, Filter, Wrench, CalendarDays, Download } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,11 +71,15 @@ interface JobListProps {
   meta: { page: number; pageSize: number; total: number };
   searchQuery?: string;
   statusFilter?: string;
+  priorityFilter?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 const allStatuses = ["new", "scheduled", "dispatched", "in_progress", "completed", "canceled"];
+const allPriorities = ["low", "normal", "high", "emergency"];
 
-export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps) {
+export function JobList({ jobs, meta, searchQuery, statusFilter, priorityFilter, dateFrom, dateTo }: JobListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/jobs", searchQuery);
@@ -157,20 +161,77 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {(search || activeStatuses.length > 0) && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Filter className="mr-2 h-3.5 w-3.5" />
+              Priority
+              {priorityFilter && (
+                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-xs">
+                  1
+                </Badge>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {allPriorities.map((p) => (
+              <DropdownMenuCheckboxItem
+                key={p}
+                checked={priorityFilter === p}
+                onCheckedChange={() =>
+                  updateParams({ priority: priorityFilter === p ? undefined : p })
+                }
+              >
+                {priorityConfig[p]?.label ?? p}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="hidden lg:flex items-center gap-2">
+          <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            type="date"
+            className="h-8 w-[140px]"
+            value={dateFrom ?? ""}
+            onChange={(e) => updateParams({ from: e.target.value || undefined })}
+            aria-label="From date"
+          />
+          <span className="text-xs text-muted-foreground">to</span>
+          <Input
+            type="date"
+            className="h-8 w-[140px]"
+            value={dateTo ?? ""}
+            onChange={(e) => updateParams({ to: e.target.value || undefined })}
+            aria-label="To date"
+          />
+        </div>
+
+        {(search || activeStatuses.length > 0 || priorityFilter || dateFrom || dateTo) && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
               clearSearch();
-              if (activeStatuses.length > 0) {
-                router.push("/jobs");
-              }
+              router.push("/jobs");
             }}
           >
             Clear
           </Button>
         )}
+
+        <div className="ml-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <a href={`/api/v1/jobs/export?${searchParams.toString()}`} download>
+              <Download className="mr-2 h-3.5 w-3.5" />
+              Export
+            </a>
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

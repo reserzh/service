@@ -14,6 +14,8 @@ interface PageProps {
     page?: string;
     search?: string;
     status?: string;
+    from?: string;
+    to?: string;
   }>;
 }
 
@@ -25,6 +27,8 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     page: Number(params.page || "1"),
     search: params.search || undefined,
     status: params.status?.split(",") as any || undefined,
+    from: params.from,
+    to: params.to,
   });
 
   return (
@@ -43,6 +47,8 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         meta={result.meta}
         searchQuery={params.search}
         statusFilter={params.status}
+        dateFrom={params.from}
+        dateTo={params.to}
       />
     </div>
   );

@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       order: (url.searchParams.get("order") as "asc" | "desc") || undefined,
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json({ data: result.data, meta: result.meta });
   } catch (error) {
     return handleApiError(error);
   }

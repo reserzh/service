@@ -14,7 +14,10 @@ interface PageProps {
     page?: string;
     search?: string;
     status?: string;
+    priority?: string;
     assignedTo?: string;
+    from?: string;
+    to?: string;
   }>;
 }
 
@@ -30,7 +33,10 @@ export default async function JobsPage({ searchParams }: PageProps) {
     page: params.page ? parseInt(params.page) : 1,
     search: params.search,
     status: statusFilter,
+    priority: params.priority as "low" | "normal" | "high" | "emergency" | undefined,
     assignedTo: params.assignedTo,
+    from: params.from,
+    to: params.to,
   });
 
   return (
@@ -49,6 +55,9 @@ export default async function JobsPage({ searchParams }: PageProps) {
         meta={result.meta}
         searchQuery={params.search}
         statusFilter={params.status}
+        priorityFilter={params.priority}
+        dateFrom={params.from}
+        dateTo={params.to}
       />
     </div>
   );

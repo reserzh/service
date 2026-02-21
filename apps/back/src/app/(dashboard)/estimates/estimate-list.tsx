@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, FileText } from "lucide-react";
+import { Search, Filter, FileText, Download } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -156,6 +156,15 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
             Clear
           </Button>
         )}
+
+        <div className="ml-auto">
+          <Button variant="outline" size="sm" asChild>
+            <a href={`/api/v1/estimates/export?${searchParams.toString()}`} download>
+              <Download className="mr-2 h-3.5 w-3.5" />
+              Export
+            </a>
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

@@ -6,7 +6,7 @@ import {
   properties,
   jobs,
 } from "@fieldservice/shared/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
@@ -31,19 +31,28 @@ export async function listBookingRequests(ctx: UserContext, params: ListBookings
     conditions.push(eq(bookingRequests.status, status));
   }
 
-  const results = await db
-    .select()
-    .from(bookingRequests)
-    .leftJoin(serviceCatalog, and(eq(bookingRequests.serviceId, serviceCatalog.id), eq(serviceCatalog.tenantId, ctx.tenantId)))
-    .where(and(...conditions))
-    .orderBy(desc(bookingRequests.createdAt))
-    .limit(pageSize)
-    .offset(offset);
+  const [results, countResult] = await Promise.all([
+    db
+      .select()
+      .from(bookingRequests)
+      .leftJoin(serviceCatalog, and(eq(bookingRequests.serviceId, serviceCatalog.id), eq(serviceCatalog.tenantId, ctx.tenantId)))
+      .where(and(...conditions))
+      .orderBy(desc(bookingRequests.createdAt))
+      .limit(pageSize)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(bookingRequests)
+      .where(and(...conditions)),
+  ]);
 
-  return results.map((r) => ({
-    ...r.booking_requests,
-    service: r.service_catalog,
-  }));
+  return {
+    data: results.map((r) => ({
+      ...r.booking_requests,
+      service: r.service_catalog,
+    })),
+    meta: { page, pageSize, total: Number(countResult[0].count) },
+  };
 }
 
 export async function getBookingRequest(ctx: UserContext, bookingId: string) {

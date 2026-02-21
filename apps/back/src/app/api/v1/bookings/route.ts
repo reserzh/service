@@ -11,13 +11,13 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") ?? "1");
     const pageSize = parseInt(searchParams.get("pageSize") ?? "25");
 
-    const bookings = await listBookingRequests(ctx, {
+    const result = await listBookingRequests(ctx, {
       status: status ?? undefined,
       page,
       pageSize,
     });
 
-    return NextResponse.json({ data: bookings });
+    return NextResponse.json({ data: result.data, meta: result.meta });
   } catch (error) {
     return handleApiError(error);
   }

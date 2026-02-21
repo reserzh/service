@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       includeInactive: url.searchParams.get("includeInactive") === "true",
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json({ data: result.data, meta: result.meta });
   } catch (error) {
     return handleApiError(error);
   }

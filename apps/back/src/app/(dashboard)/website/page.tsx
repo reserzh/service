@@ -11,14 +11,13 @@ import { Globe, FileText, CalendarCheck, ExternalLink } from "lucide-react";
 
 export default async function WebsiteOverviewPage() {
   const ctx = await requireAuth();
-  const [settings, pages, bookings] = await Promise.all([
+  const [settings, pages, pendingResult] = await Promise.all([
     getSiteSettings(ctx),
     listPages(ctx),
-    listBookingRequests(ctx, { pageSize: 5 }),
+    listBookingRequests(ctx, { status: "pending", pageSize: 5 }),
   ]);
 
   const publishedPages = pages.filter((p) => p.status === "published");
-  const pendingBookings = bookings.filter((b) => b.status === "pending");
   const siteUrl = settings?.subdomainSlug
     ? `${settings.subdomainSlug}.yourplatform.com`
     : null;
@@ -86,7 +85,7 @@ export default async function WebsiteOverviewPage() {
             <CalendarCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingBookings.length}</div>
+            <div className="text-2xl font-bold">{pendingResult.meta.total}</div>
             <p className="text-xs text-muted-foreground">
               awaiting confirmation
             </p>

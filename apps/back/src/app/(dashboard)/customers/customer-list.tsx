@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Users } from "lucide-react";
+import { Search, Users, Download } from "lucide-react";
 import { useCallback } from "react";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { ListPagination } from "@/components/shared/list-pagination";
@@ -72,6 +72,15 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
             Clear
           </Button>
         )}
+
+        <div className="ml-auto">
+          <Button variant="outline" size="sm" asChild>
+            <a href={`/api/v1/customers/export?${searchParams.toString()}`} download>
+              <Download className="mr-2 h-3.5 w-3.5" />
+              Export
+            </a>
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

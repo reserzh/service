@@ -1,7 +1,49 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+
+function getClientIp(request: NextRequest): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+function rateLimitResponse(resetMs: number) {
+  return NextResponse.json(
+    { error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." } },
+    {
+      status: 429,
+      headers: { "Retry-After": String(Math.ceil(resetMs / 1000)) },
+    }
+  );
+}
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Rate limit auth endpoints (strictest)
+  if (pathname.startsWith("/api/v1/auth/")) {
+    const ip = getClientIp(request);
+    const result = checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
+  // Rate limit public form submissions
+  if (pathname.match(/^\/api\/v1\/public\/.*\/bookings/)) {
+    const ip = getClientIp(request);
+    const result = checkRateLimit(`booking:${ip}`, RATE_LIMITS.publicForm);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
+  // General API rate limit
+  if (pathname.startsWith("/api/v1/") && !pathname.startsWith("/api/v1/public/")) {
+    const ip = getClientIp(request);
+    const result = checkRateLimit(`api:${ip}`, RATE_LIMITS.api);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
   return await updateSession(request);
 }
 

@@ -511,6 +511,7 @@ export async function getTechnicianReport(ctx: UserContext, params: { from: stri
       jobs,
       and(
         eq(jobs.assignedTo, users.id),
+        eq(jobs.tenantId, ctx.tenantId),
         gte(jobs.createdAt, fromDate),
         lte(jobs.createdAt, toDate)
       )

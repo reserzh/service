@@ -216,8 +216,7 @@ export async function globalSearchAction(
         href: `/invoices/${inv.id}`,
       });
     }
-  } catch (error) {
-    console.error("Search error:", error);
+  } catch {
     return [];
   }
 

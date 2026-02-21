@@ -5,9 +5,9 @@ import { BookingsList } from "./bookings-list";
 
 export default async function BookingsPage() {
   const ctx = await requireAuth();
-  const bookings = await listBookingRequests(ctx);
+  const result = await listBookingRequests(ctx);
 
-  const serialized = bookings.map((b) => ({
+  const serialized = result.data.map((b) => ({
     ...b,
     preferredDate: b.preferredDate ? String(b.preferredDate) : null,
     createdAt: b.createdAt.toISOString(),
