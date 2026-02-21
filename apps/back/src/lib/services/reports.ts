@@ -176,7 +176,7 @@ export async function getRecentActivity(ctx: UserContext, limit: number = 10) {
       userLastName: users.lastName,
     })
     .from(activityLog)
-    .leftJoin(users, eq(activityLog.userId, users.id))
+    .leftJoin(users, and(eq(activityLog.userId, users.id), eq(users.tenantId, ctx.tenantId)))
     .where(eq(activityLog.tenantId, ctx.tenantId))
     .orderBy(desc(activityLog.createdAt))
     .limit(limit);

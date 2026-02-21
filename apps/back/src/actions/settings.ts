@@ -8,6 +8,7 @@ import {
   updateTenantSettings,
 } from "@/lib/services/settings";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 // ---------- Schemas ----------
 
@@ -71,33 +72,34 @@ export async function updateCompanyProfileAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Update company profile error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update company profile.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update company profile.") };
   }
 }
 
 // ---------- Update services/tax settings ----------
 
+const businessHourSlot = z.object({ open: z.string(), close: z.string() }).nullable();
+
+const servicesSettingsSchema = z.object({
+  defaultTaxRate: z.number().min(0).max(1).optional(),
+  businessHours: z.record(z.string(), businessHourSlot).optional(),
+  invoiceTerms: z.string().max(10000).optional(),
+  estimateTerms: z.string().max(10000).optional(),
+});
+
 export async function updateServicesSettingsAction(
-  input: {
-    defaultTaxRate?: number;
-    businessHours?: TenantSettings["businessHours"];
-    invoiceTerms?: string;
-    estimateTerms?: string;
-  }
+  input: Partial<TenantSettings>
 ): Promise<{ error?: string }> {
   try {
     const ctx = await requireAuth();
-    await updateTenantSettings(ctx, input);
+    const parsed = servicesSettingsSchema.parse(input);
+    await updateTenantSettings(ctx, parsed as Partial<TenantSettings>);
 
     revalidatePath("/settings");
     revalidatePath("/settings/services");
 
     return {};
   } catch (error) {
-    console.error("Update services settings error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update settings.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update settings.") };
   }
 }

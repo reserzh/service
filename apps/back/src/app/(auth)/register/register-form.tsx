@@ -51,13 +51,15 @@ export function RegisterForm() {
         return;
       }
 
-      if (data.user) {
+      if (data.user && data.session) {
         // Call our API to create tenant and user records
         const res = await fetch("/api/v1/auth/register", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${data.session.access_token}`,
+          },
           body: JSON.stringify({
-            userId: data.user.id,
             companyName: formData.companyName,
             firstName: formData.firstName,
             lastName: formData.lastName,
@@ -73,6 +75,9 @@ export function RegisterForm() {
 
         router.push("/dashboard");
         router.refresh();
+      } else if (data.user && !data.session) {
+        // Email confirmation required
+        setError("Please check your email to confirm your account before continuing.");
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

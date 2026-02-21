@@ -23,6 +23,7 @@ import {
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
+import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
 
@@ -119,7 +120,7 @@ export async function listInvoices(ctx: UserContext, params: ListInvoicesParams 
   }
 
   if (search) {
-    const term = `%${search}%`;
+    const term = `%${escapeLike(search)}%`;
     conditions.push(
       or(
         ilike(invoices.invoiceNumber, term),
@@ -162,7 +163,7 @@ export async function listInvoices(ctx: UserContext, params: ListInvoicesParams 
         jobId: invoices.jobId,
       })
       .from(invoices)
-      .leftJoin(customers, eq(invoices.customerId, customers.id))
+      .leftJoin(customers, and(eq(invoices.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
       .where(and(...conditions))
       .orderBy(orderFn(sortColumn))
       .limit(pageSize)
@@ -241,9 +242,8 @@ export async function createInvoice(ctx: UserContext, input: CreateInvoiceInput)
     throw new AppError("VALIDATION_ERROR", "At least one line item is required", 400);
   }
 
-  const invoiceNumber = await getNextSequenceNumber(ctx.tenantId, "invoice");
-
   const result = await db.transaction(async (tx) => {
+    const invoiceNumber = await getNextSequenceNumber(ctx.tenantId, "invoice", tx);
     // Validate customer belongs to tenant
     const [customer] = await tx
       .select({ id: customers.id })

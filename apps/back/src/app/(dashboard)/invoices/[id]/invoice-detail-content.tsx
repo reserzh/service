@@ -128,7 +128,8 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(invoice.balanceDue);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  type PaymentMethod = "credit_card" | "debit_card" | "ach" | "cash" | "check" | "other";
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [paymentRef, setPaymentRef] = useState("");
 
   const sc = statusConfig[invoice.status] ?? { label: invoice.status, variant: "secondary" as const };
@@ -164,7 +165,7 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
     setLoading("payment");
     const result = await recordPaymentAction(invoice.id, {
       amount: Number(paymentAmount),
-      method: paymentMethod as any,
+      method: paymentMethod,
       referenceNumber: paymentRef || undefined,
     });
     setLoading(null);
@@ -199,7 +200,10 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
             )}
 
             {canRecordPayment && (
-              <Dialog open={paymentOpen} onOpenChange={setPaymentOpen}>
+              <Dialog open={paymentOpen} onOpenChange={(open) => {
+                  setPaymentOpen(open);
+                  if (open) setPaymentAmount(invoice.balanceDue);
+                }}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="default">
                     <DollarSign className="mr-2 h-3.5 w-3.5" />
@@ -227,7 +231,7 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
                     </div>
                     <div className="space-y-2">
                       <Label>Payment Method *</Label>
-                      <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                      <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as PaymentMethod)}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -286,6 +290,36 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
           </div>
         </PageHeader>
       </div>
+
+      {/* Status progress bar */}
+      {invoice.status !== "void" && (
+        <div className="flex items-center gap-1">
+          {(["draft", "sent", "viewed", "paid"] as const).map((step, idx) => {
+            const stepOrder = { draft: 0, sent: 1, viewed: 2, partial: 2, overdue: 2, paid: 3 };
+            const currentOrder = stepOrder[invoice.status as keyof typeof stepOrder] ?? -1;
+            const isComplete = idx < currentOrder;
+            const isCurrent = idx === currentOrder;
+            const colors: Record<string, string> = { draft: "bg-gray-400", sent: "bg-blue-500", viewed: "bg-purple-500", paid: "bg-green-500" };
+            const displayLabel = isCurrent && invoice.status === "partial" ? "Partial" :
+                                 isCurrent && invoice.status === "overdue" ? "Overdue" :
+                                 statusConfig[step]?.label ?? step;
+            const barColor = isCurrent && invoice.status === "overdue" ? "bg-destructive" :
+                            (isComplete || isCurrent) ? (colors[step] ?? "bg-muted") : "bg-muted";
+            return (
+              <div key={step} className="flex flex-1 flex-col items-center gap-1">
+                <div className={`h-1.5 w-full rounded-full ${barColor}`} />
+                <span
+                  className={`text-[10px] ${
+                    isCurrent ? "font-semibold text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {displayLabel}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">

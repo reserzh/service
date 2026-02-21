@@ -8,6 +8,7 @@ import {
   deactivateTeamMember,
   reactivateTeamMember,
 } from "@/lib/services/team";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 // ---------- Schemas ----------
 
@@ -70,9 +71,7 @@ export async function updateTeamMemberAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Update team member error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update team member.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update team member.") };
   }
 }
 
@@ -87,9 +86,7 @@ export async function deactivateTeamMemberAction(userId: string): Promise<{ erro
 
     return {};
   } catch (error) {
-    console.error("Deactivate team member error:", error);
-    const message = error instanceof Error ? error.message : "Failed to deactivate team member.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to deactivate team member.") };
   }
 }
 
@@ -104,8 +101,6 @@ export async function reactivateTeamMemberAction(userId: string): Promise<{ erro
 
     return {};
   } catch (error) {
-    console.error("Reactivate team member error:", error);
-    const message = error instanceof Error ? error.message : "Failed to reactivate team member.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to reactivate team member.") };
   }
 }

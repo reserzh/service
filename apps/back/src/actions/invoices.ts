@@ -13,6 +13,7 @@ import {
   recordPayment,
   generateInvoiceFromJob,
 } from "@/lib/services/invoices";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 // ---------- Schemas ----------
 
@@ -83,9 +84,7 @@ export async function createInvoiceAction(
 
     return { success: true, invoiceId: invoice.id };
   } catch (error) {
-    console.error("Create invoice error:", error);
-    const message = error instanceof Error ? error.message : "Failed to create invoice.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create invoice.") };
   }
 }
 
@@ -104,9 +103,7 @@ export async function updateInvoiceAction(
 
     return {};
   } catch (error) {
-    console.error("Update invoice error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update invoice.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update invoice.") };
   }
 }
 
@@ -123,9 +120,7 @@ export async function sendInvoiceAction(invoiceId: string): Promise<{ error?: st
 
     return {};
   } catch (error) {
-    console.error("Send invoice error:", error);
-    const message = error instanceof Error ? error.message : "Failed to send invoice.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to send invoice.") };
   }
 }
 
@@ -142,9 +137,7 @@ export async function voidInvoiceAction(invoiceId: string): Promise<{ error?: st
 
     return {};
   } catch (error) {
-    console.error("Void invoice error:", error);
-    const message = error instanceof Error ? error.message : "Failed to void invoice.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to void invoice.") };
   }
 }
 
@@ -172,8 +165,7 @@ export async function addInvoiceLineItemAction(
     revalidatePath(`/invoices/${invoiceId}`);
     return { success: true };
   } catch (error) {
-    console.error("Add line item error:", error);
-    return { error: "Failed to add line item." };
+    return { error: getActionErrorMessage(error, "Failed to add line item.") };
   }
 }
 
@@ -188,8 +180,7 @@ export async function deleteInvoiceLineItemAction(
     revalidatePath(`/invoices/${invoiceId}`);
     return {};
   } catch (error) {
-    console.error("Delete line item error:", error);
-    return { error: "Failed to delete line item." };
+    return { error: getActionErrorMessage(error, "Failed to delete line item.") };
   }
 }
 
@@ -220,9 +211,7 @@ export async function recordPaymentAction(
 
     return {};
   } catch (error) {
-    console.error("Record payment error:", error);
-    const message = error instanceof Error ? error.message : "Failed to record payment.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to record payment.") };
   }
 }
 
@@ -243,8 +232,6 @@ export async function generateInvoiceFromJobAction(
 
     return { success: true, invoiceId: invoice.id };
   } catch (error) {
-    console.error("Generate invoice error:", error);
-    const message = error instanceof Error ? error.message : "Failed to generate invoice.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to generate invoice.") };
   }
 }

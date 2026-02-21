@@ -13,6 +13,7 @@ import {
   deleteJobLineItem,
   addJobNote,
 } from "@/lib/services/jobs";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 // ---------- Schemas ----------
 
@@ -102,9 +103,7 @@ export async function createJobAction(
 
     return { success: true, jobId: job.id };
   } catch (error) {
-    console.error("Create job error:", error);
-    const message = error instanceof Error ? error.message : "Failed to create job.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create job.") };
   }
 }
 
@@ -136,9 +135,7 @@ export async function updateJobAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Update job error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update job.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update job.") };
   }
 }
 
@@ -160,9 +157,7 @@ export async function changeJobStatusAction(
 
     return {};
   } catch (error) {
-    console.error("Change status error:", error);
-    const message = error instanceof Error ? error.message : "Failed to change status.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to change status.") };
   }
 }
 
@@ -183,9 +178,7 @@ export async function assignJobAction(
 
     return {};
   } catch (error) {
-    console.error("Assign job error:", error);
-    const message = error instanceof Error ? error.message : "Failed to assign job.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to assign job.") };
   }
 }
 
@@ -213,8 +206,7 @@ export async function addLineItemAction(
     revalidatePath(`/jobs/${jobId}`);
     return { success: true };
   } catch (error) {
-    console.error("Add line item error:", error);
-    return { error: "Failed to add line item." };
+    return { error: getActionErrorMessage(error, "Failed to add line item.") };
   }
 }
 
@@ -228,8 +220,7 @@ export async function deleteLineItemAction(
     revalidatePath(`/jobs/${jobId}`);
     return {};
   } catch (error) {
-    console.error("Delete line item error:", error);
-    return { error: "Failed to delete line item." };
+    return { error: getActionErrorMessage(error, "Failed to delete line item.") };
   }
 }
 
@@ -253,7 +244,6 @@ export async function addJobNoteAction(
     revalidatePath(`/jobs/${jobId}`);
     return {};
   } catch (error) {
-    console.error("Add note error:", error);
-    return { error: "Failed to add note." };
+    return { error: getActionErrorMessage(error, "Failed to add note.") };
   }
 }

@@ -4,6 +4,7 @@ import { eq, and, desc, asc, ilike, or, sql } from "drizzle-orm";
 import type { UserContext, UserRole } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
+import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError, ConflictError } from "@/lib/api/errors";
 
 // ---------- Types ----------
@@ -63,7 +64,7 @@ export async function listTeamMembers(ctx: UserContext, params: ListTeamParams =
   }
 
   if (search) {
-    const term = `%${search}%`;
+    const term = `%${escapeLike(search)}%`;
     conditions.push(
       or(
         ilike(users.firstName, term),
@@ -176,6 +177,11 @@ export async function updateTeamMember(ctx: UserContext, userId: string, input: 
   // Prevent changing own role
   if (userId === ctx.userId && input.role && input.role !== user.role) {
     throw new AppError("VALIDATION_ERROR", "You cannot change your own role.", 400);
+  }
+
+  // Only admins can promote users to admin
+  if (input.role === "admin" && ctx.role !== "admin") {
+    throw new AppError("FORBIDDEN", "Only admins can promote users to the admin role.", 403);
   }
 
   const updateData: Record<string, unknown> = { updatedAt: new Date() };

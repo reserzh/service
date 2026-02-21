@@ -21,6 +21,7 @@ import {
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
+import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
 
@@ -103,7 +104,7 @@ export async function listEstimates(ctx: UserContext, params: ListEstimatesParam
   }
 
   if (search) {
-    const term = `%${search}%`;
+    const term = `%${escapeLike(search)}%`;
     conditions.push(
       or(
         ilike(estimates.summary, term),
@@ -142,7 +143,7 @@ export async function listEstimates(ctx: UserContext, params: ListEstimatesParam
         jobId: estimates.jobId,
       })
       .from(estimates)
-      .leftJoin(customers, eq(estimates.customerId, customers.id))
+      .leftJoin(customers, and(eq(estimates.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
       .where(and(...conditions))
       .orderBy(orderFn(sortColumn))
       .limit(pageSize)
@@ -228,9 +229,8 @@ export async function createEstimate(ctx: UserContext, input: CreateEstimateInpu
     throw new AppError("VALIDATION_ERROR", "At least one option is required", 400);
   }
 
-  const estimateNumber = await getNextSequenceNumber(ctx.tenantId, "estimate");
-
   const result = await db.transaction(async (tx) => {
+    const estimateNumber = await getNextSequenceNumber(ctx.tenantId, "estimate", tx);
     // Validate customer belongs to tenant
     const [customer] = await tx
       .select({ id: customers.id })

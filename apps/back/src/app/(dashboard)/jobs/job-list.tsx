@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { Search, Filter, Wrench } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCallback } from "react";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
+import { ListPagination } from "@/components/shared/list-pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -79,7 +81,6 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
   const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/jobs", searchQuery);
 
   const activeStatuses = statusFilter ? statusFilter.split(",") : [];
-  const totalPages = Math.ceil(meta.total / meta.pageSize);
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -188,10 +189,18 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
           <TableBody>
             {jobs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                  {searchQuery || statusFilter
-                    ? "No jobs match your filters."
-                    : "No jobs yet. Create your first job to get started."}
+                <TableCell colSpan={6} className="p-0">
+                  {searchQuery || statusFilter ? (
+                    <p className="text-center py-8 text-muted-foreground">No jobs match your filters.</p>
+                  ) : (
+                    <EmptyState
+                      icon={Wrench}
+                      title="No jobs yet"
+                      description="Create your first service job to start tracking work, scheduling technicians, and billing customers."
+                      actionLabel="Create Job"
+                      actionHref="/jobs/new"
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -276,37 +285,7 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <p>
-            Showing {(meta.page - 1) * meta.pageSize + 1}–
-            {Math.min(meta.page * meta.pageSize, meta.total)} of {meta.total}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page <= 1}
-              onClick={() => goToPage(meta.page - 1)}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span aria-live="polite">Page {meta.page} of {totalPages}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page >= totalPages}
-              onClick={() => goToPage(meta.page + 1)}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <ListPagination meta={meta} onPageChange={goToPage} />
     </div>
   );
 }

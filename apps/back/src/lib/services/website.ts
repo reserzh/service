@@ -24,6 +24,15 @@ import { logActivity } from "./activity";
 import { NotFoundError } from "@/lib/api/errors";
 import { addDomainToVercel, removeDomainFromVercel } from "./vercel-domains";
 
+/**
+ * Strip dangerous patterns from user-supplied CSS to prevent XSS via
+ * `<style dangerouslySetInnerHTML>`. Escapes all `<` characters so
+ * injected HTML cannot escape the style element context.
+ */
+function sanitizeCss(css: string): string {
+  return css.replace(/</g, "\\3c ");
+}
+
 // ─── Site Settings ─────────────────────────────────────────────
 
 export async function getSiteSettings(ctx: UserContext) {
@@ -66,12 +75,15 @@ export async function updateSiteSettings(ctx: UserContext, input: UpdateSiteSett
       .where(eq(tenants.id, ctx.tenantId))
       .limit(1);
 
+    const sanitizedInput = input.customCss
+      ? { ...input, customCss: sanitizeCss(input.customCss) }
+      : input;
     const [created] = await db
       .insert(siteSettings)
       .values({
         tenantId: ctx.tenantId,
         subdomainSlug: tenant?.slug ?? ctx.tenantId,
-        ...input,
+        ...sanitizedInput,
       })
       .returning();
 
@@ -86,7 +98,7 @@ export async function updateSiteSettings(ctx: UserContext, input: UpdateSiteSett
   if (input.seoDefaults !== undefined) updateData.seoDefaults = input.seoDefaults;
   if (input.socialLinks !== undefined) updateData.socialLinks = input.socialLinks;
   if (input.analytics !== undefined) updateData.analytics = input.analytics;
-  if (input.customCss !== undefined) updateData.customCss = input.customCss;
+  if (input.customCss !== undefined) updateData.customCss = input.customCss ? sanitizeCss(input.customCss) : input.customCss;
   if (input.templateId !== undefined) updateData.templateId = input.templateId;
 
   const [updated] = await db

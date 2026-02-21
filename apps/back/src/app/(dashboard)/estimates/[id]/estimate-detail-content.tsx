@@ -182,6 +182,35 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
         </PageHeader>
       </div>
 
+      {/* Status progress bar */}
+      {estimate.status !== "expired" && estimate.status !== "declined" && (
+        <div className="flex items-center gap-1">
+          {(["draft", "sent", "viewed", "approved"] as const).map((step, idx) => {
+            const stepOrder = { draft: 0, sent: 1, viewed: 2, approved: 3 };
+            const currentOrder = stepOrder[estimate.status as keyof typeof stepOrder] ?? -1;
+            const isComplete = idx < currentOrder;
+            const isCurrent = idx === currentOrder;
+            const colors: Record<string, string> = { draft: "bg-gray-400", sent: "bg-blue-500", viewed: "bg-purple-500", approved: "bg-green-500" };
+            return (
+              <div key={step} className="flex flex-1 flex-col items-center gap-1">
+                <div
+                  className={`h-1.5 w-full rounded-full ${
+                    isComplete || isCurrent ? (colors[step] ?? "bg-muted") : "bg-muted"
+                  }`}
+                />
+                <span
+                  className={`text-[10px] ${
+                    isCurrent ? "font-semibold text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {statusConfig[step]?.label ?? step}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Info Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>

@@ -10,6 +10,7 @@ import {
   invoices,
 } from "@fieldservice/shared/db/schema";
 import { eq, and, or, ilike, isNull, desc } from "drizzle-orm";
+import { escapeLike } from "@/lib/utils";
 
 export interface SearchResult {
   id: string;
@@ -19,10 +20,6 @@ export interface SearchResult {
   href: string;
 }
 
-function escapeLikePattern(input: string): string {
-  return input.replace(/[%_\\]/g, "\\$&");
-}
-
 export async function globalSearchAction(
   query: string
 ): Promise<SearchResult[]> {
@@ -30,7 +27,7 @@ export async function globalSearchAction(
   if (trimmed.length < 2 || trimmed.length > 100) return [];
 
   const ctx = await requireAuth();
-  const term = `%${escapeLikePattern(trimmed)}%`;
+  const term = `%${escapeLike(trimmed)}%`;
   const results: SearchResult[] = [];
 
   try {
@@ -98,6 +95,17 @@ export async function globalSearchAction(
     }
 
     if (hasPermission(ctx.role, "jobs", "read")) {
+      const jobConditions = [
+        eq(jobs.tenantId, ctx.tenantId),
+        or(
+          ilike(jobs.jobNumber, term),
+          ilike(jobs.summary, term)
+        ),
+      ];
+      // Technicians should only see jobs assigned to them
+      if (ctx.role === "technician") {
+        jobConditions.push(eq(jobs.assignedTo, ctx.userId));
+      }
       queries.push(
         db
           .select({
@@ -107,15 +115,7 @@ export async function globalSearchAction(
             status: jobs.status,
           })
           .from(jobs)
-          .where(
-            and(
-              eq(jobs.tenantId, ctx.tenantId),
-              or(
-                ilike(jobs.jobNumber, term),
-                ilike(jobs.summary, term)
-              )
-            )
-          )
+          .where(and(...jobConditions))
           .orderBy(desc(jobs.updatedAt))
           .limit(5)
           .then((rows) => {

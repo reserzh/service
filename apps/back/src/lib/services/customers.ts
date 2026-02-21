@@ -5,6 +5,7 @@ import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
 import { NotFoundError } from "@/lib/api/errors";
+import { escapeLike } from "@/lib/utils";
 
 export interface ListCustomersParams {
   page?: number;
@@ -35,7 +36,7 @@ export async function listCustomers(
   }
 
   if (search) {
-    const term = `%${search}%`;
+    const term = `%${escapeLike(search)}%`;
     conditions.push(
       or(
         ilike(customers.firstName, term),

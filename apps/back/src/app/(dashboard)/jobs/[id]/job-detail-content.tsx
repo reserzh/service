@@ -50,6 +50,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { AddLineItemForm } from "./add-line-item-form";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
 // ---- Status config ----
 
@@ -154,6 +155,8 @@ export function JobDetailContent({ job, userRole }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [noteText, setNoteText] = useState("");
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
   const sc = statusConfig[job.status] ?? statusConfig.new;
   const pc = priorityConfig[job.priority] ?? priorityConfig.normal;
@@ -192,13 +195,19 @@ export function JobDetailContent({ job, userRole }: Props) {
   }
 
   function handleDeleteLineItem(itemId: string) {
+    setDeleteItemId(itemId);
+  }
+
+  function confirmDeleteLineItem() {
+    if (!deleteItemId) return;
     startTransition(async () => {
-      const result = await deleteLineItemAction(job.id, itemId);
+      const result = await deleteLineItemAction(job.id, deleteItemId);
       if (result.error) {
         showToast.error("Action failed", result.error);
       } else {
         router.refresh();
       }
+      setDeleteItemId(null);
     });
   }
 
@@ -233,7 +242,7 @@ export function JobDetailContent({ job, userRole }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {job.status !== "canceled" && job.status !== "completed" && (
-                <DropdownMenuItem onClick={() => handleStatusChange("canceled")} className="text-destructive">
+                <DropdownMenuItem onClick={() => setConfirmCancel(true)} className="text-destructive">
                   Cancel Job
                 </DropdownMenuItem>
               )}
@@ -253,7 +262,7 @@ export function JobDetailContent({ job, userRole }: Props) {
       </div>
 
       {/* Status progress bar */}
-      <div className="flex items-center gap-1">
+      {job.status !== "canceled" && <div className="flex items-center gap-1">
         {statusSteps.map((step, idx) => {
           const isComplete = idx < currentStepIdx;
           const isCurrent = idx === currentStepIdx;
@@ -277,7 +286,7 @@ export function JobDetailContent({ job, userRole }: Props) {
             </div>
           );
         })}
-      </div>
+      </div>}
 
       {/* Info cards row */}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -593,6 +602,24 @@ export function JobDetailContent({ job, userRole }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Confirmation dialogs */}
+      <ConfirmDialog
+        open={confirmCancel}
+        onOpenChange={setConfirmCancel}
+        title="Cancel this job?"
+        description="This will cancel the job and remove it from the schedule. You can reopen it later if needed."
+        confirmLabel="Cancel Job"
+        onConfirm={() => handleStatusChange("canceled")}
+      />
+      <ConfirmDialog
+        open={deleteItemId !== null}
+        onOpenChange={(open) => { if (!open) setDeleteItemId(null); }}
+        title="Delete line item?"
+        description="This line item will be permanently removed from the job."
+        confirmLabel="Delete"
+        onConfirm={confirmDeleteLineItem}
+      />
     </div>
   );
 }

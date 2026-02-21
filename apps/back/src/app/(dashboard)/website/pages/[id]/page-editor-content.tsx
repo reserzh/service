@@ -43,6 +43,7 @@ import {
   Save,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
 type Section = {
   id: string;
@@ -96,6 +97,8 @@ export function PageEditorContent({
   const [editContent, setEditContent] = useState("");
   const [pageTitle, setPageTitle] = useState(page.title);
   const [pageSlug, setPageSlug] = useState(page.slug);
+  const [confirmDeletePage, setConfirmDeletePage] = useState(false);
+  const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
 
   const handlePublish = async () => {
     const result = await publishPageAction(page.id);
@@ -108,7 +111,6 @@ export function PageEditorContent({
   };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this page?")) return;
     const result = await deletePageAction(page.id);
     if (result.error) {
       toast.error(result.error);
@@ -116,6 +118,7 @@ export function PageEditorContent({
       toast.success("Page deleted");
       router.push("/website/pages");
     }
+    setConfirmDeletePage(false);
   };
 
   const handleSavePage = async () => {
@@ -149,15 +152,16 @@ export function PageEditorContent({
     setAddSectionOpen(false);
   };
 
-  const handleDeleteSection = async (sectionId: string) => {
-    if (!confirm("Delete this section?")) return;
-    const result = await deleteSectionAction(sectionId, page.id);
+  const handleDeleteSection = async () => {
+    if (!deleteSectionId) return;
+    const result = await deleteSectionAction(deleteSectionId, page.id);
     if (result.error) {
       toast.error(result.error);
     } else {
-      setSections(sections.filter((s) => s.id !== sectionId));
+      setSections(sections.filter((s) => s.id !== deleteSectionId));
       toast.success("Section deleted");
     }
+    setDeleteSectionId(null);
   };
 
   const handleToggleVisibility = async (section: Section) => {
@@ -185,10 +189,14 @@ export function PageEditorContent({
     [newSections[index], newSections[swapIndex]] = [newSections[swapIndex], newSections[index]];
     setSections(newSections);
 
-    await reorderSectionsAction(
+    const result = await reorderSectionsAction(
       page.id,
       newSections.map((s) => s.id)
     );
+    if (result.error) {
+      setSections(sections);
+      toast.error(result.error);
+    }
   };
 
   const handleSaveContent = async (sectionId: string) => {
@@ -252,7 +260,7 @@ export function PageEditorContent({
           {page.status !== "published" && (
             <Button size="sm" onClick={handlePublish}>Publish</Button>
           )}
-          <Button variant="destructive" size="sm" onClick={handleDelete}>
+          <Button variant="destructive" size="sm" onClick={() => setConfirmDeletePage(true)}>
             <Trash2 className="h-4 w-4" />
           </Button>
         </CardContent>
@@ -356,7 +364,7 @@ export function PageEditorContent({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    onClick={() => handleDeleteSection(section.id)}
+                    onClick={() => setDeleteSectionId(section.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -390,6 +398,23 @@ export function PageEditorContent({
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDeletePage}
+        onOpenChange={setConfirmDeletePage}
+        title="Delete this page?"
+        description="This page and all its sections will be permanently removed from your website."
+        confirmLabel="Delete Page"
+        onConfirm={handleDelete}
+      />
+      <ConfirmDialog
+        open={deleteSectionId !== null}
+        onOpenChange={(open) => { if (!open) setDeleteSectionId(null); }}
+        title="Delete this section?"
+        description="This section will be permanently removed from the page."
+        confirmLabel="Delete Section"
+        onConfirm={handleDeleteSection}
+      />
     </div>
   );
 }

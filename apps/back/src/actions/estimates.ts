@@ -12,6 +12,7 @@ import {
   addEstimateOption,
   deleteEstimateOption,
 } from "@/lib/services/estimates";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 // ---------- Schemas ----------
 
@@ -87,9 +88,7 @@ export async function createEstimateAction(
 
     return { success: true, estimateId: estimate.id };
   } catch (error) {
-    console.error("Create estimate error:", error);
-    const message = error instanceof Error ? error.message : "Failed to create estimate.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create estimate.") };
   }
 }
 
@@ -108,9 +107,7 @@ export async function updateEstimateAction(
 
     return {};
   } catch (error) {
-    console.error("Update estimate error:", error);
-    const message = error instanceof Error ? error.message : "Failed to update estimate.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update estimate.") };
   }
 }
 
@@ -127,9 +124,7 @@ export async function sendEstimateAction(estimateId: string): Promise<{ error?: 
 
     return {};
   } catch (error) {
-    console.error("Send estimate error:", error);
-    const message = error instanceof Error ? error.message : "Failed to send estimate.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to send estimate.") };
   }
 }
 
@@ -149,9 +144,7 @@ export async function approveEstimateAction(
 
     return {};
   } catch (error) {
-    console.error("Approve estimate error:", error);
-    const message = error instanceof Error ? error.message : "Failed to approve estimate.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to approve estimate.") };
   }
 }
 
@@ -167,9 +160,7 @@ export async function declineEstimateAction(estimateId: string): Promise<{ error
 
     return {};
   } catch (error) {
-    console.error("Decline estimate error:", error);
-    const message = error instanceof Error ? error.message : "Failed to decline estimate.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to decline estimate.") };
   }
 }
 
@@ -197,9 +188,7 @@ export async function addEstimateOptionAction(
     revalidatePath(`/estimates/${estimateId}`);
     return {};
   } catch (error) {
-    console.error("Add option error:", error);
-    const message = error instanceof Error ? error.message : "Failed to add option.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to add option.") };
   }
 }
 
@@ -216,8 +205,6 @@ export async function deleteEstimateOptionAction(
     revalidatePath(`/estimates/${estimateId}`);
     return {};
   } catch (error) {
-    console.error("Delete option error:", error);
-    const message = error instanceof Error ? error.message : "Failed to delete option.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to delete option.") };
   }
 }

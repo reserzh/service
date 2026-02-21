@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { Search, Filter, Receipt, AlertTriangle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCallback } from "react";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
+import { ListPagination } from "@/components/shared/list-pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -68,7 +70,6 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter }: Invoi
   const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/invoices", searchQuery);
 
   const activeStatuses = statusFilter ? statusFilter.split(",") : [];
-  const totalPages = Math.ceil(meta.total / meta.pageSize);
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -177,19 +178,32 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter }: Invoi
           <TableBody>
             {invoices.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                  {searchQuery || statusFilter
-                    ? "No invoices match your filters."
-                    : "No invoices yet. Create your first invoice to get started."}
+                <TableCell colSpan={6} className="p-0">
+                  {searchQuery || statusFilter ? (
+                    <p className="text-center py-8 text-muted-foreground">No invoices match your filters.</p>
+                  ) : (
+                    <EmptyState
+                      icon={Receipt}
+                      title="No invoices yet"
+                      description="Create your first invoice to start tracking payments and managing your accounts receivable."
+                      actionLabel="Create Invoice"
+                      actionHref="/invoices/new"
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
               invoices.map((inv) => {
-                const sc = statusConfig[inv.status] ?? { label: inv.status, variant: "secondary" as const };
                 const balanceDue = Number(inv.balanceDue);
+                const isPastDue =
+                  balanceDue > 0 &&
+                  !["paid", "void"].includes(inv.status) &&
+                  new Date(inv.dueDate) < new Date();
+                const effectiveStatus = isPastDue && inv.status !== "overdue" ? "overdue" : inv.status;
+                const sc = statusConfig[effectiveStatus] ?? { label: effectiveStatus, variant: "secondary" as const };
 
                 return (
-                  <TableRow key={inv.id}>
+                  <TableRow key={inv.id} className={isPastDue ? "bg-destructive/5" : undefined}>
                     <TableCell>
                       <Link href={`/invoices/${inv.id}`} className="block">
                         <span className="text-xs text-muted-foreground">{inv.invoiceNumber}</span>
@@ -206,7 +220,10 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter }: Invoi
                       )}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <span className="text-sm">{format(new Date(inv.dueDate), "MMM d, yyyy")}</span>
+                      <span className={`text-sm ${isPastDue ? "text-destructive font-medium" : ""}`}>
+                        {isPastDue && <AlertTriangle className="inline mr-1 h-3 w-3" />}
+                        {format(new Date(inv.dueDate), "MMM d, yyyy")}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Badge variant={sc.variant}>{sc.label}</Badge>
@@ -232,37 +249,7 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter }: Invoi
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <p>
-            Showing {(meta.page - 1) * meta.pageSize + 1}-
-            {Math.min(meta.page * meta.pageSize, meta.total)} of {meta.total}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page <= 1}
-              onClick={() => goToPage(meta.page - 1)}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span aria-live="polite">Page {meta.page} of {totalPages}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page >= totalPages}
-              onClick={() => goToPage(meta.page + 1)}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <ListPagination meta={meta} onPageChange={goToPage} />
     </div>
   );
 }

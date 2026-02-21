@@ -13,9 +13,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Users } from "lucide-react";
 import { useCallback } from "react";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
+import { ListPagination } from "@/components/shared/list-pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 
 interface Customer {
   id: string;
@@ -38,8 +40,6 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
   const router = useRouter();
   const searchParams = useSearchParams();
   const { search, handleChange, clearSearch } = useDebouncedSearch("/customers", searchQuery);
-
-  const totalPages = Math.ceil(meta.total / meta.pageSize);
 
   const goToPage = useCallback(
     (page: number) => {
@@ -88,10 +88,16 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
           <TableBody>
             {customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                  {searchQuery
-                    ? "No customers match your search."
-                    : "No customers yet. Add your first customer to get started."}
+                <TableCell colSpan={4} className="p-0">
+                  {searchQuery ? (
+                    <p className="text-center py-8 text-muted-foreground">No customers match your search.</p>
+                  ) : (
+                    <EmptyState
+                      icon={Users}
+                      title="No customers yet"
+                      description="Add your first customer to start managing their service requests, properties, and billing."
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -127,39 +133,7 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <p>
-            Showing {(meta.page - 1) * meta.pageSize + 1}–
-            {Math.min(meta.page * meta.pageSize, meta.total)} of {meta.total}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page <= 1}
-              onClick={() => goToPage(meta.page - 1)}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span aria-live="polite">
-              Page {meta.page} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page >= totalPages}
-              onClick={() => goToPage(meta.page + 1)}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <ListPagination meta={meta} onPageChange={goToPage} />
     </div>
   );
 }

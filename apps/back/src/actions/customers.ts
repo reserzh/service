@@ -8,6 +8,7 @@ import {
   updateCustomer,
   deleteCustomer,
 } from "@/lib/services/customers";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 const createCustomerSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(100),
@@ -78,8 +79,7 @@ export async function createCustomerAction(
 
     return { success: true, customerId: customer.id };
   } catch (error) {
-    console.error("Create customer error:", error);
-    return { error: "Failed to create customer. Please try again." };
+    return { error: getActionErrorMessage(error, "Failed to create customer. Please try again.") };
   }
 }
 
@@ -90,7 +90,6 @@ export async function deleteCustomerAction(customerId: string): Promise<{ error?
     revalidatePath("/customers");
     return {};
   } catch (error) {
-    console.error("Delete customer error:", error);
-    return { error: "Failed to delete customer." };
+    return { error: getActionErrorMessage(error, "Failed to delete customer.") };
   }
 }

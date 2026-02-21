@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Plus, Trash2, CheckCircle, AlertCircle, Globe } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
 type Domain = {
   id: string;
@@ -38,6 +39,7 @@ export function DomainsManager({
   const [domains, setDomains] = useState(initialDomains);
   const [newDomain, setNewDomain] = useState("");
   const [adding, setAdding] = useState(false);
+  const [removeDomainId, setRemoveDomainId] = useState<string | null>(null);
 
   const handleAddDomain = async () => {
     if (!newDomain) return;
@@ -78,19 +80,20 @@ export function DomainsManager({
     }
   };
 
-  const handleRemove = async (domainId: string) => {
-    if (!confirm("Remove this domain?")) return;
+  const handleRemove = async () => {
+    if (!removeDomainId) return;
     try {
-      const res = await fetch(`/api/v1/website/domains/${domainId}`, {
+      const res = await fetch(`/api/v1/website/domains/${removeDomainId}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setDomains(domains.filter((d) => d.id !== domainId));
+        setDomains(domains.filter((d) => d.id !== removeDomainId));
         toast.success("Domain removed");
       }
     } catch {
       toast.error("Failed to remove domain");
     }
+    setRemoveDomainId(null);
   };
 
   const statusBadge = (status: string) => {
@@ -205,7 +208,7 @@ export function DomainsManager({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        onClick={() => handleRemove(domain.id)}
+                        onClick={() => setRemoveDomainId(domain.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -217,6 +220,14 @@ export function DomainsManager({
           </CardContent>
         </Card>
       )}
+      <ConfirmDialog
+        open={removeDomainId !== null}
+        onOpenChange={(open) => { if (!open) setRemoveDomainId(null); }}
+        title="Remove this domain?"
+        description="This domain will be disconnected from your website. You can add it again later."
+        confirmLabel="Remove Domain"
+        onConfirm={handleRemove}
+      />
     </div>
   );
 }

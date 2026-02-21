@@ -35,6 +35,22 @@ export class ValidationError extends AppError {
   }
 }
 
+/**
+ * Extract a safe error message from a caught error.
+ * Only passes through messages from known app error classes;
+ * returns the fallback message for unexpected/internal errors.
+ */
+export function getActionErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof AppError || error instanceof ForbiddenError) {
+    return error.message;
+  }
+  if (error instanceof z.ZodError) {
+    return error.issues.map((i) => i.message).join(", ");
+  }
+  console.error(fallback, error);
+  return fallback;
+}
+
 export function handleApiError(error: unknown): NextResponse {
   if (error instanceof ApiAuthError) {
     return NextResponse.json(

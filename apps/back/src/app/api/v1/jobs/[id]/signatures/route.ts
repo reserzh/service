@@ -8,8 +8,10 @@ import { eq, and, desc } from "drizzle-orm";
 import { handleApiError, NotFoundError } from "@/lib/api/errors";
 import { randomUUID } from "crypto";
 
+const MAX_SIGNATURE_BASE64_LENGTH = 1_000_000; // ~750KB decoded
+
 const signatureSchema = z.object({
-  base64: z.string().min(1),
+  base64: z.string().min(1).max(MAX_SIGNATURE_BASE64_LENGTH),
   signerName: z.string().min(1).max(255),
   signerRole: z.enum(["customer", "technician"]),
 });

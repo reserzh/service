@@ -20,6 +20,7 @@ import {
   deleteService,
 } from "@/lib/services/service-catalog";
 import { applyTemplate } from "@/lib/services/template-applicator";
+import { getActionErrorMessage } from "@/lib/api/errors";
 
 export type WebsiteActionState = {
   error?: string;
@@ -76,7 +77,7 @@ const siteSettingsSchema = z.object({
       facebookPixelId: z.string().optional(),
     })
     .optional(),
-  customCss: z.string().nullable().optional(),
+  customCss: z.string().max(50000).nullable().optional(),
   templateId: z.string().optional(),
 });
 
@@ -97,8 +98,7 @@ export async function updateSiteSettingsAction(
     revalidatePath("/website");
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update site settings.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update site settings.") };
   }
 }
 
@@ -130,8 +130,7 @@ export async function createPageAction(
     revalidatePath("/website/pages");
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create page.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create page.") };
   }
 }
 
@@ -172,8 +171,7 @@ export async function updatePageAction(
     revalidatePath(`/website/pages/${input.id}`);
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update page.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update page.") };
   }
 }
 
@@ -185,8 +183,7 @@ export async function publishPageAction(pageId: string): Promise<WebsiteActionSt
     revalidatePath(`/website/pages/${pageId}`);
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to publish page.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to publish page.") };
   }
 }
 
@@ -197,8 +194,7 @@ export async function deletePageAction(pageId: string): Promise<WebsiteActionSta
     revalidatePath("/website/pages");
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete page.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to delete page.") };
   }
 }
 
@@ -229,8 +225,7 @@ export async function createSectionAction(
     revalidatePath(`/website/pages/${input.pageId}`);
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create section.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create section.") };
   }
 }
 
@@ -261,8 +256,7 @@ export async function updateSectionAction(
     revalidatePath(`/website/pages/${pageId}`);
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update section.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update section.") };
   }
 }
 
@@ -276,8 +270,7 @@ export async function deleteSectionAction(
     revalidatePath(`/website/pages/${pageId}`);
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete section.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to delete section.") };
   }
 }
 
@@ -291,8 +284,7 @@ export async function reorderSectionsAction(
     revalidatePath(`/website/pages/${pageId}`);
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to reorder sections.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to reorder sections.") };
   }
 }
 
@@ -328,8 +320,7 @@ export async function createServiceAction(
     revalidatePath("/website/services");
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create service.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to create service.") };
   }
 }
 
@@ -365,8 +356,7 @@ export async function updateServiceAction(
     revalidatePath("/website/services");
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update service.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to update service.") };
   }
 }
 
@@ -377,8 +367,7 @@ export async function deleteServiceAction(serviceId: string): Promise<WebsiteAct
     revalidatePath("/website/services");
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete service.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to delete service.") };
   }
 }
 
@@ -391,7 +380,6 @@ export async function applyTemplateAction(templateId: string): Promise<WebsiteAc
     revalidatePath("/website");
     return { success: true, data: result };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to apply template.";
-    return { error: message };
+    return { error: getActionErrorMessage(error, "Failed to apply template.") };
   }
 }

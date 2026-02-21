@@ -53,8 +53,40 @@ export async function POST(req: NextRequest, context: RouteContext) {
       );
     }
 
+    // Validate file type
+    const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "heic"];
+    const ALLOWED_MIME_TYPES = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/heic",
+    ];
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
+    const fileExt = (file.name?.split(".").pop() || "").toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+      return NextResponse.json(
+        { error: { code: "VALIDATION_ERROR", message: `File type not allowed. Accepted: ${ALLOWED_EXTENSIONS.join(", ")}` } },
+        { status: 400 }
+      );
+    }
+
+    if (!file.type || !ALLOWED_MIME_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: { code: "VALIDATION_ERROR", message: "Invalid file MIME type. Only image files are accepted." } },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: { code: "VALIDATION_ERROR", message: "File too large. Maximum size is 20MB." } },
+        { status: 400 }
+      );
+    }
+
     // Upload to Supabase Storage
-    const fileExt = file.name?.split(".").pop() || "jpg";
     const fileName = `${randomUUID()}.${fileExt}`;
     const storagePath = `${ctx.tenantId}/${jobId}/${fileName}`;
 

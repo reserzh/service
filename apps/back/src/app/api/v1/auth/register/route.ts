@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { tenants, users } from "@fieldservice/shared/db/schema";
+import { eq } from "drizzle-orm";
 import { initializeSequences } from "@/lib/services/sequences";
 import { handleApiError } from "@/lib/api/errors";
+import { createApiClient } from "@/lib/supabase/server";
 
 const registerSchema = z.object({
-  userId: z.string().uuid(),
   companyName: z.string().min(1).max(255),
   firstName: z.string().min(1).max(100),
   lastName: z.string().min(1).max(100),
@@ -15,8 +16,35 @@ const registerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Verify the caller's Supabase JWT
+    const supabase = await createApiClient(req);
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+
+    if (!authUser) {
+      return NextResponse.json(
+        { error: { code: "UNAUTHORIZED", message: "Not authenticated" } },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const input = registerSchema.parse(body);
+
+    // Prevent duplicate registration -- check if user already has a record
+    const [existingUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, authUser.id))
+      .limit(1);
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: { code: "CONFLICT", message: "User already registered" } },
+        { status: 409 }
+      );
+    }
 
     // Generate slug from company name
     const slug = input.companyName
@@ -37,11 +65,11 @@ export async function POST(req: NextRequest) {
         })
         .returning();
 
-      // Create admin user
+      // Create admin user -- use the authenticated user's ID
       const [user] = await tx
         .insert(users)
         .values({
-          id: input.userId,
+          id: authUser.id,
           tenantId: tenant.id,
           email: input.email,
           firstName: input.firstName,

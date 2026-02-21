@@ -4,6 +4,11 @@ import { eq, and, sql } from "drizzle-orm";
 
 type SequenceType = "job" | "estimate" | "invoice";
 
+// Accept both the main db and a transaction handle
+type DbOrTx = {
+  insert: typeof db.insert;
+};
+
 const defaultPrefixes: Record<SequenceType, string> = {
   job: "JOB",
   estimate: "EST",
@@ -12,16 +17,19 @@ const defaultPrefixes: Record<SequenceType, string> = {
 
 /**
  * Generate the next sequential number for a tenant.
- * Uses SELECT FOR UPDATE to prevent race conditions.
+ * Uses an atomic upsert to prevent race conditions.
+ * Accepts an optional transaction handle so the sequence is only
+ * consumed when the surrounding transaction commits.
  */
 export async function getNextSequenceNumber(
   tenantId: string,
-  sequenceType: SequenceType
+  sequenceType: SequenceType,
+  txOrDb: DbOrTx = db,
 ): Promise<string> {
   const prefix = defaultPrefixes[sequenceType];
 
   // Upsert the sequence and atomically increment
-  const result = await db
+  const result = await txOrDb
     .insert(tenantSequences)
     .values({
       tenantId,

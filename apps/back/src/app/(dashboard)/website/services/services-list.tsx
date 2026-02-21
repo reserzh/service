@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import {
 } from "@/actions/website";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
 type Service = {
   id: string;
@@ -56,6 +57,7 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
   const [priceDisplay, setPriceDisplay] = useState("");
   const [isBookable, setIsBookable] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleteServiceId, setDeleteServiceId] = useState<string | null>(null);
 
   const resetForm = () => {
     setName("");
@@ -133,16 +135,18 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
     setSaving(false);
   };
 
-  const handleDelete = async (serviceId: string) => {
-    if (!confirm("Delete this service?")) return;
-    const result = await deleteServiceAction(serviceId);
+  const handleDelete = useCallback(async () => {
+    const id = deleteServiceId;
+    if (!id) return;
+    const result = await deleteServiceAction(id);
     if (result.error) {
       toast.error(result.error);
     } else {
-      setServices(services.filter((s) => s.id !== serviceId));
+      setServices((prev) => prev.filter((s) => s.id !== id));
       toast.success("Service deleted");
     }
-  };
+    setDeleteServiceId(null);
+  }, [deleteServiceId]);
 
   const handleToggleActive = async (service: Service) => {
     const result = await updateServiceAction({
@@ -309,7 +313,7 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        onClick={() => handleDelete(service.id)}
+                        onClick={() => setDeleteServiceId(service.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -321,6 +325,15 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
           </Table>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={deleteServiceId !== null}
+        onOpenChange={(open) => { if (!open) setDeleteServiceId(null); }}
+        title="Delete this service?"
+        description="This service will be permanently removed from your catalog and website."
+        confirmLabel="Delete Service"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

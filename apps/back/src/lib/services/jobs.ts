@@ -25,6 +25,7 @@ import {
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
+import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
 
@@ -150,7 +151,7 @@ export async function listJobs(ctx: UserContext, params: ListJobsParams = {}) {
   }
 
   if (search) {
-    const term = `%${search}%`;
+    const term = `%${escapeLike(search)}%`;
     conditions.push(
       or(
         ilike(jobs.summary, term),
@@ -197,9 +198,9 @@ export async function listJobs(ctx: UserContext, params: ListJobsParams = {}) {
         assignedColor: users.color,
       })
       .from(jobs)
-      .leftJoin(customers, eq(jobs.customerId, customers.id))
-      .leftJoin(properties, eq(jobs.propertyId, properties.id))
-      .leftJoin(users, eq(jobs.assignedTo, users.id))
+      .leftJoin(customers, and(eq(jobs.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
+      .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))
+      .leftJoin(users, and(eq(jobs.assignedTo, users.id), eq(users.tenantId, ctx.tenantId)))
       .where(and(...conditions))
       .orderBy(orderFn(sortColumn))
       .limit(pageSize)
@@ -267,7 +268,7 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
         userLastName: users.lastName,
       })
       .from(jobNotes)
-      .leftJoin(users, eq(jobNotes.userId, users.id))
+      .leftJoin(users, and(eq(jobNotes.userId, users.id), eq(users.tenantId, ctx.tenantId)))
       .where(and(eq(jobNotes.jobId, jobId), eq(jobNotes.tenantId, ctx.tenantId)))
       .orderBy(desc(jobNotes.createdAt)),
     db.select().from(jobPhotos)
@@ -295,9 +296,8 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
 export async function createJob(ctx: UserContext, input: CreateJobInput) {
   assertPermission(ctx, "jobs", "create");
 
-  const jobNumber = await getNextSequenceNumber(ctx.tenantId, "job");
-
   const result = await db.transaction(async (tx) => {
+    const jobNumber = await getNextSequenceNumber(ctx.tenantId, "job", tx);
     // Validate customer and property belong to tenant
     const [customer] = await tx
       .select({ id: customers.id })
@@ -688,9 +688,9 @@ export async function getSchedule(
       propertyCity: properties.city,
     })
     .from(jobs)
-    .leftJoin(users, eq(jobs.assignedTo, users.id))
-    .leftJoin(customers, eq(jobs.customerId, customers.id))
-    .leftJoin(properties, eq(jobs.propertyId, properties.id))
+    .leftJoin(users, and(eq(jobs.assignedTo, users.id), eq(users.tenantId, ctx.tenantId)))
+    .leftJoin(customers, and(eq(jobs.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
+    .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))
     .where(and(...conditions))
     .orderBy(asc(jobs.scheduledStart));
 
@@ -721,8 +721,8 @@ export async function getDispatchableJobs(ctx: UserContext) {
       propertyState: properties.state,
     })
     .from(jobs)
-    .leftJoin(customers, eq(jobs.customerId, customers.id))
-    .leftJoin(properties, eq(jobs.propertyId, properties.id))
+    .leftJoin(customers, and(eq(jobs.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
+    .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))
     .where(
       and(
         eq(jobs.tenantId, ctx.tenantId),

@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { Search, Filter, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCallback } from "react";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
+import { ListPagination } from "@/components/shared/list-pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -64,7 +66,6 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
   const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/estimates", searchQuery);
 
   const activeStatuses = statusFilter ? statusFilter.split(",") : [];
-  const totalPages = Math.ceil(meta.total / meta.pageSize);
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -172,10 +173,18 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
           <TableBody>
             {estimates.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                  {searchQuery || statusFilter
-                    ? "No estimates match your filters."
-                    : "No estimates yet. Create your first estimate to get started."}
+                <TableCell colSpan={5} className="p-0">
+                  {searchQuery || statusFilter ? (
+                    <p className="text-center py-8 text-muted-foreground">No estimates match your filters.</p>
+                  ) : (
+                    <EmptyState
+                      icon={FileText}
+                      title="No estimates yet"
+                      description="Create your first estimate to start sending professional quotes with Good/Better/Best options to your customers."
+                      actionLabel="Create Estimate"
+                      actionHref="/estimates/new"
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -224,37 +233,7 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <p>
-            Showing {(meta.page - 1) * meta.pageSize + 1}-
-            {Math.min(meta.page * meta.pageSize, meta.total)} of {meta.total}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page <= 1}
-              onClick={() => goToPage(meta.page - 1)}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span aria-live="polite">Page {meta.page} of {totalPages}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={meta.page >= totalPages}
-              onClick={() => goToPage(meta.page + 1)}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <ListPagination meta={meta} onPageChange={goToPage} />
     </div>
   );
 }
