@@ -10,12 +10,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "incremental": true,
-    "paths": {
-      "@fieldservice/api-types": ["../api-types/src"],
-      "@fieldservice/api-types/*": ["../api-types/src/*"]
-    }
+    "incremental": true
   },
-  "include": ["src/**/*.ts", "../api-types/src/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

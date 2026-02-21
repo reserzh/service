@@ -28,12 +28,8 @@ import { logActivity } from "./activity";
 import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
-
-// ---------- Types ----------
-
-type JobStatus = "new" | "scheduled" | "dispatched" | "in_progress" | "completed" | "canceled";
-type JobPriority = "low" | "normal" | "high" | "emergency";
-type LineItemType = "service" | "material" | "labor" | "discount" | "other";
+import type { JobStatus, JobPriority, LineItemType } from "@fieldservice/api-types/enums";
+import { VALID_TRANSITIONS } from "@fieldservice/api-types/constants";
 
 export interface ListJobsParams {
   page?: number;
@@ -84,17 +80,6 @@ export interface UpdateJobInput {
   customerNotes?: string | null;
   tags?: string[];
 }
-
-// ---------- Valid status transitions ----------
-
-const validTransitions: Record<JobStatus, JobStatus[]> = {
-  new: ["scheduled", "canceled"],
-  scheduled: ["dispatched", "new", "canceled"],
-  dispatched: ["in_progress", "scheduled", "canceled"],
-  in_progress: ["completed", "dispatched", "canceled"],
-  completed: [],
-  canceled: ["new"],
-};
 
 // ---------- List ----------
 
@@ -432,7 +417,7 @@ export async function changeJobStatus(
   const job = await getJob(ctx, jobId);
   const currentStatus = job.status as JobStatus;
 
-  const allowed = validTransitions[currentStatus];
+  const allowed = VALID_TRANSITIONS[currentStatus];
   if (!allowed || !allowed.includes(newStatus)) {
     throw new AppError(
       "INVALID_STATUS_TRANSITION",

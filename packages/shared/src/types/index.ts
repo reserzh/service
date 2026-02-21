@@ -1,13 +1,4 @@
-export type UserRole = "admin" | "office_manager" | "dispatcher" | "csr" | "technician";
-
-export interface UserContext {
-  userId: string;
-  tenantId: string;
-  role: UserRole;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
+export type { UserRole, UserContext } from "@fieldservice/api-types";
 
 // TenantSettings is exported from db/schema/tenants.ts
 

@@ -1,4 +1,16 @@
 import { fieldserviceSchema } from "./pg-schema";
+import {
+  USER_ROLES,
+  CUSTOMER_TYPES,
+  JOB_STATUSES,
+  JOB_PRIORITIES,
+  LINE_ITEM_TYPES,
+  ESTIMATE_STATUSES,
+  INVOICE_STATUSES,
+  PAYMENT_METHODS,
+  PAYMENT_STATUSES,
+  SIGNER_ROLES,
+} from "@fieldservice/api-types/enums";
 
 export const subscriptionStatusEnum = fieldserviceSchema.enum("subscription_status", [
   "trialing",
@@ -7,82 +19,16 @@ export const subscriptionStatusEnum = fieldserviceSchema.enum("subscription_stat
   "canceled",
 ]);
 
-export const userRoleEnum = fieldserviceSchema.enum("user_role", [
-  "admin",
-  "office_manager",
-  "dispatcher",
-  "csr",
-  "technician",
-]);
-
-export const customerTypeEnum = fieldserviceSchema.enum("customer_type", [
-  "residential",
-  "commercial",
-]);
-
-export const jobStatusEnum = fieldserviceSchema.enum("job_status", [
-  "new",
-  "scheduled",
-  "dispatched",
-  "in_progress",
-  "completed",
-  "canceled",
-]);
-
-export const jobPriorityEnum = fieldserviceSchema.enum("job_priority", [
-  "low",
-  "normal",
-  "high",
-  "emergency",
-]);
-
-export const lineItemTypeEnum = fieldserviceSchema.enum("line_item_type", [
-  "service",
-  "material",
-  "labor",
-  "discount",
-  "other",
-]);
-
-export const estimateStatusEnum = fieldserviceSchema.enum("estimate_status", [
-  "draft",
-  "sent",
-  "viewed",
-  "approved",
-  "declined",
-  "expired",
-]);
-
-export const invoiceStatusEnum = fieldserviceSchema.enum("invoice_status", [
-  "draft",
-  "sent",
-  "viewed",
-  "paid",
-  "partial",
-  "overdue",
-  "void",
-]);
-
-export const paymentMethodEnum = fieldserviceSchema.enum("payment_method", [
-  "credit_card",
-  "debit_card",
-  "ach",
-  "cash",
-  "check",
-  "other",
-]);
-
-export const paymentStatusEnum = fieldserviceSchema.enum("payment_status", [
-  "pending",
-  "succeeded",
-  "failed",
-  "refunded",
-]);
-
-export const signerRoleEnum = fieldserviceSchema.enum("signer_role", [
-  "customer",
-  "technician",
-]);
+export const userRoleEnum = fieldserviceSchema.enum("user_role", [...USER_ROLES]);
+export const customerTypeEnum = fieldserviceSchema.enum("customer_type", [...CUSTOMER_TYPES]);
+export const jobStatusEnum = fieldserviceSchema.enum("job_status", [...JOB_STATUSES]);
+export const jobPriorityEnum = fieldserviceSchema.enum("job_priority", [...JOB_PRIORITIES]);
+export const lineItemTypeEnum = fieldserviceSchema.enum("line_item_type", [...LINE_ITEM_TYPES]);
+export const estimateStatusEnum = fieldserviceSchema.enum("estimate_status", [...ESTIMATE_STATUSES]);
+export const invoiceStatusEnum = fieldserviceSchema.enum("invoice_status", [...INVOICE_STATUSES]);
+export const paymentMethodEnum = fieldserviceSchema.enum("payment_method", [...PAYMENT_METHODS]);
+export const paymentStatusEnum = fieldserviceSchema.enum("payment_status", [...PAYMENT_STATUSES]);
+export const signerRoleEnum = fieldserviceSchema.enum("signer_role", [...SIGNER_ROLES]);
 
 // Website / CMS enums
 export const pageStatusEnum = fieldserviceSchema.enum("page_status", [

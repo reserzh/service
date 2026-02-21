@@ -1,0 +1,293 @@
+import { useState, useCallback, useMemo, useRef } from "react";
+import { View, Text, Pressable, Alert, Linking } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import {
+  Phone,
+  Navigation,
+  MessageSquare,
+  Camera,
+  Send,
+  Receipt,
+} from "lucide-react-native";
+import * as Haptics from "expo-haptics";
+import Toast from "react-native-toast-message";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useJob, useUpdateJobStatus, useUpdateJob, useNotifyOnMyWay } from "@/hooks/useJobs";
+import { useCreateInvoiceFromJob } from "@/hooks/useInvoices";
+import { CreateInvoiceSheet } from "@/components/job/CreateInvoiceSheet";
+import { JobDetailTabs, type JobTab } from "@/components/job/JobDetailTabs";
+import { JobOverviewTab } from "@/components/job/JobOverviewTab";
+import { JobWorkTab } from "@/components/job/JobWorkTab";
+import { JobMediaTab } from "@/components/job/JobMediaTab";
+import { JobHistoryTab } from "@/components/job/JobHistoryTab";
+import { JobStatusBadge } from "@/components/job/JobStatusBadge";
+import { JobPriorityBadge } from "@/components/job/JobPriorityBadge";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ErrorFallback } from "@/components/common/ErrorFallback";
+import { formatAddress } from "@/lib/format";
+import { PRIMARY_NEXT_STATUS, STATUS_ACTION_LABELS } from "@/lib/constants";
+import { STATUS_ACTION_COLORS } from "@/lib/colors";
+import type { JobStatus } from "@/types/models";
+
+export default function JobDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { data, isLoading, isError, refetch } = useJob(id);
+  const updateStatus = useUpdateJobStatus();
+  const updateJob = useUpdateJob();
+  const notifyOnMyWay = useNotifyOnMyWay();
+  const createInvoice = useCreateInvoiceFromJob();
+  const [activeTab, setActiveTab] = useState<JobTab>("overview");
+  const invoiceSheetRef = useRef<BottomSheet>(null);
+
+  const job = data?.data;
+
+  const primaryAction = useMemo(() => {
+    if (!job) return null;
+    const nextStatus = PRIMARY_NEXT_STATUS[job.status];
+    if (!nextStatus) return null;
+    return {
+      status: nextStatus,
+      label: STATUS_ACTION_LABELS[job.status] ?? `Move to ${nextStatus}`,
+      color: STATUS_ACTION_COLORS[job.status] ?? "bg-blue-600",
+    };
+  }, [job]);
+
+  const handleStatusChange = useCallback(
+    (newStatus: JobStatus) => {
+      if (!job) return;
+
+      const labels: Record<string, string> = {
+        in_progress: "Start this job?",
+        completed: "Mark this job as completed?",
+        canceled: "Cancel this job?",
+        dispatched: "Move back to dispatched?",
+      };
+
+      Alert.alert(
+        labels[newStatus] ?? `Change status to ${newStatus}?`,
+        "This action will update the job status.",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Confirm",
+            onPress: async () => {
+              try {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                await updateStatus.mutateAsync({ id: job.id, status: newStatus });
+                Toast.show({ type: "success", text1: "Status updated" });
+              } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : "Failed to update status";
+                Toast.show({ type: "error", text1: "Error", text2: msg });
+              }
+            },
+          },
+        ]
+      );
+    },
+    [job, updateStatus]
+  );
+
+  const handleStartTimer = useCallback(() => {
+    if (!job) return;
+    updateJob.mutate({
+      id: job.id,
+      data: { actualStart: new Date().toISOString() },
+    });
+  }, [job, updateJob]);
+
+  const handleStopTimer = useCallback(() => {
+    if (!job) return;
+    updateJob.mutate({
+      id: job.id,
+      data: { actualEnd: new Date().toISOString() },
+    });
+  }, [job, updateJob]);
+
+  const handleCall = useCallback(() => {
+    if (!job) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Linking.openURL(`tel:${job.customer.phone}`);
+  }, [job]);
+
+  const handleNavigate = useCallback(() => {
+    if (!job) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const address = formatAddress(job.property);
+    const encoded = encodeURIComponent(address);
+    Linking.openURL(`maps://app?daddr=${encoded}`).catch(() => {
+      Linking.openURL(
+        `https://www.google.com/maps/dir/?api=1&destination=${encoded}`
+      );
+    });
+  }, [job]);
+
+  const handleOnMyWay = useCallback(async () => {
+    if (!job) return;
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await notifyOnMyWay.mutateAsync(job.id);
+      Toast.show({ type: "success", text1: "Customer notified", text2: "On my way notification sent" });
+    } catch {
+      Toast.show({ type: "error", text1: "Failed to notify customer" });
+    }
+  }, [job, notifyOnMyWay]);
+
+  if (isError) {
+    return <ErrorFallback message="Failed to load job details" onRetry={() => refetch()} />;
+  }
+
+  if (isLoading || !job) {
+    return <LoadingScreen />;
+  }
+
+  const showOnMyWay = job.status === "dispatched";
+  const showCreateInvoice = job.status === "completed";
+
+  return (
+    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+      {/* Fixed Header */}
+      <View className="px-4 pt-4 pb-2 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <View className="flex-row items-center gap-2 mb-1">
+          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            {job.jobNumber}
+          </Text>
+          <Text className="text-xs text-slate-300">·</Text>
+          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            {job.jobType}
+          </Text>
+        </View>
+        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-2" numberOfLines={1}>
+          {job.summary}
+        </Text>
+        <View className="flex-row items-center gap-2">
+          <JobStatusBadge status={job.status} size="md" />
+          <JobPriorityBadge priority={job.priority} />
+        </View>
+      </View>
+
+      {/* Tabs */}
+      <JobDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Tab Content */}
+      <View className="flex-1">
+        {activeTab === "overview" && <JobOverviewTab job={job} />}
+        {activeTab === "work" && (
+          <JobWorkTab
+            job={job}
+            onStatusChange={handleStatusChange}
+            onStartTimer={handleStartTimer}
+            onStopTimer={handleStopTimer}
+          />
+        )}
+        {activeTab === "media" && <JobMediaTab job={job} />}
+        {activeTab === "history" && <JobHistoryTab job={job} />}
+      </View>
+
+      {/* Fixed Bottom Action Bar */}
+      <View className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-8">
+        {/* Quick action icons */}
+        <View className="flex-row items-center justify-center gap-4 mb-3">
+          <Pressable
+            onPress={handleCall}
+            className="items-center gap-1 active:opacity-70"
+            accessibilityLabel="Call customer"
+            accessibilityRole="button"
+          >
+            <View className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 items-center justify-center">
+              <Phone size={18} color="#10b981" />
+            </View>
+            <Text className="text-[10px] text-slate-500">Call</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={handleNavigate}
+            className="items-center gap-1 active:opacity-70"
+            accessibilityLabel="Navigate to job"
+            accessibilityRole="button"
+          >
+            <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 items-center justify-center">
+              <Navigation size={18} color="#3b82f6" />
+            </View>
+            <Text className="text-[10px] text-slate-500">Navigate</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setActiveTab("work")}
+            className="items-center gap-1 active:opacity-70"
+            accessibilityLabel="Add note"
+            accessibilityRole="button"
+          >
+            <View className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900 items-center justify-center">
+              <MessageSquare size={18} color="#8b5cf6" />
+            </View>
+            <Text className="text-[10px] text-slate-500">Note</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setActiveTab("media")}
+            className="items-center gap-1 active:opacity-70"
+            accessibilityLabel="Take photo"
+            accessibilityRole="button"
+          >
+            <View className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center">
+              <Camera size={18} color="#f59e0b" />
+            </View>
+            <Text className="text-[10px] text-slate-500">Photo</Text>
+          </Pressable>
+
+          {showOnMyWay && (
+            <Pressable
+              onPress={handleOnMyWay}
+              className="items-center gap-1 active:opacity-70"
+              accessibilityLabel="Notify customer on my way"
+              accessibilityRole="button"
+            >
+              <View className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 items-center justify-center">
+                <Send size={18} color="#6366f1" />
+              </View>
+              <Text className="text-[10px] text-slate-500">On Way</Text>
+            </Pressable>
+          )}
+
+          {showCreateInvoice && (
+            <Pressable
+              onPress={() => invoiceSheetRef.current?.snapToIndex(0)}
+              className="items-center gap-1 active:opacity-70"
+              accessibilityLabel="Create invoice"
+              accessibilityRole="button"
+            >
+              <View className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 items-center justify-center">
+                <Receipt size={18} color="#22c55e" />
+              </View>
+              <Text className="text-[10px] text-slate-500">Invoice</Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* Primary action button */}
+        {primaryAction && (
+          <Pressable
+            onPress={() => handleStatusChange(primaryAction.status)}
+            disabled={updateStatus.isPending}
+            className={`flex-row items-center justify-center py-4 rounded-2xl ${primaryAction.color} active:opacity-90`}
+          >
+            <Text className="text-lg font-bold text-white">
+              {updateStatus.isPending ? "Updating..." : primaryAction.label}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      {/* Create Invoice Sheet */}
+      {showCreateInvoice && (
+        <CreateInvoiceSheet
+          job={job}
+          sheetRef={invoiceSheetRef}
+          onSubmit={async (data) => {
+            await createInvoice.mutateAsync({ jobId: job.id, taxRate: data.taxRate });
+          }}
+        />
+      )}
+    </View>
+  );
+}

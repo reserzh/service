@@ -20,6 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@fieldservice/api-types": ["../../packages/api-types/src"],
+      "@fieldservice/api-types/*": ["../../packages/api-types/src/*"],
       "@fieldservice/shared": ["../../packages/shared/src"],
       "@fieldservice/shared/*": ["../../packages/shared/src/*"]
     }
@@ -30,7 +32,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "../../packages/shared/src/**/*.ts"
+    "../../packages/shared/src/**/*.ts",
+    "../../packages/api-types/src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
