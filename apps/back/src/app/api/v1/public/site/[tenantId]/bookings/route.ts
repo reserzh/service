@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { bookingRequests, tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const bookingSchema = z.object({
   serviceId: z.string().uuid().optional(),
@@ -27,6 +27,7 @@ export async function POST(
 ) {
   try {
     const { tenantId } = await params;
+    validateUUID(tenantId);
 
     // Validate tenant exists
     const [tenant] = await db

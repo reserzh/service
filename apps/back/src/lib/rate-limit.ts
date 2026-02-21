@@ -10,6 +10,7 @@ interface RateLimitEntry {
 }
 
 const store = new Map<string, RateLimitEntry>();
+const MAX_STORE_SIZE = 100_000;
 
 // Clean up expired entries every 60 seconds to prevent memory leaks
 const CLEANUP_INTERVAL = 60_000;
@@ -64,6 +65,11 @@ export function checkRateLimit(key: string, config: RateLimitConfig): RateLimitR
     const oldestInWindow = entry.timestamps[0];
     const resetMs = oldestInWindow + config.windowMs - now;
     return { allowed: false, remaining: 0, resetMs };
+  }
+
+  // Cap store size to prevent memory exhaustion from IP rotation attacks
+  if (!store.has(key) && store.size >= MAX_STORE_SIZE) {
+    return { allowed: false, remaining: 0, resetMs: config.windowMs };
   }
 
   entry.timestamps.push(now);

@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
       page: Number(url.searchParams.get("page") || "1"),
       pageSize: Number(url.searchParams.get("pageSize") || "25"),
       search: url.searchParams.get("search") || undefined,
-      status: url.searchParams.get("status")?.split(",") as ("draft" | "sent" | "viewed" | "paid" | "partial" | "overdue" | "void")[] || undefined,
+      status: url.searchParams.get("status")
+        ? (url.searchParams.get("status")!.split(",") as ("draft" | "sent" | "viewed" | "paid" | "partial" | "overdue" | "void")[])
+        : undefined,
       customerId: url.searchParams.get("customerId") || undefined,
       from: url.searchParams.get("from") || undefined,
       to: url.searchParams.get("to") || undefined,

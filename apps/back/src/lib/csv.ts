@@ -6,13 +6,16 @@ export function toCSV<T extends Record<string, unknown>>(
   rows: T[],
   columns: { key: keyof T; header: string }[]
 ): string {
+  const FORMULA_CHARS = /^[=+\-@\t\r]/;
   const escape = (val: unknown): string => {
     if (val == null) return "";
     const str = String(val);
-    if (str.includes(",") || str.includes('"') || str.includes("\n")) {
-      return `"${str.replace(/"/g, '""')}"`;
+    // Neutralize CSV formula injection by prefixing with single quote
+    const safe = FORMULA_CHARS.test(str) ? `'${str}` : str;
+    if (safe.includes(",") || safe.includes('"') || safe.includes("\n") || safe.includes("'")) {
+      return `"${safe.replace(/"/g, '""')}"`;
     }
-    return str;
+    return safe;
   };
 
   const header = columns.map((c) => escape(c.header)).join(",");
@@ -49,10 +52,12 @@ export async function fetchAllPages<T>(
 }
 
 export function csvResponse(csv: string, filename: string): Response {
+  // Sanitize filename to prevent header injection
+  const safeName = filename.replace(/[^\w.\-]/g, "_");
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Disposition": `attachment; filename="${safeName}"`,
     },
   });
 }

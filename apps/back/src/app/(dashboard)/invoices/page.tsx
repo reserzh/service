@@ -26,7 +26,9 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const result = await listInvoices(ctx, {
     page: Number(params.page || "1"),
     search: params.search || undefined,
-    status: params.status?.split(",") as any || undefined,
+    status: params.status
+      ? (params.status.split(",") as ("draft" | "sent" | "viewed" | "paid" | "partial" | "overdue" | "void")[])
+      : undefined,
     from: params.from,
     to: params.to,
   });

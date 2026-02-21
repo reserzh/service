@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sitePages } from "@fieldservice/shared/db/schema";
 import { eq, and, asc } from "drizzle-orm";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 export async function GET(
   req: NextRequest,
@@ -10,6 +10,7 @@ export async function GET(
 ) {
   try {
     const { tenantId } = await params;
+    validateUUID(tenantId);
 
     const pages = await db
       .select({

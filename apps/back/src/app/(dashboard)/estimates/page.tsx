@@ -24,7 +24,9 @@ export default async function EstimatesPage({ searchParams }: PageProps) {
   const result = await listEstimates(ctx, {
     page: Number(params.page || "1"),
     search: params.search || undefined,
-    status: params.status?.split(",") as any || undefined,
+    status: params.status
+      ? (params.status.split(",") as ("draft" | "sent" | "viewed" | "approved" | "declined" | "expired")[])
+      : undefined,
   });
 
   return (

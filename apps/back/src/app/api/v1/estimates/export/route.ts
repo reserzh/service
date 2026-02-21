@@ -16,7 +16,9 @@ export async function GET(req: NextRequest) {
         page,
         pageSize,
         search: url.searchParams.get("search") || undefined,
-        status: url.searchParams.get("status")?.split(",") as ("draft" | "sent" | "viewed" | "approved" | "declined" | "expired")[] || undefined,
+        status: url.searchParams.get("status")
+          ? (url.searchParams.get("status")!.split(",") as ("draft" | "sent" | "viewed" | "approved" | "declined" | "expired")[])
+          : undefined,
       })
     );
 
