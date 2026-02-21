@@ -86,7 +86,10 @@ export function CreateCustomerDialog({ children }: { children: React.ReactNode }
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="phone">Phone *</Label>
-              <Input id="phone" name="phone" type="tel" required />
+              <Input id="phone" name="phone" type="tel" required aria-describedby={state.fieldErrors?.phone ? "phone-error" : undefined} />
+              {state.fieldErrors?.phone && (
+                <p id="phone-error" className="text-xs text-destructive" role="alert">{state.fieldErrors.phone[0]}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

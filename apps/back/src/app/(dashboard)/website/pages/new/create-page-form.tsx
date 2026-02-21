@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { createPageAction } from "@/actions/website";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 
 export function CreatePageForm() {
   const router = useRouter();
@@ -44,9 +44,9 @@ export function CreatePageForm() {
       });
 
       if (result.error) {
-        toast.error(result.error);
+        showToast.error(result.error);
       } else {
-        toast.success("Page created successfully");
+        showToast.created("Page");
         const page = result.data as { id: string };
         router.push(`/website/pages/${page.id}`);
       }

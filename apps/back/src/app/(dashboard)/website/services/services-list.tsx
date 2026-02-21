@@ -29,7 +29,7 @@ import {
   updateServiceAction,
   deleteServiceAction,
 } from "@/actions/website";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
@@ -107,9 +107,9 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
         isBookable,
       });
       if (result.error) {
-        toast.error(result.error);
+        showToast.error(result.error);
       } else {
-        toast.success("Service updated");
+        showToast.saved("Service");
         setDialogOpen(false);
         resetForm();
         router.refresh();
@@ -124,9 +124,9 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
         isBookable,
       });
       if (result.error) {
-        toast.error(result.error);
+        showToast.error(result.error);
       } else {
-        toast.success("Service created");
+        showToast.created("Service");
         setDialogOpen(false);
         resetForm();
         router.refresh();
@@ -140,10 +140,10 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
     if (!id) return;
     const result = await deleteServiceAction(id);
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
       setServices((prev) => prev.filter((s) => s.id !== id));
-      toast.success("Service deleted");
+      showToast.deleted("Service");
     }
     setDeleteServiceId(null);
   }, [deleteServiceId]);
@@ -154,7 +154,7 @@ export function ServicesList({ initialServices }: { initialServices: Service[] }
       isActive: !service.isActive,
     });
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
       setServices(
         services.map((s) =>

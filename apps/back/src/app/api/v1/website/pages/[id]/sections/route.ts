@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 import { listSections, createSection } from "@/lib/services/website";
 
 const createSectionSchema = z.object({
@@ -15,6 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const sections = await listSections(ctx, id);
     return NextResponse.json({ data: sections });
   } catch (error) {
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const body = await req.json();
     const parsed = createSectionSchema.parse(body);
     const section = await createSection(ctx, { pageId: id, ...parsed } as Parameters<typeof createSection>[1]);

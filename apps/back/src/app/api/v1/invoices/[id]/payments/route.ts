@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
 import { recordPayment } from "@/lib/services/invoices";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const paymentSchema = z.object({
   amount: z.number().min(0.01),
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const body = await req.json();
     const input = paymentSchema.parse(body);
     const payment = await recordPayment(ctx, id, input);

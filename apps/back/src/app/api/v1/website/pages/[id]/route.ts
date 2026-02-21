@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 import { getPage, updatePage, deletePage } from "@/lib/services/website";
 
 const updatePageSchema = z.object({
@@ -24,6 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const page = await getPage(ctx, id);
     return NextResponse.json({ data: page });
   } catch (error) {
@@ -35,6 +36,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const body = await req.json();
     const parsed = updatePageSchema.parse(body);
     const page = await updatePage(ctx, { id, ...parsed });
@@ -48,6 +50,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     await deletePage(ctx, id);
     return NextResponse.json({ success: true });
   } catch (error) {

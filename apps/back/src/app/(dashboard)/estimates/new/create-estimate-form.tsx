@@ -179,6 +179,7 @@ export function CreateEstimateForm({ customers }: Props) {
       router.push(`/estimates/${result.estimateId}`);
     } else if (result.error) {
       setError(result.error);
+      showToast.error(result.error);
     }
   }
 

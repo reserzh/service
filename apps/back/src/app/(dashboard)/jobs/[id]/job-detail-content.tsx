@@ -188,6 +188,7 @@ export function JobDetailContent({ job, userRole }: Props) {
       if (result.error) {
         showToast.error("Action failed", result.error);
       } else {
+        showToast.created("Note");
         setNoteText("");
         router.refresh();
       }
@@ -205,6 +206,7 @@ export function JobDetailContent({ job, userRole }: Props) {
       if (result.error) {
         showToast.error("Action failed", result.error);
       } else {
+        showToast.deleted("Line item");
         router.refresh();
       }
       setDeleteItemId(null);

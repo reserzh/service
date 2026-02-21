@@ -51,6 +51,13 @@ export function getActionErrorMessage(error: unknown, fallback: string): string 
   return fallback;
 }
 
+const uuidSchema = z.string().uuid();
+
+/** Validate and return a UUID path parameter. Throws ZodError on invalid input. */
+export function validateUUID(value: string): string {
+  return uuidSchema.parse(value);
+}
+
 export function handleApiError(error: unknown): NextResponse {
   if (error instanceof ApiAuthError) {
     return NextResponse.json(

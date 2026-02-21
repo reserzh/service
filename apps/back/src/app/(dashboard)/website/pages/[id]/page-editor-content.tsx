@@ -31,7 +31,7 @@ import {
   deleteSectionAction,
   reorderSectionsAction,
 } from "@/actions/website";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 import {
   Plus,
   Trash2,
@@ -103,9 +103,9 @@ export function PageEditorContent({
   const handlePublish = async () => {
     const result = await publishPageAction(page.id);
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
-      toast.success("Page published");
+      showToast.saved("Page");
       router.refresh();
     }
   };
@@ -113,9 +113,9 @@ export function PageEditorContent({
   const handleDelete = async () => {
     const result = await deletePageAction(page.id);
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
-      toast.success("Page deleted");
+      showToast.deleted("Page");
       router.push("/website/pages");
     }
     setConfirmDeletePage(false);
@@ -130,9 +130,9 @@ export function PageEditorContent({
     });
     setSaving(false);
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
-      toast.success("Page saved");
+      showToast.saved("Page");
       router.refresh();
     }
   };
@@ -144,10 +144,10 @@ export function PageEditorContent({
       content: getDefaultContent(type),
     });
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
       setSections([...sections, result.data as Section]);
-      toast.success("Section added");
+      showToast.created("Section");
     }
     setAddSectionOpen(false);
   };
@@ -156,10 +156,10 @@ export function PageEditorContent({
     if (!deleteSectionId) return;
     const result = await deleteSectionAction(deleteSectionId, page.id);
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
       setSections(sections.filter((s) => s.id !== deleteSectionId));
-      toast.success("Section deleted");
+      showToast.deleted("Section");
     }
     setDeleteSectionId(null);
   };
@@ -171,7 +171,7 @@ export function PageEditorContent({
       isVisible: !section.isVisible,
     });
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
       setSections(
         sections.map((s) =>
@@ -195,7 +195,7 @@ export function PageEditorContent({
     );
     if (result.error) {
       setSections(sections);
-      toast.error(result.error);
+      showToast.error(result.error);
     }
   };
 
@@ -208,7 +208,7 @@ export function PageEditorContent({
         content,
       });
       if (result.error) {
-        toast.error(result.error);
+        showToast.error(result.error);
       } else {
         setSections(
           sections.map((s) =>
@@ -216,10 +216,10 @@ export function PageEditorContent({
           )
         );
         setEditingSectionId(null);
-        toast.success("Section updated");
+        showToast.saved("Section");
       }
     } catch {
-      toast.error("Invalid JSON content");
+      showToast.error("Invalid JSON content");
     }
   };
 

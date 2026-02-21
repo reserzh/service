@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
 import { approveEstimate } from "@/lib/services/estimates";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const approveSchema = z.object({
   optionId: z.string().uuid(),
@@ -16,6 +16,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const body = await req.json();
     const { optionId } = approveSchema.parse(body);
     const data = await approveEstimate(ctx, id, optionId);

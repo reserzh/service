@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { updateSiteSettingsAction } from "@/actions/website";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 import { Save } from "lucide-react";
 
 type SiteSettings = {
@@ -142,9 +142,9 @@ export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
     setSaving(false);
 
     if (result.error) {
-      toast.error(result.error);
+      showToast.error(result.error);
     } else {
-      toast.success("Theme saved successfully");
+      showToast.saved("Theme");
       router.refresh();
     }
   };

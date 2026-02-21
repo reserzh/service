@@ -4,7 +4,7 @@ import { createApiClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { jobPhotos, jobs } from "@fieldservice/shared/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { handleApiError, NotFoundError } from "@/lib/api/errors";
+import { handleApiError, NotFoundError, validateUUID } from "@/lib/api/errors";
 import { randomUUID } from "crypto";
 
 interface RouteContext {
@@ -15,6 +15,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
 
     const photos = await db
       .select()
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id: jobId } = await context.params;
+    validateUUID(jobId);
 
     // Verify job exists and belongs to tenant
     const [job] = await db

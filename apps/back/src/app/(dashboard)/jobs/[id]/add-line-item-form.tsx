@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
 interface Props {
   jobId: string;
@@ -31,6 +32,7 @@ export function AddLineItemForm({ jobId }: Props) {
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset();
+      showToast.created("Line item");
       router.refresh();
     }
   }, [state.success, router]);

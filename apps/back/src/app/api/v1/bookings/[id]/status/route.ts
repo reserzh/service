@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 import { updateBookingStatus } from "@/lib/services/bookings";
 
 const statusSchema = z.object({
@@ -12,6 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const body = await req.json();
     const parsed = statusSchema.parse(body);
     const booking = await updateBookingStatus(ctx, id, parsed.status);

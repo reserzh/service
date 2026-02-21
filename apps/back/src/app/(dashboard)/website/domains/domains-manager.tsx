@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 import { Plus, Trash2, CheckCircle, AlertCircle, Globe } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
@@ -52,9 +52,9 @@ export function DomainsManager({
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error?.message || "Failed to add domain");
+        showToast.error(data.error?.message || "Failed to add domain");
       } else {
-        toast.success("Domain added");
+        showToast.created("Domain");
         setNewDomain("");
         router.refresh();
       }
@@ -70,13 +70,13 @@ export function DomainsManager({
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error?.message || "Verification failed");
+        showToast.error(data.error?.message || "Verification failed");
       } else {
-        toast.success("Domain verified");
+        showToast.saved("Domain verified");
         router.refresh();
       }
     } catch {
-      toast.error("Verification failed");
+      showToast.error("Verification failed");
     }
   };
 
@@ -88,10 +88,10 @@ export function DomainsManager({
       });
       if (res.ok) {
         setDomains(domains.filter((d) => d.id !== removeDomainId));
-        toast.success("Domain removed");
+        showToast.deleted("Domain");
       }
     } catch {
-      toast.error("Failed to remove domain");
+      showToast.error("Failed to remove domain");
     }
     setRemoveDomainId(null);
   };

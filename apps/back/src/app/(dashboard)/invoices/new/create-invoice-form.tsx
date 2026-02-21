@@ -89,6 +89,7 @@ export function CreateInvoiceForm({ customers }: Props) {
       router.push(`/invoices/${result.invoiceId}`);
     } else if (result.error) {
       setError(result.error);
+      showToast.error(result.error);
     }
   }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
 import { getTeamMember, updateTeamMember } from "@/lib/services/team";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -12,6 +12,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const data = await getTeamMember(ctx, id);
     return NextResponse.json({ data });
   } catch (error) {
@@ -33,6 +34,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const body = await req.json();
     const input = updateSchema.parse(body);
     const data = await updateTeamMember(ctx, id, input);

@@ -6,7 +6,7 @@ import {
   updateCustomer,
   deleteCustomer,
 } from "@/lib/services/customers";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const updateSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
@@ -29,6 +29,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const customer = await getCustomerWithRelations(ctx, id);
     return NextResponse.json({ data: customer });
   } catch (error) {
@@ -40,6 +41,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const body = await req.json();
     const input = updateSchema.parse(body);
     const customer = await updateCustomer(ctx, id, input);
@@ -53,6 +55,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     await deleteCustomer(ctx, id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {

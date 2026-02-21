@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
+import { showToast } from "@/lib/toast";
 import { format } from "date-fns";
 import { ArrowRight, Check, X } from "lucide-react";
 
@@ -49,10 +49,10 @@ export function BookingsList({ initialBookings }: { initialBookings: Booking[] }
             b.id === bookingId ? { ...b, status } : b
           )
         );
-        toast.success(`Booking ${status}`);
+        showToast.saved(`Booking ${status}`);
       }
     } catch {
-      toast.error("Failed to update booking");
+      showToast.error("Failed to update booking");
     }
   };
 
@@ -63,13 +63,13 @@ export function BookingsList({ initialBookings }: { initialBookings: Booking[] }
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Booking converted to job");
+        showToast.created("Job from booking");
         router.push(`/jobs/${data.data.jobId}`);
       } else {
-        toast.error(data.error?.message || "Failed to convert booking");
+        showToast.error(data.error?.message || "Failed to convert booking");
       }
     } catch {
-      toast.error("Failed to convert booking");
+      showToast.error("Failed to convert booking");
     }
   };
 

@@ -4,7 +4,7 @@ import { createApiClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { jobPhotos } from "@fieldservice/shared/db/schema";
 import { eq, and } from "drizzle-orm";
-import { handleApiError, NotFoundError } from "@/lib/api/errors";
+import { handleApiError, NotFoundError, validateUUID } from "@/lib/api/errors";
 
 interface RouteContext {
   params: Promise<{ id: string; photoId: string }>;
@@ -14,6 +14,8 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id: jobId, photoId } = await context.params;
+    validateUUID(jobId);
+    validateUUID(photoId);
 
     // Find the photo
     const [photo] = await db

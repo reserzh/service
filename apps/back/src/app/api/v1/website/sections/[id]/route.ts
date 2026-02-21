@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 import { updateSection, deleteSection } from "@/lib/services/website";
 
 const updateSectionSchema = z.object({
@@ -15,6 +15,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const body = await req.json();
     const parsed = updateSectionSchema.parse(body);
     const section = await updateSection(ctx, id, parsed as Parameters<typeof updateSection>[2]);
@@ -28,6 +29,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     await deleteSection(ctx, id);
     return NextResponse.json({ success: true });
   } catch (error) {

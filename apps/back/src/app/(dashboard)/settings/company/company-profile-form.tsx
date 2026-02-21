@@ -99,7 +99,11 @@ export function CompanyProfileForm({ company }: Props) {
                 type="email"
                 defaultValue={company.email}
                 required
+                aria-describedby={state.fieldErrors?.email ? "email-error" : undefined}
               />
+              {state.fieldErrors?.email && (
+                <p id="email-error" className="text-xs text-destructive" role="alert">{state.fieldErrors.email[0]}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -109,7 +113,11 @@ export function CompanyProfileForm({ company }: Props) {
                 name="phone"
                 type="tel"
                 defaultValue={company.phone ?? ""}
+                aria-describedby={state.fieldErrors?.phone ? "phone-error" : undefined}
               />
+              {state.fieldErrors?.phone && (
+                <p id="phone-error" className="text-xs text-destructive" role="alert">{state.fieldErrors.phone[0]}</p>
+              )}
             </div>
 
             <div className="space-y-2">

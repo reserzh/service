@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
 import { getJobWithRelations, updateJob } from "@/lib/services/jobs";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const updateSchema = z.object({
   jobType: z.string().min(1).max(100).optional(),
@@ -26,6 +26,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const job = await getJobWithRelations(ctx, id);
     return NextResponse.json({ data: job });
   } catch (error) {
@@ -37,6 +38,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await context.params;
+    validateUUID(id);
     const body = await req.json();
     const input = updateSchema.parse(body);
     const job = await updateJob(ctx, id, input);

@@ -23,6 +23,7 @@ import {
   Globe,
   Settings,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { globalSearchAction, type SearchResult } from "@/actions/search";
 
@@ -181,6 +182,30 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <CommandSeparator />
           </>
         )}
+
+        {/* Quick actions */}
+        {!isPending && (query.length < 2 || results.length > 0) && (
+          <CommandGroup heading="Quick Actions">
+            <CommandItem value="New Customer" onSelect={() => navigate("/customers")}>
+              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+              New Customer
+            </CommandItem>
+            <CommandItem value="New Job" onSelect={() => navigate("/jobs/new")}>
+              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+              New Job
+            </CommandItem>
+            <CommandItem value="New Estimate" onSelect={() => navigate("/estimates/new")}>
+              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+              New Estimate
+            </CommandItem>
+            <CommandItem value="New Invoice" onSelect={() => navigate("/invoices/new")}>
+              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+              New Invoice
+            </CommandItem>
+          </CommandGroup>
+        )}
+
+        <CommandSeparator />
 
         {/* Quick navigation - always shown */}
         {!isPending && (query.length < 2 || results.length > 0) && (

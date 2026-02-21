@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiAuth } from "@/lib/auth";
-import { handleApiError } from "@/lib/api/errors";
+import { handleApiError, validateUUID } from "@/lib/api/errors";
 import { reorderSections } from "@/lib/services/website";
 
 const reorderSchema = z.object({
@@ -12,6 +12,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const ctx = await requireApiAuth(req);
     const { id } = await params;
+    validateUUID(id);
     const body = await req.json();
     const parsed = reorderSchema.parse(body);
     await reorderSections(ctx, id, parsed.sectionIds);
