@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers();
   const slug = headersList.get("x-tenant-slug");
   const customDomain = headersList.get("x-custom-domain");
-  const host = headersList.get("host") || "localhost:3001";
+  const host = headersList.get("host") || "localhost:3201";
 
   let site;
   if (slug) {

@@ -6,7 +6,7 @@ import type { JobStatus, JobPriority, EstimateStatus, InvoiceStatus } from "@/ty
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ??
   (__DEV__
-    ? "http://localhost:3000/api/v1"
+    ? "http://localhost:3200/api/v1"
     : "https://app.fieldservicepro.com/api/v1");
 
 export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";

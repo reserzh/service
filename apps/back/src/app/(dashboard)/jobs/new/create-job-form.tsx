@@ -79,7 +79,7 @@ export function CreateJobForm({ customers, technicians }: Props) {
   return (
     <form action={formAction} className="space-y-6">
       {state.error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive" role="alert">
           {state.error}
         </div>
       )}

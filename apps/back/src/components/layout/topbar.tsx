@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, Search, Moon, Sun, LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { Search, Moon, Sun, LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { CommandPalette } from "@/components/layout/command-palette";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 interface TopbarProps {
   user: {
@@ -26,6 +29,7 @@ interface TopbarProps {
 
 export function Topbar({ user }: TopbarProps) {
   const { setTheme, theme } = useTheme();
+  const [commandOpen, setCommandOpen] = useState(false);
 
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
@@ -34,14 +38,12 @@ export function Topbar({ user }: TopbarProps) {
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="mr-2 h-4" />
 
-      {/* Search placeholder */}
+      {/* Search trigger */}
       <div className="flex flex-1 items-center">
         <Button
           variant="outline"
           className="h-9 w-full max-w-sm justify-start gap-2 text-muted-foreground"
-          onClick={() => {
-            // TODO: Open command palette (Cmd+K)
-          }}
+          onClick={() => setCommandOpen(true)}
         >
           <Search className="h-4 w-4" />
           <span className="hidden sm:inline">Search customers, jobs, invoices...</span>
@@ -51,6 +53,8 @@ export function Topbar({ user }: TopbarProps) {
           </kbd>
         </Button>
       </div>
+
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
 
       {/* Right side actions */}
       <div className="flex items-center gap-1">
@@ -67,17 +71,12 @@ export function Topbar({ user }: TopbarProps) {
         </Button>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative h-9 w-9">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Notifications</span>
-          {/* Notification dot */}
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
-        </Button>
+        <NotificationDropdown />
 
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="ml-1 h-9 gap-2 px-2">
+            <Button variant="ghost" className="ml-1 h-9 gap-2 px-2" aria-label={`User menu for ${user.firstName} ${user.lastName}`}>
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="text-xs">{initials}</AvatarFallback>
               </Avatar>

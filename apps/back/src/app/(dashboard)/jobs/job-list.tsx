@@ -21,7 +21,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
+import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { format } from "date-fns";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -75,7 +76,7 @@ const allStatuses = ["new", "scheduled", "dispatched", "in_progress", "completed
 export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchQuery || "");
+  const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/jobs", searchQuery);
 
   const activeStatuses = statusFilter ? statusFilter.split(",") : [];
   const totalPages = Math.ceil(meta.total / meta.pageSize);
@@ -125,10 +126,7 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
           <Input
             placeholder="Search jobs..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") updateParams({ search: search || undefined });
-            }}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -163,8 +161,10 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
             variant="ghost"
             size="sm"
             onClick={() => {
-              setSearch("");
-              router.push("/jobs");
+              clearSearch();
+              if (activeStatuses.length > 0) {
+                router.push("/jobs");
+              }
             }}
           >
             Clear
@@ -289,16 +289,18 @@ export function JobList({ jobs, meta, searchQuery, statusFilter }: JobListProps)
               className="h-8 w-8"
               disabled={meta.page <= 1}
               onClick={() => goToPage(meta.page - 1)}
+              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span>Page {meta.page} of {totalPages}</span>
+            <span aria-live="polite">Page {meta.page} of {totalPages}</span>
             <Button
               variant="outline"
               size="icon"
               className="h-8 w-8"
               disabled={meta.page >= totalPages}
               onClick={() => goToPage(meta.page + 1)}
+              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

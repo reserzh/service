@@ -59,7 +59,7 @@ export function CreateCustomerDialog({ children }: { children: React.ReactNode }
 
         <form action={formAction} className="space-y-4">
           {state.error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive" role="alert">
               {state.error}
             </div>
           )}
@@ -68,16 +68,16 @@ export function CreateCustomerDialog({ children }: { children: React.ReactNode }
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name *</Label>
-              <Input id="firstName" name="firstName" required />
+              <Input id="firstName" name="firstName" required aria-describedby={state.fieldErrors?.firstName ? "firstName-error" : undefined} />
               {state.fieldErrors?.firstName && (
-                <p className="text-xs text-destructive">{state.fieldErrors.firstName[0]}</p>
+                <p id="firstName-error" className="text-xs text-destructive" role="alert">{state.fieldErrors.firstName[0]}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name *</Label>
-              <Input id="lastName" name="lastName" required />
+              <Input id="lastName" name="lastName" required aria-describedby={state.fieldErrors?.lastName ? "lastName-error" : undefined} />
               {state.fieldErrors?.lastName && (
-                <p className="text-xs text-destructive">{state.fieldErrors.lastName[0]}</p>
+                <p id="lastName-error" className="text-xs text-destructive" role="alert">{state.fieldErrors.lastName[0]}</p>
               )}
             </div>
           </div>
@@ -115,18 +115,29 @@ export function CreateCustomerDialog({ children }: { children: React.ReactNode }
           </div>
 
           {/* Property Address */}
-          <div className="space-y-3 rounded-md border p-3">
-            <p className="text-sm font-medium">Service Address</p>
+          <fieldset className="space-y-3 rounded-md border p-3">
+            <legend className="text-sm font-medium">Service Address</legend>
             <div className="space-y-2">
-              <Input name="addressLine1" placeholder="Street address" />
-              <Input name="addressLine2" placeholder="Apt, suite, etc." />
+              <Label htmlFor="addressLine1" className="sr-only">Street address</Label>
+              <Input id="addressLine1" name="addressLine1" placeholder="Street address" />
+              <Label htmlFor="addressLine2" className="sr-only">Apt, suite, etc.</Label>
+              <Input id="addressLine2" name="addressLine2" placeholder="Apt, suite, etc." />
               <div className="grid grid-cols-6 gap-2">
-                <Input name="city" placeholder="City" className="col-span-3" />
-                <Input name="state" placeholder="State" className="col-span-1" />
-                <Input name="zip" placeholder="ZIP" className="col-span-2" />
+                <div className="col-span-3">
+                  <Label htmlFor="city" className="sr-only">City</Label>
+                  <Input id="city" name="city" placeholder="City" />
+                </div>
+                <div className="col-span-1">
+                  <Label htmlFor="state" className="sr-only">State</Label>
+                  <Input id="state" name="state" placeholder="State" />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="zip" className="sr-only">ZIP code</Label>
+                  <Input id="zip" name="zip" placeholder="ZIP" />
+                </div>
               </div>
             </div>
-          </div>
+          </fieldset>
 
           {/* Source & Notes */}
           <div className="space-y-2">

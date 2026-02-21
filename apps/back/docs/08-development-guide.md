@@ -34,8 +34,8 @@ pnpm --filter back db:seed
 pnpm dev
 
 # Or start individual apps:
-pnpm --filter back dev      # Admin dashboard at localhost:3000
-pnpm --filter front dev     # Public sites at localhost:3001
+pnpm --filter back dev      # Admin dashboard at localhost:3200
+pnpm --filter front dev     # Public sites at localhost:3201
 ```
 
 ## Environment Variables
@@ -61,7 +61,7 @@ TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3200
 
 # Website Builder (optional — for custom domain provisioning)
 VERCEL_API_TOKEN=            # Vercel API token for domain management
@@ -69,8 +69,8 @@ VERCEL_PROJECT_ID=           # The FRONT project ID on Vercel
 VERCEL_TEAM_ID=              # (optional) Vercel team ID
 
 # FRONT app
-NEXT_PUBLIC_SITE_URL=http://localhost:3001
-NEXT_PUBLIC_BACK_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3201
+NEXT_PUBLIC_BACK_URL=http://localhost:3200
 ```
 
 ## Project Scripts

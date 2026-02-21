@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
+import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 
 interface Customer {
   id: string;
@@ -36,23 +37,9 @@ interface CustomerListProps {
 export function CustomerList({ customers, meta, searchQuery }: CustomerListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchQuery || "");
+  const { search, handleChange, clearSearch } = useDebouncedSearch("/customers", searchQuery);
 
   const totalPages = Math.ceil(meta.total / meta.pageSize);
-
-  const updateSearch = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set("search", value);
-        params.delete("page");
-      } else {
-        params.delete("search");
-      }
-      router.push(`/customers?${params.toString()}`);
-    },
-    [router, searchParams]
-  );
 
   const goToPage = useCallback(
     (page: number) => {
@@ -72,10 +59,7 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
           <Input
             placeholder="Search customers..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") updateSearch(search);
-            }}
+            onChange={(e) => handleChange(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -83,10 +67,7 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setSearch("");
-              updateSearch("");
-            }}
+            onClick={clearSearch}
           >
             Clear
           </Button>
@@ -159,10 +140,11 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
               className="h-8 w-8"
               disabled={meta.page <= 1}
               onClick={() => goToPage(meta.page - 1)}
+              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span>
+            <span aria-live="polite">
               Page {meta.page} of {totalPages}
             </span>
             <Button
@@ -171,6 +153,7 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
               className="h-8 w-8"
               disabled={meta.page >= totalPages}
               onClick={() => goToPage(meta.page + 1)}
+              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

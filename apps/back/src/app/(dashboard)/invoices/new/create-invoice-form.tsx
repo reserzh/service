@@ -95,7 +95,7 @@ export function CreateInvoiceForm({ customers }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive" role="alert">
           {error}
         </div>
       )}

@@ -35,3 +35,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Docker dev
+Dockerfile.dev
+docker-compose.yml
+
+# pnpm store
+.pnpm-store

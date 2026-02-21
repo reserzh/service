@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
   } else if (hostname === PLATFORM_DOMAIN || hostname === `www.${PLATFORM_DOMAIN}`) {
     // Main platform domain — no tenant
     return new NextResponse("Platform homepage", { status: 200 });
-  } else if (hostname === "localhost:3001" || hostname === "localhost") {
+  } else if (hostname === "localhost:3201" || hostname === "localhost") {
     // Local dev — use x-tenant-slug header or query param for testing
     tenantSlug = request.headers.get("x-tenant-slug") || url.searchParams.get("tenant") || "demo";
   } else {
