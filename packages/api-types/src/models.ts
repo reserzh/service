@@ -9,6 +9,12 @@ import type {
   PaymentMethod,
   PaymentStatus,
   SignerRole,
+  CommunicationType,
+  CommunicationStatus,
+  CommunicationTrigger,
+  AgreementStatus,
+  BillingFrequency,
+  AgreementVisitStatus,
 } from "./enums";
 
 // ---- Core Models ----
@@ -141,6 +147,7 @@ export interface JobWithRelations extends Job {
 export interface JobLineItem {
   id: string;
   jobId: string;
+  pricebookItemId: string | null;
   description: string;
   quantity: string;
   unitPrice: string;
@@ -224,6 +231,7 @@ export interface EstimateOption {
 export interface EstimateOptionItem {
   id: string;
   optionId: string;
+  pricebookItemId: string | null;
   description: string;
   quantity: string;
   unitPrice: string;
@@ -261,6 +269,7 @@ export interface Invoice {
 export interface InvoiceLineItem {
   id: string;
   invoiceId: string;
+  pricebookItemId: string | null;
   description: string;
   quantity: string;
   unitPrice: string;
@@ -300,4 +309,132 @@ export interface InvoiceListItem extends Invoice {
 export interface CustomerWithRelations extends Customer {
   properties: Property[];
   equipment: Equipment[];
+}
+
+// ---- Pricebook Models ----
+
+export interface PricebookItem {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string | null;
+  sku: string | null;
+  category: string | null;
+  type: LineItemType;
+  unitPrice: string;
+  unit: string | null;
+  costPrice: string | null;
+  taxable: boolean;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---- Communication Models ----
+
+export interface CommunicationTemplate {
+  id: string;
+  tenantId: string;
+  name: string;
+  type: CommunicationType;
+  trigger: CommunicationTrigger | null;
+  subject: string;
+  body: string;
+  isActive: boolean;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CommunicationLogEntry {
+  id: string;
+  tenantId: string;
+  templateId: string | null;
+  recipientEmail: string;
+  recipientName: string;
+  subject: string;
+  channel: CommunicationType;
+  status: CommunicationStatus;
+  entityType: string | null;
+  entityId: string | null;
+  sentBy: string;
+  resendMessageId: string | null;
+  errorMessage: string | null;
+  sentAt: string | null;
+  createdAt: string;
+}
+
+// ---- Agreement Models ----
+
+export interface Agreement {
+  id: string;
+  tenantId: string;
+  agreementNumber: string;
+  customerId: string;
+  propertyId: string;
+  status: AgreementStatus;
+  name: string;
+  description: string | null;
+  startDate: string;
+  endDate: string;
+  billingFrequency: BillingFrequency;
+  billingAmount: string;
+  totalValue: string;
+  visitsPerYear: number;
+  autoRenew: boolean;
+  renewalReminderDays: number;
+  notes: string | null;
+  internalNotes: string | null;
+  createdBy: string;
+  activatedAt: string | null;
+  pausedAt: string | null;
+  canceledAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AgreementService {
+  id: string;
+  tenantId: string;
+  agreementId: string;
+  pricebookItemId: string | null;
+  name: string;
+  description: string | null;
+  quantity: string;
+  unitPrice: string;
+  sortOrder: number;
+}
+
+export interface AgreementVisit {
+  id: string;
+  tenantId: string;
+  agreementId: string;
+  visitNumber: number;
+  status: AgreementVisitStatus;
+  scheduledDate: string | null;
+  completedDate: string | null;
+  jobId: string | null;
+  invoiceId: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AgreementWithRelations extends Agreement {
+  customer: Customer;
+  property: Property;
+  services: AgreementService[];
+  visits: AgreementVisit[];
+}
+
+// ---- Customer Portal Models ----
+
+export interface CustomerPortalContext {
+  customerId: string;
+  tenantId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }

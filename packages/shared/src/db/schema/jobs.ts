@@ -36,6 +36,8 @@ export const jobs = fieldserviceSchema.table(
       .notNull()
       .references(() => properties.id),
     estimateId: uuid("estimate_id"),
+    agreementId: uuid("agreement_id"),
+    agreementVisitId: uuid("agreement_visit_id"),
     assignedTo: uuid("assigned_to").references(() => users.id),
     status: jobStatusEnum("status").default("new").notNull(),
     priority: jobPriorityEnum("priority").default("normal").notNull(),
@@ -92,6 +94,7 @@ export const jobLineItems = fieldserviceSchema.table(
     jobId: uuid("job_id")
       .notNull()
       .references(() => jobs.id, { onDelete: "cascade" }),
+    pricebookItemId: uuid("pricebook_item_id"),
     description: varchar("description", { length: 500 }).notNull(),
     quantity: decimal("quantity", { precision: 10, scale: 2 }).default("1").notNull(),
     unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).notNull(),

@@ -8,3 +8,7 @@ export * from "./estimates";
 export * from "./invoices";
 export * from "./system";
 export * from "./website";
+export * from "./pricebook";
+export * from "./communications";
+export * from "./agreements";
+export * from "./portal";

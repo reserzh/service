@@ -373,6 +373,35 @@ export async function sendEstimate(ctx: UserContext, estimateId: string) {
     .returning();
 
   await logActivity(ctx, "estimate", estimateId, "sent");
+
+  // Send email notification
+  try {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.id, estimate.customerId), eq(customers.tenantId, ctx.tenantId)))
+      .limit(1);
+
+    if (customer?.email) {
+      const { sendTriggeredCommunication } = await import("./communications");
+      await sendTriggeredCommunication(ctx, "estimate_sent", {
+        recipientEmail: customer.email,
+        recipientName: `${customer.firstName} ${customer.lastName}`,
+        entityType: "estimate",
+        entityId: estimateId,
+        variables: {
+          customerFirstName: customer.firstName,
+          customerLastName: customer.lastName,
+          estimateNumber: estimate.estimateNumber,
+          estimateTotal: estimate.totalAmount ? Number(estimate.totalAmount).toFixed(2) : "0.00",
+          estimateValidUntil: estimate.validUntil || "",
+        },
+      });
+    }
+  } catch (emailError) {
+    console.error("[Estimate] Failed to send email notification:", emailError);
+  }
+
   return updated;
 }
 

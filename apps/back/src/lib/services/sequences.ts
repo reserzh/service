@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { tenantSequences } from "@fieldservice/shared/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
-type SequenceType = "job" | "estimate" | "invoice";
+type SequenceType = "job" | "estimate" | "invoice" | "agreement";
 
 // Accept both the main db and a transaction handle
 type DbOrTx = {
@@ -13,6 +13,7 @@ const defaultPrefixes: Record<SequenceType, string> = {
   job: "JOB",
   estimate: "EST",
   invoice: "INV",
+  agreement: "AGR",
 };
 
 /**
@@ -54,7 +55,7 @@ export async function getNextSequenceNumber(
  * Initialize default sequences for a new tenant.
  */
 export async function initializeSequences(tenantId: string): Promise<void> {
-  const types: SequenceType[] = ["job", "estimate", "invoice"];
+  const types: SequenceType[] = ["job", "estimate", "invoice", "agreement"];
 
   await db.insert(tenantSequences).values(
     types.map((type) => ({

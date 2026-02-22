@@ -19,6 +19,7 @@ import {
   Cpu,
 } from "lucide-react";
 import Link from "next/link";
+import { PortalAccessCard } from "./portal-access-card";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -99,6 +100,15 @@ export default async function CustomerDetailPage({ params }: PageProps) {
           </Card>
         )}
       </div>
+
+      {/* Portal Access */}
+      <PortalAccessCard
+        customerId={customer.id}
+        portalAccessEnabled={customer.portalAccessEnabled}
+        invitedAt={customer.invitedAt?.toISOString() ?? null}
+        lastPortalLoginAt={customer.lastPortalLoginAt?.toISOString() ?? null}
+        hasEmail={!!customer.email}
+      />
 
       {/* Tabs */}
       <Tabs defaultValue="properties" className="space-y-4">

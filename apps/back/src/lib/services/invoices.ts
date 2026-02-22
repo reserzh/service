@@ -469,6 +469,35 @@ export async function sendInvoice(ctx: UserContext, invoiceId: string) {
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "sent");
+
+  // Send email notification
+  try {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.id, invoice.customerId), eq(customers.tenantId, ctx.tenantId)))
+      .limit(1);
+
+    if (customer?.email) {
+      const { sendTriggeredCommunication } = await import("./communications");
+      await sendTriggeredCommunication(ctx, "invoice_sent", {
+        recipientEmail: customer.email,
+        recipientName: `${customer.firstName} ${customer.lastName}`,
+        entityType: "invoice",
+        entityId: invoiceId,
+        variables: {
+          customerFirstName: customer.firstName,
+          customerLastName: customer.lastName,
+          invoiceNumber: invoice.invoiceNumber,
+          invoiceTotal: Number(invoice.total).toFixed(2),
+          invoiceDueDate: invoice.dueDate,
+        },
+      });
+    }
+  } catch (emailError) {
+    console.error("[Invoice] Failed to send email notification:", emailError);
+  }
+
   return updated;
 }
 

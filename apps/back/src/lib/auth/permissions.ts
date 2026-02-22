@@ -14,7 +14,11 @@ type Resource =
   | "invoices"
   | "payments"
   | "reports"
-  | "website";
+  | "website"
+  | "pricebook"
+  | "communications"
+  | "agreements"
+  | "portal";
 
 // Permission matrix: role -> resource -> allowed actions
 const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
@@ -31,6 +35,10 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     payments: ["create", "read", "update", "delete"],
     reports: ["read"],
     website: ["create", "read", "update", "delete"],
+    pricebook: ["create", "read", "update", "delete"],
+    communications: ["create", "read", "update", "delete"],
+    agreements: ["create", "read", "update", "delete"],
+    portal: ["create", "read", "update", "delete", "manage"],
   },
   office_manager: {
     settings: ["read"],
@@ -45,6 +53,10 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     payments: ["create", "read", "update", "delete"],
     reports: ["read"],
     website: ["create", "read", "update", "delete"],
+    pricebook: ["create", "read", "update", "delete"],
+    communications: ["create", "read", "update", "delete"],
+    agreements: ["create", "read", "update", "delete"],
+    portal: ["create", "read", "update", "delete", "manage"],
   },
   dispatcher: {
     customers: ["read"],
@@ -55,6 +67,9 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     estimates: ["read"],
     invoices: ["read"],
     reports: ["read"],
+    pricebook: ["read"],
+    communications: ["read"],
+    agreements: ["read"],
   },
   csr: {
     customers: ["create", "read", "update"],
@@ -64,6 +79,9 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     schedule: ["create", "read"],
     estimates: ["create", "read"],
     invoices: ["read"],
+    pricebook: ["read"],
+    communications: ["read"],
+    agreements: ["read"],
   },
   technician: {
     customers: ["read"],
@@ -73,6 +91,8 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     schedule: ["read"],
     estimates: ["read", "create"],
     payments: ["create"],
+    pricebook: ["read"],
+    agreements: ["read"],
   },
 };
 

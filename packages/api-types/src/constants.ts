@@ -1,4 +1,14 @@
-import type { JobStatus, JobPriority, EstimateStatus, InvoiceStatus } from "./enums";
+import type {
+  JobStatus,
+  JobPriority,
+  EstimateStatus,
+  InvoiceStatus,
+  LineItemType,
+  CommunicationTrigger,
+  AgreementStatus,
+  BillingFrequency,
+  AgreementVisitStatus,
+} from "./enums";
 
 // Valid status transitions (authoritative — backend is source of truth)
 export const VALID_TRANSITIONS: Record<JobStatus, JobStatus[]> = {
@@ -56,4 +66,57 @@ export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
 export const STATUS_ACTION_LABELS: Partial<Record<JobStatus, string>> = {
   dispatched: "Start Job",
   in_progress: "Complete Job",
+};
+
+// Line item type labels
+export const LINE_ITEM_TYPE_LABELS: Record<LineItemType, string> = {
+  service: "Service",
+  material: "Material",
+  labor: "Labor",
+  discount: "Discount",
+  other: "Other",
+};
+
+// Communication trigger labels
+export const COMMUNICATION_TRIGGER_LABELS: Record<CommunicationTrigger, string> = {
+  invoice_sent: "Invoice Sent",
+  estimate_sent: "Estimate Sent",
+  job_scheduled: "Job Scheduled",
+  job_dispatched: "Job Dispatched",
+  job_completed: "Job Completed",
+  appointment_reminder: "Appointment Reminder",
+  custom: "Custom",
+};
+
+// Agreement status labels
+export const AGREEMENT_STATUS_LABELS: Record<AgreementStatus, string> = {
+  draft: "Draft",
+  active: "Active",
+  paused: "Paused",
+  completed: "Completed",
+  canceled: "Canceled",
+};
+
+export const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
+  monthly: "Monthly",
+  quarterly: "Quarterly",
+  semi_annual: "Semi-Annual",
+  annual: "Annual",
+  one_time: "One Time",
+};
+
+export const AGREEMENT_VISIT_STATUS_LABELS: Record<AgreementVisitStatus, string> = {
+  scheduled: "Scheduled",
+  completed: "Completed",
+  skipped: "Skipped",
+  canceled: "Canceled",
+};
+
+// Valid agreement status transitions
+export const VALID_AGREEMENT_TRANSITIONS: Record<AgreementStatus, AgreementStatus[]> = {
+  draft: ["active", "canceled"],
+  active: ["paused", "completed", "canceled"],
+  paused: ["active", "canceled"],
+  completed: [],
+  canceled: ["draft"],
 };

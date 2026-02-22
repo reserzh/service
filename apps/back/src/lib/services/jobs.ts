@@ -449,6 +449,49 @@ export async function changeJobStatus(
     to: newStatus,
   });
 
+  // Send triggered communication for status changes
+  try {
+    const triggerMap: Record<string, string> = {
+      scheduled: "job_scheduled",
+      dispatched: "job_dispatched",
+      completed: "job_completed",
+    };
+    const trigger = triggerMap[newStatus];
+    if (trigger) {
+      const [customer] = await db
+        .select()
+        .from(customers)
+        .where(and(eq(customers.id, job.customerId), eq(customers.tenantId, ctx.tenantId)))
+        .limit(1);
+
+      if (customer?.email) {
+        const { sendTriggeredCommunication } = await import("./communications");
+        const techUser = job.assignedTo
+          ? await db.select({ firstName: users.firstName, lastName: users.lastName })
+              .from(users).where(eq(users.id, job.assignedTo)).limit(1).then((r) => r[0])
+          : null;
+
+        await sendTriggeredCommunication(ctx, trigger as import("@fieldservice/api-types/enums").CommunicationTrigger, {
+          recipientEmail: customer.email,
+          recipientName: `${customer.firstName} ${customer.lastName}`,
+          entityType: "job",
+          entityId: jobId,
+          variables: {
+            customerFirstName: customer.firstName,
+            customerLastName: customer.lastName,
+            jobNumber: job.jobNumber,
+            jobSummary: job.summary,
+            scheduledDate: job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : "",
+            scheduledTime: job.scheduledStart ? new Date(job.scheduledStart).toLocaleTimeString() : "",
+            technicianName: techUser ? `${techUser.firstName} ${techUser.lastName}` : "",
+          },
+        });
+      }
+    }
+  } catch (emailError) {
+    console.error("[Job] Failed to send status notification:", emailError);
+  }
+
   return updated;
 }
 

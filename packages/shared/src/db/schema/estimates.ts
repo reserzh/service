@@ -107,6 +107,7 @@ export const estimateOptionItems = fieldserviceSchema.table(
     optionId: uuid("option_id")
       .notNull()
       .references(() => estimateOptions.id, { onDelete: "cascade" }),
+    pricebookItemId: uuid("pricebook_item_id"),
     description: varchar("description", { length: 500 }).notNull(),
     quantity: decimal("quantity", { precision: 10, scale: 2 }).default("1").notNull(),
     unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).notNull(),

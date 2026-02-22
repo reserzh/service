@@ -9,6 +9,7 @@ import {
   Bell,
   Link2,
   CreditCard,
+  Package,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -32,6 +33,12 @@ const settingsGroups = [
     description: "Configure service types, tax rates, and business hours",
     icon: Wrench,
     href: "/settings/services",
+  },
+  {
+    title: "Pricebook",
+    description: "Manage your catalog of services and materials",
+    icon: Package,
+    href: "/settings/pricebook",
   },
   {
     title: "Notifications",

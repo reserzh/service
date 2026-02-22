@@ -116,3 +116,25 @@ Mobile imports types via `@fieldservice/api-types`. The local `src/types/models.
 - Lucide icons (lucide-react in web, lucide-react-native in mobile)
 - All workspace packages use `workspace:*` protocol
 - tsconfig `paths` + `include` entries required for each workspace dependency (no build step — raw `.ts` imports via bundler resolution)
+
+## Docker Development
+
+Single container (`service-app`) runs the full monorepo. Turbo starts both back and front apps via `pnpm dev`.
+
+```bash
+# Start the container
+docker compose -f SERVICE/docker-compose.yml up -d
+
+# Exec in
+docker exec -it service-app zsh
+
+# Run Claude Code (sandboxed yolo mode)
+claude --dangerously-skip-permissions
+```
+
+- **Container:** `service-app` — ports 3200 (back) and 3201 (front)
+- **Workdir:** `/workspace` (full monorepo mount)
+- **Command:** `pnpm dev` (Turbo runs both apps)
+- **Node modules:** Separate named volumes per workspace package to avoid host/container conflicts
+- **Claude memory:** Bind-mounted from `~/.claude/projects/-Users-john-WEB-SERVICE/memory`
+- Mobile app code is available at `/workspace/apps/mobile` within the same container

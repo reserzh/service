@@ -35,6 +35,7 @@ export const invoices = fieldserviceSchema.table(
       .references(() => customers.id),
     jobId: uuid("job_id").references(() => jobs.id),
     estimateId: uuid("estimate_id").references(() => estimates.id),
+    agreementId: uuid("agreement_id"),
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id),
@@ -83,6 +84,7 @@ export const invoiceLineItems = fieldserviceSchema.table(
     invoiceId: uuid("invoice_id")
       .notNull()
       .references(() => invoices.id, { onDelete: "cascade" }),
+    pricebookItemId: uuid("pricebook_item_id"),
     description: varchar("description", { length: 500 }).notNull(),
     quantity: decimal("quantity", { precision: 10, scale: 2 }).default("1").notNull(),
     unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).notNull(),

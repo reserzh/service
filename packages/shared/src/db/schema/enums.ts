@@ -10,6 +10,11 @@ import {
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
   SIGNER_ROLES,
+  COMMUNICATION_TYPES,
+  COMMUNICATION_STATUSES,
+  AGREEMENT_STATUSES,
+  BILLING_FREQUENCIES,
+  AGREEMENT_VISIT_STATUSES,
 } from "@fieldservice/api-types/enums";
 
 export const subscriptionStatusEnum = fieldserviceSchema.enum("subscription_status", [
@@ -66,3 +71,12 @@ export const bookingStatusEnum = fieldserviceSchema.enum("booking_status", [
   "confirmed",
   "canceled",
 ]);
+
+// Communication enums
+export const communicationTypeEnum = fieldserviceSchema.enum("communication_type", [...COMMUNICATION_TYPES]);
+export const communicationStatusEnum = fieldserviceSchema.enum("communication_status", [...COMMUNICATION_STATUSES]);
+
+// Agreement enums
+export const agreementStatusEnum = fieldserviceSchema.enum("agreement_status", [...AGREEMENT_STATUSES]);
+export const billingFrequencyEnum = fieldserviceSchema.enum("billing_frequency", [...BILLING_FREQUENCIES]);
+export const agreementVisitStatusEnum = fieldserviceSchema.enum("agreement_visit_status", [...AGREEMENT_VISIT_STATUSES]);

@@ -11,6 +11,7 @@ import {
   FileText,
   Receipt,
   BarChart3,
+  ClipboardList,
   Globe,
   Settings,
   Wrench,
@@ -37,6 +38,7 @@ const mainNav = [
   { title: "Estimates", href: "/estimates", icon: FileText },
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Agreements", href: "/agreements", icon: ClipboardList },
   { title: "Website", href: "/website", icon: Globe },
 ];
 
