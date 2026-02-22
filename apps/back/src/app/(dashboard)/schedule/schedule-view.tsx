@@ -8,23 +8,22 @@ import {
   subWeeks,
   addDays,
   subDays,
-  startOfWeek,
   eachDayOfInterval,
   isSameDay,
-  parseISO,
 } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { ChevronLeft, ChevronRight, Calendar as CalIcon } from "lucide-react";
 
-const statusColors: Record<string, string> = {
-  new: "border-l-gray-400",
-  scheduled: "border-l-blue-500",
-  dispatched: "border-l-purple-500",
-  in_progress: "border-l-amber-500",
-  completed: "border-l-green-500",
+const statusBorderColors: Record<string, string> = {
+  new: "border-l-status-new",
+  scheduled: "border-l-status-scheduled",
+  dispatched: "border-l-status-dispatched",
+  in_progress: "border-l-status-in-progress",
+  completed: "border-l-status-completed",
+  canceled: "border-l-status-canceled",
 };
 
 interface ScheduleEvent {
@@ -98,28 +97,30 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
       {/* Toolbar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigate("prev")}>
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigate("prev")} aria-label="Previous period">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("today")}>
             Today
           </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigate("next")}>
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigate("next")} aria-label="Next period">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 rounded-lg border p-0.5">
           <Button
-            variant={view === "day" ? "default" : "outline"}
+            variant={view === "day" ? "default" : "ghost"}
             size="sm"
+            className="h-7"
             onClick={() => setView("day")}
           >
             Day
           </Button>
           <Button
-            variant={view === "week" ? "default" : "outline"}
+            variant={view === "week" ? "default" : "ghost"}
             size="sm"
+            className="h-7"
             onClick={() => setView("week")}
           >
             Week
@@ -141,9 +142,9 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
                     isToday ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
-                  <p>{format(day, "EEE")}</p>
+                  <p className="uppercase tracking-wide text-[10px]">{format(day, "EEE")}</p>
                   <p
-                    className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-sm ${
+                    className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
                       isToday ? "bg-primary text-primary-foreground" : ""
                     }`}
                   >
@@ -155,23 +156,23 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
                   {dayEvents.map((event) => (
                     <Link key={event.id} href={`/jobs/${event.id}`}>
                       <div
-                        className={`rounded border-l-2 bg-card p-1.5 text-xs shadow-sm hover:shadow transition-shadow cursor-pointer ${
-                          statusColors[event.status] || "border-l-gray-300"
+                        className={`rounded-md border-l-2 bg-card p-2 text-xs shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
+                          statusBorderColors[event.status] || "border-l-muted"
                         }`}
                       >
                         {event.scheduledStart && (
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-[10px] font-medium text-primary/70">
                             {format(new Date(event.scheduledStart), "h:mm a")}
                           </p>
                         )}
-                        <p className="font-medium truncate leading-tight">{event.summary}</p>
-                        <p className="text-muted-foreground truncate">
+                        <p className="font-medium truncate leading-tight mt-0.5">{event.summary}</p>
+                        <p className="text-muted-foreground truncate text-[10px]">
                           {event.customerFirstName} {event.customerLastName?.[0]}.
                         </p>
                         {event.assignedFirstName && (
-                          <div className="flex items-center gap-1 mt-0.5">
+                          <div className="flex items-center gap-1 mt-1">
                             <div
-                              className="h-2 w-2 rounded-full"
+                              className="h-2 w-2 rounded-full shrink-0"
                               style={{ backgroundColor: event.assignedColor ?? "#6b7280" }}
                             />
                             <span className="text-[10px] text-muted-foreground truncate">
@@ -183,7 +184,7 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
                     </Link>
                   ))}
                   {dayEvents.length === 0 && (
-                    <p className="text-center text-[10px] text-muted-foreground/50 py-4">—</p>
+                    <p className="text-center text-[10px] text-muted-foreground/30 py-6">No jobs</p>
                   )}
                 </div>
               </div>
@@ -193,12 +194,15 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
       ) : (
         /* Day view */
         <div className="space-y-3">
-          <h3 className="text-lg font-medium">{format(base, "EEEE, MMMM d, yyyy")}</h3>
+          <h3 className="text-lg font-semibold">{format(base, "EEEE, MMMM d, yyyy")}</h3>
           {events.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <CalIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">No jobs scheduled for this day.</p>
+                <div className="rounded-full bg-muted p-3 mb-3">
+                  <CalIcon className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium">No jobs scheduled</p>
+                <p className="text-xs text-muted-foreground mt-1">No jobs scheduled for this day.</p>
               </CardContent>
             </Card>
           ) : (
@@ -210,15 +214,15 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
               )
               .map((event) => (
                 <Link key={event.id} href={`/jobs/${event.id}`}>
-                  <Card className={`border-l-4 ${statusColors[event.status] || ""} hover:shadow transition-shadow`}>
+                  <Card className={`border-l-4 ${statusBorderColors[event.status] || ""} hover:shadow-md transition-all hover:border-l-primary`}>
                     <CardContent className="flex items-center gap-4 py-4">
                       <div className="text-center min-w-[60px]">
                         {event.scheduledStart ? (
                           <>
-                            <p className="text-sm font-medium">
+                            <p className="text-sm font-semibold text-primary">
                               {format(new Date(event.scheduledStart), "h:mm")}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[10px] uppercase text-muted-foreground">
                               {format(new Date(event.scheduledStart), "a")}
                             </p>
                           </>
@@ -229,9 +233,7 @@ export function ScheduleView({ events, technicians, view, baseDate, from, to }: 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground">{event.jobNumber}</span>
-                          <Badge variant="outline" className="text-[10px]">
-                            {event.jobType}
-                          </Badge>
+                          <StatusBadge type="job" status={event.status} className="text-[10px] px-1.5 py-0" />
                         </div>
                         <p className="font-medium truncate">{event.summary}</p>
                         <p className="text-sm text-muted-foreground truncate">

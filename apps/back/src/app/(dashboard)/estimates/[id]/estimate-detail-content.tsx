@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/layout/page-header";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -44,14 +45,13 @@ import {
   declineEstimateAction,
 } from "@/actions/estimates";
 import { showToast } from "@/lib/toast";
-
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  draft: { label: "Draft", variant: "secondary" },
-  sent: { label: "Sent", variant: "default" },
-  viewed: { label: "Viewed", variant: "outline" },
-  approved: { label: "Approved", variant: "default" },
-  declined: { label: "Declined", variant: "destructive" },
-  expired: { label: "Expired", variant: "secondary" },
+const statusLabels: Record<string, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  viewed: "Viewed",
+  approved: "Approved",
+  declined: "Declined",
+  expired: "Expired",
 };
 
 interface EstimateOption {
@@ -95,7 +95,6 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
-  const sc = statusConfig[estimate.status] ?? { label: estimate.status, variant: "secondary" as const };
   const isDraft = estimate.status === "draft";
   const canApprove = ["sent", "viewed"].includes(estimate.status);
 
@@ -147,7 +146,7 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
           ]}
         >
           <div className="flex items-center gap-2">
-            <Badge variant={sc.variant} className="text-sm">{sc.label}</Badge>
+            <StatusBadge type="estimate" status={estimate.status} />
 
             {isDraft && (
               <Button size="sm" onClick={handleSend} disabled={loading === "send"}>
@@ -190,7 +189,7 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
             const currentOrder = stepOrder[estimate.status as keyof typeof stepOrder] ?? -1;
             const isComplete = idx < currentOrder;
             const isCurrent = idx === currentOrder;
-            const colors: Record<string, string> = { draft: "bg-gray-400", sent: "bg-blue-500", viewed: "bg-purple-500", approved: "bg-green-500" };
+            const colors: Record<string, string> = { draft: "bg-status-draft", sent: "bg-status-sent", viewed: "bg-status-sent", approved: "bg-status-completed" };
             return (
               <div key={step} className="flex flex-1 flex-col items-center gap-1">
                 <div
@@ -203,7 +202,7 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
                     isCurrent ? "font-semibold text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  {statusConfig[step]?.label ?? step}
+                  {statusLabels[step] ?? step}
                 </span>
               </div>
             );

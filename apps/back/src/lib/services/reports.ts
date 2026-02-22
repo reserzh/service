@@ -16,7 +16,6 @@ import {
   desc,
   asc,
   inArray,
-  count,
 } from "drizzle-orm";
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
@@ -157,6 +156,52 @@ export async function getDashboardStats(ctx: UserContext) {
     overdueInvoices,
     overdueValue,
   };
+}
+
+// ==================== Upcoming Jobs (Today) ====================
+
+export async function getUpcomingJobs(ctx: UserContext, limit: number = 5) {
+  assertPermission(ctx, "schedule", "read");
+
+  const safeLimit = Math.min(Math.max(1, limit), 50);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const conditions = [
+    eq(jobs.tenantId, ctx.tenantId),
+    gte(jobs.scheduledStart, today),
+    lte(jobs.scheduledStart, tomorrow),
+    sql`${jobs.status} != 'canceled'`,
+    sql`${jobs.status} != 'completed'`,
+  ];
+
+  // Technicians only see their own jobs
+  if (ctx.role === "technician") {
+    conditions.push(eq(jobs.assignedTo, ctx.userId));
+  }
+
+  const data = await db
+    .select({
+      id: jobs.id,
+      jobNumber: jobs.jobNumber,
+      summary: jobs.summary,
+      status: jobs.status,
+      priority: jobs.priority,
+      scheduledStart: jobs.scheduledStart,
+      scheduledEnd: jobs.scheduledEnd,
+      assignedFirstName: users.firstName,
+      assignedLastName: users.lastName,
+      assignedColor: users.color,
+    })
+    .from(jobs)
+    .leftJoin(users, and(eq(jobs.assignedTo, users.id), eq(users.tenantId, ctx.tenantId)))
+    .where(and(...conditions))
+    .orderBy(asc(jobs.scheduledStart))
+    .limit(safeLimit);
+
+  return data;
 }
 
 // ==================== Recent Activity ====================

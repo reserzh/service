@@ -14,6 +14,7 @@ import {
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,20 +55,13 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
 // ---- Status config ----
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; color: string }> = {
-  new: { label: "New", variant: "secondary", color: "bg-gray-400" },
-  scheduled: { label: "Scheduled", variant: "default", color: "bg-blue-500" },
-  dispatched: { label: "Dispatched", variant: "default", color: "bg-purple-500" },
-  in_progress: { label: "In Progress", variant: "outline", color: "bg-amber-500" },
-  completed: { label: "Completed", variant: "secondary", color: "bg-green-500" },
-  canceled: { label: "Canceled", variant: "destructive", color: "bg-red-500" },
-};
-
-const priorityConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  low: { label: "Low", variant: "secondary" },
-  normal: { label: "Normal", variant: "outline" },
-  high: { label: "High", variant: "default" },
-  emergency: { label: "Emergency", variant: "destructive" },
+const statusConfig: Record<string, { label: string; color: string }> = {
+  new: { label: "New", color: "bg-status-new" },
+  scheduled: { label: "Scheduled", color: "bg-status-scheduled" },
+  dispatched: { label: "Dispatched", color: "bg-status-dispatched" },
+  in_progress: { label: "In Progress", color: "bg-status-in-progress" },
+  completed: { label: "Completed", color: "bg-status-completed" },
+  canceled: { label: "Canceled", color: "bg-status-canceled" },
 };
 
 const statusSteps = ["new", "scheduled", "dispatched", "in_progress", "completed"];
@@ -158,8 +152,6 @@ export function JobDetailContent({ job, userRole }: Props) {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
-  const sc = statusConfig[job.status] ?? statusConfig.new;
-  const pc = priorityConfig[job.priority] ?? priorityConfig.normal;
   const nextAction = nextStatusMap[job.status];
   const currentStepIdx = statusSteps.indexOf(job.status);
 
@@ -224,8 +216,8 @@ export function JobDetailContent({ job, userRole }: Props) {
             { label: job.jobNumber },
           ]}
         >
-          <Badge variant={pc.variant}>{pc.label} priority</Badge>
-          <Badge variant={sc.variant}>{sc.label}</Badge>
+          <StatusBadge type="priority" status={job.priority} />
+          <StatusBadge type="job" status={job.status} />
 
           {/* Primary action */}
           {nextAction && job.status !== "canceled" && (

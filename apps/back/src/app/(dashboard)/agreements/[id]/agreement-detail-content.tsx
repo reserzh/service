@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -25,7 +25,6 @@ import {
   CheckCircle,
   XCircle,
   Briefcase,
-  RefreshCw,
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
@@ -63,14 +62,6 @@ interface AgreementDetailProps {
   };
 }
 
-const statusVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  draft: "secondary",
-  active: "default",
-  paused: "outline",
-  completed: "secondary",
-  canceled: "destructive",
-};
-
 const statusIcons: Record<string, React.ReactNode> = {
   active: <Play className="h-3.5 w-3.5" />,
   paused: <Pause className="h-3.5 w-3.5" />,
@@ -100,9 +91,7 @@ export function AgreementDetailContent({ agreement }: AgreementDetailProps) {
     <div className="space-y-6">
       {/* Status + Actions */}
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={statusVariants[agreement.status] || "secondary"} className="text-sm">
-          {AGREEMENT_STATUS_LABELS[agreement.status as keyof typeof AGREEMENT_STATUS_LABELS]}
-        </Badge>
+        <StatusBadge type="agreement" status={agreement.status} />
         {allowedTransitions.map((status) => (
           <Button
             key={status}
@@ -228,9 +217,7 @@ export function AgreementDetailContent({ agreement }: AgreementDetailProps) {
                     <TableRow key={visit.id}>
                       <TableCell className="font-medium">Visit {visit.visitNumber}</TableCell>
                       <TableCell>
-                        <Badge variant={visit.status === "completed" ? "default" : "secondary"}>
-                          {AGREEMENT_VISIT_STATUS_LABELS[visit.status as keyof typeof AGREEMENT_VISIT_STATUS_LABELS] || visit.status}
-                        </Badge>
+                        <StatusBadge type="job" status={visit.status === "skipped" ? "canceled" : visit.status} />
                       </TableCell>
                       <TableCell className="text-muted-foreground">{visit.scheduledDate || "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{visit.completedDate || "—"}</TableCell>

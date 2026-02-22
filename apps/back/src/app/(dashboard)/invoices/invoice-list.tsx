@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Search, Filter, Receipt, AlertTriangle, CalendarDays, Download } from "lucide-react";
 import {
   DropdownMenu,
@@ -26,14 +27,14 @@ import { ListPagination } from "@/components/shared/list-pagination";
 import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  draft: { label: "Draft", variant: "secondary" },
-  sent: { label: "Sent", variant: "default" },
-  viewed: { label: "Viewed", variant: "outline" },
-  paid: { label: "Paid", variant: "default" },
-  partial: { label: "Partial", variant: "outline" },
-  overdue: { label: "Overdue", variant: "destructive" },
-  void: { label: "Void", variant: "secondary" },
+const statusLabels: Record<string, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  viewed: "Viewed",
+  paid: "Paid",
+  partial: "Partial",
+  overdue: "Overdue",
+  void: "Void",
 };
 
 interface Invoice {
@@ -142,7 +143,7 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter, dateFro
                 checked={activeStatuses.includes(s)}
                 onCheckedChange={() => toggleStatus(s)}
               >
-                {statusConfig[s]?.label ?? s}
+                {statusLabels[s] ?? s}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
@@ -232,14 +233,13 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter, dateFro
                   !["paid", "void"].includes(inv.status) &&
                   new Date(inv.dueDate) < new Date();
                 const effectiveStatus = isPastDue && inv.status !== "overdue" ? "overdue" : inv.status;
-                const sc = statusConfig[effectiveStatus] ?? { label: effectiveStatus, variant: "secondary" as const };
 
                 return (
-                  <TableRow key={inv.id} className={isPastDue ? "bg-destructive/5" : undefined}>
+                  <TableRow key={inv.id} className={`group ${isPastDue ? "bg-status-overdue/5" : ""}`}>
                     <TableCell>
                       <Link href={`/invoices/${inv.id}`} className="block">
                         <span className="text-xs text-muted-foreground">{inv.invoiceNumber}</span>
-                        <p className="font-medium hover:underline leading-tight">
+                        <p className="font-medium group-hover:text-primary leading-tight transition-colors">
                           {format(new Date(inv.createdAt), "MMM d, yyyy")}
                         </p>
                       </Link>
@@ -258,7 +258,7 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter, dateFro
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={sc.variant}>{sc.label}</Badge>
+                      <StatusBadge type="invoice" status={effectiveStatus} />
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       ${Number(inv.total).toLocaleString("en-US", { minimumFractionDigits: 2 })}

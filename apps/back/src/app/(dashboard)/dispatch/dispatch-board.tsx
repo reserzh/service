@@ -7,10 +7,11 @@ import { format } from "date-fns";
 import { showToast } from "@/lib/toast";
 import { assignJobAction, changeJobStatusAction } from "@/actions/jobs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,12 +24,11 @@ import {
   UserPlus,
   ArrowRight,
   AlertTriangle,
-  Loader2,
 } from "lucide-react";
 
 const priorityIcons: Record<string, React.ReactNode> = {
-  emergency: <AlertTriangle className="h-3 w-3 text-destructive" />,
-  high: <AlertTriangle className="h-3 w-3 text-amber-500" />,
+  emergency: <AlertTriangle className="h-3 w-3 text-status-overdue" />,
+  high: <AlertTriangle className="h-3 w-3 text-status-in-progress" />,
 };
 
 interface UnassignedJob {
@@ -81,14 +81,6 @@ interface Props {
   todaysJobs: TodayJob[];
 }
 
-const statusLabels: Record<string, string> = {
-  new: "New",
-  scheduled: "Scheduled",
-  dispatched: "Dispatched",
-  in_progress: "In Progress",
-  completed: "Completed",
-};
-
 export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -135,77 +127,90 @@ export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props
         <Card className="h-full">
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center justify-between">
-              Unassigned Jobs
-              <Badge variant="secondary">{unassignedJobs.length}</Badge>
+              <span className="flex items-center gap-2">
+                Unassigned Jobs
+              </span>
+              <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                {unassignedJobs.length}
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-[calc(100vh-320px)]">
               {unassignedJobs.length === 0 ? (
-                <p className="p-6 text-sm text-muted-foreground text-center">
-                  All jobs are assigned. Nice work!
-                </p>
+                <div className="flex flex-col items-center justify-center p-8 text-center">
+                  <div className="rounded-full bg-status-completed/10 p-3 mb-3">
+                    <svg className="h-5 w-5 text-status-completed" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium">All jobs assigned</p>
+                  <p className="text-xs text-muted-foreground mt-1">Nice work!</p>
+                </div>
               ) : (
                 <div className="space-y-2 p-4 pt-0">
                   {unassignedJobs.map((job) => (
-                    <Card key={job.id} className="shadow-sm">
-                      <CardContent className="p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              {priorityIcons[job.priority]}
-                              <span className="text-[10px] text-muted-foreground">
-                                {job.jobNumber}
-                              </span>
-                              <Badge variant="outline" className="text-[10px] px-1 py-0">
-                                {job.jobType}
-                              </Badge>
-                            </div>
-                            <Link href={`/jobs/${job.id}`}>
-                              <p className="text-sm font-medium truncate mt-0.5 hover:underline">
-                                {job.summary}
-                              </p>
-                            </Link>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {job.customerFirstName} {job.customerLastName}
-                            </p>
-                            {job.propertyCity && (
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <MapPin className="h-2.5 w-2.5 text-muted-foreground" />
-                                <span className="text-[10px] text-muted-foreground truncate">
-                                  {job.propertyAddress}, {job.propertyCity}
-                                </span>
-                              </div>
-                            )}
-                            {job.scheduledStart && (
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <Clock className="h-2.5 w-2.5 text-muted-foreground" />
-                                <span className="text-[10px] text-muted-foreground">
-                                  {format(new Date(job.scheduledStart), "h:mm a")}
-                                </span>
-                              </div>
-                            )}
+                    <div
+                      key={job.id}
+                      className="rounded-lg border bg-card p-3 transition-shadow hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            {priorityIcons[job.priority]}
+                            <span className="text-[10px] text-muted-foreground">
+                              {job.jobNumber}
+                            </span>
+                            <StatusBadge type="job" status={job.status} className="text-[9px] px-1 py-0" />
                           </div>
+                          <Link href={`/jobs/${job.id}`}>
+                            <p className="text-sm font-medium truncate mt-1 hover:text-primary transition-colors">
+                              {job.summary}
+                            </p>
+                          </Link>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {job.customerFirstName} {job.customerLastName}
+                          </p>
+                          {job.propertyCity && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <MapPin className="h-2.5 w-2.5 text-muted-foreground" />
+                              <span className="text-[10px] text-muted-foreground truncate">
+                                {job.propertyAddress}, {job.propertyCity}
+                              </span>
+                            </div>
+                          )}
+                          {job.scheduledStart && (
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <Clock className="h-2.5 w-2.5 text-muted-foreground" />
+                              <span className="text-[10px] text-muted-foreground">
+                                {format(new Date(job.scheduledStart), "h:mm a")}
+                              </span>
+                            </div>
+                          )}
+                        </div>
 
-                          {/* Assign dropdown */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-7 w-7 shrink-0"
-                                disabled={isPending}
-                              >
-                                <UserPlus className="h-3.5 w-3.5" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {technicians.length === 0 ? (
-                                <DropdownMenuItem disabled>
-                                  No technicians available
-                                </DropdownMenuItem>
-                              ) : (
-                                technicians.map((tech) => (
+                        {/* Assign dropdown */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-7 w-7 shrink-0"
+                              disabled={isPending}
+                              aria-label="Assign technician"
+                            >
+                              <UserPlus className="h-3.5 w-3.5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {technicians.length === 0 ? (
+                              <DropdownMenuItem disabled>
+                                No technicians available
+                              </DropdownMenuItem>
+                            ) : (
+                              technicians.map((tech) => {
+                                const techJobCount = jobsByTech.get(tech.id)?.length ?? 0;
+                                return (
                                   <DropdownMenuItem
                                     key={tech.id}
                                     onClick={() => handleAssign(job.id, tech.id)}
@@ -218,15 +223,18 @@ export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props
                                         {tech.firstName[0]}{tech.lastName[0]}
                                       </AvatarFallback>
                                     </Avatar>
-                                    {tech.firstName} {tech.lastName}
+                                    <span className="flex-1">{tech.firstName} {tech.lastName}</span>
+                                    <span className="text-[10px] text-muted-foreground ml-2">
+                                      {techJobCount} jobs
+                                    </span>
                                   </DropdownMenuItem>
-                                ))
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </CardContent>
-                    </Card>
+                                );
+                              })
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -253,24 +261,38 @@ export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props
           ) : (
             technicians.map((tech) => {
               const techJobs = jobsByTech.get(tech.id) || [];
+              const completedCount = techJobs.filter((j) => j.status === "completed").length;
+              const completionRate = techJobs.length > 0 ? Math.round((completedCount / techJobs.length) * 100) : 0;
 
               return (
                 <Card key={tech.id}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback
-                          className="text-[10px] text-white"
-                          style={{ backgroundColor: tech.color }}
-                        >
-                          {tech.firstName[0]}{tech.lastName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      {tech.firstName} {tech.lastName}
-                      <Badge variant="secondary" className="text-[10px]">
-                        {techJobs.length} {techJobs.length === 1 ? "job" : "jobs"}
-                      </Badge>
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <Avatar className="h-7 w-7">
+                          <AvatarFallback
+                            className="text-[10px] text-white"
+                            style={{ backgroundColor: tech.color }}
+                          >
+                            {tech.firstName[0]}{tech.lastName[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <span>{tech.firstName} {tech.lastName}</span>
+                          {tech.phone && (
+                            <p className="text-[10px] text-muted-foreground font-normal">{tech.phone}</p>
+                          )}
+                        </div>
+                      </CardTitle>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">
+                            {completedCount}/{techJobs.length} done
+                          </p>
+                          <Progress value={completionRate} className="h-1.5 w-16 mt-0.5" />
+                        </div>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     {techJobs.length === 0 ? (
@@ -285,21 +307,20 @@ export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props
                           )
                           .map((job) => (
                             <Link key={job.id} href={`/jobs/${job.id}`} className="shrink-0">
-                              <div className="w-52 rounded-md border p-2.5 hover:shadow transition-shadow">
+                              <div className="w-56 rounded-lg border p-3 hover:shadow-md transition-all hover:border-primary/20">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] text-muted-foreground">
                                     {job.jobNumber}
                                   </span>
-                                  <Badge variant="outline" className="text-[10px] px-1 py-0">
-                                    {statusLabels[job.status] ?? job.status}
-                                  </Badge>
+                                  <StatusBadge type="job" status={job.status} className="text-[9px] px-1 py-0" />
                                 </div>
                                 <p className="text-xs font-medium truncate mt-1">{job.summary}</p>
                                 <p className="text-[10px] text-muted-foreground truncate">
                                   {job.customerFirstName} {job.customerLastName}
                                 </p>
                                 {job.scheduledStart && (
-                                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                                  <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                                    <Clock className="h-2.5 w-2.5" />
                                     {format(new Date(job.scheduledStart), "h:mm a")}
                                     {job.scheduledEnd &&
                                       ` – ${format(new Date(job.scheduledEnd), "h:mm a")}`}
@@ -309,8 +330,7 @@ export function DispatchBoard({ unassignedJobs, technicians, todaysJobs }: Props
                                 {job.status === "scheduled" && (
                                   <Button
                                     size="sm"
-                                    variant="outline"
-                                    className="mt-2 h-6 text-[10px] w-full"
+                                    className="mt-2 h-7 text-[11px] w-full"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       handleDispatch(job.id);

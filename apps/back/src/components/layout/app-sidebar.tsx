@@ -14,7 +14,7 @@ import {
   ClipboardList,
   Globe,
   Settings,
-  Wrench,
+  Zap,
 } from "lucide-react";
 import {
   Sidebar,
@@ -52,20 +52,20 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader className="border-b border-sidebar-border">
-        <Link href="/dashboard" className="flex items-center gap-2 px-2 py-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Wrench className="h-4 w-4" />
+        <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
+            <Zap className="h-4 w-4" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold">FieldService</span>
-            <span className="text-xs text-muted-foreground">Pro</span>
+            <span className="text-sm font-bold tracking-tight text-sidebar-foreground">FieldService</span>
+            <span className="text-[10px] font-medium uppercase tracking-wider text-sidebar-foreground/50">Pro</span>
           </div>
         </Link>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-foreground/40 text-[10px] uppercase tracking-wider">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNav.map((item) => (

@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Search, Filter, FileText, Download } from "lucide-react";
 import {
   DropdownMenu,
@@ -26,13 +27,13 @@ import { ListPagination } from "@/components/shared/list-pagination";
 import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  draft: { label: "Draft", variant: "secondary" },
-  sent: { label: "Sent", variant: "default" },
-  viewed: { label: "Viewed", variant: "outline" },
-  approved: { label: "Approved", variant: "default" },
-  declined: { label: "Declined", variant: "destructive" },
-  expired: { label: "Expired", variant: "secondary" },
+const statusLabels: Record<string, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  viewed: "Viewed",
+  approved: "Approved",
+  declined: "Declined",
+  expired: "Expired",
 };
 
 interface Estimate {
@@ -136,7 +137,7 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
                 checked={activeStatuses.includes(s)}
                 onCheckedChange={() => toggleStatus(s)}
               >
-                {statusConfig[s]?.label ?? s}
+                {statusLabels[s] ?? s}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
@@ -198,14 +199,12 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
               </TableRow>
             ) : (
               estimates.map((est) => {
-                const sc = statusConfig[est.status] ?? { label: est.status, variant: "secondary" as const };
-
                 return (
-                  <TableRow key={est.id}>
+                  <TableRow key={est.id} className="group">
                     <TableCell>
                       <Link href={`/estimates/${est.id}`} className="block">
                         <span className="text-xs text-muted-foreground">{est.estimateNumber}</span>
-                        <p className="font-medium hover:underline leading-tight">{est.summary}</p>
+                        <p className="font-medium group-hover:text-primary leading-tight transition-colors">{est.summary}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {format(new Date(est.createdAt), "MMM d, yyyy")}
                         </p>
@@ -226,7 +225,7 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={sc.variant}>{sc.label}</Badge>
+                      <StatusBadge type="estimate" status={est.status} />
                     </TableCell>
                     <TableCell className="text-right">
                       {est.totalAmount

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -64,14 +65,14 @@ import {
 } from "@/actions/invoices";
 import { showToast } from "@/lib/toast";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  draft: { label: "Draft", variant: "secondary" },
-  sent: { label: "Sent", variant: "default" },
-  viewed: { label: "Viewed", variant: "outline" },
-  paid: { label: "Paid", variant: "default" },
-  partial: { label: "Partial", variant: "outline" },
-  overdue: { label: "Overdue", variant: "destructive" },
-  void: { label: "Void", variant: "secondary" },
+const statusLabels: Record<string, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  viewed: "Viewed",
+  paid: "Paid",
+  partial: "Partial",
+  overdue: "Overdue",
+  void: "Void",
 };
 
 const paymentMethodLabels: Record<string, string> = {
@@ -132,7 +133,6 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [paymentRef, setPaymentRef] = useState("");
 
-  const sc = statusConfig[invoice.status] ?? { label: invoice.status, variant: "secondary" as const };
   const isDraft = invoice.status === "draft";
   const canRecordPayment = !["void", "paid"].includes(invoice.status);
   const canVoid = !["void", "paid"].includes(invoice.status);
@@ -190,7 +190,7 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
           ]}
         >
           <div className="flex items-center gap-2">
-            <Badge variant={sc.variant} className="text-sm">{sc.label}</Badge>
+            <StatusBadge type="invoice" status={invoice.status} />
 
             {isDraft && (
               <Button size="sm" onClick={handleSend} disabled={loading === "send"}>
@@ -299,10 +299,10 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
             const currentOrder = stepOrder[invoice.status as keyof typeof stepOrder] ?? -1;
             const isComplete = idx < currentOrder;
             const isCurrent = idx === currentOrder;
-            const colors: Record<string, string> = { draft: "bg-gray-400", sent: "bg-blue-500", viewed: "bg-purple-500", paid: "bg-green-500" };
+            const colors: Record<string, string> = { draft: "bg-status-draft", sent: "bg-status-sent", viewed: "bg-status-sent", paid: "bg-status-paid" };
             const displayLabel = isCurrent && invoice.status === "partial" ? "Partial" :
                                  isCurrent && invoice.status === "overdue" ? "Overdue" :
-                                 statusConfig[step]?.label ?? step;
+                                 statusLabels[step] ?? step;
             const barColor = isCurrent && invoice.status === "overdue" ? "bg-destructive" :
                             (isComplete || isCurrent) ? (colors[step] ?? "bg-muted") : "bg-muted";
             return (
@@ -497,9 +497,7 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
                     </TableCell>
                     <TableCell>{payment.referenceNumber || "-"}</TableCell>
                     <TableCell>
-                      <Badge variant={payment.status === "succeeded" ? "default" : "secondary"} className="capitalize">
-                        {payment.status}
-                      </Badge>
+                      <StatusBadge type="payment" status={payment.status} />
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       ${Number(payment.amount).toFixed(2)}

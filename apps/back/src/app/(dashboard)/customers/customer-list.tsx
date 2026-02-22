@@ -111,11 +111,11 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
               </TableRow>
             ) : (
               customers.map((customer) => (
-                <TableRow key={customer.id} className="cursor-pointer">
+                <TableRow key={customer.id} className="cursor-pointer group">
                   <TableCell>
                     <Link
                       href={`/customers/${customer.id}`}
-                      className="font-medium hover:underline"
+                      className="font-medium group-hover:text-primary transition-colors"
                     >
                       {customer.firstName} {customer.lastName}
                     </Link>

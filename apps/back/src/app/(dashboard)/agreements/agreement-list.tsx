@@ -3,8 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Select,
   SelectContent,
@@ -52,13 +52,6 @@ interface AgreementListProps {
   activeStatus?: string;
 }
 
-const statusVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  draft: "secondary",
-  active: "default",
-  paused: "outline",
-  completed: "secondary",
-  canceled: "destructive",
-};
 
 export function AgreementList({ agreements, meta, searchQuery, activeStatus }: AgreementListProps) {
   const router = useRouter();
@@ -152,9 +145,7 @@ export function AgreementList({ agreements, meta, searchQuery, activeStatus }: A
                       {agr.customerFirstName} {agr.customerLastName}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusVariants[agr.status] || "secondary"}>
-                        {AGREEMENT_STATUS_LABELS[agr.status as keyof typeof AGREEMENT_STATUS_LABELS] || agr.status}
-                      </Badge>
+                      <StatusBadge type="agreement" status={agr.status} />
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {agr.startDate} — {agr.endDate}

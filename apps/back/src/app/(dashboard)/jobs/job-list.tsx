@@ -11,9 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Search, Filter, Wrench, CalendarDays, Download } from "lucide-react";
 import {
   DropdownMenu,
@@ -27,13 +28,13 @@ import { ListPagination } from "@/components/shared/list-pagination";
 import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  new: { label: "New", variant: "secondary" },
-  scheduled: { label: "Scheduled", variant: "default" },
-  dispatched: { label: "Dispatched", variant: "default" },
-  in_progress: { label: "In Progress", variant: "outline" },
-  completed: { label: "Completed", variant: "secondary" },
-  canceled: { label: "Canceled", variant: "destructive" },
+const statusLabels: Record<string, string> = {
+  new: "New",
+  scheduled: "Scheduled",
+  dispatched: "Dispatched",
+  in_progress: "In Progress",
+  completed: "Completed",
+  canceled: "Canceled",
 };
 
 const priorityConfig: Record<string, { label: string; className: string }> = {
@@ -155,7 +156,7 @@ export function JobList({ jobs, meta, searchQuery, statusFilter, priorityFilter,
                 checked={activeStatuses.includes(s)}
                 onCheckedChange={() => toggleStatus(s)}
               >
-                {statusConfig[s]?.label ?? s}
+                {statusLabels[s] ?? s}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
@@ -266,21 +267,18 @@ export function JobList({ jobs, meta, searchQuery, statusFilter, priorityFilter,
               </TableRow>
             ) : (
               jobs.map((job) => {
-                const sc = statusConfig[job.status] ?? { label: job.status, variant: "secondary" as const };
-                const pc = priorityConfig[job.priority] ?? priorityConfig.normal;
-
                 return (
-                  <TableRow key={job.id}>
+                  <TableRow key={job.id} className="group">
                     <TableCell>
                       <Link href={`/jobs/${job.id}`} className="block">
                         <span className="text-xs text-muted-foreground">{job.jobNumber}</span>
-                        <p className="font-medium hover:underline leading-tight">{job.summary}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {job.jobType}
+                        <p className="font-medium group-hover:text-primary leading-tight transition-colors">{job.summary}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-xs text-muted-foreground">{job.jobType}</span>
                           {job.priority !== "normal" && (
-                            <span className={`ml-2 ${pc.className}`}>{pc.label}</span>
+                            <StatusBadge type="priority" status={job.priority} className="text-[10px] px-1.5 py-0" />
                           )}
-                        </p>
+                        </div>
                       </Link>
                     </TableCell>
                     <TableCell>
@@ -330,7 +328,7 @@ export function JobList({ jobs, meta, searchQuery, statusFilter, priorityFilter,
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={sc.variant}>{sc.label}</Badge>
+                      <StatusBadge type="job" status={job.status} />
                     </TableCell>
                     <TableCell className="hidden sm:table-cell text-right">
                       {job.totalAmount
