@@ -82,7 +82,7 @@ npx expo start
 - **Local Supabase:** port 54331 (API), port 54332 (DB)
 - **Connection:** `DATABASE_URL` env var (default: `postgresql://postgres:postgres@localhost:54332/postgres`)
 
-Schema modules: `tenants`, `users`, `customers`, `jobs`, `estimates`, `invoices`, `system`, `website`, `enums`
+Schema modules: `tenants`, `users`, `customers`, `jobs`, `estimates`, `invoices`, `system`, `website`, `enums`, `pricebook`, `communications`, `agreements`, `portal`
 
 ## Environment Variables
 
