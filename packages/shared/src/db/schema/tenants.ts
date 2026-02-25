@@ -46,4 +46,6 @@ export type TenantSettings = {
   invoicePrefix?: string;
   estimatePrefix?: string;
   jobPrefix?: string;
+  dashboardPreset?: string;
+  dashboardHiddenWidgets?: string[];
 };

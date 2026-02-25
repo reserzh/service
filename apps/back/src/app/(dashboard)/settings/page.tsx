@@ -10,6 +10,7 @@ import {
   Link2,
   CreditCard,
   Package,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -33,6 +34,12 @@ const settingsGroups = [
     description: "Configure service types, tax rates, and business hours",
     icon: Wrench,
     href: "/settings/services",
+  },
+  {
+    title: "Dashboard Layout",
+    description: "Choose a layout preset and toggle widgets",
+    icon: LayoutDashboard,
+    href: "/settings/dashboard",
   },
   {
     title: "Pricebook",

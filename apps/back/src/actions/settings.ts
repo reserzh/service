@@ -103,3 +103,31 @@ export async function updateServicesSettingsAction(
     return { error: getActionErrorMessage(error, "Failed to update settings.") };
   }
 }
+
+// ---------- Update dashboard settings ----------
+
+const VALID_PRESETS = ["classic", "blueprint", "mission-control", "glass", "executive", "arctic", "ocean"];
+const VALID_WIDGETS = ["stats", "quick-actions", "schedule", "activity", "chart", "team"];
+
+const dashboardSettingsSchema = z.object({
+  dashboardPreset: z.string().refine((v) => VALID_PRESETS.includes(v), "Invalid preset"),
+  dashboardHiddenWidgets: z.array(z.string().refine((v) => VALID_WIDGETS.includes(v), "Invalid widget")),
+});
+
+export async function updateDashboardSettingsAction(
+  input: { dashboardPreset: string; dashboardHiddenWidgets: string[] }
+): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    const parsed = dashboardSettingsSchema.parse(input);
+    await updateTenantSettings(ctx, parsed as Partial<TenantSettings>);
+
+    revalidatePath("/settings");
+    revalidatePath("/settings/dashboard");
+    revalidatePath("/dashboard");
+
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update dashboard settings.") };
+  }
+}
