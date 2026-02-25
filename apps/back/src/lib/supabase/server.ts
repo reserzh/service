@@ -8,9 +8,10 @@ export async function createClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVER_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
+      cookieOptions: { name: env.SUPABASE_COOKIE_NAME },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -39,7 +40,7 @@ export async function createApiClient(req: NextRequest) {
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
     return createSupabaseClient(
-      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.SUPABASE_SERVER_URL,
       env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
         global: {
