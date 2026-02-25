@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/select";
 import { updateSiteSettingsAction } from "@/actions/website";
 import { showToast } from "@/lib/toast";
-import { Save } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Check, Save } from "lucide-react";
 
 type SiteSettings = {
   id: string;
@@ -76,6 +77,109 @@ const RADIUS_OPTIONS = [
   { value: "1rem", label: "Extra Large" },
 ];
 
+type ThemePreset = {
+  id: string;
+  name: string;
+  description: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  fontHeading: string;
+  fontBody: string;
+  borderRadius: string;
+};
+
+const THEME_PRESETS: ThemePreset[] = [
+  {
+    id: "professional-blue",
+    name: "Professional Blue",
+    description: "Clean corporate look",
+    primaryColor: "#2563eb",
+    secondaryColor: "#1e40af",
+    accentColor: "#f59e0b",
+    fontHeading: "Inter",
+    fontBody: "Inter",
+    borderRadius: "0.5rem",
+  },
+  {
+    id: "bold-contractor",
+    name: "Bold Contractor",
+    description: "High-energy trades",
+    primaryColor: "#dc2626",
+    secondaryColor: "#991b1b",
+    accentColor: "#fbbf24",
+    fontHeading: "Montserrat",
+    fontBody: "Open Sans",
+    borderRadius: "0.25rem",
+  },
+  {
+    id: "nature-green",
+    name: "Nature Green",
+    description: "Outdoor & landscaping",
+    primaryColor: "#059669",
+    secondaryColor: "#065f46",
+    accentColor: "#f97316",
+    fontHeading: "Poppins",
+    fontBody: "Lato",
+    borderRadius: "0.75rem",
+  },
+  {
+    id: "modern-slate",
+    name: "Modern Slate",
+    description: "Sophisticated premium",
+    primaryColor: "#475569",
+    secondaryColor: "#1e293b",
+    accentColor: "#06b6d4",
+    fontHeading: "Inter",
+    fontBody: "Roboto",
+    borderRadius: "0.5rem",
+  },
+  {
+    id: "warm-copper",
+    name: "Warm Copper",
+    description: "Classic established",
+    primaryColor: "#b45309",
+    secondaryColor: "#78350f",
+    accentColor: "#0284c7",
+    fontHeading: "Playfair Display",
+    fontBody: "Lato",
+    borderRadius: "0.75rem",
+  },
+  {
+    id: "ocean-breeze",
+    name: "Ocean Breeze",
+    description: "Water-inspired calm",
+    primaryColor: "#0369a1",
+    secondaryColor: "#0c4a6e",
+    accentColor: "#22c55e",
+    fontHeading: "Poppins",
+    fontBody: "Inter",
+    borderRadius: "1rem",
+  },
+  {
+    id: "midnight-pro",
+    name: "Midnight Pro",
+    description: "Tech-forward dark",
+    primaryColor: "#1e1b4b",
+    secondaryColor: "#312e81",
+    accentColor: "#a78bfa",
+    fontHeading: "Montserrat",
+    fontBody: "Roboto",
+    borderRadius: "0.25rem",
+  },
+  {
+    id: "sunrise-energy",
+    name: "Sunrise Energy",
+    description: "Vibrant & emergency",
+    primaryColor: "#ea580c",
+    secondaryColor: "#c2410c",
+    accentColor: "#2563eb",
+    fontHeading: "Poppins",
+    fontBody: "Open Sans",
+    borderRadius: "0.5rem",
+  },
+];
+
 export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -108,44 +212,66 @@ export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
   // Custom CSS
   const [customCss, setCustomCss] = useState(settings?.customCss ?? "");
 
+  const activePresetId = THEME_PRESETS.find(
+    (p) =>
+      p.primaryColor === primaryColor &&
+      p.secondaryColor === secondaryColor &&
+      p.accentColor === accentColor &&
+      p.fontHeading === fontHeading &&
+      p.fontBody === fontBody &&
+      p.borderRadius === borderRadius
+  )?.id ?? null;
+
+  const applyPreset = (preset: ThemePreset) => {
+    setPrimaryColor(preset.primaryColor);
+    setSecondaryColor(preset.secondaryColor);
+    setAccentColor(preset.accentColor);
+    setFontHeading(preset.fontHeading);
+    setFontBody(preset.fontBody);
+    setBorderRadius(preset.borderRadius);
+  };
+
   const handleSave = async () => {
     setSaving(true);
-    const result = await updateSiteSettingsAction({
-      isPublished,
-      theme: {
-        primaryColor,
-        secondaryColor,
-        accentColor,
-        fontHeading,
-        fontBody,
-        borderRadius,
-        style: "modern",
-      },
-      branding: {
-        businessName,
-        tagline: tagline || undefined,
-        phone: brandingPhone || undefined,
-        email: brandingEmail || undefined,
-      },
-      seoDefaults: {
-        title: seoTitle || undefined,
-        description: seoDescription || undefined,
-      },
-      socialLinks: {
-        facebook: facebook || undefined,
-        instagram: instagram || undefined,
-        google: google || undefined,
-        yelp: yelp || undefined,
-      },
-      customCss: customCss || null,
-    });
-    setSaving(false);
+    try {
+      const result = await updateSiteSettingsAction({
+        isPublished,
+        theme: {
+          primaryColor,
+          secondaryColor,
+          accentColor,
+          fontHeading,
+          fontBody,
+          borderRadius,
+          style: "modern",
+        },
+        branding: {
+          businessName,
+          tagline: tagline || undefined,
+          phone: brandingPhone || undefined,
+          email: brandingEmail || undefined,
+        },
+        seoDefaults: {
+          title: seoTitle || undefined,
+          description: seoDescription || undefined,
+        },
+        socialLinks: {
+          facebook: facebook || undefined,
+          instagram: instagram || undefined,
+          google: google || undefined,
+          yelp: yelp || undefined,
+        },
+        customCss: customCss || null,
+      });
 
-    if (result.error) {
-      showToast.error(result.error);
-    } else {
-      showToast.saved("Theme");
-      router.refresh();
+      if (result.error) {
+        showToast.error(result.error);
+      } else {
+        showToast.saved("Theme");
+        router.refresh();
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -161,6 +287,54 @@ export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
             </p>
           </div>
           <Switch checked={isPublished} onCheckedChange={setIsPublished} />
+        </CardContent>
+      </Card>
+
+      {/* Theme Presets */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Theme Presets</CardTitle>
+          <CardDescription>Quick-start with a curated theme, then customize below</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {THEME_PRESETS.map((preset) => {
+              const isActive = activePresetId === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => applyPreset(preset)}
+                  className={cn(
+                    "relative rounded-lg border p-3 text-left transition-all hover:border-primary/50 hover:shadow-sm",
+                    isActive && "border-primary ring-2 ring-primary/20"
+                  )}
+                >
+                  {isActive && (
+                    <div className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    </div>
+                  )}
+                  <div className="mb-2 flex gap-1.5">
+                    <span
+                      className="h-5 w-5 rounded-full border"
+                      style={{ backgroundColor: preset.primaryColor }}
+                    />
+                    <span
+                      className="h-5 w-5 rounded-full border"
+                      style={{ backgroundColor: preset.secondaryColor }}
+                    />
+                    <span
+                      className="h-5 w-5 rounded-full border"
+                      style={{ backgroundColor: preset.accentColor }}
+                    />
+                  </div>
+                  <p className="text-sm font-medium leading-tight">{preset.name}</p>
+                  <p className="text-xs text-muted-foreground">{preset.description}</p>
+                </button>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 
