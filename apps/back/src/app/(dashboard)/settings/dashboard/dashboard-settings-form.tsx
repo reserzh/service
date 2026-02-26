@@ -70,7 +70,7 @@ export function DashboardSettingsForm({
       {/* Preset Selector */}
       <Card>
         <CardHeader>
-          <CardTitle>Layout Preset</CardTitle>
+          <CardTitle>Site Theme</CardTitle>
           <CardDescription>Select a dashboard layout that fits your workflow</CardDescription>
         </CardHeader>
         <CardContent>

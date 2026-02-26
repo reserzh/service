@@ -125,6 +125,7 @@ export async function updateDashboardSettingsAction(
     revalidatePath("/settings");
     revalidatePath("/settings/dashboard");
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
 
     return {};
   } catch (error) {

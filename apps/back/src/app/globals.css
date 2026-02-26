@@ -151,6 +151,514 @@
   --status-partial: oklch(0.70 0.17 80);
 }
 
+/* ===== Theme Overrides ===== */
+/* Colors matched to HTML design references in tmp/designs/ */
+
+/* Mission Control (Design 11) — Dark tactical, neon green accent, monospace */
+/* Sidebar: #0f1018, Bg: #0a0a0f, Accent: #00ff88, Text: #c8ccd8 */
+[data-theme="mission-control"] {
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
+  --background: #0a0a0f;
+  --foreground: #c8ccd8;
+  --card: #0f1018;
+  --card-foreground: #c8ccd8;
+  --popover: #0f1018;
+  --popover-foreground: #c8ccd8;
+  --primary: #00ff88;
+  --primary-foreground: #0a0a0f;
+  --secondary: #161822;
+  --secondary-foreground: #c8ccd8;
+  --muted: #161822;
+  --muted-foreground: #5a5e72;
+  --accent: #1a1d2e;
+  --accent-foreground: #c8ccd8;
+  --destructive: #ef4444;
+  --border: #1e2035;
+  --input: #1e2035;
+  --ring: #00ff88;
+  --chart-1: #00ff88;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #ef4444;
+  --sidebar: #0f1018;
+  --sidebar-foreground: #5a5e72;
+  --sidebar-primary: #00ff88;
+  --sidebar-primary-foreground: #0a0a0f;
+  --sidebar-accent: rgba(0, 255, 136, 0.08);
+  --sidebar-accent-foreground: #00ff88;
+  --sidebar-border: #1e2035;
+  --sidebar-ring: #00ff88;
+}
+
+/* Glass Command Center (Design 9) — Dark glassmorphism, indigo accent */
+/* Sidebar: rgba(255,255,255,0.06), Bg: dark overlay, Accent: #818cf8 */
+[data-theme="glass"] {
+  --font-sans: var(--font-space-grotesk);
+  --background: #0f0b1e;
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.06);
+  --card-foreground: rgba(255, 255, 255, 0.95);
+  --popover: #1a1530;
+  --popover-foreground: rgba(255, 255, 255, 0.95);
+  --primary: #818cf8;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: rgba(255, 255, 255, 0.5);
+  --accent: rgba(129, 140, 248, 0.15);
+  --accent-foreground: #c7d2fe;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #818cf8;
+  --chart-1: #818cf8;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #34d399;
+  --sidebar: rgba(255, 255, 255, 0.04);
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(129, 140, 248, 0.2);
+  --sidebar-accent-foreground: #818cf8;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #818cf8;
+}
+
+/* Executive Midnight (Design 1) — Dark luxury, indigo accent, DM Sans */
+/* Sidebar: #0a0c12, Bg: #0f1117, Card: #1e2130, Accent: #6366f1 */
+[data-theme="executive"] {
+  --font-sans: var(--font-dm-sans);
+  --background: #0f1117;
+  --foreground: #e8eaf0;
+  --card: #1e2130;
+  --card-foreground: #e8eaf0;
+  --popover: #1e2130;
+  --popover-foreground: #e8eaf0;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1d27;
+  --secondary-foreground: #e8eaf0;
+  --muted: #1a1d27;
+  --muted-foreground: #8b8fa3;
+  --accent: #252838;
+  --accent-foreground: #e8eaf0;
+  --destructive: #ef4444;
+  --border: #2a2d3a;
+  --input: #353849;
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #3b82f6;
+  --sidebar: #0a0c12;
+  --sidebar-foreground: #8b8fa3;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(99, 102, 241, 0.1);
+  --sidebar-accent-foreground: #818cf8;
+  --sidebar-border: #2a2d3a;
+  --sidebar-ring: #6366f1;
+}
+
+/* Blueprint Operations (Design 8) — Industrial, Space Grotesk, navy sidebar, orange accent */
+/* Sidebar: #1a2744, Bg: #f0f3f8, Card: white, Accent: #f97316, Text: #1a2744 */
+[data-theme="blueprint"] {
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+  --background: #f0f3f8;
+  --foreground: #1a2744;
+  --card: #ffffff;
+  --card-foreground: #1a2744;
+  --popover: #ffffff;
+  --popover-foreground: #1a2744;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #e8ecf2;
+  --secondary-foreground: #1a2744;
+  --muted: #e8ecf2;
+  --muted-foreground: #64748b;
+  --accent: #fff7ed;
+  --accent-foreground: #9a3412;
+  --destructive: #ef4444;
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #3b82f6;
+  --chart-3: #10b981;
+  --chart-4: #8b5cf6;
+  --chart-5: #ef4444;
+  --sidebar: #1a2744;
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.1);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #f97316;
+}
+
+/* Arctic Minimal (Design 5) — Pure white, light sidebar, violet accent */
+/* Sidebar: #ffffff, Bg: #ffffff, Accent: #7c3aed, Border: #f4f4f5 */
+[data-theme="arctic"] {
+  --background: #ffffff;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #3f3f46;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f5f3ff;
+  --accent-foreground: #5b21b6;
+  --destructive: #ef4444;
+  --border: #f4f4f5;
+  --input: #e4e4e7;
+  --ring: #7c3aed;
+  --chart-1: #7c3aed;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #ec4899;
+  --chart-5: #10b981;
+  /* Light sidebar — key differentiator */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #71717a;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f3ff;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-border: #f4f4f5;
+  --sidebar-ring: #7c3aed;
+}
+
+/* Ocean Breeze (Design 3) — Maritime, dark navy sidebar, teal accent, glass cards */
+/* Sidebar: #0f172a, Bg: #f0f4f8, Accent: #0891b2, Card: glass white */
+[data-theme="ocean"] {
+  --font-sans: var(--font-plus-jakarta-sans);
+  --background: #f0f4f8;
+  --foreground: #0f172a;
+  --card: rgba(255, 255, 255, 0.85);
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #334155;
+  --muted: #e2e8f0;
+  --muted-foreground: #64748b;
+  --accent: #ecfeff;
+  --accent-foreground: #155e75;
+  --destructive: #ef4444;
+  --border: rgba(148, 163, 184, 0.25);
+  --input: rgba(148, 163, 184, 0.3);
+  --ring: #0891b2;
+  --chart-1: #0891b2;
+  --chart-2: #6366f1;
+  --chart-3: #f59e0b;
+  --chart-4: #ec4899;
+  --chart-5: #10b981;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #94a3b8;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(56, 189, 248, 0.15);
+  --sidebar-accent-foreground: #38bdf8;
+  --sidebar-border: rgba(148, 163, 184, 0.1);
+  --sidebar-ring: #0891b2;
+}
+
+/* Glass theme: atmospheric background with colorful gradient orbs */
+[data-theme="glass"] {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 40%);
+  background-color: #0f0b1e;
+  background-attachment: fixed;
+}
+
+/* Glass backdrop blur on cards and sidebar */
+[data-theme="glass"] [data-slot="card"],
+[data-theme="glass"] [data-sidebar="sidebar"] {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Executive: colored gradient top-border on stat cards */
+[data-theme="executive"] [data-stat-color] {
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="executive"] [data-stat-color]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+}
+[data-theme="executive"] [data-stat-color="primary"]::before {
+  background: linear-gradient(90deg, #6366f1 0%, #6366f1 40%, transparent 100%);
+}
+[data-theme="executive"] [data-stat-color="green"]::before {
+  background: linear-gradient(90deg, #10b981 0%, #10b981 40%, transparent 100%);
+}
+[data-theme="executive"] [data-stat-color="blue"]::before {
+  background: linear-gradient(90deg, #3b82f6 0%, #3b82f6 40%, transparent 100%);
+}
+[data-theme="executive"] [data-stat-color="red"]::before {
+  background: linear-gradient(90deg, #ef4444 0%, #ef4444 40%, transparent 100%);
+}
+[data-theme="executive"] [data-stat-color="default"]::before {
+  background: linear-gradient(90deg, #6366f1 0%, #6366f1 40%, transparent 100%);
+}
+
+/* Ocean: glass-card effect on cards and topbar */
+[data-theme="ocean"] [data-slot="card"] {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+[data-theme="ocean"] header {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+/* Ocean: teal top-accent on stat cards */
+[data-theme="ocean"] [data-stat-color] {
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="ocean"] [data-stat-color]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+}
+[data-theme="ocean"] [data-stat-color="primary"]::before {
+  background: linear-gradient(90deg, #0891b2, #06b6d4);
+}
+[data-theme="ocean"] [data-stat-color="green"]::before {
+  background: linear-gradient(90deg, #14b8a6, #2dd4bf);
+}
+[data-theme="ocean"] [data-stat-color="blue"]::before {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+[data-theme="ocean"] [data-stat-color="red"]::before {
+  background: linear-gradient(90deg, #f43f5e, #fb7185);
+}
+
+/* Arctic: ultra-minimal — no shadows, hairline borders */
+[data-theme="arctic"] [data-slot="card"] {
+  box-shadow: none;
+  border-color: #f4f4f5;
+}
+
+/* Blueprint: graph-paper background on main content area */
+[data-theme="blueprint"] > main {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
+    #f0f3f8;
+}
+
+/* Blueprint: graph-paper background (explicit class for dashboard) */
+.blueprint-bg {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
+    #f0f3f8;
+}
+
+/* Blueprint: inner graph-paper for route map */
+.blueprint-grid-inner {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(26, 39, 68, 0.03) 19px, rgba(26, 39, 68, 0.03) 20px),
+    repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(26, 39, 68, 0.03) 19px, rgba(26, 39, 68, 0.03) 20px);
+}
+
+@keyframes blueprint-route-pulse {
+  0% { transform: translate(-6px, 3px); opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { transform: translate(6px, -3px); opacity: 1; }
+}
+
+/* Blueprint: dashed-border cards with inner border */
+[data-theme="blueprint"] [data-slot="card"] {
+  border: 2px dashed #cbd5e1;
+  border-radius: 4px;
+  box-shadow: none;
+  position: relative;
+}
+[data-theme="blueprint"] [data-slot="card"]::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Blueprint: card titles in monospace uppercase */
+[data-theme="blueprint"] [data-slot="card-title"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #1a2744;
+  font-weight: 600;
+}
+
+/* Blueprint: page header title */
+[data-theme="blueprint"] h1 {
+  font-family: var(--font-space-grotesk);
+  letter-spacing: -0.5px;
+}
+
+/* Blueprint: table styling — dashed row borders */
+[data-theme="blueprint"] [data-slot="table-container"] {
+  border: 2px dashed #cbd5e1;
+  border-radius: 4px;
+  position: relative;
+}
+[data-theme="blueprint"] [data-slot="table-container"]::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+[data-theme="blueprint"] [data-slot="table-head"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  font-weight: 600;
+}
+[data-theme="blueprint"] [data-slot="table-row"] {
+  border-bottom-style: dashed;
+  border-bottom-color: #e2e8f0;
+}
+[data-theme="blueprint"] [data-slot="table-row"]:hover {
+  background: rgba(26, 39, 68, 0.02);
+}
+
+/* Blueprint: input fields */
+[data-theme="blueprint"] [data-slot="input"],
+[data-theme="blueprint"] [data-slot="textarea"] {
+  border-style: dashed;
+  border-color: #cbd5e1;
+  border-radius: 3px;
+  font-family: var(--font-space-grotesk);
+}
+[data-theme="blueprint"] [data-slot="input"]:focus,
+[data-theme="blueprint"] [data-slot="textarea"]:focus {
+  border-color: #f97316;
+  border-style: solid;
+}
+
+/* Blueprint: buttons — sharper radius */
+[data-theme="blueprint"] [data-slot="button"] {
+  border-radius: 3px;
+  font-family: var(--font-space-grotesk);
+  font-weight: 600;
+}
+[data-theme="blueprint"] [data-slot="button"][data-variant="outline"] {
+  border-style: dashed;
+}
+
+/* Blueprint: badge styling — squared off, monospace */
+[data-theme="blueprint"] [data-slot="badge"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* Blueprint: tabs — monospace labels, dashed bottom border */
+[data-theme="blueprint"] [data-slot="tabs-list"] {
+  border-radius: 3px;
+}
+[data-theme="blueprint"] [data-slot="tabs-trigger"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 2px;
+}
+
+/* Blueprint: separator — dashed */
+[data-theme="blueprint"] [data-slot="separator"] {
+  border-style: dashed;
+  border-color: #e2e8f0;
+}
+
+/* Blueprint: breadcrumb — monospace */
+[data-theme="blueprint"] [data-slot="breadcrumb-list"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* Blueprint: dropdown & popover — sharp corners, dashed border */
+[data-theme="blueprint"] [data-slot="dropdown-menu-content"],
+[data-theme="blueprint"] [data-slot="popover-content"] {
+  border: 2px dashed #cbd5e1;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(26, 39, 68, 0.08);
+}
+
+/* Blueprint: form labels — monospace */
+[data-theme="blueprint"] [data-slot="form-label"],
+[data-theme="blueprint"] [data-slot="label"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Blueprint: dialog — dashed border */
+[data-theme="blueprint"] [data-slot="dialog-content"] {
+  border: 2px dashed #cbd5e1;
+  border-radius: 4px;
+}
+
+/* Blueprint: sheet — dashed border on the side */
+[data-theme="blueprint"] [data-slot="sheet-content"] {
+  border-style: dashed;
+  border-color: #cbd5e1;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

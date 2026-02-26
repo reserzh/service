@@ -36,8 +36,8 @@ const settingsGroups = [
     href: "/settings/services",
   },
   {
-    title: "Dashboard Layout",
-    description: "Choose a layout preset and toggle widgets",
+    title: "Site Theme",
+    description: "Choose a site-wide theme and toggle widgets",
     icon: LayoutDashboard,
     href: "/settings/dashboard",
   },

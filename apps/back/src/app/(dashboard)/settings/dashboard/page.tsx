@@ -8,7 +8,7 @@ import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 import { DashboardSettingsForm } from "./dashboard-settings-form";
 
 export const metadata: Metadata = {
-  title: "Dashboard Layout – Settings",
+  title: "Site Theme – Settings",
 };
 
 export default async function DashboardSettingsPage() {
@@ -25,8 +25,8 @@ export default async function DashboardSettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard Layout"
-        description="Choose a layout preset and toggle widget visibility"
+        title="Site Theme"
+        description="Choose a site-wide theme and toggle widget visibility"
       />
       <DashboardSettingsForm
         currentPreset={settings.dashboardPreset ?? "classic"}

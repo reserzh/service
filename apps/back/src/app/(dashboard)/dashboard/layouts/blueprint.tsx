@@ -1,305 +1,568 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { StatusBadge } from "@/components/shared/status-badge";
-import {
-  Briefcase,
-  DollarSign,
-  FileText,
-  AlertTriangle,
-  Clock,
-  CalendarDays,
-  Users,
-  TrendingUp,
-  ArrowRight,
-  Plus,
-  Wrench,
-} from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
-import type { DashboardLayoutProps } from "./types";
+import { format, getISOWeek } from "date-fns";
+import type { DashboardLayoutProps, UpcomingJob } from "./types";
 
-export function BlueprintLayout({ data, hiddenWidgets }: DashboardLayoutProps) {
-  const { stats, activity, upcoming, firstName } = data;
-  const completionPct = stats.todaysJobs > 0
-    ? Math.round((stats.todaysCompleted / stats.todaysJobs) * 100)
-    : 0;
+export function BlueprintLayout({ data }: DashboardLayoutProps) {
+  const { stats, upcoming, firstName } = data;
 
   return (
-    <div className="space-y-6">
-      {/* Hero Greeting Bar */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-800 via-slate-700 to-blue-900 p-6 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="bp-grid" width="32" height="32" patternUnits="userSpaceOnUse">
-                <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#bp-grid)" />
-          </svg>
-        </div>
-        <div className="relative flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Good {getGreeting()}, {firstName}</h1>
-            <p className="mt-1 text-sm text-blue-200">Operations overview for today</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button size="sm" variant="secondary" asChild>
-              <Link href="/schedule">
-                <CalendarDays className="mr-2 h-3.5 w-3.5" />
-                Schedule
-              </Link>
-            </Button>
-            <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" asChild>
-              <Link href="/jobs/new">
-                <Plus className="mr-2 h-3.5 w-3.5" />
-                New Job
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats + Gauge Row */}
-      {!hiddenWidgets.has("stats") && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {/* SVG Gauge */}
-          <Card className="lg:row-span-1 border-slate-200">
-            <CardContent className="flex flex-col items-center justify-center pt-6">
-              <svg viewBox="0 0 120 80" className="h-20 w-28">
-                <path d="M 10 70 A 50 50 0 0 1 110 70" fill="none" stroke="#e2e8f0" strokeWidth="10" strokeLinecap="round" />
-                <path
-                  d="M 10 70 A 50 50 0 0 1 110 70"
-                  fill="none"
-                  stroke="#2563eb"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={`${completionPct * 1.57} 157`}
-                />
-                <text x="60" y="55" textAnchor="middle" className="fill-slate-800 text-xl font-bold" fontSize="20">
-                  {completionPct}%
-                </text>
-                <text x="60" y="72" textAnchor="middle" className="fill-slate-500" fontSize="9">
-                  completed
-                </text>
-              </svg>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {stats.todaysCompleted}/{stats.todaysJobs} jobs
-              </p>
-            </CardContent>
-          </Card>
-          <StatTile icon={Briefcase} label="Today's Jobs" value={stats.todaysJobs} color="bg-blue-500" href="/schedule" />
-          <StatTile icon={DollarSign} label="Revenue MTD" value={formatCurrency(stats.revenueMTD)} color="bg-emerald-500" href="/reports" />
-          <StatTile icon={FileText} label="Open Estimates" value={stats.openEstimates} color="bg-amber-500" href="/estimates?status=sent,viewed" />
-          <StatTile icon={AlertTriangle} label="Overdue" value={stats.overdueInvoices} color={stats.overdueInvoices > 0 ? "bg-rose-500" : "bg-slate-400"} href="/invoices?status=overdue" />
-        </div>
-      )}
-
-      {/* Quick Actions */}
-      {!hiddenWidgets.has("quick-actions") && (
-        <div className="grid gap-3 grid-cols-5">
-          {[
-            { href: "/jobs/new", icon: Briefcase, label: "New Job" },
-            { href: "/estimates/new", icon: FileText, label: "Estimate" },
-            { href: "/invoices/new", icon: DollarSign, label: "Invoice" },
-            { href: "/customers/new", icon: Users, label: "Customer" },
-            { href: "/dispatch", icon: TrendingUp, label: "Dispatch" },
-          ].map((a) => (
-            <Link key={a.href} href={a.href}>
-              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-3 text-center transition-all hover:border-blue-300 hover:shadow-sm cursor-pointer">
-                <div className="rounded-md bg-slate-100 p-2">
-                  <a.icon className="h-4 w-4 text-slate-600" />
-                </div>
-                <span className="text-xs font-medium text-slate-700">{a.label}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Job Queue */}
-        {!hiddenWidgets.has("schedule") && (
-          <Card className="lg:col-span-2 border-slate-200">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base text-slate-800">
-                  <Wrench className="h-4 w-4 text-blue-600" />
-                  Job Queue
-                </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/schedule" className="text-xs text-blue-600">
-                    View All <ArrowRight className="ml-1 h-3 w-3" />
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {upcoming.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400">
-                  <CalendarDays className="h-8 w-8 mb-2" />
-                  <p className="text-sm">No jobs queued for today.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b text-left text-xs text-slate-500">
-                        <th className="pb-2 font-medium">Time</th>
-                        <th className="pb-2 font-medium">Job</th>
-                        <th className="pb-2 font-medium">Status</th>
-                        <th className="pb-2 font-medium">Tech</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {upcoming.map((job) => (
-                        <tr key={job.id} className="border-b border-slate-100 last:border-0">
-                          <td className="py-2.5 pr-3 text-xs text-slate-500 whitespace-nowrap">
-                            {job.scheduledStart ? format(new Date(job.scheduledStart), "h:mm a") : "TBD"}
-                          </td>
-                          <td className="py-2.5 pr-3">
-                            <Link href={`/jobs/${job.id}`} className="font-medium text-slate-800 hover:text-blue-600 transition-colors">
-                              {job.summary}
-                            </Link>
-                            <p className="text-xs text-slate-400">{job.jobNumber}</p>
-                          </td>
-                          <td className="py-2.5 pr-3">
-                            <StatusBadge type="job" status={job.status} className="text-[10px] px-1.5 py-0" />
-                          </td>
-                          <td className="py-2.5">
-                            {job.assignedFirstName ? (
-                              <div className="flex items-center gap-1.5">
-                                <Avatar className="h-5 w-5">
-                                  <AvatarFallback
-                                    className="text-[9px] text-white"
-                                    style={{ backgroundColor: job.assignedColor ?? "#6b7280" }}
-                                  >
-                                    {job.assignedFirstName[0]}{job.assignedLastName?.[0]}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs text-slate-600">{job.assignedFirstName}</span>
-                              </div>
-                            ) : (
-                              <span className="text-xs text-slate-400">Unassigned</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Activity + Team */}
-        <div className="space-y-6">
-          {!hiddenWidgets.has("activity") && (
-            <Card className="border-slate-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base text-slate-800">
-                  <Clock className="h-4 w-4 text-blue-600" />
-                  Activity Feed
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {activity.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-slate-400">No recent activity.</p>
-                ) : (
-                  <div className="space-y-1">
-                    {activity.slice(0, 6).map((item) => (
-                      <div key={item.id} className="flex items-start gap-2 rounded px-1 py-1.5 text-xs">
-                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0" />
-                        <div className="min-w-0">
-                          <p className="leading-snug text-slate-700">
-                            <span className="font-medium">{item.userFirstName}</span>{" "}
-                            {formatAction(item.entityType, item.action)}
-                          </p>
-                          <p className="text-slate-400">
-                            {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {!hiddenWidgets.has("team") && (
-            <Card className="border-slate-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base text-slate-800">
-                  <Users className="h-4 w-4 text-blue-600" />
-                  Technician Grid
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {upcoming.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-slate-400">No techs scheduled today.</p>
-                ) : (
-                  <div className="grid grid-cols-3 gap-2">
-                    {getUniqueTechs(upcoming).map((tech) => (
-                      <div key={tech.name} className="flex flex-col items-center rounded-lg border border-slate-100 p-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback
-                            className="text-xs text-white"
-                            style={{ backgroundColor: tech.color }}
-                          >
-                            {tech.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="mt-1 text-[10px] font-medium text-slate-600 truncate max-w-full">{tech.name}</span>
-                        <span className="text-[10px] text-slate-400">{tech.jobCount} job{tech.jobCount !== 1 ? "s" : ""}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
+    <div className="-m-6 blueprint-bg min-h-screen">
+      <BlueprintHero
+        firstName={firstName}
+        todaysJobs={stats.todaysJobs}
+        todaysCompleted={stats.todaysCompleted}
+        revenueMTD={stats.revenueMTD}
+        techCount={getUniqueTechs(upcoming).length}
+      />
+      <div className="grid grid-cols-2 gap-4 px-8 pb-8 pt-4">
+        <RevenueGaugeCard revenueMTD={stats.revenueMTD} />
+        <RouteMapCard upcoming={upcoming} todaysCompleted={stats.todaysCompleted} />
+        <JobQueueCard upcoming={upcoming} />
+        <TechnicianGridCard upcoming={upcoming} />
       </div>
     </div>
   );
 }
 
-function StatTile({
-  icon: Icon,
-  label,
-  value,
-  color,
-  href,
+/* ─── Hero Banner ─── */
+
+function BlueprintHero({
+  firstName,
+  todaysJobs,
+  todaysCompleted,
+  revenueMTD,
+  techCount,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string | number;
-  color: string;
-  href?: string;
+  firstName: string;
+  todaysJobs: number;
+  todaysCompleted: number;
+  revenueMTD: number;
+  techCount: number;
 }) {
-  const tile = (
-    <Card className="border-slate-200 hover:shadow-sm transition-shadow cursor-pointer">
-      <CardContent className="pt-5 pb-4">
-        <div className="flex items-center gap-3">
-          <div className={`rounded-lg p-2 ${color}`}>
-            <Icon className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-slate-800">{value}</p>
-            <p className="text-xs text-slate-500">{label}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+  const now = new Date();
+  const completionPct =
+    todaysJobs > 0 ? Math.round((todaysCompleted / todaysJobs) * 100) : 0;
+
+  return (
+    <div
+      className="flex items-center px-8"
+      style={{
+        height: 140,
+        background:
+          "linear-gradient(135deg, rgba(26,39,68,0.92) 0%, rgba(26,39,68,0.75) 100%)",
+      }}
+    >
+      <div className="flex-1">
+        <p className="text-[13px] text-white/70">
+          Good {getGreeting()}, {firstName}
+        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-white">
+          Operations Dashboard
+        </h1>
+        <p className="mt-1 font-mono text-xs text-white/50 uppercase tracking-wider">
+          {format(now, "EEEE, MMM d yyyy")} &bull; Week{" "}
+          {String(getISOWeek(now)).padStart(2, "0")}
+        </p>
+      </div>
+      <div className="flex gap-6">
+        <HeroStat value={todaysJobs} label="Jobs Today" />
+        <HeroStat value={techCount} label="Techs Active" />
+        <HeroStat
+          value={formatRevShort(revenueMTD)}
+          label="MTD Revenue"
+          highlight
+        />
+        <HeroStat value={`${completionPct}%`} label="Completion" />
+      </div>
+    </div>
   );
-  return href ? <Link href={href}>{tile}</Link> : tile;
 }
 
-function getUniqueTechs(upcoming: DashboardLayoutProps["data"]["upcoming"]) {
-  const map = new Map<string, { name: string; initials: string; color: string; jobCount: number }>();
+function HeroStat({
+  value,
+  label,
+  highlight,
+}: {
+  value: string | number;
+  label: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="text-center">
+      <div
+        className="font-mono text-[28px] font-bold leading-none"
+        style={{ color: highlight ? "#fdba74" : "#ffffff" }}
+      >
+        {value}
+      </div>
+      <div className="mt-1 text-[10px] uppercase tracking-widest text-white/50">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Blueprint Card Shell ─── */
+
+function BlueprintCard({
+  title,
+  badge,
+  children,
+}: {
+  title: string;
+  badge?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative rounded bg-white" style={{ border: "2px dashed #cbd5e1" }}>
+      {/* Inner border */}
+      <div
+        className="pointer-events-none absolute rounded-sm"
+        style={{
+          top: 4,
+          left: 4,
+          right: 4,
+          bottom: 4,
+          border: "1px solid #e2e8f0",
+        }}
+      />
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-2">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-[1.5px] text-[#1a2744]">
+          {title}
+        </span>
+        {badge && (
+          <span className="rounded-sm font-mono text-[9px] font-semibold text-[#f97316] px-2 py-0.5" style={{ background: "rgba(249,115,22,0.1)" }}>
+            {badge}
+          </span>
+        )}
+      </div>
+      {/* Body */}
+      <div className="px-4 pb-4">{children}</div>
+    </div>
+  );
+}
+
+/* ─── Revenue Gauge Card ─── */
+
+function RevenueGaugeCard({ revenueMTD }: { revenueMTD: number }) {
+  const now = new Date();
+  const dayOfMonth = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const pace = dayOfMonth > 0 ? revenueMTD / dayOfMonth : 0;
+  const projected = pace * daysInMonth;
+  const target = Math.ceil((projected * 1.15) / 5000) * 5000;
+  const safeTarget = Math.max(target, 5000);
+
+  const pct = Math.min(revenueMTD / safeTarget, 1);
+  const remaining = Math.max(safeTarget - revenueMTD, 0);
+  const avgDay = dayOfMonth > 0 ? Math.round(revenueMTD / dayOfMonth) : 0;
+
+  // Arc math: semicircle from (15,85) to (145,85), radius 65
+  const arcLength = Math.PI * 65; // ~204
+  const dashLen = pct * arcLength;
+
+  // Needle angle: 0% = 180°, 100% = 0° (semicircle)
+  const needleAngle = Math.PI * (1 - pct);
+  const needleLen = 58;
+  const cx = 80,
+    cy = 85;
+  const nx = cx + needleLen * Math.cos(needleAngle);
+  const ny = cy - needleLen * Math.sin(needleAngle);
+
+  const pctChange =
+    dayOfMonth > 1 ? (((pace * daysInMonth) / safeTarget - 1) * 100).toFixed(1) : "0.0";
+
+  return (
+    <BlueprintCard title="Revenue / Target" badge={`${Number(pctChange) >= 0 ? "+" : ""}${pctChange}%`}>
+      <div className="flex items-center gap-6 py-2">
+        <svg width="160" height="95" viewBox="0 0 160 95" className="shrink-0">
+          <defs>
+            <linearGradient id="bpGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#1a2744" />
+              <stop offset="80%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#f97316" />
+            </linearGradient>
+          </defs>
+          {/* Background arc */}
+          <path
+            d="M 15 85 A 65 65 0 0 1 145 85"
+            fill="none"
+            stroke="#e2e8f0"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          {/* Value arc */}
+          <path
+            d="M 15 85 A 65 65 0 0 1 145 85"
+            fill="none"
+            stroke="url(#bpGaugeGrad)"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={`${dashLen} ${arcLength}`}
+          />
+          {/* Tick marks */}
+          <line x1="15" y1="85" x2="15" y2="78" stroke="#cbd5e1" strokeWidth="1" />
+          <line x1="40" y1="35" x2="43" y2="41" stroke="#cbd5e1" strokeWidth="1" />
+          <line x1="80" y1="20" x2="80" y2="27" stroke="#cbd5e1" strokeWidth="1" />
+          <line x1="120" y1="35" x2="117" y2="41" stroke="#cbd5e1" strokeWidth="1" />
+          <line x1="145" y1="85" x2="145" y2="78" stroke="#cbd5e1" strokeWidth="1" />
+          {/* Tick labels */}
+          <text x="15" y="94" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+            $0
+          </text>
+          <text x="80" y="16" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+            {formatRevShort(safeTarget / 2)}
+          </text>
+          <text x="145" y="94" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+            {formatRevShort(safeTarget)}
+          </text>
+          {/* Needle */}
+          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#1a2744" strokeWidth="2" strokeLinecap="round" />
+          <circle cx={cx} cy={cy} r="4" fill="#1a2744" />
+          <circle cx={cx} cy={cy} r="2" fill="white" />
+          {/* Center value */}
+          <text x="80" y="75" textAnchor="middle" fill="#1a2744" fontFamily="var(--font-jetbrains-mono)" fontSize="22" fontWeight="700">
+            {formatRevShort(revenueMTD)}
+          </text>
+        </svg>
+
+        {/* Revenue details */}
+        <div className="flex-1 space-y-0">
+          <RevLine label="Target" value={formatCurrency(safeTarget)} />
+          <RevLine label="Current" value={formatCurrency(revenueMTD)} highlight />
+          <RevLine label="Remaining" value={formatCurrency(remaining)} />
+          <RevLine label="Avg/Day" value={formatCurrency(avgDay)} last />
+        </div>
+      </div>
+    </BlueprintCard>
+  );
+}
+
+function RevLine({
+  label,
+  value,
+  highlight,
+  last,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  last?: boolean;
+}) {
+  return (
+    <div
+      className="flex items-center justify-between py-1.5"
+      style={last ? undefined : { borderBottom: "1px dashed #e2e8f0" }}
+    >
+      <span className="text-xs text-[#64748b]">{label}</span>
+      <span
+        className="font-mono text-sm font-semibold"
+        style={{ color: highlight ? "#f97316" : "#1a2744" }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+/* ─── Route Map Card ─── */
+
+function RouteMapCard({
+  upcoming,
+  todaysCompleted,
+}: {
+  upcoming: UpcomingJob[];
+  todaysCompleted: number;
+}) {
+  const stops = upcoming.slice(0, 8);
+  const stopCount = stops.length;
+
+  if (stopCount === 0) {
+    return (
+      <BlueprintCard title="Today&apos;s Route Plan" badge="0 STOPS">
+        <div className="flex items-center justify-center py-12 text-sm text-[#94a3b8]">
+          No scheduled stops today.
+        </div>
+      </BlueprintCard>
+    );
+  }
+
+  // Generate positions: evenly spaced horizontally with sine-wave vertical variation
+  const positions = stops.map((_, i) => {
+    const xPct = 8 + (i / Math.max(stopCount - 1, 1)) * 84;
+    const yPct = 30 + Math.sin((i * Math.PI) / 2.5) * 25 + (i % 2 === 0 ? 0 : 15);
+    return { x: xPct, y: Math.min(Math.max(yPct, 15), 75) };
+  });
+
+  // Determine status: first N = completed, next = active, rest = upcoming
+  const activeIdx = Math.min(todaysCompleted, stopCount - 1);
+
+  return (
+    <BlueprintCard title="Today's Route Plan" badge={`${stopCount} STOPS`}>
+      <div className="blueprint-grid-inner relative" style={{ minHeight: 200 }}>
+        {/* SVG bezier path connecting stops */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          style={{ zIndex: 1 }}
+        >
+          {positions.map((pos, i) => {
+            if (i === 0) return null;
+            const prev = positions[i - 1];
+            const midX = (prev.x + pos.x) / 2;
+            const isCompleted = i <= activeIdx;
+            return (
+              <path
+                key={i}
+                d={`M ${prev.x} ${prev.y} C ${midX} ${prev.y}, ${midX} ${pos.y}, ${pos.x} ${pos.y}`}
+                fill="none"
+                stroke={isCompleted ? "#1a2744" : "#cbd5e1"}
+                strokeWidth="0.4"
+                strokeDasharray="1.5 1"
+                opacity={isCompleted ? 0.25 : 0.35}
+              />
+            );
+          })}
+        </svg>
+
+        {/* Stop markers */}
+        {stops.map((job, i) => {
+          const pos = positions[i];
+          const isCompleted = i < activeIdx;
+          const isActive = i === activeIdx;
+
+          let bg = "white";
+          let border = "#1a2744";
+          let textColor = "#1a2744";
+          if (isCompleted) {
+            bg = "#1a2744";
+            textColor = "white";
+          } else if (isActive) {
+            bg = "#f97316";
+            border = "#f97316";
+            textColor = "white";
+          }
+
+          const timeStr = job.scheduledStart
+            ? format(new Date(job.scheduledStart), "h:mma").toLowerCase()
+            : "TBD";
+          const labelText = `${truncate(job.summary, 12)} ${timeStr}`;
+
+          return (
+            <div key={job.id} style={{ position: "absolute", left: `${pos.x}%`, top: `${pos.y}%`, zIndex: 5 }}>
+              {/* Marker */}
+              <div
+                className="flex items-center justify-center rounded-full font-mono text-[10px] font-bold"
+                style={{
+                  width: 24,
+                  height: 24,
+                  background: bg,
+                  border: `2px solid ${border}`,
+                  color: textColor,
+                  transform: "translate(-50%, -50%)",
+                  boxShadow: isActive ? "0 0 0 4px rgba(249,115,22,0.2)" : undefined,
+                }}
+              >
+                {i + 1}
+              </div>
+              {/* Label */}
+              <div
+                className="whitespace-nowrap font-mono text-[9px] text-[#64748b] tracking-wide"
+                style={{ transform: "translate(-50%, 4px)", textAlign: "center" }}
+              >
+                {labelText}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Animated tech dot near active stop */}
+        {stops.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${positions[activeIdx].x - 2}%`,
+              top: `${positions[activeIdx].y - 3}%`,
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              background: "#f97316",
+              boxShadow: "0 0 8px #f97316",
+              zIndex: 10,
+              animation: "blueprint-route-pulse 3s ease-in-out infinite alternate",
+            }}
+          />
+        )}
+      </div>
+    </BlueprintCard>
+  );
+}
+
+/* ─── Job Queue Card ─── */
+
+function JobQueueCard({ upcoming }: { upcoming: UpcomingJob[] }) {
+  const jobs = upcoming.slice(0, 6);
+
+  if (jobs.length === 0) {
+    return (
+      <BlueprintCard title="Job Queue" badge="0 PENDING">
+        <div className="flex items-center justify-center py-8 text-sm text-[#94a3b8]">
+          No pending jobs.
+        </div>
+      </BlueprintCard>
+    );
+  }
+
+  return (
+    <BlueprintCard title="Job Queue" badge={`${jobs.length} PENDING`}>
+      <div className="flex flex-col gap-1.5">
+        {jobs.map((job) => {
+          const priority = job.priority ?? "normal";
+          const borderColor =
+            priority === "high" || priority === "urgent"
+              ? "#ef4444"
+              : priority === "medium"
+                ? "#f97316"
+                : "#10b981";
+
+          const timeStr = job.scheduledStart
+            ? formatShortTime(new Date(job.scheduledStart))
+            : "TBD";
+
+          const tag = getJobTag(priority, job.status);
+
+          return (
+            <Link
+              key={job.id}
+              href={`/jobs/${job.id}`}
+              className="flex items-center gap-2.5 rounded-sm border transition-colors hover:border-[#cbd5e1]"
+              style={{
+                padding: "8px 12px",
+                background: "#f0f3f8",
+                borderColor: "#e2e8f0",
+                borderLeftWidth: 3,
+                borderLeftColor: borderColor,
+              }}
+            >
+              <span className="w-[50px] shrink-0 font-mono text-[11px] font-semibold text-[#1a2744]">
+                {timeStr}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-semibold text-[#1a2744] truncate">
+                  {job.summary}
+                </div>
+                <div className="text-[10px] text-[#94a3b8]">{job.jobNumber}</div>
+              </div>
+              <span
+                className="shrink-0 rounded-sm font-mono text-[9px] tracking-wide px-1.5 py-0.5"
+                style={{
+                  background:
+                    tag === "URGENT"
+                      ? "rgba(239,68,68,0.08)"
+                      : "rgba(26,39,68,0.06)",
+                  color: tag === "URGENT" ? "#ef4444" : "#64748b",
+                }}
+              >
+                {tag}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </BlueprintCard>
+  );
+}
+
+/* ─── Technician Grid Card ─── */
+
+function TechnicianGridCard({ upcoming }: { upcoming: UpcomingJob[] }) {
+  const techs = getUniqueTechs(upcoming);
+
+  if (techs.length === 0) {
+    return (
+      <BlueprintCard title="Technicians" badge="0 ACTIVE">
+        <div className="flex items-center justify-center py-8 text-sm text-[#94a3b8]">
+          No techs scheduled today.
+        </div>
+      </BlueprintCard>
+    );
+  }
+
+  return (
+    <BlueprintCard title="Technicians" badge={`${techs.length} ACTIVE`}>
+      <div className="grid grid-cols-2 gap-2">
+        {techs.map((tech) => (
+          <div
+            key={tech.name}
+            className="flex items-center gap-2.5 rounded-sm border border-[#e2e8f0] p-2.5"
+            style={{ background: "#f0f3f8" }}
+          >
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
+              style={{ background: tech.color }}
+            >
+              {tech.initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-[#1a2744] truncate">
+                {tech.abbrevName}
+              </div>
+              <div className="font-mono text-[9px] text-[#94a3b8] tracking-wide truncate uppercase">
+                {tech.statusText}
+              </div>
+            </div>
+            <div className="text-center shrink-0">
+              <div className="font-mono text-lg font-bold leading-none text-[#1a2744]">
+                {tech.jobCount}
+              </div>
+              <div className="text-[8px] uppercase tracking-wide text-[#94a3b8]">
+                TODAY
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Off-duty placeholder */}
+        <div
+          className="flex items-center gap-2.5 rounded-sm p-2.5"
+          style={{ border: "1px dashed #cbd5e1" }}
+        >
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold"
+            style={{ background: "#e2e8f0", color: "#94a3b8" }}
+          >
+            +
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-[#94a3b8]">Off-Duty</div>
+            <div className="font-mono text-[9px] text-[#94a3b8] tracking-wide">
+              SCHEDULED TOMORROW
+            </div>
+          </div>
+        </div>
+      </div>
+    </BlueprintCard>
+  );
+}
+
+/* ─── Helpers ─── */
+
+function getUniqueTechs(upcoming: UpcomingJob[]) {
+  const map = new Map<
+    string,
+    {
+      name: string;
+      abbrevName: string;
+      initials: string;
+      color: string;
+      jobCount: number;
+      statusText: string;
+      currentJob: string | null;
+    }
+  >();
+
   for (const job of upcoming) {
     if (!job.assignedFirstName) continue;
     const key = job.assignedFirstName + (job.assignedLastName ?? "");
@@ -307,19 +570,19 @@ function getUniqueTechs(upcoming: DashboardLayoutProps["data"]["upcoming"]) {
     if (existing) {
       existing.jobCount++;
     } else {
+      const lastName = job.assignedLastName ?? "";
       map.set(key, {
-        name: job.assignedFirstName,
-        initials: `${job.assignedFirstName[0]}${job.assignedLastName?.[0] ?? ""}`,
-        color: job.assignedColor ?? "#6b7280",
+        name: `${job.assignedFirstName} ${lastName}`.trim(),
+        abbrevName: `${job.assignedFirstName[0]}. ${lastName}`,
+        initials: `${job.assignedFirstName[0]}${lastName[0] ?? ""}`.toUpperCase(),
+        color: job.assignedColor ?? "#1a2744",
         jobCount: 1,
+        statusText: job.jobNumber ? `ON JOB \u2022 ${job.jobNumber}` : "AVAILABLE",
+        currentJob: job.jobNumber,
       });
     }
   }
   return Array.from(map.values());
-}
-
-function formatCurrency(amount: number): string {
-  return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 function getGreeting(): string {
@@ -329,17 +592,32 @@ function getGreeting(): string {
   return "evening";
 }
 
-function formatAction(entityType: string, action: string): string {
-  const typeLabels: Record<string, string> = {
-    job: "a job", estimate: "an estimate", invoice: "an invoice",
-    payment: "a payment", customer: "a customer", user: "a team member", settings: "settings",
-  };
-  const actionLabels: Record<string, string> = {
-    created: "created", updated: "updated", sent: "sent", approved: "approved",
-    declined: "declined", voided: "voided", status_changed: "changed status of",
-    assigned: "assigned", invited: "invited", deactivated: "deactivated",
-    reactivated: "reactivated", recorded: "recorded",
-    company_updated: "updated company profile", settings_updated: "updated",
-  };
-  return `${actionLabels[action] || action} ${typeLabels[entityType] || entityType}`;
+function formatRevShort(amount: number): string {
+  if (amount >= 1000) {
+    const k = amount / 1000;
+    return `$${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K`;
+  }
+  return `$${amount}`;
+}
+
+function formatCurrency(amount: number): string {
+  return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+function formatShortTime(date: Date): string {
+  const h = date.getHours();
+  const m = date.getMinutes();
+  const ampm = h >= 12 ? "p" : "a";
+  const hour = h % 12 || 12;
+  return m === 0 ? `${hour}:00${ampm}` : `${hour}:${String(m).padStart(2, "0")}${ampm}`;
+}
+
+function truncate(str: string, len: number): string {
+  return str.length > len ? str.slice(0, len) + "…" : str;
+}
+
+function getJobTag(priority: string, status: string): string {
+  if (priority === "high" || priority === "urgent") return "URGENT";
+  if (status === "scheduled") return "SCHED";
+  return "SERVICE";
 }

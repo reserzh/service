@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const [stats, activity, upcoming, tenantRow] = await Promise.all([
     getDashboardStats(ctx),
     getRecentActivity(ctx, 8),
-    getUpcomingJobs(ctx, 5),
+    getUpcomingJobs(ctx, 8),
     db
       .select({ settings: tenants.settings })
       .from(tenants)

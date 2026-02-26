@@ -27,13 +27,13 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
     : 0;
 
   return (
-    <div className="dark space-y-5 rounded-xl bg-slate-950 p-5 text-slate-100">
+    <div className="space-y-5">
       {/* Alert Ticker */}
-      <div className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/80 px-4 py-2.5">
-        <Radio className="h-4 w-4 text-cyan-400 animate-pulse" />
+      <div className="flex items-center gap-3 rounded-lg border border-border bg-card/80 px-4 py-2.5">
+        <Radio className="h-4 w-4 text-primary animate-pulse" />
         <div className="flex-1 overflow-hidden">
-          <p className="text-sm text-slate-300">
-            <span className="font-semibold text-cyan-400">{stats.todaysJobs}</span> jobs today
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-primary">{stats.todaysJobs}</span> jobs today
             {" \u00B7 "}
             <span className="font-semibold text-emerald-400">{stats.todaysCompleted}</span> completed
             {stats.overdueInvoices > 0 && (
@@ -45,10 +45,10 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" className="h-7 border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white" asChild>
+          <Button size="sm" variant="outline" className="h-7" asChild>
             <Link href="/schedule">Schedule</Link>
           </Button>
-          <Button size="sm" className="h-7 bg-cyan-600 hover:bg-cyan-500 text-white" asChild>
+          <Button size="sm" className="h-7" asChild>
             <Link href="/jobs/new">
               <Plus className="mr-1 h-3 w-3" />
               New Job
@@ -109,9 +109,9 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
             { href: "/dispatch", icon: TrendingUp, label: "Dispatch" },
           ].map((a) => (
             <Link key={a.href} href={a.href}>
-              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-center transition-all hover:border-cyan-500/30 hover:bg-slate-900 cursor-pointer">
-                <a.icon className="h-4 w-4 text-slate-400" />
-                <span className="text-[11px] font-medium text-slate-400">{a.label}</span>
+              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border bg-card/60 p-3 text-center transition-all hover:border-primary/30 hover:bg-card cursor-pointer">
+                <a.icon className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[11px] font-medium text-muted-foreground">{a.label}</span>
               </div>
             </Link>
           ))}
@@ -121,14 +121,14 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
       {/* Dispatch Table + Activity */}
       <div className="grid gap-5 lg:grid-cols-5">
         {!hiddenWidgets.has("schedule") && (
-          <Card className="lg:col-span-3 border-slate-800 bg-slate-900/60">
+          <Card className="lg:col-span-3 border-border bg-card/60">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base text-slate-200">
-                  <Zap className="h-4 w-4 text-cyan-400" />
+                <CardTitle className="flex items-center gap-2 text-base text-foreground">
+                  <Zap className="h-4 w-4 text-primary" />
                   Dispatch Table
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-cyan-400 hover:text-cyan-300 hover:bg-slate-800" asChild>
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80" asChild>
                   <Link href="/schedule" className="text-xs">
                     View All <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
@@ -137,7 +137,7 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
             </CardHeader>
             <CardContent>
               {upcoming.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center text-slate-600">
+                <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground/60">
                   <CalendarDays className="h-8 w-8 mb-2" />
                   <p className="text-sm">No dispatches for today.</p>
                 </div>
@@ -145,7 +145,7 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-800 text-left text-[11px] uppercase tracking-wider text-slate-500">
+                      <tr className="border-b border-border text-left text-[11px] uppercase tracking-wider text-muted-foreground">
                         <th className="pb-2 font-medium">ETA</th>
                         <th className="pb-2 font-medium">Job</th>
                         <th className="pb-2 font-medium">Status</th>
@@ -154,15 +154,15 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
                     </thead>
                     <tbody>
                       {upcoming.map((job) => (
-                        <tr key={job.id} className="border-b border-slate-800/50 last:border-0 hover:bg-slate-800/30 transition-colors">
-                          <td className="py-2.5 pr-3 text-xs text-cyan-400 font-mono whitespace-nowrap">
+                        <tr key={job.id} className="border-b border-border/50 last:border-0 hover:bg-accent/30 transition-colors">
+                          <td className="py-2.5 pr-3 text-xs text-primary font-mono whitespace-nowrap">
                             {job.scheduledStart ? format(new Date(job.scheduledStart), "HH:mm") : "--:--"}
                           </td>
                           <td className="py-2.5 pr-3">
-                            <Link href={`/jobs/${job.id}`} className="font-medium text-slate-200 hover:text-cyan-400 transition-colors">
+                            <Link href={`/jobs/${job.id}`} className="font-medium text-foreground hover:text-primary transition-colors">
                               {job.summary}
                             </Link>
-                            <p className="text-xs text-slate-600 font-mono">{job.jobNumber}</p>
+                            <p className="text-xs text-muted-foreground/60 font-mono">{job.jobNumber}</p>
                           </td>
                           <td className="py-2.5 pr-3">
                             <StatusBadge type="job" status={job.status} className="text-[10px] px-1.5 py-0" />
@@ -178,10 +178,10 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
                                     {job.assignedFirstName[0]}{job.assignedLastName?.[0]}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="text-xs text-slate-400">{job.assignedFirstName}</span>
+                                <span className="text-xs text-muted-foreground">{job.assignedFirstName}</span>
                               </div>
                             ) : (
-                              <span className="text-xs text-slate-600">--</span>
+                              <span className="text-xs text-muted-foreground/60">--</span>
                             )}
                           </td>
                         </tr>
@@ -197,48 +197,48 @@ export function MissionControlLayout({ data, hiddenWidgets }: DashboardLayoutPro
         {/* Activity + Sparkline placeholder */}
         <div className="lg:col-span-2 space-y-5">
           {!hiddenWidgets.has("chart") && (
-            <Card className="border-slate-800 bg-slate-900/60">
+            <Card className="border-border bg-card/60">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-slate-400">Revenue Trend</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground">Revenue Trend</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-end gap-1 h-16">
                   {generateSparkline(stats.revenueMTD).map((h, i) => (
                     <div
                       key={i}
-                      className="flex-1 rounded-t bg-cyan-500/60 transition-all hover:bg-cyan-400"
+                      className="flex-1 rounded-t bg-primary/60 transition-all hover:bg-primary"
                       style={{ height: `${h}%` }}
                     />
                   ))}
                 </div>
-                <p className="mt-2 text-center text-lg font-bold text-cyan-400">{formatCurrency(stats.revenueMTD)}</p>
-                <p className="text-center text-[11px] text-slate-500">month to date</p>
+                <p className="mt-2 text-center text-lg font-bold text-primary">{formatCurrency(stats.revenueMTD)}</p>
+                <p className="text-center text-[11px] text-muted-foreground">month to date</p>
               </CardContent>
             </Card>
           )}
 
           {!hiddenWidgets.has("activity") && (
-            <Card className="border-slate-800 bg-slate-900/60">
+            <Card className="border-border bg-card/60">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base text-slate-200">
-                  <Clock className="h-4 w-4 text-cyan-400" />
+                <CardTitle className="flex items-center gap-2 text-base text-foreground">
+                  <Clock className="h-4 w-4 text-primary" />
                   Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {activity.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-slate-600">No recent activity.</p>
+                  <p className="py-4 text-center text-sm text-muted-foreground/60">No recent activity.</p>
                 ) : (
                   <div className="space-y-1">
                     {activity.slice(0, 5).map((item) => (
                       <div key={item.id} className="flex items-start gap-2 rounded px-1 py-1.5 text-xs">
-                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400/60 shrink-0" />
+                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary/60 shrink-0" />
                         <div className="min-w-0">
-                          <p className="leading-snug text-slate-300">
-                            <span className="font-medium text-slate-200">{item.userFirstName}</span>{" "}
-                            <span className="text-slate-500">{formatAction(item.entityType, item.action)}</span>
+                          <p className="leading-snug text-foreground/80">
+                            <span className="font-medium text-foreground">{item.userFirstName}</span>{" "}
+                            <span className="text-muted-foreground">{formatAction(item.entityType, item.action)}</span>
                           </p>
-                          <p className="text-slate-600">
+                          <p className="text-muted-foreground/60">
                             {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                           </p>
                         </div>
@@ -289,16 +289,16 @@ function GaugeMeter({
   };
 
   const inner = (
-    <Card className="border-slate-800 bg-slate-900/60 hover:border-slate-700 transition-colors cursor-pointer">
+    <Card className="border-border bg-card/60 hover:border-border/80 transition-colors cursor-pointer">
       <CardContent className="pt-5 pb-4">
-        <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-2">{label}</p>
-        <div className="h-1.5 rounded-full bg-slate-800 mb-2">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">{label}</p>
+        <div className="h-1.5 rounded-full bg-muted mb-2">
           <div className={`h-full rounded-full ${colorMap[color]} transition-all`} style={{ width: `${pct}%` }} />
         </div>
         <p className={`text-xl font-bold font-mono ${textColorMap[color]}`}>
           {unit === "$" ? formatCurrency(value) : `${value}${unit}`}
         </p>
-        <p className="text-[11px] text-slate-500">{subtext}</p>
+        <p className="text-[11px] text-muted-foreground">{subtext}</p>
       </CardContent>
     </Card>
   );
