@@ -192,6 +192,274 @@
   --sidebar-ring: #00ff88;
 }
 
+/* Mission Control: CRT scanline overlay */
+.mc-scanline {
+  position: relative;
+}
+.mc-scanline::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 136, 0.03) 2px,
+    rgba(0, 255, 136, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Mission Control: panel base */
+.mc-panel {
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+  position: relative;
+}
+.mc-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+  z-index: 1;
+}
+.mc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #1e2035;
+}
+.mc-panel-title {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  color: #00d4ff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Mission Control: badges */
+.mc-badge {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+.mc-badge-green { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
+.mc-badge-cyan { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
+.mc-badge-amber { background: rgba(255, 184, 0, 0.1); color: #ffb800; }
+.mc-badge-red { background: rgba(255, 51, 85, 0.1); color: #ff3355; }
+
+/* Mission Control: gauge cards */
+.mc-gauge-card {
+  flex: 1;
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+  padding: 12px;
+  position: relative;
+}
+.mc-gauge-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+}
+
+/* Mission Control: blinking cursor */
+@keyframes mc-blink {
+  50% { opacity: 0; }
+}
+.mc-blink {
+  animation: mc-blink 1.2s step-end infinite;
+}
+
+/* Mission Control: alert dots */
+.mc-alert-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mc-alert-dot-red { background: #ff3355; box-shadow: 0 0 6px #ff3355; }
+.mc-alert-dot-amber { background: #ffb800; box-shadow: 0 0 6px #ffb800; }
+.mc-alert-dot-green { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+
+/* Mission Control: technician dots with pulse rings */
+.mc-tech-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+.mc-tech-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid;
+  opacity: 0.4;
+  animation: mc-pulse-ring 2s ease-out infinite;
+}
+@keyframes mc-pulse-ring {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.mc-tech-dot-green { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+.mc-tech-dot-green::after { border-color: #00ff88; }
+.mc-tech-dot-cyan { background: #00d4ff; box-shadow: 0 0 10px #00d4ff; }
+.mc-tech-dot-cyan::after { border-color: #00d4ff; }
+.mc-tech-dot-amber { background: #ffb800; box-shadow: 0 0 10px #ffb800; }
+.mc-tech-dot-amber::after { border-color: #ffb800; }
+.mc-tech-dot-red { background: #ff3355; box-shadow: 0 0 10px #ff3355; }
+.mc-tech-dot-red::after { border-color: #ff3355; }
+
+/* Mission Control: site-wide card styling — glow border, sharp corners */
+[data-theme="mission-control"] [data-slot="card"] {
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+  box-shadow: none;
+  position: relative;
+}
+[data-theme="mission-control"] [data-slot="card"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+  z-index: 1;
+}
+
+/* Mission Control: card titles in cyan monospace */
+[data-theme="mission-control"] [data-slot="card-title"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #00d4ff;
+}
+
+/* Mission Control: table styling */
+[data-theme="mission-control"] [data-slot="table-container"] {
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+}
+[data-theme="mission-control"] [data-slot="table-head"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #5a5e72;
+}
+[data-theme="mission-control"] [data-slot="table-row"] {
+  border-bottom-color: rgba(30, 32, 53, 0.5);
+}
+[data-theme="mission-control"] [data-slot="table-row"]:hover {
+  background: rgba(0, 255, 136, 0.02);
+}
+
+/* Mission Control: inputs — dark, sharp */
+[data-theme="mission-control"] [data-slot="input"],
+[data-theme="mission-control"] [data-slot="textarea"] {
+  background: #0a0a0f;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+  color: #c8ccd8;
+  font-family: var(--font-jetbrains-mono);
+}
+[data-theme="mission-control"] [data-slot="input"]:focus,
+[data-theme="mission-control"] [data-slot="textarea"]:focus {
+  border-color: #00ff88;
+  box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.2);
+}
+
+/* Mission Control: buttons — sharp, neon */
+[data-theme="mission-control"] [data-slot="button"] {
+  border-radius: 2px;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* Mission Control: badges — monospace, sharp */
+[data-theme="mission-control"] [data-slot="badge"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  border-radius: 1px;
+  text-transform: uppercase;
+}
+
+/* Mission Control: tabs */
+[data-theme="mission-control"] [data-slot="tabs-list"] {
+  background: #0f1018;
+  border-radius: 2px;
+}
+[data-theme="mission-control"] [data-slot="tabs-trigger"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 1px;
+}
+
+/* Mission Control: form labels */
+[data-theme="mission-control"] [data-slot="form-label"],
+[data-theme="mission-control"] [data-slot="label"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #5a5e72;
+}
+
+/* Mission Control: breadcrumb */
+[data-theme="mission-control"] [data-slot="breadcrumb-list"] {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* Mission Control: dropdowns & popovers */
+[data-theme="mission-control"] [data-slot="dropdown-menu-content"],
+[data-theme="mission-control"] [data-slot="popover-content"] {
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Mission Control: dialog & sheet */
+[data-theme="mission-control"] [data-slot="dialog-content"] {
+  background: #0f1018;
+  border: 1px solid #1e2035;
+  border-radius: 2px;
+}
+[data-theme="mission-control"] [data-slot="sheet-content"] {
+  background: #0f1018;
+  border-color: #1e2035;
+}
+
+/* Mission Control: separator */
+[data-theme="mission-control"] [data-slot="separator"] {
+  border-color: #1e2035;
+}
+
 /* Glass Command Center (Design 9) — Dark glassmorphism, indigo accent */
 /* Sidebar: rgba(255,255,255,0.06), Bg: dark overlay, Accent: #818cf8 */
 [data-theme="glass"] {
