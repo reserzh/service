@@ -664,6 +664,191 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
+/* Glass: dashboard card component */
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.glass-card-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.glass-card-header h3 {
+  font-family: var(--font-space-grotesk);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.2px;
+}
+
+/* Glass: site-wide card styling — frosted glass, rounded */
+[data-theme="glass"] [data-slot="card"] {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Glass: card titles */
+[data-theme="glass"] [data-slot="card-title"] {
+  font-family: var(--font-space-grotesk);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.2px;
+}
+
+/* Glass: table styling */
+[data-theme="glass"] [data-slot="table-container"] {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+[data-theme="glass"] [data-slot="table-head"] {
+  font-family: var(--font-space-grotesk);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+[data-theme="glass"] [data-slot="table-row"] {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+[data-theme="glass"] [data-slot="table-row"]:hover {
+  background: rgba(129, 140, 248, 0.06);
+}
+
+/* Glass: inputs — frosted, rounded */
+[data-theme="glass"] [data-slot="input"],
+[data-theme="glass"] [data-slot="textarea"] {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-space-grotesk);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+[data-theme="glass"] [data-slot="input"]:focus,
+[data-theme="glass"] [data-slot="textarea"]:focus {
+  border-color: rgba(129, 140, 248, 0.5);
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+[data-theme="glass"] [data-slot="input"]::placeholder,
+[data-theme="glass"] [data-slot="textarea"]::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Glass: buttons — rounded, glass effect */
+[data-theme="glass"] [data-slot="button"] {
+  border-radius: 10px;
+  font-family: var(--font-space-grotesk);
+  font-weight: 500;
+}
+[data-theme="glass"] [data-slot="button"][data-variant="outline"] {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Glass: badges — pill-shaped, frosted */
+[data-theme="glass"] [data-slot="badge"] {
+  font-family: var(--font-space-grotesk);
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+
+/* Glass: tabs — frosted pill list */
+[data-theme="glass"] [data-slot="tabs-list"] {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+[data-theme="glass"] [data-slot="tabs-trigger"] {
+  font-family: var(--font-space-grotesk);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+}
+[data-theme="glass"] [data-slot="tabs-trigger"][data-state="active"] {
+  background: rgba(129, 140, 248, 0.2);
+  color: #c7d2fe;
+}
+
+/* Glass: form labels */
+[data-theme="glass"] [data-slot="form-label"],
+[data-theme="glass"] [data-slot="label"] {
+  font-family: var(--font-space-grotesk);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.2px;
+}
+
+/* Glass: breadcrumb */
+[data-theme="glass"] [data-slot="breadcrumb-list"] {
+  font-family: var(--font-space-grotesk);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Glass: separator */
+[data-theme="glass"] [data-slot="separator"] {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Glass: dropdowns & popovers — frosted panels */
+[data-theme="glass"] [data-slot="dropdown-menu-content"],
+[data-theme="glass"] [data-slot="popover-content"] {
+  background: rgba(26, 21, 48, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Glass: dialog — frosted glass panel */
+[data-theme="glass"] [data-slot="dialog-content"] {
+  background: rgba(26, 21, 48, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass: sheet — frosted side panel */
+[data-theme="glass"] [data-slot="sheet-content"] {
+  background: rgba(26, 21, 48, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Glass: atmospheric background on main content */
+[data-theme="glass"] > main {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 40%);
+}
+
 /* Executive: colored gradient top-border on stat cards */
 [data-theme="executive"] [data-stat-color] {
   position: relative;

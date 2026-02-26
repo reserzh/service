@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { BlueprintTopNav } from "@/components/layout/blueprint-top-nav";
+import { GlassTopNav } from "@/components/layout/glass-top-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -10,6 +11,7 @@ import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 import { cn } from "@/lib/utils";
 
 const DARK_THEMES = new Set(["mission-control", "glass", "executive"]);
+const TOP_NAV_THEMES = new Set(["blueprint", "glass"]);
 
 export default async function DashboardLayout({
   children,
@@ -27,7 +29,14 @@ export default async function DashboardLayout({
 
   const settings = (tenantRow?.settings ?? {}) as TenantSettings;
   const preset = (settings.dashboardPreset ?? "classic") as string;
-  const isBlueprint = preset === "blueprint";
+  const hasTopNav = TOP_NAV_THEMES.has(preset);
+
+  const userProps = {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+  };
 
   return (
     <div
@@ -37,30 +46,20 @@ export default async function DashboardLayout({
         DARK_THEMES.has(preset) && "dark"
       )}
     >
-      {isBlueprint ? (
+      {hasTopNav ? (
         <>
-          <BlueprintTopNav
-            user={{
-              firstName: user.firstName,
-              lastName: user.lastName,
-              email: user.email,
-              role: user.role,
-            }}
-          />
+          {preset === "blueprint" ? (
+            <BlueprintTopNav user={userProps} />
+          ) : (
+            <GlassTopNav user={userProps} />
+          )}
           <main className="flex-1 overflow-auto p-6">{children}</main>
         </>
       ) : (
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <Topbar
-              user={{
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                role: user.role,
-              }}
-            />
+            <Topbar user={userProps} />
             <main className="flex-1 overflow-auto p-6">{children}</main>
           </SidebarInset>
         </SidebarProvider>
