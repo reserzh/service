@@ -15,6 +15,8 @@ import Toast from "react-native-toast-message";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useJob, useUpdateJobStatus, useUpdateJob, useNotifyOnMyWay } from "@/hooks/useJobs";
 import { useCreateInvoiceFromJob } from "@/hooks/useInvoices";
+import { useSettingsStore } from "@/stores/settings";
+import { FieldModeToggle } from "@/components/common/FieldModeToggle";
 import { CreateInvoiceSheet } from "@/components/job/CreateInvoiceSheet";
 import { JobDetailTabs, type JobTab } from "@/components/job/JobDetailTabs";
 import { JobOverviewTab } from "@/components/job/JobOverviewTab";
@@ -37,6 +39,7 @@ export default function JobDetailScreen() {
   const updateJob = useUpdateJob();
   const notifyOnMyWay = useNotifyOnMyWay();
   const createInvoice = useCreateInvoiceFromJob();
+  const fieldMode = useSettingsStore((s) => s.fieldMode);
   const [activeTab, setActiveTab] = useState<JobTab>("overview");
   const invoiceSheetRef = useRef<BottomSheet>(null);
 
@@ -158,20 +161,38 @@ export default function JobDetailScreen() {
   const showOnMyWay = job.status === "dispatched";
   const showCreateInvoice = job.status === "completed";
 
+  // Field mode sizing
+  const quickActionSize = fieldMode ? "w-14 h-14" : "w-10 h-10";
+  const quickActionIconSize = fieldMode ? 24 : 18;
+  const quickActionLabelSize = fieldMode ? "text-xs" : "text-[10px]";
+
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View className={`flex-1 ${fieldMode ? "bg-black" : "bg-slate-50 dark:bg-slate-950"}`}>
       {/* Fixed Header */}
-      <View className="px-4 pt-4 pb-2 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <View className="flex-row items-center gap-2 mb-1">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-            {job.jobNumber}
-          </Text>
-          <Text className="text-xs text-slate-300">·</Text>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-            {job.jobType}
-          </Text>
+      <View className={`px-4 pt-4 pb-2 border-b ${
+        fieldMode
+          ? "bg-[#1A1A1A] border-[#333]"
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+      }`}>
+        <View className="flex-row items-center justify-between mb-1">
+          <View className="flex-row items-center gap-2">
+            <Text className={`text-xs font-medium uppercase tracking-wide ${
+              fieldMode ? "text-[#B0B0B0]" : "text-slate-500"
+            }`}>
+              {job.jobNumber}
+            </Text>
+            <Text className={`text-xs ${fieldMode ? "text-[#555]" : "text-slate-300"}`}>·</Text>
+            <Text className={`text-xs font-medium uppercase tracking-wide ${
+              fieldMode ? "text-[#B0B0B0]" : "text-slate-500"
+            }`}>
+              {job.jobType}
+            </Text>
+          </View>
+          <FieldModeToggle />
         </View>
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-2" numberOfLines={1}>
+        <Text className={`font-bold mb-2 ${
+          fieldMode ? "text-2xl text-white" : "text-xl text-slate-900 dark:text-white"
+        }`} numberOfLines={1}>
           {job.summary}
         </Text>
         <View className="flex-row items-center gap-2">
@@ -199,19 +220,25 @@ export default function JobDetailScreen() {
       </View>
 
       {/* Fixed Bottom Action Bar */}
-      <View className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-8">
+      <View className={`border-t px-4 pt-3 pb-8 ${
+        fieldMode
+          ? "bg-[#1A1A1A] border-[#333]"
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+      }`}>
         {/* Quick action icons */}
-        <View className="flex-row items-center justify-center gap-4 mb-3">
+        <View className={`flex-row items-center justify-center mb-3 ${fieldMode ? "gap-5" : "gap-4"}`}>
           <Pressable
             onPress={handleCall}
             className="items-center gap-1 active:opacity-70"
             accessibilityLabel="Call customer"
             accessibilityRole="button"
           >
-            <View className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 items-center justify-center">
-              <Phone size={18} color="#10b981" />
+            <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+              fieldMode ? "bg-emerald-900" : "bg-emerald-100 dark:bg-emerald-900"
+            }`}>
+              <Phone size={quickActionIconSize} color={fieldMode ? "#00E676" : "#10b981"} />
             </View>
-            <Text className="text-[10px] text-slate-500">Call</Text>
+            <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Call</Text>
           </Pressable>
 
           <Pressable
@@ -220,10 +247,12 @@ export default function JobDetailScreen() {
             accessibilityLabel="Navigate to job"
             accessibilityRole="button"
           >
-            <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 items-center justify-center">
-              <Navigation size={18} color="#3b82f6" />
+            <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+              fieldMode ? "bg-blue-900" : "bg-blue-100 dark:bg-blue-900"
+            }`}>
+              <Navigation size={quickActionIconSize} color="#3b82f6" />
             </View>
-            <Text className="text-[10px] text-slate-500">Navigate</Text>
+            <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Navigate</Text>
           </Pressable>
 
           <Pressable
@@ -232,10 +261,12 @@ export default function JobDetailScreen() {
             accessibilityLabel="Add note"
             accessibilityRole="button"
           >
-            <View className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900 items-center justify-center">
-              <MessageSquare size={18} color="#8b5cf6" />
+            <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+              fieldMode ? "bg-violet-900" : "bg-violet-100 dark:bg-violet-900"
+            }`}>
+              <MessageSquare size={quickActionIconSize} color="#8b5cf6" />
             </View>
-            <Text className="text-[10px] text-slate-500">Note</Text>
+            <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Note</Text>
           </Pressable>
 
           <Pressable
@@ -244,10 +275,12 @@ export default function JobDetailScreen() {
             accessibilityLabel="Take photo"
             accessibilityRole="button"
           >
-            <View className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900 items-center justify-center">
-              <Camera size={18} color="#f59e0b" />
+            <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+              fieldMode ? "bg-amber-900" : "bg-amber-100 dark:bg-amber-900"
+            }`}>
+              <Camera size={quickActionIconSize} color="#f59e0b" />
             </View>
-            <Text className="text-[10px] text-slate-500">Photo</Text>
+            <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Photo</Text>
           </Pressable>
 
           {showOnMyWay && (
@@ -257,10 +290,12 @@ export default function JobDetailScreen() {
               accessibilityLabel="Notify customer on my way"
               accessibilityRole="button"
             >
-              <View className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 items-center justify-center">
-                <Send size={18} color="#6366f1" />
+              <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+                fieldMode ? "bg-indigo-900" : "bg-indigo-100 dark:bg-indigo-900"
+              }`}>
+                <Send size={quickActionIconSize} color="#6366f1" />
               </View>
-              <Text className="text-[10px] text-slate-500">On Way</Text>
+              <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>On Way</Text>
             </Pressable>
           )}
 
@@ -271,10 +306,12 @@ export default function JobDetailScreen() {
               accessibilityLabel="Create invoice"
               accessibilityRole="button"
             >
-              <View className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 items-center justify-center">
-                <Receipt size={18} color="#22c55e" />
+              <View className={`rounded-full items-center justify-center ${quickActionSize} ${
+                fieldMode ? "bg-green-900" : "bg-green-100 dark:bg-green-900"
+              }`}>
+                <Receipt size={quickActionIconSize} color="#22c55e" />
               </View>
-              <Text className="text-[10px] text-slate-500">Invoice</Text>
+              <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Invoice</Text>
             </Pressable>
           )}
         </View>
@@ -284,9 +321,14 @@ export default function JobDetailScreen() {
           <Pressable
             onPress={() => handleStatusChange(primaryAction.status)}
             disabled={updateStatus.isPending}
-            className={`flex-row items-center justify-center py-4 rounded-2xl ${primaryAction.color} active:opacity-90`}
+            className={`flex-row items-center justify-center rounded-2xl active:opacity-90 ${
+              fieldMode
+                ? "bg-[#FF6B00] py-5"
+                : `${primaryAction.color} py-4`
+            }`}
+            style={fieldMode ? { minHeight: 64 } : undefined}
           >
-            <Text className="text-lg font-bold text-white">
+            <Text className={`font-bold text-white ${fieldMode ? "text-xl" : "text-lg"}`}>
               {updateStatus.isPending ? "Updating..." : primaryAction.label}
             </Text>
           </Pressable>

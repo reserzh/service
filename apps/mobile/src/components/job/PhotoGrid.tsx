@@ -5,12 +5,18 @@ import { X, Trash2 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 import { useDeletePhoto } from "@/hooks/usePhotos";
+import { PendingSyncBadge } from "@/components/ui/PendingSyncBadge";
 import { formatRelativeTime } from "@/lib/format";
 import { SUPABASE_URL } from "@/lib/constants";
 import type { JobPhoto } from "@/types/models";
 
+interface OfflinePhoto extends JobPhoto {
+  _offlineUri?: string;
+  _pending?: boolean;
+}
+
 interface PhotoGridProps {
-  photos: JobPhoto[];
+  photos: OfflinePhoto[];
   jobId: string;
 }
 
@@ -20,15 +26,22 @@ const GRID_GAP = 8;
 const COLUMNS = 3;
 const THUMB_SIZE = (SCREEN_WIDTH - GRID_PADDING * 2 - GRID_GAP * (COLUMNS - 1)) / COLUMNS;
 
-function getPhotoUrl(storagePath: string): string {
-  return `${SUPABASE_URL}/storage/v1/object/public/job-photos/${storagePath}`;
+function getPhotoUrl(photo: OfflinePhoto): string {
+  // Use local file URI for offline/pending photos
+  if (photo._offlineUri) {
+    return photo._offlineUri;
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/job-photos/${photo.storagePath}`;
 }
 
 export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
-  const [selectedPhoto, setSelectedPhoto] = useState<JobPhoto | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<OfflinePhoto | null>(null);
   const deletePhoto = useDeletePhoto();
 
-  const handleLongPress = (photo: JobPhoto) => {
+  const handleLongPress = (photo: OfflinePhoto) => {
+    // Don't allow deleting pending offline photos from server
+    if (photo._pending) return;
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert("Delete Photo", "Are you sure you want to delete this photo?", [
       { text: "Cancel", style: "cancel" },
@@ -59,7 +72,7 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
   const hasMultipleTypes = [beforePhotos.length > 0, afterPhotos.length > 0, generalPhotos.length > 0]
     .filter(Boolean).length > 1;
 
-  const renderGrid = (group: JobPhoto[]) => (
+  const renderGrid = (group: OfflinePhoto[]) => (
     <View className="flex-row flex-wrap" style={{ gap: GRID_GAP }}>
       {group.map((photo) => (
         <Pressable
@@ -69,7 +82,7 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
           className="rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700"
         >
           <Image
-            source={{ uri: getPhotoUrl(photo.storagePath) }}
+            source={{ uri: getPhotoUrl(photo) }}
             style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
             contentFit="cover"
             transition={200}
@@ -84,6 +97,12 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
               <Text className="text-[10px] font-semibold text-white uppercase">
                 {photo.photoType}
               </Text>
+            </View>
+          )}
+          {/* Pending sync badge */}
+          {photo._pending && (
+            <View className="absolute top-1 right-1">
+              <PendingSyncBadge count={1} compact />
             </View>
           )}
         </Pressable>
@@ -130,19 +149,23 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
               )}
               {selectedPhoto && (
                 <Text className="text-white/60 text-xs">
-                  {formatRelativeTime(selectedPhoto.createdAt)}
+                  {selectedPhoto._pending
+                    ? "Pending upload"
+                    : formatRelativeTime(selectedPhoto.createdAt)}
                 </Text>
               )}
             </View>
             <View className="flex-row items-center gap-4">
-              <Pressable
-                onPress={() => {
-                  if (selectedPhoto) handleLongPress(selectedPhoto);
-                }}
-                hitSlop={12}
-              >
-                <Trash2 size={22} color="#ef4444" />
-              </Pressable>
+              {selectedPhoto && !selectedPhoto._pending && (
+                <Pressable
+                  onPress={() => {
+                    if (selectedPhoto) handleLongPress(selectedPhoto);
+                  }}
+                  hitSlop={12}
+                >
+                  <Trash2 size={22} color="#ef4444" />
+                </Pressable>
+              )}
               <Pressable onPress={() => setSelectedPhoto(null)} hitSlop={12}>
                 <X size={24} color="#fff" />
               </Pressable>
@@ -150,7 +173,7 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
           </View>
           {selectedPhoto && (
             <Image
-              source={{ uri: getPhotoUrl(selectedPhoto.storagePath) }}
+              source={{ uri: getPhotoUrl(selectedPhoto) }}
               style={{ flex: 1 }}
               contentFit="contain"
               transition={200}

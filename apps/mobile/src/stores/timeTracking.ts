@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { timeTrackingApi } from "@/api/endpoints/time-tracking";
+import { useSyncQueueStore } from "./syncQueue";
 
 type ClockStatus = "clocked_out" | "clocked_in" | "on_break";
 
@@ -30,6 +31,17 @@ async function persist(state: Partial<TimeTrackingState>) {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function enqueueTimeTracking(
+  action: string,
+  coords?: { latitude: number; longitude: number }
+) {
+  useSyncQueueStore.getState().enqueue(
+    "time_tracking",
+    { action, coords },
+    []
+  );
+}
+
 export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
   status: "clocked_out",
   clockInTime: null,
@@ -48,8 +60,9 @@ export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
         latitude: coords?.latitude,
         longitude: coords?.longitude,
       });
-    } catch (error) {
-      console.error("[TimeTracking] Failed to sync clock-in:", error);
+    } catch {
+      // Queue failed call for later sync
+      enqueueTimeTracking("clock_in", coords);
     } finally {
       set({ isLoading: false });
     }
@@ -64,8 +77,8 @@ export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
         latitude: coords?.latitude,
         longitude: coords?.longitude,
       });
-    } catch (error) {
-      console.error("[TimeTracking] Failed to sync clock-out:", error);
+    } catch {
+      enqueueTimeTracking("clock_out", coords);
     } finally {
       set({ isLoading: false });
     }
@@ -81,8 +94,8 @@ export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
         latitude: coords?.latitude,
         longitude: coords?.longitude,
       });
-    } catch (error) {
-      console.error("[TimeTracking] Failed to sync break-start:", error);
+    } catch {
+      enqueueTimeTracking("break_start", coords);
     } finally {
       set({ isLoading: false });
     }
@@ -102,8 +115,8 @@ export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
         latitude: coords?.latitude,
         longitude: coords?.longitude,
       });
-    } catch (error) {
-      console.error("[TimeTracking] Failed to sync break-end:", error);
+    } catch {
+      enqueueTimeTracking("break_end", coords);
     } finally {
       set({ isLoading: false });
     }

@@ -9,12 +9,15 @@ import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import { useAuthInit } from "@/hooks/useAuth";
 import { useAuthStore } from "@/stores/auth";
+import { useSettingsStore } from "@/stores/settings";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { BiometricLock } from "@/components/auth/BiometricLock";
 import { setupNotificationHandler } from "@/lib/notifications";
 import { queryPersister } from "@/lib/queryPersister";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { OfflineBanner } from "@/components/common/OfflineBanner";
+import { useSyncQueueStore } from "@/stores/syncQueue";
+import { startSyncListeners } from "@/lib/syncProcessor";
 
 // Sync TanStack Query online state with NetInfo
 onlineManager.setEventListener((setOnline) => {
@@ -40,6 +43,15 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const cleanup = setupNotificationHandler();
     return cleanup;
+  }, []);
+
+  // Restore persisted stores and start sync listeners
+  useEffect(() => {
+    useSyncQueueStore.getState().restore();
+    useSettingsStore.getState().restore();
+
+    const cleanupSync = startSyncListeners(queryClient);
+    return cleanupSync;
   }, []);
 
   return <>{children}</>;

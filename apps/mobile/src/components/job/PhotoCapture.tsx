@@ -3,9 +3,11 @@ import { View, Text, TextInput, Pressable, Alert, ActionSheetIOS, Platform } fro
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
-import { Camera, Image as ImageIcon } from "lucide-react-native";
+import { Camera } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
 import { useUploadPhoto } from "@/hooks/usePhotos";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { useSettingsStore } from "@/stores/settings";
 import type { PhotoType } from "@/types/models";
 
 const PHOTO_TYPE_OPTIONS: { value: PhotoType; label: string }[] = [
@@ -20,6 +22,8 @@ interface PhotoCaptureProps {
 
 export function PhotoCapture({ jobId }: PhotoCaptureProps) {
   const uploadPhoto = useUploadPhoto();
+  const { isOffline } = useNetworkStatus();
+  const fieldMode = useSettingsStore((s) => s.fieldMode);
   const [caption, setCaption] = useState("");
   const [photoType, setPhotoType] = useState<PhotoType>("general");
   const [showCaption, setShowCaption] = useState(false);
@@ -92,13 +96,18 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
         photoType,
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Toast.show({ type: "success", text1: "Photo uploaded" });
+      Toast.show({
+        type: "success",
+        text1: isOffline ? "Photo saved" : "Photo uploaded",
+        text2: isOffline ? "Will upload when online" : undefined,
+      });
       setSelectedUri(null);
       setCaption("");
       setPhotoType("general");
       setShowCaption(false);
-    } catch {
-      Toast.show({ type: "error", text1: "Failed to upload photo" });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to upload photo";
+      Toast.show({ type: "error", text1: msg });
     }
   };
 
@@ -111,17 +120,23 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
             <Pressable
               key={opt.value}
               onPress={() => setPhotoType(opt.value)}
-              className={`flex-1 items-center py-2 rounded-lg border ${
+              className={`flex-1 items-center rounded-lg border ${
+                fieldMode ? "py-3.5" : "py-2"
+              } ${
                 photoType === opt.value
-                  ? "bg-blue-500 border-blue-500"
+                  ? fieldMode
+                    ? "bg-orange-500 border-orange-500"
+                    : "bg-blue-500 border-blue-500"
                   : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
               }`}
             >
               <Text
-                className={`text-xs font-medium ${
+                className={`font-medium ${fieldMode ? "text-sm" : "text-xs"} ${
                   photoType === opt.value
                     ? "text-white"
-                    : "text-slate-600 dark:text-slate-300"
+                    : fieldMode
+                      ? "text-white"
+                      : "text-slate-600 dark:text-slate-300"
                 }`}
               >
                 {opt.label}
@@ -134,7 +149,9 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
           onChangeText={setCaption}
           placeholder="Add a caption (optional)"
           placeholderTextColor="#94a3b8"
-          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white"
+          className={`bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-slate-900 dark:text-white ${
+            fieldMode ? "py-4 text-base" : "py-3 text-sm"
+          }`}
         />
         <View className="flex-row gap-2">
           <Button
@@ -149,7 +166,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
             }}
           />
           <Button
-            title="Upload"
+            title={isOffline ? "Save" : "Upload"}
             size="sm"
             onPress={handleUpload}
             loading={uploadPhoto.isPending}

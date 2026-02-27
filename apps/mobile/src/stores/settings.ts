@@ -10,12 +10,14 @@ interface SettingsState {
   notifyJobAssigned: boolean;
   notifyJobUpdated: boolean;
   notifyNewEstimate: boolean;
+  fieldMode: boolean;
 
   setPreferredMapApp: (app: MapApp) => void;
   setDarkModeOverride: (mode: DarkModeOverride) => void;
   setNotifyJobAssigned: (enabled: boolean) => void;
   setNotifyJobUpdated: (enabled: boolean) => void;
   setNotifyNewEstimate: (enabled: boolean) => void;
+  setFieldMode: (enabled: boolean) => void;
   restore: () => Promise<void>;
 }
 
@@ -28,6 +30,7 @@ async function persist(state: Partial<SettingsState>) {
     notifyJobAssigned: state.notifyJobAssigned,
     notifyJobUpdated: state.notifyJobUpdated,
     notifyNewEstimate: state.notifyNewEstimate,
+    fieldMode: state.fieldMode,
   };
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
@@ -38,6 +41,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   notifyJobAssigned: true,
   notifyJobUpdated: true,
   notifyNewEstimate: true,
+  fieldMode: false,
 
   setPreferredMapApp: (preferredMapApp) => {
     set({ preferredMapApp });
@@ -59,6 +63,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set({ notifyNewEstimate });
     persist(get());
   },
+  setFieldMode: (fieldMode) => {
+    set({ fieldMode });
+    persist(get());
+  },
 
   restore: async () => {
     try {
@@ -71,6 +79,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           notifyJobAssigned: data.notifyJobAssigned ?? true,
           notifyJobUpdated: data.notifyJobUpdated ?? true,
           notifyNewEstimate: data.notifyNewEstimate ?? true,
+          fieldMode: data.fieldMode ?? false,
         });
       }
     } catch {
