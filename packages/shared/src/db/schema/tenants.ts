@@ -48,4 +48,6 @@ export type TenantSettings = {
   jobPrefix?: string;
   dashboardPreset?: string;
   dashboardHiddenWidgets?: string[];
+  operatorType?: "solo" | "crew";
+  tradeType?: string;
 };

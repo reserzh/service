@@ -9,6 +9,9 @@ import type {
   PaymentMethod,
   PaymentStatus,
   SignerRole,
+  PhotoType,
+  TimeEntryType,
+  JobAssignmentRole,
   CommunicationType,
   CommunicationStatus,
   CommunicationTrigger,
@@ -119,6 +122,10 @@ export interface Job {
   internalNotes: string | null;
   customerNotes: string | null;
   totalAmount: string | null;
+  startLatitude: string | null;
+  startLongitude: string | null;
+  endLatitude: string | null;
+  endLongitude: string | null;
   isRecurring: boolean;
   createdBy: string;
   createdAt: string;
@@ -130,7 +137,21 @@ export interface JobChecklistItem {
   jobId: string;
   label: string;
   completed: boolean;
+  completedAt: string | null;
+  completedBy: string | null;
   sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JobAssignment {
+  id: string;
+  jobId: string;
+  userId: string;
+  role: JobAssignmentRole;
+  assignedAt: string;
+  assignedBy: string;
+  user?: Pick<User, "id" | "firstName" | "lastName" | "color">;
 }
 
 export interface JobWithRelations extends Job {
@@ -141,7 +162,8 @@ export interface JobWithRelations extends Job {
   notes: JobNote[];
   photos: JobPhoto[];
   signatures: JobSignature[];
-  checklist?: JobChecklistItem[];
+  checklist: JobChecklistItem[];
+  assignments: JobAssignment[];
 }
 
 export interface JobLineItem {
@@ -173,6 +195,7 @@ export interface JobPhoto {
   userId: string;
   storagePath: string;
   caption: string | null;
+  photoType: PhotoType;
   takenAt: string | null;
   createdAt: string;
 }
@@ -352,6 +375,7 @@ export interface CommunicationLogEntry {
   tenantId: string;
   templateId: string | null;
   recipientEmail: string;
+  recipientPhone: string | null;
   recipientName: string;
   subject: string;
   channel: CommunicationType;
@@ -427,6 +451,21 @@ export interface AgreementWithRelations extends Agreement {
   property: Property;
   services: AgreementService[];
   visits: AgreementVisit[];
+}
+
+// ---- Time Tracking Models ----
+
+export interface TimeEntry {
+  id: string;
+  tenantId: string;
+  userId: string;
+  type: TimeEntryType;
+  timestamp: string;
+  latitude: string | null;
+  longitude: string | null;
+  jobId: string | null;
+  notes: string | null;
+  createdAt: string;
 }
 
 // ---- Customer Portal Models ----

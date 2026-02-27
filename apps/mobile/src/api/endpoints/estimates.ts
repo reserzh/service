@@ -29,6 +29,7 @@ export interface CreateEstimateInput {
     description?: string;
     isRecommended?: boolean;
     items: {
+      pricebookItemId?: string;
       description: string;
       quantity: number;
       unitPrice: number;

@@ -15,6 +15,8 @@ import {
   jobPriorityEnum,
   lineItemTypeEnum,
   signerRoleEnum,
+  photoTypeEnum,
+  jobAssignmentRoleEnum,
 } from "./enums";
 import { tenants } from "./tenants";
 import { users } from "./users";
@@ -55,6 +57,10 @@ export const jobs = fieldserviceSchema.table(
     internalNotes: text("internal_notes"),
     customerNotes: text("customer_notes"),
     totalAmount: decimal("total_amount", { precision: 12, scale: 2 }),
+    startLatitude: decimal("start_latitude", { precision: 10, scale: 7 }),
+    startLongitude: decimal("start_longitude", { precision: 10, scale: 7 }),
+    endLatitude: decimal("end_latitude", { precision: 10, scale: 7 }),
+    endLongitude: decimal("end_longitude", { precision: 10, scale: 7 }),
     isRecurring: boolean("is_recurring").default(false).notNull(),
     recurrenceRule: jsonb("recurrence_rule"),
     createdBy: uuid("created_by")
@@ -81,6 +87,8 @@ export const jobsRelations = relations(jobs, ({ one, many }) => ({
   notes: many(jobNotes),
   photos: many(jobPhotos),
   signatures: many(jobSignatures),
+  checklist: many(jobChecklistItems),
+  assignments: many(jobAssignments),
 }));
 
 // Job Line Items
@@ -153,6 +161,7 @@ export const jobPhotos = fieldserviceSchema.table(
       .references(() => users.id),
     storagePath: text("storage_path").notNull(),
     caption: varchar("caption", { length: 255 }),
+    photoType: photoTypeEnum("photo_type").default("general").notNull(),
     takenAt: timestamp("taken_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -186,4 +195,63 @@ export const jobSignatures = fieldserviceSchema.table(
 
 export const jobSignaturesRelations = relations(jobSignatures, ({ one }) => ({
   job: one(jobs, { fields: [jobSignatures.jobId], references: [jobs.id] }),
+}));
+
+// Job Checklist Items
+export const jobChecklistItems = fieldserviceSchema.table(
+  "job_checklist_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 500 }).notNull(),
+    completed: boolean("completed").default(false).notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    completedBy: uuid("completed_by").references(() => users.id),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("job_checklist_items_job_idx").on(table.tenantId, table.jobId)]
+);
+
+export const jobChecklistItemsRelations = relations(jobChecklistItems, ({ one }) => ({
+  job: one(jobs, { fields: [jobChecklistItems.jobId], references: [jobs.id] }),
+  completedByUser: one(users, { fields: [jobChecklistItems.completedBy], references: [users.id] }),
+}));
+
+// Job Assignments (crew)
+export const jobAssignments = fieldserviceSchema.table(
+  "job_assignments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    role: jobAssignmentRoleEnum("role").default("member").notNull(),
+    assignedAt: timestamp("assigned_at", { withTimezone: true }).defaultNow().notNull(),
+    assignedBy: uuid("assigned_by")
+      .notNull()
+      .references(() => users.id),
+  },
+  (table) => [
+    index("job_assignments_job_idx").on(table.tenantId, table.jobId),
+    index("job_assignments_user_idx").on(table.tenantId, table.userId),
+  ]
+);
+
+export const jobAssignmentsRelations = relations(jobAssignments, ({ one }) => ({
+  job: one(jobs, { fields: [jobAssignments.jobId], references: [jobs.id] }),
+  user: one(users, { fields: [jobAssignments.userId], references: [users.id] }),
+  assignedByUser: one(users, { fields: [jobAssignments.assignedBy], references: [users.id] }),
 }));

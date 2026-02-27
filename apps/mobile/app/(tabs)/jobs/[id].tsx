@@ -10,6 +10,7 @@ import {
   Receipt,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useJob, useUpdateJobStatus, useUpdateJob, useNotifyOnMyWay } from "@/hooks/useJobs";
@@ -72,8 +73,22 @@ export default function JobDetailScreen() {
             text: "Confirm",
             onPress: async () => {
               try {
+                // Capture GPS for in_progress and completed transitions
+                let coords: { latitude: number; longitude: number } | undefined;
+                if (newStatus === "in_progress" || newStatus === "completed") {
+                  try {
+                    const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
+                    if (permStatus === "granted") {
+                      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+                      coords = { latitude: loc.coords.latitude, longitude: loc.coords.longitude };
+                    }
+                  } catch {
+                    // GPS capture is best-effort, proceed without coords
+                  }
+                }
+
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                await updateStatus.mutateAsync({ id: job.id, status: newStatus });
+                await updateStatus.mutateAsync({ id: job.id, status: newStatus, coords });
                 Toast.show({ type: "success", text1: "Status updated" });
               } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : "Failed to update status";

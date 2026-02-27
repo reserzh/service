@@ -73,7 +73,7 @@ export function RegisterForm() {
           return;
         }
 
-        router.push("/dashboard");
+        router.push("/onboarding");
         router.refresh();
       } else if (data.user && !data.session) {
         // Email confirmation required

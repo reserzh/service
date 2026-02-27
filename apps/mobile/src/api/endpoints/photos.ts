@@ -1,12 +1,12 @@
 import { api } from "../client";
-import type { JobPhoto, ApiResponse } from "@/types/models";
+import type { JobPhoto, PhotoType, ApiResponse } from "@/types/models";
 
 export const photosApi = {
   list(jobId: string) {
     return api.get<ApiResponse<JobPhoto[]>>(`/jobs/${jobId}/photos`);
   },
 
-  upload(jobId: string, fileUri: string, mimeType: string, caption?: string) {
+  upload(jobId: string, fileUri: string, mimeType: string, caption?: string, photoType?: PhotoType) {
     const formData = new FormData();
 
     // React Native FormData accepts uri-based objects
@@ -18,6 +18,10 @@ export const photosApi = {
 
     if (caption) {
       formData.append("caption", caption);
+    }
+
+    if (photoType) {
+      formData.append("photoType", photoType);
     }
 
     return api.upload<ApiResponse<JobPhoto>>(`/jobs/${jobId}/photos`, formData);

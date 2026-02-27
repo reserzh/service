@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { BlueprintTopNav } from "@/components/layout/blueprint-top-nav";
@@ -21,11 +22,18 @@ export default async function DashboardLayout({
   const user = await requireAuth();
 
   const tenantRow = await db
-    .select({ settings: tenants.settings })
+    .select({
+      settings: tenants.settings,
+      onboardingCompleted: tenants.onboardingCompleted,
+    })
     .from(tenants)
     .where(eq(tenants.id, user.tenantId))
     .limit(1)
     .then((rows) => rows[0]);
+
+  if (tenantRow && !tenantRow.onboardingCompleted) {
+    redirect("/onboarding");
+  }
 
   const settings = (tenantRow?.settings ?? {}) as TenantSettings;
   const preset = (settings.dashboardPreset ?? "classic") as string;

@@ -52,25 +52,71 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
     return <Text className="text-sm text-slate-400 italic">No photos yet</Text>;
   }
 
+  // Group photos: Before > After > General
+  const beforePhotos = photos.filter((p) => p.photoType === "before");
+  const afterPhotos = photos.filter((p) => p.photoType === "after");
+  const generalPhotos = photos.filter((p) => p.photoType === "general" || !p.photoType);
+  const hasMultipleTypes = [beforePhotos.length > 0, afterPhotos.length > 0, generalPhotos.length > 0]
+    .filter(Boolean).length > 1;
+
+  const renderGrid = (group: JobPhoto[]) => (
+    <View className="flex-row flex-wrap" style={{ gap: GRID_GAP }}>
+      {group.map((photo) => (
+        <Pressable
+          key={photo.id}
+          onPress={() => setSelectedPhoto(photo)}
+          onLongPress={() => handleLongPress(photo)}
+          className="rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700"
+        >
+          <Image
+            source={{ uri: getPhotoUrl(photo.storagePath) }}
+            style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
+            contentFit="cover"
+            transition={200}
+          />
+          {/* Type badge */}
+          {photo.photoType && photo.photoType !== "general" && (
+            <View
+              className={`absolute top-1 left-1 px-1.5 py-0.5 rounded ${
+                photo.photoType === "before" ? "bg-blue-500" : "bg-green-500"
+              }`}
+            >
+              <Text className="text-[10px] font-semibold text-white uppercase">
+                {photo.photoType}
+              </Text>
+            </View>
+          )}
+        </Pressable>
+      ))}
+    </View>
+  );
+
   return (
     <>
-      <View className="flex-row flex-wrap" style={{ gap: GRID_GAP }}>
-        {photos.map((photo) => (
-          <Pressable
-            key={photo.id}
-            onPress={() => setSelectedPhoto(photo)}
-            onLongPress={() => handleLongPress(photo)}
-            className="rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700"
-          >
-            <Image
-              source={{ uri: getPhotoUrl(photo.storagePath) }}
-              style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
-              contentFit="cover"
-              transition={200}
-            />
-          </Pressable>
-        ))}
-      </View>
+      {hasMultipleTypes ? (
+        <View className="gap-3">
+          {beforePhotos.length > 0 && (
+            <View>
+              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Before</Text>
+              {renderGrid(beforePhotos)}
+            </View>
+          )}
+          {afterPhotos.length > 0 && (
+            <View>
+              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">After</Text>
+              {renderGrid(afterPhotos)}
+            </View>
+          )}
+          {generalPhotos.length > 0 && (
+            <View>
+              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">General</Text>
+              {renderGrid(generalPhotos)}
+            </View>
+          )}
+        </View>
+      ) : (
+        renderGrid(photos)
+      )}
 
       {/* Fullscreen modal */}
       <Modal visible={!!selectedPhoto} transparent animationType="fade">

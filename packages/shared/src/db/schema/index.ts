@@ -12,3 +12,5 @@ export * from "./pricebook";
 export * from "./communications";
 export * from "./agreements";
 export * from "./portal";
+export * from "./templates";
+export * from "./time-tracking";

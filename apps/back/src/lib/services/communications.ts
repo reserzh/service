@@ -20,8 +20,9 @@ import { logActivity } from "./activity";
 import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { sendEmail } from "@/lib/email/resend";
+import { sendSms } from "@/lib/sms/twilio";
 import { renderTemplate } from "@/lib/email/templates";
-import type { CommunicationTrigger } from "@fieldservice/api-types/enums";
+import type { CommunicationTrigger, CommunicationType } from "@fieldservice/api-types/enums";
 
 // ---------- Types ----------
 
@@ -34,6 +35,7 @@ export interface ListTemplatesParams {
 
 export interface CreateTemplateInput {
   name: string;
+  type?: CommunicationType;
   trigger?: string;
   subject: string;
   body: string;
@@ -128,6 +130,7 @@ export async function createTemplate(ctx: UserContext, input: CreateTemplateInpu
     .values({
       tenantId: ctx.tenantId,
       name: input.name,
+      type: input.type || "email",
       trigger: input.trigger || null,
       subject: input.subject,
       body: input.body,
@@ -180,7 +183,9 @@ export async function deleteTemplate(ctx: UserContext, templateId: string) {
 export async function sendCommunication(
   ctx: UserContext,
   params: {
+    channel?: CommunicationType;
     recipientEmail: string;
+    recipientPhone?: string;
     recipientName: string;
     subject: string;
     body: string;
@@ -190,6 +195,8 @@ export async function sendCommunication(
     variables?: Record<string, string | number | undefined | null>;
   }
 ) {
+  const channel = params.channel || "email";
+
   const renderedSubject = params.variables
     ? renderTemplate(params.subject, params.variables)
     : params.subject;
@@ -205,9 +212,10 @@ export async function sendCommunication(
       tenantId: ctx.tenantId,
       templateId: params.templateId || null,
       recipientEmail: params.recipientEmail,
+      recipientPhone: params.recipientPhone || null,
       recipientName: params.recipientName,
       subject: renderedSubject,
-      channel: "email",
+      channel,
       status: "pending",
       entityType: params.entityType || null,
       entityId: params.entityId || null,
@@ -216,23 +224,37 @@ export async function sendCommunication(
     .returning();
 
   try {
-    const result = await sendEmail({
-      to: params.recipientEmail,
-      subject: renderedSubject,
-      html: renderedBody,
-    });
+    let messageId: string;
+
+    if (channel === "sms") {
+      if (!params.recipientPhone) {
+        throw new Error("Recipient phone number is required for SMS");
+      }
+      const result = await sendSms({
+        to: params.recipientPhone,
+        body: renderedBody,
+      });
+      messageId = result.sid;
+    } else {
+      const result = await sendEmail({
+        to: params.recipientEmail,
+        subject: renderedSubject,
+        html: renderedBody,
+      });
+      messageId = result.id;
+    }
 
     // Update log with success
     await db
       .update(communicationLog)
       .set({
         status: "sent",
-        resendMessageId: result.id,
+        resendMessageId: messageId,
         sentAt: new Date(),
       })
       .where(eq(communicationLog.id, logEntry.id));
 
-    return { ...logEntry, status: "sent", resendMessageId: result.id };
+    return { ...logEntry, status: "sent", resendMessageId: messageId };
   } catch (error) {
     // Update log with failure
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -256,14 +278,15 @@ export async function sendTriggeredCommunication(
   trigger: CommunicationTrigger,
   params: {
     recipientEmail: string;
+    recipientPhone?: string;
     recipientName: string;
     entityType: string;
     entityId: string;
     variables: Record<string, string | number | undefined | null>;
   }
 ) {
-  // Find active template for this trigger
-  const [template] = await db
+  // Find all active templates for this trigger (could be email + SMS)
+  const templates = await db
     .select()
     .from(communicationTemplates)
     .where(
@@ -273,21 +296,51 @@ export async function sendTriggeredCommunication(
         eq(communicationTemplates.isActive, true)
       )
     )
-    .orderBy(desc(communicationTemplates.isDefault))
-    .limit(1);
+    .orderBy(desc(communicationTemplates.isDefault));
 
-  if (!template) return null; // No template configured for this trigger
+  if (templates.length === 0) return null; // No templates configured for this trigger
 
-  return sendCommunication(ctx, {
-    recipientEmail: params.recipientEmail,
-    recipientName: params.recipientName,
-    subject: template.subject,
-    body: template.body,
-    templateId: template.id,
-    entityType: params.entityType,
-    entityId: params.entityId,
-    variables: params.variables,
-  });
+  // Group by type and send best match for each channel
+  const emailTemplate = templates.find((t) => t.type === "email");
+  const smsTemplate = templates.find((t) => t.type === "sms");
+
+  const promises: Promise<unknown>[] = [];
+
+  if (emailTemplate) {
+    promises.push(
+      sendCommunication(ctx, {
+        channel: "email",
+        recipientEmail: params.recipientEmail,
+        recipientName: params.recipientName,
+        subject: emailTemplate.subject,
+        body: emailTemplate.body,
+        templateId: emailTemplate.id,
+        entityType: params.entityType,
+        entityId: params.entityId,
+        variables: params.variables,
+      })
+    );
+  }
+
+  if (smsTemplate && params.recipientPhone) {
+    promises.push(
+      sendCommunication(ctx, {
+        channel: "sms",
+        recipientEmail: params.recipientEmail,
+        recipientPhone: params.recipientPhone,
+        recipientName: params.recipientName,
+        subject: smsTemplate.subject,
+        body: smsTemplate.body,
+        templateId: smsTemplate.id,
+        entityType: params.entityType,
+        entityId: params.entityId,
+        variables: params.variables,
+      })
+    );
+  }
+
+  const results = await Promise.allSettled(promises);
+  return results;
 }
 
 // ---------- Communication Log ----------

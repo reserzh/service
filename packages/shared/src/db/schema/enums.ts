@@ -10,6 +10,9 @@ import {
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
   SIGNER_ROLES,
+  PHOTO_TYPES,
+  TIME_ENTRY_TYPES,
+  JOB_ASSIGNMENT_ROLES,
   COMMUNICATION_TYPES,
   COMMUNICATION_STATUSES,
   AGREEMENT_STATUSES,
@@ -34,6 +37,7 @@ export const invoiceStatusEnum = fieldserviceSchema.enum("invoice_status", [...I
 export const paymentMethodEnum = fieldserviceSchema.enum("payment_method", [...PAYMENT_METHODS]);
 export const paymentStatusEnum = fieldserviceSchema.enum("payment_status", [...PAYMENT_STATUSES]);
 export const signerRoleEnum = fieldserviceSchema.enum("signer_role", [...SIGNER_ROLES]);
+export const photoTypeEnum = fieldserviceSchema.enum("photo_type", [...PHOTO_TYPES]);
 
 // Website / CMS enums
 export const pageStatusEnum = fieldserviceSchema.enum("page_status", [
@@ -71,6 +75,12 @@ export const bookingStatusEnum = fieldserviceSchema.enum("booking_status", [
   "confirmed",
   "canceled",
 ]);
+
+// Time tracking enums
+export const timeEntryTypeEnum = fieldserviceSchema.enum("time_entry_type", [...TIME_ENTRY_TYPES]);
+
+// Job assignment enums
+export const jobAssignmentRoleEnum = fieldserviceSchema.enum("job_assignment_role", [...JOB_ASSIGNMENT_ROLES]);
 
 // Communication enums
 export const communicationTypeEnum = fieldserviceSchema.enum("communication_type", [...COMMUNICATION_TYPES]);

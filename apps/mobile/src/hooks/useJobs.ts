@@ -21,8 +21,8 @@ export function useUpdateJobStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: JobStatus }) =>
-      jobsApi.changeStatus(id, status),
+    mutationFn: ({ id, status, coords }: { id: string; status: JobStatus; coords?: { latitude: number; longitude: number } }) =>
+      jobsApi.changeStatus(id, status, coords),
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
       queryClient.invalidateQueries({ queryKey: ["jobs", id] });

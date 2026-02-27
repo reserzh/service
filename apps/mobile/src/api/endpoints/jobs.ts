@@ -37,8 +37,11 @@ export const jobsApi = {
     return api.patch<ApiResponse<Job>>(`/jobs/${id}`, data);
   },
 
-  changeStatus(id: string, status: JobStatus) {
-    return api.post<ApiResponse<Job>>(`/jobs/${id}/status`, { status });
+  changeStatus(id: string, status: JobStatus, coords?: { latitude: number; longitude: number }) {
+    return api.post<ApiResponse<Job>>(`/jobs/${id}/status`, {
+      status,
+      ...(coords && { latitude: coords.latitude, longitude: coords.longitude }),
+    });
   },
 
   assign(id: string, technicianId: string | null) {

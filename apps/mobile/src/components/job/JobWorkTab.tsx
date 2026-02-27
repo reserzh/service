@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { JobChecklist } from "./JobChecklist";
 import { TimeTracker } from "./TimeTracker";
-import { useAddJobNote } from "@/hooks/useJobs";
+import { useAddJobNote, useToggleChecklistItem } from "@/hooks/useJobs";
 import { formatCurrency } from "@/lib/format";
 import { VALID_TRANSITIONS } from "@/lib/constants";
 import type { JobWithRelations, JobStatus, JobChecklistItem } from "@/types/models";
@@ -21,6 +21,7 @@ interface JobWorkTabProps {
 
 export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: JobWorkTabProps) {
   const addNote = useAddJobNote();
+  const toggleChecklist = useToggleChecklistItem();
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
 
@@ -63,7 +64,9 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
           </Text>
           <JobChecklist
             items={checklistItems}
-            onToggle={() => {}}
+            onToggle={(itemId, completed) => {
+              toggleChecklist.mutate({ jobId: job.id, itemId, completed });
+            }}
           />
         </Card>
       )}

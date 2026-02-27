@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { LineItemType } from "@/types/models";
 
 interface DraftOptionItem {
+  pricebookItemId?: string;
   description: string;
   quantity: string;
   unitPrice: string;

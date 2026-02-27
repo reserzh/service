@@ -12,6 +12,9 @@ import {
   updateJobLineItem,
   deleteJobLineItem,
   addJobNote,
+  createChecklistItem,
+  toggleChecklistItem,
+  deleteChecklistItem,
 } from "@/lib/services/jobs";
 import { getActionErrorMessage } from "@/lib/api/errors";
 
@@ -245,5 +248,59 @@ export async function addJobNoteAction(
     return {};
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to add note.") };
+  }
+}
+
+// ---------- Checklist ----------
+
+export async function addChecklistItemAction(
+  jobId: string,
+  formData: FormData
+): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    const label = formData.get("label") as string;
+
+    if (!label?.trim()) {
+      return { error: "Label is required." };
+    }
+
+    await createChecklistItem(ctx, jobId, label.trim());
+
+    revalidatePath(`/jobs/${jobId}`);
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to add checklist item.") };
+  }
+}
+
+export async function toggleChecklistItemAction(
+  jobId: string,
+  itemId: string,
+  completed: boolean
+): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    await toggleChecklistItem(ctx, jobId, itemId, completed);
+
+    revalidatePath(`/jobs/${jobId}`);
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update checklist item.") };
+  }
+}
+
+export async function deleteChecklistItemAction(
+  jobId: string,
+  itemId: string
+): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    await deleteChecklistItem(ctx, jobId, itemId);
+
+    revalidatePath(`/jobs/${jobId}`);
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to delete checklist item.") };
   }
 }

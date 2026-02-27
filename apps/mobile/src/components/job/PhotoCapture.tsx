@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { View, Text, TextInput, Alert, ActionSheetIOS, Platform } from "react-native";
+import { View, Text, TextInput, Pressable, Alert, ActionSheetIOS, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 import { Camera, Image as ImageIcon } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
 import { useUploadPhoto } from "@/hooks/usePhotos";
+import type { PhotoType } from "@/types/models";
+
+const PHOTO_TYPE_OPTIONS: { value: PhotoType; label: string }[] = [
+  { value: "before", label: "Before" },
+  { value: "after", label: "After" },
+  { value: "general", label: "General" },
+];
 
 interface PhotoCaptureProps {
   jobId: string;
@@ -14,6 +21,7 @@ interface PhotoCaptureProps {
 export function PhotoCapture({ jobId }: PhotoCaptureProps) {
   const uploadPhoto = useUploadPhoto();
   const [caption, setCaption] = useState("");
+  const [photoType, setPhotoType] = useState<PhotoType>("general");
   const [showCaption, setShowCaption] = useState(false);
   const [selectedUri, setSelectedUri] = useState<string | null>(null);
   const [selectedMimeType, setSelectedMimeType] = useState("image/jpeg");
@@ -81,11 +89,13 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
         fileUri: selectedUri,
         mimeType: selectedMimeType,
         caption: caption.trim() || undefined,
+        photoType,
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({ type: "success", text1: "Photo uploaded" });
       setSelectedUri(null);
       setCaption("");
+      setPhotoType("general");
       setShowCaption(false);
     } catch {
       Toast.show({ type: "error", text1: "Failed to upload photo" });
@@ -95,6 +105,30 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
   if (showCaption && selectedUri) {
     return (
       <View className="gap-2">
+        {/* Photo type selector */}
+        <View className="flex-row gap-2">
+          {PHOTO_TYPE_OPTIONS.map((opt) => (
+            <Pressable
+              key={opt.value}
+              onPress={() => setPhotoType(opt.value)}
+              className={`flex-1 items-center py-2 rounded-lg border ${
+                photoType === opt.value
+                  ? "bg-blue-500 border-blue-500"
+                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+              }`}
+            >
+              <Text
+                className={`text-xs font-medium ${
+                  photoType === opt.value
+                    ? "text-white"
+                    : "text-slate-600 dark:text-slate-300"
+                }`}
+              >
+                {opt.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
         <TextInput
           value={caption}
           onChangeText={setCaption}
@@ -111,6 +145,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
               setSelectedUri(null);
               setShowCaption(false);
               setCaption("");
+              setPhotoType("general");
             }}
           />
           <Button

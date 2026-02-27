@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Linking, ScrollView } from "react-native";
-import { Phone, MapPin, Clock, Info } from "lucide-react-native";
+import { Phone, MapPin, Clock, Info, Users } from "lucide-react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Card } from "@/components/ui/Card";
 import { JobStatusBadge } from "@/components/job/JobStatusBadge";
@@ -105,9 +105,43 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         </Animated.View>
       )}
 
+      {/* Crew */}
+      {job.assignments && job.assignments.length > 0 && (
+        <Animated.View className="mb-3" entering={FadeInDown.delay(240).duration(400).springify()}>
+          <Card>
+            <View className="flex-row items-center gap-2 mb-2">
+              <Users size={16} color="#6366f1" />
+              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                Crew
+              </Text>
+            </View>
+            {job.assignments.map((a) => (
+              <View key={a.id} className="flex-row items-center gap-2 mb-1.5">
+                <View
+                  className="w-6 h-6 rounded-full items-center justify-center"
+                  style={{ backgroundColor: a.user?.color ?? "#94a3b8" }}
+                >
+                  <Text className="text-[10px] font-bold text-white">
+                    {a.user?.firstName?.[0]}{a.user?.lastName?.[0]}
+                  </Text>
+                </View>
+                <Text className="text-sm text-slate-700 dark:text-slate-300">
+                  {a.user?.firstName} {a.user?.lastName}
+                </Text>
+                <View className={`px-1.5 py-0.5 rounded ${a.role === "lead" ? "bg-blue-100 dark:bg-blue-900" : "bg-slate-100 dark:bg-slate-800"}`}>
+                  <Text className={`text-[10px] font-medium ${a.role === "lead" ? "text-blue-700 dark:text-blue-300" : "text-slate-600 dark:text-slate-400"}`}>
+                    {a.role}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </Card>
+        </Animated.View>
+      )}
+
       {/* Description */}
       {job.description && (
-        <Animated.View className="mb-3" entering={FadeInDown.delay(240).duration(400).springify()}>
+        <Animated.View className="mb-3" entering={FadeInDown.delay(320).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
               <Info size={16} color="#64748b" />

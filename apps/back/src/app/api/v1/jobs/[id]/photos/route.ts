@@ -47,6 +47,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const formData = await req.formData();
     const file = formData.get("photo") as File | null;
     const caption = (formData.get("caption") as string) || null;
+    const photoType = (formData.get("photoType") as string) || "general";
+    const validPhotoTypes = ["general", "before", "after"];
+    const resolvedPhotoType = validPhotoTypes.includes(photoType) ? photoType : "general";
 
     if (!file) {
       return NextResponse.json(
@@ -119,6 +122,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
         userId: ctx.userId,
         storagePath,
         caption,
+        photoType: resolvedPhotoType as "general" | "before" | "after",
         takenAt: new Date(),
       })
       .returning();

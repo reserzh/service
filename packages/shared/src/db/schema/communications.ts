@@ -53,6 +53,7 @@ export const communicationLog = fieldserviceSchema.table(
       .references(() => tenants.id, { onDelete: "cascade" }),
     templateId: uuid("template_id").references(() => communicationTemplates.id),
     recipientEmail: varchar("recipient_email", { length: 255 }).notNull(),
+    recipientPhone: varchar("recipient_phone", { length: 50 }),
     recipientName: varchar("recipient_name", { length: 255 }).notNull(),
     subject: varchar("subject", { length: 500 }).notNull(),
     channel: communicationTypeEnum("channel").default("email").notNull(),

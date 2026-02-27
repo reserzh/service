@@ -5,6 +5,8 @@ import {
   jobNotes,
   jobPhotos,
   jobSignatures,
+  jobChecklistItems,
+  jobAssignments,
   customers,
   properties,
   users,
@@ -233,6 +235,8 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
     notes,
     photos,
     signatures,
+    checklist,
+    assignmentsRaw,
   ] = await Promise.all([
     db.select().from(customers).where(and(eq(customers.id, job.customerId), eq(customers.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
     db.select().from(properties).where(and(eq(properties.id, job.propertyId), eq(properties.tenantId, ctx.tenantId))).limit(1).then((r) => r[0]),
@@ -262,7 +266,34 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
     db.select().from(jobSignatures)
       .where(and(eq(jobSignatures.jobId, jobId), eq(jobSignatures.tenantId, ctx.tenantId)))
       .orderBy(desc(jobSignatures.createdAt)),
+    db.select().from(jobChecklistItems)
+      .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
+      .orderBy(asc(jobChecklistItems.sortOrder)),
+    db.select({
+        id: jobAssignments.id,
+        jobId: jobAssignments.jobId,
+        userId: jobAssignments.userId,
+        role: jobAssignments.role,
+        assignedAt: jobAssignments.assignedAt,
+        assignedBy: jobAssignments.assignedBy,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userColor: users.color,
+      })
+      .from(jobAssignments)
+      .leftJoin(users, eq(jobAssignments.userId, users.id))
+      .where(and(eq(jobAssignments.jobId, jobId), eq(jobAssignments.tenantId, ctx.tenantId))),
   ]);
+
+  const assignments = assignmentsRaw.map((a) => ({
+    id: a.id,
+    jobId: a.jobId,
+    userId: a.userId,
+    role: a.role,
+    assignedAt: a.assignedAt,
+    assignedBy: a.assignedBy,
+    user: { id: a.userId, firstName: a.userFirstName!, lastName: a.userLastName!, color: a.userColor! },
+  }));
 
   return {
     ...job,
@@ -273,6 +304,8 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
     notes,
     photos,
     signatures,
+    checklist,
+    assignments,
   };
 }
 
@@ -410,7 +443,8 @@ export async function updateJob(ctx: UserContext, jobId: string, input: UpdateJo
 export async function changeJobStatus(
   ctx: UserContext,
   jobId: string,
-  newStatus: JobStatus
+  newStatus: JobStatus,
+  options?: { latitude?: number; longitude?: number }
 ) {
   assertPermission(ctx, "jobs", "update");
 
@@ -432,10 +466,16 @@ export async function changeJobStatus(
   };
 
   if (newStatus === "dispatched") updateData.dispatchedAt = new Date();
-  if (newStatus === "in_progress") updateData.actualStart = new Date();
+  if (newStatus === "in_progress") {
+    updateData.actualStart = new Date();
+    if (options?.latitude != null) updateData.startLatitude = String(options.latitude);
+    if (options?.longitude != null) updateData.startLongitude = String(options.longitude);
+  }
   if (newStatus === "completed") {
     updateData.actualEnd = new Date();
     updateData.completedAt = new Date();
+    if (options?.latitude != null) updateData.endLatitude = String(options.latitude);
+    if (options?.longitude != null) updateData.endLongitude = String(options.longitude);
   }
 
   const [updated] = await db
@@ -532,6 +572,78 @@ export async function assignJob(
   });
 
   return updated;
+}
+
+// ---------- Crew Assignments ----------
+
+export async function addJobAssignment(
+  ctx: UserContext,
+  jobId: string,
+  userId: string,
+  role: "lead" | "member" = "member"
+) {
+  assertPermission(ctx, "schedule", "update");
+  await getJob(ctx, jobId);
+
+  // Verify user exists and can be dispatched
+  const [tech] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(and(eq(users.id, userId), eq(users.tenantId, ctx.tenantId), eq(users.canBeDispatched, true)))
+    .limit(1);
+  if (!tech) throw new NotFoundError("Technician");
+
+  // Check for existing assignment
+  const [existing] = await db
+    .select({ id: jobAssignments.id })
+    .from(jobAssignments)
+    .where(and(
+      eq(jobAssignments.jobId, jobId),
+      eq(jobAssignments.userId, userId),
+      eq(jobAssignments.tenantId, ctx.tenantId)
+    ))
+    .limit(1);
+  if (existing) {
+    throw new AppError("DUPLICATE_ASSIGNMENT", "Technician is already assigned to this job", 409);
+  }
+
+  const [assignment] = await db
+    .insert(jobAssignments)
+    .values({
+      tenantId: ctx.tenantId,
+      jobId,
+      userId,
+      role,
+      assignedBy: ctx.userId,
+    })
+    .returning();
+
+  await logActivity(ctx, "job", jobId, "crew_member_added", { userId, role });
+
+  return assignment;
+}
+
+export async function removeJobAssignment(
+  ctx: UserContext,
+  jobId: string,
+  userId: string
+) {
+  assertPermission(ctx, "schedule", "update");
+
+  const [deleted] = await db
+    .delete(jobAssignments)
+    .where(and(
+      eq(jobAssignments.jobId, jobId),
+      eq(jobAssignments.userId, userId),
+      eq(jobAssignments.tenantId, ctx.tenantId)
+    ))
+    .returning();
+
+  if (!deleted) throw new NotFoundError("Assignment");
+
+  await logActivity(ctx, "job", jobId, "crew_member_removed", { userId });
+
+  return deleted;
 }
 
 // ---------- Line Items ----------
@@ -783,4 +895,131 @@ export async function getTechnicians(ctx: UserContext) {
       )
     )
     .orderBy(asc(users.firstName));
+}
+
+// ---------- Checklist ----------
+
+export async function getJobChecklist(ctx: UserContext, jobId: string) {
+  assertPermission(ctx, "jobs", "read");
+  await getJob(ctx, jobId);
+
+  return db
+    .select()
+    .from(jobChecklistItems)
+    .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
+    .orderBy(asc(jobChecklistItems.sortOrder));
+}
+
+export async function createChecklistItem(
+  ctx: UserContext,
+  jobId: string,
+  label: string
+) {
+  assertPermission(ctx, "jobs", "update");
+  await getJob(ctx, jobId);
+
+  const maxSort = await db
+    .select({ max: sql<number>`coalesce(max(${jobChecklistItems.sortOrder}), -1)` })
+    .from(jobChecklistItems)
+    .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)));
+
+  const [item] = await db
+    .insert(jobChecklistItems)
+    .values({
+      tenantId: ctx.tenantId,
+      jobId,
+      label,
+      sortOrder: Number(maxSort[0].max) + 1,
+    })
+    .returning();
+
+  return item;
+}
+
+export async function toggleChecklistItem(
+  ctx: UserContext,
+  jobId: string,
+  itemId: string,
+  completed: boolean
+) {
+  assertPermission(ctx, "jobs", "update");
+  await getJob(ctx, jobId);
+
+  const [existing] = await db
+    .select()
+    .from(jobChecklistItems)
+    .where(
+      and(
+        eq(jobChecklistItems.id, itemId),
+        eq(jobChecklistItems.jobId, jobId),
+        eq(jobChecklistItems.tenantId, ctx.tenantId)
+      )
+    )
+    .limit(1);
+
+  if (!existing) throw new NotFoundError("Checklist item");
+
+  const [updated] = await db
+    .update(jobChecklistItems)
+    .set({
+      completed,
+      completedAt: completed ? new Date() : null,
+      completedBy: completed ? ctx.userId : null,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(jobChecklistItems.id, itemId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
+    .returning();
+
+  return updated;
+}
+
+export async function deleteChecklistItem(
+  ctx: UserContext,
+  jobId: string,
+  itemId: string
+) {
+  assertPermission(ctx, "jobs", "update");
+  await getJob(ctx, jobId);
+
+  await db
+    .delete(jobChecklistItems)
+    .where(
+      and(
+        eq(jobChecklistItems.id, itemId),
+        eq(jobChecklistItems.jobId, jobId),
+        eq(jobChecklistItems.tenantId, ctx.tenantId)
+      )
+    );
+}
+
+export async function bulkCreateChecklistItems(
+  ctx: UserContext,
+  jobId: string,
+  labels: string[]
+) {
+  assertPermission(ctx, "jobs", "update");
+  await getJob(ctx, jobId);
+
+  if (labels.length === 0) return [];
+
+  const maxSort = await db
+    .select({ max: sql<number>`coalesce(max(${jobChecklistItems.sortOrder}), -1)` })
+    .from(jobChecklistItems)
+    .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)));
+
+  const startOrder = Number(maxSort[0].max) + 1;
+
+  const items = await db
+    .insert(jobChecklistItems)
+    .values(
+      labels.map((label, idx) => ({
+        tenantId: ctx.tenantId,
+        jobId,
+        label,
+        sortOrder: startOrder + idx,
+      }))
+    )
+    .returning();
+
+  return items;
 }

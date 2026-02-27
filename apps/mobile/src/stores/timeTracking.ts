@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { timeTrackingApi } from "@/api/endpoints/time-tracking";
 
 type ClockStatus = "clocked_out" | "clocked_in" | "on_break";
 
@@ -8,11 +9,12 @@ interface TimeTrackingState {
   clockInTime: string | null;
   breakStartTime: string | null;
   totalBreakMs: number;
+  isLoading: boolean;
 
-  clockIn: () => void;
-  clockOut: () => void;
-  startBreak: () => void;
-  endBreak: () => void;
+  clockIn: (coords?: { latitude: number; longitude: number }) => void;
+  clockOut: (coords?: { latitude: number; longitude: number }) => void;
+  startBreak: (coords?: { latitude: number; longitude: number }) => void;
+  endBreak: (coords?: { latitude: number; longitude: number }) => void;
   restore: () => Promise<void>;
 }
 
@@ -33,32 +35,78 @@ export const useTimeTrackingStore = create<TimeTrackingState>((set, get) => ({
   clockInTime: null,
   breakStartTime: null,
   totalBreakMs: 0,
+  isLoading: false,
 
-  clockIn: () => {
+  clockIn: async (coords) => {
     const now = new Date().toISOString();
-    set({ status: "clocked_in", clockInTime: now, breakStartTime: null, totalBreakMs: 0 });
+    // Optimistic update
+    set({ status: "clocked_in", clockInTime: now, breakStartTime: null, totalBreakMs: 0, isLoading: true });
     persist({ ...get(), status: "clocked_in", clockInTime: now });
+
+    try {
+      await timeTrackingApi.clockIn({
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+      });
+    } catch (error) {
+      console.error("[TimeTracking] Failed to sync clock-in:", error);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
-  clockOut: () => {
-    set({ status: "clocked_out", clockInTime: null, breakStartTime: null, totalBreakMs: 0 });
+  clockOut: async (coords) => {
+    set({ status: "clocked_out", clockInTime: null, breakStartTime: null, totalBreakMs: 0, isLoading: true });
     persist({ status: "clocked_out", clockInTime: null, breakStartTime: null, totalBreakMs: 0 });
+
+    try {
+      await timeTrackingApi.clockOut({
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+      });
+    } catch (error) {
+      console.error("[TimeTracking] Failed to sync clock-out:", error);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
-  startBreak: () => {
+  startBreak: async (coords) => {
     const now = new Date().toISOString();
-    set({ status: "on_break", breakStartTime: now });
+    set({ status: "on_break", breakStartTime: now, isLoading: true });
     persist({ ...get(), status: "on_break", breakStartTime: now });
+
+    try {
+      await timeTrackingApi.breakStart({
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+      });
+    } catch (error) {
+      console.error("[TimeTracking] Failed to sync break-start:", error);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
-  endBreak: () => {
+  endBreak: async (coords) => {
     const state = get();
     const breakMs = state.breakStartTime
       ? Date.now() - new Date(state.breakStartTime).getTime()
       : 0;
     const totalBreakMs = state.totalBreakMs + breakMs;
-    set({ status: "clocked_in", breakStartTime: null, totalBreakMs });
+    set({ status: "clocked_in", breakStartTime: null, totalBreakMs, isLoading: true });
     persist({ ...get(), status: "clocked_in", breakStartTime: null, totalBreakMs });
+
+    try {
+      await timeTrackingApi.breakEnd({
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
+      });
+    } catch (error) {
+      console.error("[TimeTracking] Failed to sync break-end:", error);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   restore: async () => {
