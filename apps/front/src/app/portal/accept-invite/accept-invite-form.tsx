@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createPortalBrowserClient } from "@/lib/portal-supabase";
+import { createPortalBrowserClient } from "@/lib/portal-supabase-browser";
 
 export function AcceptInviteForm({ token }: { token: string }) {
   const router = useRouter();

@@ -11,7 +11,7 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import { createPortalBrowserClient } from "@/lib/portal-supabase";
+import { createPortalBrowserClient } from "@/lib/portal-supabase-browser";
 
 const navItems = [
   { label: "Dashboard", href: "/portal/dashboard", icon: LayoutDashboard },

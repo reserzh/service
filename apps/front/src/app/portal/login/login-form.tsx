@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createPortalBrowserClient } from "@/lib/portal-supabase";
+import { createPortalBrowserClient } from "@/lib/portal-supabase-browser";
 
 export function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +26,8 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/portal/dashboard");
+      // Full page navigation ensures cookies are sent on the server request
+      window.location.href = "/portal/dashboard";
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

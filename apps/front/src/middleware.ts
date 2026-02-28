@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || "yourplatform.com";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
 
@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
 
   // Portal paths — handle Supabase session refresh
   if (url.pathname.startsWith("/portal")) {
-    return handlePortalMiddleware(request);
+    return await handlePortalMiddleware(request);
   }
 
   let tenantSlug: string | null = null;
@@ -64,14 +64,20 @@ export function middleware(request: NextRequest) {
 async function handlePortalMiddleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return response;
   }
 
+  // Derive cookie name from public URL so it matches the browser client
+  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl;
+  const publicHost = new URL(publicUrl!).hostname.split(".")[0];
+  const cookieName = `sb-${publicHost}-auth-token`;
+
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: { name: cookieName },
     cookies: {
       getAll() {
         return request.cookies.getAll();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createPortalBrowserClient } from "@/lib/portal-supabase";
+import { createPortalBrowserClient } from "@/lib/portal-supabase-browser";
 
 export function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
