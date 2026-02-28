@@ -26,21 +26,21 @@ export async function middleware(request: NextRequest) {
   // Rate limit auth endpoints (strictest)
   if (pathname.startsWith("/api/v1/auth/")) {
     const ip = getClientIp(request);
-    const result = checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth);
+    const result = await checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth);
     if (!result.allowed) return rateLimitResponse(result.resetMs);
   }
 
   // Rate limit public form submissions
   if (pathname.match(/^\/api\/v1\/public\/.*\/bookings/)) {
     const ip = getClientIp(request);
-    const result = checkRateLimit(`booking:${ip}`, RATE_LIMITS.publicForm);
+    const result = await checkRateLimit(`booking:${ip}`, RATE_LIMITS.publicForm);
     if (!result.allowed) return rateLimitResponse(result.resetMs);
   }
 
   // General API rate limit
   if (pathname.startsWith("/api/v1/") && !pathname.startsWith("/api/v1/public/")) {
     const ip = getClientIp(request);
-    const result = checkRateLimit(`api:${ip}`, RATE_LIMITS.api);
+    const result = await checkRateLimit(`api:${ip}`, RATE_LIMITS.api);
     if (!result.allowed) return rateLimitResponse(result.resetMs);
   }
 

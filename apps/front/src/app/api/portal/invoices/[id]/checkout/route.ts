@@ -83,7 +83,9 @@ export async function POST(
     // Create Stripe Checkout session
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3201";
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      `${req.nextUrl.protocol}//${req.nextUrl.host}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",

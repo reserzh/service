@@ -30,21 +30,32 @@ export function middleware(request: NextRequest) {
   } else if (hostname === PLATFORM_DOMAIN || hostname === `www.${PLATFORM_DOMAIN}`) {
     // Main platform domain — no tenant
     return new NextResponse("Platform homepage", { status: 200 });
-  } else if (hostname === "localhost:3201" || hostname === "localhost") {
-    // Local dev — use x-tenant-slug header or query param for testing
-    tenantSlug = request.headers.get("x-tenant-slug") || url.searchParams.get("tenant") || "demo";
+  } else if (hostname.startsWith("localhost")) {
+    // Local dev — use query param or default
+    tenantSlug =
+      request.headers.get("x-tenant-slug") ||
+      url.searchParams.get("tenant") ||
+      (process.env.NEXT_PUBLIC_DEFAULT_TENANT_SLUG ?? "demo");
   } else {
     // Custom domain
     customDomain = hostname.replace(/^www\./, "");
   }
 
-  const response = NextResponse.next();
-
+  const requestHeaders = new Headers(request.headers);
   if (tenantSlug) {
-    response.headers.set("x-tenant-slug", tenantSlug);
+    requestHeaders.set("x-tenant-slug", tenantSlug);
   }
   if (customDomain) {
-    response.headers.set("x-custom-domain", customDomain);
+    requestHeaders.set("x-custom-domain", customDomain);
+  }
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  // Persist tenant slug in a cookie for local dev so internal links work
+  if (hostname.startsWith("localhost") && tenantSlug && tenantSlug !== "demo") {
+    response.headers.set("Set-Cookie", `x-tenant-slug=${tenantSlug}; Path=/; SameSite=Lax`);
   }
 
   return response;

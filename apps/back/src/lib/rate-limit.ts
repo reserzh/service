@@ -1,37 +1,12 @@
 /**
- * Simple in-memory sliding-window rate limiter.
- * Suitable for single-server deployments.
- * Replace with @upstash/ratelimit + Redis for multi-server setups.
+ * Distributed rate limiter using Upstash Redis.
+ * Falls back to in-memory sliding-window for local development.
+ *
+ * Production: Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN env vars.
  */
 
-interface RateLimitEntry {
-  timestamps: number[];
-  windowMs: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-const MAX_STORE_SIZE = 100_000;
-
-// Clean up expired entries every 60 seconds to prevent memory leaks
-const CLEANUP_INTERVAL = 60_000;
-let cleanupTimer: ReturnType<typeof setInterval> | null = null;
-
-function ensureCleanup() {
-  if (cleanupTimer) return;
-  cleanupTimer = setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store) {
-      entry.timestamps = entry.timestamps.filter((t) => now - t < entry.windowMs);
-      if (entry.timestamps.length === 0) {
-        store.delete(key);
-      }
-    }
-  }, CLEANUP_INTERVAL);
-  // Allow Node.js to exit even if the timer is running
-  if (typeof cleanupTimer === "object" && "unref" in cleanupTimer) {
-    cleanupTimer.unref();
-  }
-}
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 interface RateLimitConfig {
   /** Maximum number of requests in the window */
@@ -46,40 +21,83 @@ interface RateLimitResult {
   resetMs: number;
 }
 
-/**
- * Check if a request is allowed under the rate limit.
- * @param key - Unique identifier (e.g., IP address or user ID)
- * @param config - Rate limit configuration
- * @returns Whether the request is allowed and metadata
- */
-export function checkRateLimit(key: string, config: RateLimitConfig): RateLimitResult {
-  ensureCleanup();
+// --- Upstash Redis (production) ---
 
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
+
+const upstashLimiters = new Map<RateLimitConfig, Ratelimit>();
+
+function getUpstashLimiter(config: RateLimitConfig): Ratelimit {
+  let limiter = upstashLimiters.get(config);
+  if (!limiter) {
+    const windowSec = Math.ceil(config.windowMs / 1000);
+    limiter = new Ratelimit({
+      redis: redis!,
+      limiter: Ratelimit.slidingWindow(config.maxRequests, `${windowSec} s`),
+      prefix: "ratelimit",
+    });
+    upstashLimiters.set(config, limiter);
+  }
+  return limiter;
+}
+
+// --- In-memory fallback (local dev) ---
+
+const memoryStore = new Map<string, number[]>();
+const MAX_STORE_SIZE = 10_000;
+
+function checkMemoryRateLimit(
+  key: string,
+  config: RateLimitConfig
+): RateLimitResult {
   const now = Date.now();
-  const entry = store.get(key) ?? { timestamps: [], windowMs: config.windowMs };
+  const timestamps = (memoryStore.get(key) || []).filter(
+    (t) => now - t < config.windowMs
+  );
 
-  // Remove timestamps outside the window
-  entry.timestamps = entry.timestamps.filter((t) => now - t < config.windowMs);
-
-  if (entry.timestamps.length >= config.maxRequests) {
-    const oldestInWindow = entry.timestamps[0];
-    const resetMs = oldestInWindow + config.windowMs - now;
+  if (timestamps.length >= config.maxRequests) {
+    memoryStore.set(key, timestamps);
+    const resetMs = timestamps[0] + config.windowMs - now;
     return { allowed: false, remaining: 0, resetMs };
   }
 
-  // Cap store size to prevent memory exhaustion from IP rotation attacks
-  if (!store.has(key) && store.size >= MAX_STORE_SIZE) {
-    return { allowed: false, remaining: 0, resetMs: config.windowMs };
+  // Evict all if store grows too large (local dev only, not a concern)
+  if (!memoryStore.has(key) && memoryStore.size >= MAX_STORE_SIZE) {
+    memoryStore.clear();
   }
 
-  entry.timestamps.push(now);
-  store.set(key, entry);
+  timestamps.push(now);
+  memoryStore.set(key, timestamps);
 
   return {
     allowed: true,
-    remaining: config.maxRequests - entry.timestamps.length,
+    remaining: config.maxRequests - timestamps.length,
     resetMs: config.windowMs,
   };
+}
+
+// --- Public API ---
+
+export async function checkRateLimit(
+  key: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  if (redis) {
+    const limiter = getUpstashLimiter(config);
+    const result = await limiter.limit(key);
+    return {
+      allowed: result.success,
+      remaining: result.remaining,
+      resetMs: Math.max(0, result.reset - Date.now()),
+    };
+  }
+  return checkMemoryRateLimit(key, config);
 }
 
 /** Pre-configured rate limits for different endpoint types */
