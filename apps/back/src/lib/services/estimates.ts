@@ -24,6 +24,7 @@ import { logActivity } from "./activity";
 import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
+import { triggerQBSync } from "@/lib/quickbooks/sync-trigger";
 
 // ---------- Types ----------
 
@@ -326,6 +327,7 @@ export async function createEstimate(ctx: UserContext, input: CreateEstimateInpu
   });
 
   await logActivity(ctx, "estimate", result.id, "created");
+  triggerQBSync(ctx.tenantId, "estimate", result.id, "create");
   return result;
 }
 
@@ -353,6 +355,7 @@ export async function updateEstimate(ctx: UserContext, estimateId: string, input
     .returning();
 
   await logActivity(ctx, "estimate", estimateId, "updated");
+  triggerQBSync(ctx.tenantId, "estimate", estimateId, "update");
   return updated;
 }
 

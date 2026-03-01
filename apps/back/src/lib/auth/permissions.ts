@@ -18,7 +18,8 @@ type Resource =
   | "pricebook"
   | "communications"
   | "agreements"
-  | "portal";
+  | "portal"
+  | "integrations";
 
 // Permission matrix: role -> resource -> allowed actions
 const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
@@ -39,6 +40,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     communications: ["create", "read", "update", "delete"],
     agreements: ["create", "read", "update", "delete"],
     portal: ["create", "read", "update", "delete", "manage"],
+    integrations: ["create", "read", "update", "delete", "manage"],
   },
   office_manager: {
     settings: ["read"],
@@ -57,6 +59,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     communications: ["create", "read", "update", "delete"],
     agreements: ["create", "read", "update", "delete"],
     portal: ["create", "read", "update", "delete", "manage"],
+    integrations: ["read", "manage"],
   },
   dispatcher: {
     customers: ["read"],

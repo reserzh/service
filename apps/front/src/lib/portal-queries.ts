@@ -13,7 +13,7 @@ import {
   properties,
   payments,
 } from "@fieldservice/shared/db/schema";
-import { eq, and, desc, asc, sql } from "drizzle-orm";
+import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
 import type { CustomerPortalContext } from "@fieldservice/api-types/models";
 
 // ---------- Jobs ----------
@@ -143,7 +143,7 @@ export const getPortalEstimate = cache(async (ctx: CustomerPortalContext, estima
     items = await db
       .select()
       .from(estimateOptionItems)
-      .where(sql`${estimateOptionItems.optionId} = ANY(${sql.raw(`ARRAY[${optionIds.map((id) => `'${id}'::uuid`).join(",")}]`)})`)
+      .where(inArray(estimateOptionItems.optionId, optionIds))
       .orderBy(asc(estimateOptionItems.sortOrder));
   }
 

@@ -50,4 +50,11 @@ export type TenantSettings = {
   dashboardHiddenWidgets?: string[];
   operatorType?: "solo" | "crew";
   tradeType?: string;
+  quickbooks?: {
+    incomeAccountId?: string;
+    expenseAccountId?: string;
+    taxStrategy?: "global" | "per_line" | "none";
+    syncEstimates?: boolean;
+    defaultPaymentMethodId?: string;
+  };
 };

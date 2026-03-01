@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { invoices, payments } from "@fieldservice/shared/db/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { triggerQBSync } from "@/lib/quickbooks/sync-trigger";
 
 export async function POST(req: NextRequest) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -30,43 +31,57 @@ export async function POST(req: NextRequest) {
 
       if (invoiceId && customerId && tenantId) {
         const amountPaid = (session.amount_total || 0) / 100;
+        const referenceNumber = (session.payment_intent as string) || session.id;
 
-        // Record the payment
-        await db.insert(payments).values({
-          tenantId,
-          invoiceId,
-          customerId,
-          amount: String(amountPaid),
-          method: "credit_card",
-          status: "succeeded",
-          referenceNumber: session.payment_intent as string || session.id,
-          notes: "Paid via Customer Portal",
-          processedAt: new Date(),
+        await db.transaction(async (tx) => {
+          // Idempotency: skip if payment with this reference already exists
+          const [existing] = await tx
+            .select({ id: payments.id })
+            .from(payments)
+            .where(and(eq(payments.tenantId, tenantId), eq(payments.referenceNumber, referenceNumber)))
+            .limit(1);
+
+          if (existing) return;
+
+          // Record the payment
+          await tx.insert(payments).values({
+            tenantId,
+            invoiceId,
+            customerId,
+            amount: String(amountPaid),
+            method: "credit_card",
+            status: "succeeded",
+            referenceNumber,
+            notes: "Paid via Customer Portal",
+            processedAt: new Date(),
+          });
+
+          // Update invoice: add to amountPaid, recalculate balanceDue, update status
+          const [invoice] = await tx
+            .select()
+            .from(invoices)
+            .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, tenantId)))
+            .limit(1);
+
+          if (invoice) {
+            const newAmountPaid = parseFloat(invoice.amountPaid) + amountPaid;
+            const newBalanceDue = Math.max(0, parseFloat(invoice.total) - newAmountPaid);
+            const newStatus = newBalanceDue <= 0 ? "paid" : "partial";
+
+            await tx
+              .update(invoices)
+              .set({
+                amountPaid: String(newAmountPaid),
+                balanceDue: String(newBalanceDue),
+                status: newStatus,
+                paidAt: newBalanceDue <= 0 ? new Date() : undefined,
+                updatedAt: new Date(),
+              })
+              .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, tenantId)));
+          }
         });
 
-        // Update invoice: add to amountPaid, recalculate balanceDue, update status
-        const [invoice] = await db
-          .select()
-          .from(invoices)
-          .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, tenantId)))
-          .limit(1);
-
-        if (invoice) {
-          const newAmountPaid = parseFloat(invoice.amountPaid) + amountPaid;
-          const newBalanceDue = Math.max(0, parseFloat(invoice.total) - newAmountPaid);
-          const newStatus = newBalanceDue <= 0 ? "paid" : "partial";
-
-          await db
-            .update(invoices)
-            .set({
-              amountPaid: String(newAmountPaid),
-              balanceDue: String(newBalanceDue),
-              status: newStatus,
-              paidAt: newBalanceDue <= 0 ? new Date() : undefined,
-              updatedAt: new Date(),
-            })
-            .where(eq(invoices.id, invoiceId));
-        }
+        triggerQBSync(tenantId, "invoice", invoiceId, "update");
       }
     }
 

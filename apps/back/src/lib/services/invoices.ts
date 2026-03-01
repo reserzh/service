@@ -26,6 +26,7 @@ import { logActivity } from "./activity";
 import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import { getNextSequenceNumber } from "./sequences";
+import { triggerQBSync } from "@/lib/quickbooks/sync-trigger";
 
 // ---------- Types ----------
 
@@ -319,6 +320,7 @@ export async function createInvoice(ctx: UserContext, input: CreateInvoiceInput)
   });
 
   await logActivity(ctx, "invoice", result.id, "created");
+  triggerQBSync(ctx.tenantId, "invoice", result.id, "create");
   return result;
 }
 
@@ -358,6 +360,7 @@ export async function updateInvoice(ctx: UserContext, invoiceId: string, input: 
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "updated");
+  triggerQBSync(ctx.tenantId, "invoice", invoiceId, "update");
   return updated;
 }
 
@@ -469,6 +472,7 @@ export async function sendInvoice(ctx: UserContext, invoiceId: string) {
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "sent");
+  triggerQBSync(ctx.tenantId, "invoice", invoiceId, "update");
 
   // Send email notification
   try {
@@ -520,6 +524,7 @@ export async function voidInvoice(ctx: UserContext, invoiceId: string) {
     .returning();
 
   await logActivity(ctx, "invoice", invoiceId, "voided");
+  triggerQBSync(ctx.tenantId, "invoice", invoiceId, "update");
   return updated;
 }
 
@@ -579,6 +584,7 @@ export async function recordPayment(ctx: UserContext, invoiceId: string, input: 
     amount: input.amount,
     method: input.method,
   });
+  triggerQBSync(ctx.tenantId, "payment", result.id, "create");
 
   return result;
 }

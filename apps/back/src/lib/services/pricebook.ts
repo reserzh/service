@@ -15,6 +15,7 @@ import { logActivity } from "./activity";
 import { escapeLike } from "@/lib/utils";
 import { NotFoundError, AppError } from "@/lib/api/errors";
 import type { LineItemType } from "@fieldservice/api-types/enums";
+import { triggerQBSync } from "@/lib/quickbooks/sync-trigger";
 
 // ---------- Types ----------
 
@@ -206,6 +207,7 @@ export async function createPricebookItem(ctx: UserContext, input: CreatePricebo
     .returning();
 
   await logActivity(ctx, "pricebook", item.id, "created");
+  triggerQBSync(ctx.tenantId, "pricebook", item.id, "create");
   return item;
 }
 
@@ -254,6 +256,7 @@ export async function updatePricebookItem(ctx: UserContext, itemId: string, inpu
     .returning();
 
   await logActivity(ctx, "pricebook", itemId, "updated");
+  triggerQBSync(ctx.tenantId, "pricebook", itemId, "update");
   return updated;
 }
 

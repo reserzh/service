@@ -6,6 +6,7 @@ import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
 import { NotFoundError } from "@/lib/api/errors";
 import { escapeLike } from "@/lib/utils";
+import { triggerQBSync } from "@/lib/quickbooks/sync-trigger";
 
 export interface ListCustomersParams {
   page?: number;
@@ -194,6 +195,7 @@ export async function createCustomer(ctx: UserContext, input: CreateCustomerInpu
   });
 
   await logActivity(ctx, "customer", result.id, "created");
+  triggerQBSync(ctx.tenantId, "customer", result.id, "create");
 
   return result;
 }
@@ -232,6 +234,7 @@ export async function updateCustomer(
     .returning();
 
   await logActivity(ctx, "customer", customerId, "updated");
+  triggerQBSync(ctx.tenantId, "customer", customerId, "update");
 
   return updated;
 }
