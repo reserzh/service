@@ -1,42 +1,46 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono, Space_Grotesk, DM_Sans, Plus_Jakarta_Sans, Barlow } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const geistSans = Geist({
+const geistSans = localFont({
+  src: "../fonts/GeistVF.woff2",
   variable: "--font-geist-sans",
-  subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "../fonts/GeistMonoVF.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: "../fonts/JetBrainsMonoVF.woff2",
   variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = localFont({
+  src: "../fonts/SpaceGroteskVF.woff2",
   variable: "--font-space-grotesk",
-  subsets: ["latin"],
 });
 
-const dmSans = DM_Sans({
+const dmSans = localFont({
+  src: "../fonts/DMSansVF.woff2",
   variable: "--font-dm-sans",
-  subsets: ["latin"],
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const plusJakartaSans = localFont({
+  src: "../fonts/PlusJakartaSansVF.woff2",
   variable: "--font-plus-jakarta-sans",
-  subsets: ["latin"],
 });
 
-const barlow = Barlow({
+const barlow = localFont({
+  src: [
+    { path: "../fonts/Barlow-400.woff2", weight: "400" },
+    { path: "../fonts/Barlow-500.woff2", weight: "500" },
+    { path: "../fonts/Barlow-600.woff2", weight: "600" },
+    { path: "../fonts/Barlow-700.woff2", weight: "700" },
+  ],
   variable: "--font-barlow",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

@@ -12,7 +12,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-  getNotificationsAction,
   markNotificationReadAction,
   markAllReadAction,
 } from "@/actions/notifications";
@@ -36,37 +35,49 @@ export function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [hasLoaded, setHasLoaded] = useState(false);
   const lastFetchRef = useRef<number>(0);
+  const mountedRef = useRef(true);
   const router = useRouter();
 
-  const loadNotifications = useCallback(() => {
-    // Throttle: minimum 5 seconds between fetches
+  // Use fetch() to the API route instead of a server action.
+  // Server actions (even without startTransition) trigger RSC re-renders
+  // of the current route, which causes an infinite render loop.
+  const loadNotifications = useCallback(async () => {
     if (Date.now() - lastFetchRef.current < 5000) return;
     lastFetchRef.current = Date.now();
 
-    startTransition(async () => {
-      try {
-        const data = await getNotificationsAction();
-        setNotifications(data.notifications);
-        setUnreadCount(data.unreadCount);
-      } catch {
-        // Silently fail - notifications are non-critical
-      } finally {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/v1/notifications?limit=10");
+      if (!res.ok) throw new Error("fetch failed");
+      const json = await res.json();
+      if (mountedRef.current) {
+        setNotifications(json.data ?? []);
+        setUnreadCount(json.meta?.unreadCount ?? 0);
+      }
+    } catch {
+      // Silently fail - notifications are non-critical
+    } finally {
+      if (mountedRef.current) {
+        setIsLoading(false);
         setHasLoaded(true);
       }
-    });
+    }
   }, []);
 
-  // Load on mount and periodically
   useEffect(() => {
+    mountedRef.current = true;
     loadNotifications();
     const interval = setInterval(loadNotifications, 60000);
-    return () => clearInterval(interval);
+    return () => {
+      mountedRef.current = false;
+      clearInterval(interval);
+    };
   }, [loadNotifications]);
 
-  // Refresh when dropdown opens
   useEffect(() => {
     if (open) loadNotifications();
   }, [open, loadNotifications]);
@@ -108,6 +119,8 @@ export function NotificationDropdown() {
     }
   }
 
+  const loading = isLoading || isPending;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -141,7 +154,7 @@ export function NotificationDropdown() {
               size="sm"
               className="h-auto px-2 py-1 text-xs"
               onClick={handleMarkAllRead}
-              disabled={isPending}
+              disabled={loading}
             >
               <CheckCheck className="mr-1 h-3 w-3" />
               Mark all read
@@ -151,7 +164,7 @@ export function NotificationDropdown() {
         <Separator />
 
         <ScrollArea className="max-h-80">
-          {!hasLoaded && isPending ? (
+          {!hasLoaded && loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>

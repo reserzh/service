@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // Portal paths — handle Supabase session refresh
   if (url.pathname.startsWith("/portal")) {
-    return await handlePortalMiddleware(request);
+    return await handlePortalProxy(request);
   }
 
   let tenantSlug: string | null = null;
@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-async function handlePortalMiddleware(request: NextRequest) {
+async function handlePortalProxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
