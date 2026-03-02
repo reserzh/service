@@ -9,9 +9,7 @@ import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
-import { cn } from "@/lib/utils";
 
-const DARK_THEMES = new Set(["mission-control", "glass", "executive"]);
 const TOP_NAV_THEMES = new Set(["blueprint", "glass"]);
 
 export default async function DashboardLayout({
@@ -49,10 +47,7 @@ export default async function DashboardLayout({
   return (
     <div
       data-theme={preset === "classic" ? undefined : preset}
-      className={cn(
-        "min-h-screen bg-background text-foreground font-sans",
-        DARK_THEMES.has(preset) && "dark"
-      )}
+      className="min-h-screen bg-background text-foreground font-sans"
     >
       {hasTopNav ? (
         <>

@@ -84,14 +84,14 @@
   --chart-3: oklch(0.65 0.20 45);
   --chart-4: oklch(0.55 0.22 310);
   --chart-5: oklch(0.70 0.15 80);
-  --sidebar: oklch(0.22 0.04 260);
-  --sidebar-foreground: oklch(0.90 0.01 260);
-  --sidebar-primary: oklch(0.55 0.20 260);
+  --sidebar: oklch(0.97 0.002 250);
+  --sidebar-foreground: oklch(0.40 0.02 260);
+  --sidebar-primary: oklch(0.45 0.18 260);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.28 0.05 260);
-  --sidebar-accent-foreground: oklch(0.95 0.01 260);
-  --sidebar-border: oklch(0.30 0.04 260);
-  --sidebar-ring: oklch(0.55 0.20 260);
+  --sidebar-accent: oklch(0.94 0.01 260);
+  --sidebar-accent-foreground: oklch(0.20 0.03 260);
+  --sidebar-border: oklch(0.91 0.01 260);
+  --sidebar-ring: oklch(0.45 0.18 260);
   /* Semantic status colors */
   --status-new: oklch(0.55 0.15 260);
   --status-scheduled: oklch(0.55 0.20 260);
@@ -154,43 +154,8 @@
 /* ===== Theme Overrides ===== */
 /* Colors matched to HTML design references in tmp/designs/ */
 
-/* Mission Control (Design 11) — Dark tactical, neon green accent, monospace */
-/* Sidebar: #0f1018, Bg: #0a0a0f, Accent: #00ff88, Text: #c8ccd8 */
-[data-theme="mission-control"] {
-  --font-sans: var(--font-jetbrains-mono);
-  --font-mono: var(--font-jetbrains-mono);
-  --background: #0a0a0f;
-  --foreground: #c8ccd8;
-  --card: #0f1018;
-  --card-foreground: #c8ccd8;
-  --popover: #0f1018;
-  --popover-foreground: #c8ccd8;
-  --primary: #00ff88;
-  --primary-foreground: #0a0a0f;
-  --secondary: #161822;
-  --secondary-foreground: #c8ccd8;
-  --muted: #161822;
-  --muted-foreground: #5a5e72;
-  --accent: #1a1d2e;
-  --accent-foreground: #c8ccd8;
-  --destructive: #ef4444;
-  --border: #1e2035;
-  --input: #1e2035;
-  --ring: #00ff88;
-  --chart-1: #00ff88;
-  --chart-2: #06b6d4;
-  --chart-3: #f59e0b;
-  --chart-4: #8b5cf6;
-  --chart-5: #ef4444;
-  --sidebar: #0f1018;
-  --sidebar-foreground: #5a5e72;
-  --sidebar-primary: #00ff88;
-  --sidebar-primary-foreground: #0a0a0f;
-  --sidebar-accent: rgba(0, 255, 136, 0.08);
-  --sidebar-accent-foreground: #00ff88;
-  --sidebar-border: #1e2035;
-  --sidebar-ring: #00ff88;
-}
+/* Mission Control — fonts only (light/dark color vars defined below) */
+/* Design 11 — Tactical, neon green accent, monospace */
 
 /* Mission Control: CRT scanline overlay */
 .mc-scanline {
@@ -204,8 +169,8 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 255, 136, 0.03) 2px,
-    rgba(0, 255, 136, 0.03) 4px
+    var(--mc-scanline-color) 2px,
+    var(--mc-scanline-color) 4px
   );
   pointer-events: none;
   z-index: 50;
@@ -213,8 +178,8 @@
 
 /* Mission Control: panel base */
 .mc-panel {
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--mc-panel-bg);
+  border: 1px solid var(--mc-panel-border);
   border-radius: 2px;
   position: relative;
 }
@@ -225,7 +190,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, var(--mc-glow-line), transparent);
   z-index: 1;
 }
 .mc-panel-header {
@@ -233,12 +198,12 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  border-bottom: 1px solid #1e2035;
+  border-bottom: 1px solid var(--mc-panel-border);
 }
 .mc-panel-title {
   font-family: var(--font-jetbrains-mono);
   font-size: 10px;
-  color: #00d4ff;
+  color: var(--mc-accent-cyan);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -251,16 +216,16 @@
   border-radius: 2px;
   letter-spacing: 0.5px;
 }
-.mc-badge-green { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
-.mc-badge-cyan { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
-.mc-badge-amber { background: rgba(255, 184, 0, 0.1); color: #ffb800; }
-.mc-badge-red { background: rgba(255, 51, 85, 0.1); color: #ff3355; }
+.mc-badge-green { background: rgba(0, 255, 136, 0.1); color: var(--mc-accent); }
+.mc-badge-cyan { background: rgba(0, 212, 255, 0.1); color: var(--mc-accent-cyan); }
+.mc-badge-amber { background: rgba(255, 184, 0, 0.1); color: var(--mc-accent-amber); }
+.mc-badge-red { background: rgba(255, 51, 85, 0.1); color: var(--mc-accent-red); }
 
 /* Mission Control: gauge cards */
 .mc-gauge-card {
   flex: 1;
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--mc-panel-bg);
+  border: 1px solid var(--mc-panel-border);
   border-radius: 2px;
   padding: 12px;
   position: relative;
@@ -272,7 +237,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, var(--mc-glow-line), transparent);
 }
 
 /* Mission Control: blinking cursor */
@@ -327,8 +292,8 @@
 
 /* Mission Control: site-wide card styling — glow border, sharp corners */
 [data-theme="mission-control"] [data-slot="card"] {
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 2px;
   box-shadow: none;
   position: relative;
@@ -340,7 +305,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, var(--mc-glow-line), transparent);
   z-index: 1;
 }
 
@@ -350,13 +315,13 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: #00d4ff;
+  color: var(--mc-accent-cyan);
 }
 
 /* Mission Control: table styling */
 [data-theme="mission-control"] [data-slot="table-container"] {
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 2px;
 }
 [data-theme="mission-control"] [data-slot="table-head"] {
@@ -364,27 +329,27 @@
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #5a5e72;
+  color: var(--muted-foreground);
 }
 [data-theme="mission-control"] [data-slot="table-row"] {
-  border-bottom-color: rgba(30, 32, 53, 0.5);
+  border-bottom-color: var(--border);
 }
 [data-theme="mission-control"] [data-slot="table-row"]:hover {
   background: rgba(0, 255, 136, 0.02);
 }
 
-/* Mission Control: inputs — dark, sharp */
+/* Mission Control: inputs — sharp */
 [data-theme="mission-control"] [data-slot="input"],
 [data-theme="mission-control"] [data-slot="textarea"] {
-  background: #0a0a0f;
-  border: 1px solid #1e2035;
+  background: var(--background);
+  border: 1px solid var(--border);
   border-radius: 2px;
-  color: #c8ccd8;
+  color: var(--foreground);
   font-family: var(--font-jetbrains-mono);
 }
 [data-theme="mission-control"] [data-slot="input"]:focus,
 [data-theme="mission-control"] [data-slot="textarea"]:focus {
-  border-color: #00ff88;
+  border-color: var(--primary);
   box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.2);
 }
 
@@ -407,7 +372,7 @@
 
 /* Mission Control: tabs */
 [data-theme="mission-control"] [data-slot="tabs-list"] {
-  background: #0f1018;
+  background: var(--card);
   border-radius: 2px;
 }
 [data-theme="mission-control"] [data-slot="tabs-trigger"] {
@@ -425,7 +390,7 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #5a5e72;
+  color: var(--muted-foreground);
 }
 
 /* Mission Control: breadcrumb */
@@ -438,101 +403,33 @@
 /* Mission Control: dropdowns & popovers */
 [data-theme="mission-control"] [data-slot="dropdown-menu-content"],
 [data-theme="mission-control"] [data-slot="popover-content"] {
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--popover);
+  border: 1px solid var(--border);
   border-radius: 2px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 /* Mission Control: dialog & sheet */
 [data-theme="mission-control"] [data-slot="dialog-content"] {
-  background: #0f1018;
-  border: 1px solid #1e2035;
+  background: var(--popover);
+  border: 1px solid var(--border);
   border-radius: 2px;
 }
 [data-theme="mission-control"] [data-slot="sheet-content"] {
-  background: #0f1018;
-  border-color: #1e2035;
+  background: var(--popover);
+  border-color: var(--border);
 }
 
 /* Mission Control: separator */
 [data-theme="mission-control"] [data-slot="separator"] {
-  border-color: #1e2035;
+  border-color: var(--border);
 }
 
-/* Glass Command Center (Design 9) — Dark glassmorphism, indigo accent */
-/* Sidebar: rgba(255,255,255,0.06), Bg: dark overlay, Accent: #818cf8 */
-[data-theme="glass"] {
-  --font-sans: var(--font-space-grotesk);
-  --background: #0f0b1e;
-  --foreground: rgba(255, 255, 255, 0.95);
-  --card: rgba(255, 255, 255, 0.06);
-  --card-foreground: rgba(255, 255, 255, 0.95);
-  --popover: #1a1530;
-  --popover-foreground: rgba(255, 255, 255, 0.95);
-  --primary: #818cf8;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(255, 255, 255, 0.08);
-  --secondary-foreground: rgba(255, 255, 255, 0.9);
-  --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: rgba(255, 255, 255, 0.5);
-  --accent: rgba(129, 140, 248, 0.15);
-  --accent-foreground: #c7d2fe;
-  --destructive: #ef4444;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: #818cf8;
-  --chart-1: #818cf8;
-  --chart-2: #06b6d4;
-  --chart-3: #f59e0b;
-  --chart-4: #a78bfa;
-  --chart-5: #34d399;
-  --sidebar: rgba(255, 255, 255, 0.04);
-  --sidebar-foreground: rgba(255, 255, 255, 0.6);
-  --sidebar-primary: #818cf8;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(129, 140, 248, 0.2);
-  --sidebar-accent-foreground: #818cf8;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #818cf8;
-}
+/* Glass Command Center — fonts only (light/dark color vars defined below) */
+/* Design 9 — Glassmorphism, indigo accent */
 
-/* Executive Midnight (Design 1) — Dark luxury, indigo accent, DM Sans */
-/* Sidebar: #0a0c12, Bg: #0f1117, Card: #1e2130, Accent: #6366f1 */
-[data-theme="executive"] {
-  --font-sans: var(--font-dm-sans);
-  --background: #0f1117;
-  --foreground: #e8eaf0;
-  --card: #1e2130;
-  --card-foreground: #e8eaf0;
-  --popover: #1e2130;
-  --popover-foreground: #e8eaf0;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #1a1d27;
-  --secondary-foreground: #e8eaf0;
-  --muted: #1a1d27;
-  --muted-foreground: #8b8fa3;
-  --accent: #252838;
-  --accent-foreground: #e8eaf0;
-  --destructive: #ef4444;
-  --border: #2a2d3a;
-  --input: #353849;
-  --ring: #6366f1;
-  --chart-1: #6366f1;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
-  --chart-4: #a78bfa;
-  --chart-5: #3b82f6;
-  --sidebar: #0a0c12;
-  --sidebar-foreground: #8b8fa3;
-  --sidebar-primary: #6366f1;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(99, 102, 241, 0.1);
-  --sidebar-accent-foreground: #818cf8;
-  --sidebar-border: #2a2d3a;
-  --sidebar-ring: #6366f1;
-}
+/* Executive Midnight — fonts only (light/dark color vars defined below) */
+/* Design 1 — Luxury, indigo accent, DM Sans */
 
 /* Blueprint Operations (Design 8) — Industrial, Space Grotesk, navy sidebar, orange accent */
 /* Sidebar: #1a2744, Bg: #f0f3f8, Card: white, Accent: #f97316, Text: #1a2744 */
@@ -646,15 +543,484 @@
   --sidebar-ring: #0891b2;
 }
 
-/* Glass theme: atmospheric background with colorful gradient orbs */
+/* ===== Dark Variants for Light Themes ===== */
+
+/* Blueprint Dark */
+.dark [data-theme="blueprint"] {
+  --background: #1a2232;
+  --foreground: #e2e8f0;
+  --card: #1e2740;
+  --card-foreground: #e2e8f0;
+  --popover: #1e2740;
+  --popover-foreground: #e2e8f0;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #253352;
+  --secondary-foreground: #e2e8f0;
+  --muted: #253352;
+  --muted-foreground: #94a3b8;
+  --accent: rgba(249, 115, 22, 0.15);
+  --accent-foreground: #fdba74;
+  --destructive: #ef4444;
+  --border: #2d3a52;
+  --input: #2d3a52;
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #60a5fa;
+  --chart-3: #34d399;
+  --chart-4: #a78bfa;
+  --chart-5: #f87171;
+  --sidebar: #131a2b;
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.1);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #f97316;
+}
+
+/* Arctic Dark */
+.dark [data-theme="arctic"] {
+  --background: #0f0f11;
+  --foreground: #f4f4f5;
+  --card: #18181b;
+  --card-foreground: #f4f4f5;
+  --popover: #18181b;
+  --popover-foreground: #f4f4f5;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #27272a;
+  --secondary-foreground: #f4f4f5;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: rgba(124, 58, 237, 0.15);
+  --accent-foreground: #c4b5fd;
+  --destructive: #ef4444;
+  --border: #27272a;
+  --input: #3f3f46;
+  --ring: #7c3aed;
+  --chart-1: #8b5cf6;
+  --chart-2: #22d3ee;
+  --chart-3: #fbbf24;
+  --chart-4: #f472b6;
+  --chart-5: #34d399;
+  --sidebar: #0f0f11;
+  --sidebar-foreground: #a1a1aa;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(124, 58, 237, 0.15);
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #7c3aed;
+}
+
+/* Ocean Dark */
+.dark [data-theme="ocean"] {
+  --background: #0c1222;
+  --foreground: #e2e8f0;
+  --card: rgba(15, 23, 42, 0.85);
+  --card-foreground: #e2e8f0;
+  --popover: #0f172a;
+  --popover-foreground: #e2e8f0;
+  --primary: #22d3ee;
+  --primary-foreground: #0c1222;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: rgba(34, 211, 238, 0.15);
+  --accent-foreground: #67e8f9;
+  --destructive: #ef4444;
+  --border: rgba(148, 163, 184, 0.15);
+  --input: rgba(148, 163, 184, 0.2);
+  --ring: #22d3ee;
+  --chart-1: #22d3ee;
+  --chart-2: #818cf8;
+  --chart-3: #fbbf24;
+  --chart-4: #f472b6;
+  --chart-5: #34d399;
+  --sidebar: #0a0f1c;
+  --sidebar-foreground: #94a3b8;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(56, 189, 248, 0.15);
+  --sidebar-accent-foreground: #38bdf8;
+  --sidebar-border: rgba(148, 163, 184, 0.1);
+  --sidebar-ring: #22d3ee;
+}
+
+/* ===== Light Variants for Dark Themes ===== */
+
+/* Mission Control Light */
+.dark [data-theme="mission-control"] {
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
+}
+[data-theme="mission-control"] {
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
+  --background: #f0f2f5;
+  --foreground: #1a1d2e;
+  --card: #ffffff;
+  --card-foreground: #1a1d2e;
+  --popover: #ffffff;
+  --popover-foreground: #1a1d2e;
+  --primary: #059669;
+  --primary-foreground: #ffffff;
+  --secondary: #e8eaef;
+  --secondary-foreground: #1a1d2e;
+  --muted: #e8eaef;
+  --muted-foreground: #5a5e72;
+  --accent: rgba(5, 150, 105, 0.08);
+  --accent-foreground: #065f46;
+  --destructive: #ef4444;
+  --border: #d1d5db;
+  --input: #d1d5db;
+  --ring: #059669;
+  --chart-1: #059669;
+  --chart-2: #0891b2;
+  --chart-3: #d97706;
+  --chart-4: #7c3aed;
+  --chart-5: #dc2626;
+  --sidebar: #f8f9fa;
+  --sidebar-foreground: #5a5e72;
+  --sidebar-primary: #059669;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(5, 150, 105, 0.08);
+  --sidebar-accent-foreground: #059669;
+  --sidebar-border: #d1d5db;
+  --sidebar-ring: #059669;
+}
+
+/* Mission Control Dark (original — must come after light) */
+.dark [data-theme="mission-control"] {
+  --background: #0a0a0f;
+  --foreground: #c8ccd8;
+  --card: #0f1018;
+  --card-foreground: #c8ccd8;
+  --popover: #0f1018;
+  --popover-foreground: #c8ccd8;
+  --primary: #00ff88;
+  --primary-foreground: #0a0a0f;
+  --secondary: #161822;
+  --secondary-foreground: #c8ccd8;
+  --muted: #161822;
+  --muted-foreground: #5a5e72;
+  --accent: #1a1d2e;
+  --accent-foreground: #c8ccd8;
+  --destructive: #ef4444;
+  --border: #1e2035;
+  --input: #1e2035;
+  --ring: #00ff88;
+  --chart-1: #00ff88;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #ef4444;
+  --sidebar: #0f1018;
+  --sidebar-foreground: #5a5e72;
+  --sidebar-primary: #00ff88;
+  --sidebar-primary-foreground: #0a0a0f;
+  --sidebar-accent: rgba(0, 255, 136, 0.08);
+  --sidebar-accent-foreground: #00ff88;
+  --sidebar-border: #1e2035;
+  --sidebar-ring: #00ff88;
+}
+
+/* Glass Light */
 [data-theme="glass"] {
+  --font-sans: var(--font-space-grotesk);
+  --background: #f5f3ff;
+  --foreground: #1e1b4b;
+  --card: rgba(255, 255, 255, 0.75);
+  --card-foreground: #1e1b4b;
+  --popover: #ffffff;
+  --popover-foreground: #1e1b4b;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #ede9fe;
+  --secondary-foreground: #3730a3;
+  --muted: #ede9fe;
+  --muted-foreground: #6b7280;
+  --accent: rgba(99, 102, 241, 0.1);
+  --accent-foreground: #4338ca;
+  --destructive: #ef4444;
+  --border: rgba(99, 102, 241, 0.15);
+  --input: rgba(99, 102, 241, 0.15);
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #34d399;
+  --sidebar: rgba(255, 255, 255, 0.7);
+  --sidebar-foreground: #6b7280;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(99, 102, 241, 0.12);
+  --sidebar-accent-foreground: #4338ca;
+  --sidebar-border: rgba(99, 102, 241, 0.1);
+  --sidebar-ring: #6366f1;
+}
+
+/* Glass Dark (original — must come after light) */
+.dark [data-theme="glass"] {
+  --background: #0f0b1e;
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.06);
+  --card-foreground: rgba(255, 255, 255, 0.95);
+  --popover: #1a1530;
+  --popover-foreground: rgba(255, 255, 255, 0.95);
+  --primary: #818cf8;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: rgba(255, 255, 255, 0.5);
+  --accent: rgba(129, 140, 248, 0.15);
+  --accent-foreground: #c7d2fe;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #818cf8;
+  --chart-1: #818cf8;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #34d399;
+  --sidebar: rgba(255, 255, 255, 0.04);
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(129, 140, 248, 0.2);
+  --sidebar-accent-foreground: #818cf8;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #818cf8;
+}
+
+/* Executive Light */
+[data-theme="executive"] {
+  --font-sans: var(--font-dm-sans);
+  --background: #fafafa;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #eef2ff;
+  --accent-foreground: #3730a3;
+  --destructive: #ef4444;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #3b82f6;
+  --sidebar: #111827;
+  --sidebar-foreground: #9ca3af;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(99, 102, 241, 0.1);
+  --sidebar-accent-foreground: #a5b4fc;
+  --sidebar-border: #1f2937;
+  --sidebar-ring: #6366f1;
+}
+
+/* Executive Dark (original — must come after light) */
+.dark [data-theme="executive"] {
+  --background: #0f1117;
+  --foreground: #e8eaf0;
+  --card: #1e2130;
+  --card-foreground: #e8eaf0;
+  --popover: #1e2130;
+  --popover-foreground: #e8eaf0;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1d27;
+  --secondary-foreground: #e8eaf0;
+  --muted: #1a1d27;
+  --muted-foreground: #8b8fa3;
+  --accent: #252838;
+  --accent-foreground: #e8eaf0;
+  --destructive: #ef4444;
+  --border: #2a2d3a;
+  --input: #353849;
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #a78bfa;
+  --chart-5: #3b82f6;
+  --sidebar: #0a0c12;
+  --sidebar-foreground: #8b8fa3;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(99, 102, 241, 0.1);
+  --sidebar-accent-foreground: #818cf8;
+  --sidebar-border: #2a2d3a;
+  --sidebar-ring: #6366f1;
+}
+
+/* ===== Theme CSS Custom Properties for Layout Components ===== */
+
+/* Mission Control layout vars — light */
+[data-theme="mission-control"] {
+  --mc-panel-bg: #ffffff;
+  --mc-panel-border: #d1d5db;
+  --mc-text: #1a1d2e;
+  --mc-text-muted: #5a5e72;
+  --mc-text-secondary: #9ca3af;
+  --mc-accent: #059669;
+  --mc-accent-cyan: #0891b2;
+  --mc-accent-amber: #d97706;
+  --mc-accent-red: #dc2626;
+  --mc-bg-deep: #e8eaef;
+  --mc-glow-line: rgba(5, 150, 105, 0.15);
+  --mc-scanline-color: rgba(5, 150, 105, 0.02);
+  --mc-grid-line: rgba(0, 0, 0, 0.06);
+  --mc-alert-bar-bg: linear-gradient(90deg, #f0f2f5 0%, #e8eaef 50%, #f0f2f5 100%);
+  --mc-status-bar-bg: #f8f9fa;
+}
+
+/* Mission Control layout vars — dark */
+.dark [data-theme="mission-control"] {
+  --mc-panel-bg: #0f1018;
+  --mc-panel-border: #1e2035;
+  --mc-text: #c8ccd8;
+  --mc-text-muted: #5a5e72;
+  --mc-text-secondary: #c8ccd8;
+  --mc-accent: #00ff88;
+  --mc-accent-cyan: #00d4ff;
+  --mc-accent-amber: #ffb800;
+  --mc-accent-red: #ff3355;
+  --mc-bg-deep: #0a0a0f;
+  --mc-glow-line: rgba(0, 255, 136, 0.15);
+  --mc-scanline-color: rgba(0, 255, 136, 0.03);
+  --mc-grid-line: rgba(30, 32, 53, 0.4);
+  --mc-alert-bar-bg: linear-gradient(90deg, #12041a 0%, #0a0a0f 50%, #041214 100%);
+  --mc-status-bar-bg: #0f1018;
+}
+
+/* Glass layout vars — light */
+[data-theme="glass"] {
+  --glass-text: #1e1b4b;
+  --glass-text-secondary: #6b7280;
+  --glass-text-tertiary: #9ca3af;
+  --glass-card-bg: rgba(255, 255, 255, 0.75);
+  --glass-card-border: rgba(99, 102, 241, 0.15);
+  --glass-hover-bg: rgba(99, 102, 241, 0.06);
+  --glass-nav-text: #1e1b4b;
+  --glass-nav-text-muted: #6b7280;
+  --glass-nav-bg: rgba(255, 255, 255, 0.6);
+  --glass-nav-border: rgba(99, 102, 241, 0.12);
+  --glass-nav-active-color: #6366f1;
+  --glass-nav-active-bg: rgba(99, 102, 241, 0.12);
+  --glass-ring-track: rgba(99, 102, 241, 0.12);
+  --glass-donut-track: rgba(99, 102, 241, 0.08);
+  --glass-chart-grid: rgba(99, 102, 241, 0.08);
+  --glass-chart-dot-fill: #f5f3ff;
+}
+
+/* Glass layout vars — dark */
+.dark [data-theme="glass"] {
+  --glass-text: rgba(255, 255, 255, 0.95);
+  --glass-text-secondary: rgba(255, 255, 255, 0.6);
+  --glass-text-tertiary: rgba(255, 255, 255, 0.35);
+  --glass-card-bg: rgba(255, 255, 255, 0.06);
+  --glass-card-border: rgba(255, 255, 255, 0.1);
+  --glass-hover-bg: rgba(129, 140, 248, 0.06);
+  --glass-nav-text: rgba(255, 255, 255, 0.95);
+  --glass-nav-text-muted: rgba(255, 255, 255, 0.6);
+  --glass-nav-bg: rgba(255, 255, 255, 0.06);
+  --glass-nav-border: rgba(255, 255, 255, 0.1);
+  --glass-nav-active-color: #818cf8;
+  --glass-nav-active-bg: rgba(129, 140, 248, 0.2);
+  --glass-ring-track: rgba(255, 255, 255, 0.08);
+  --glass-donut-track: rgba(255, 255, 255, 0.05);
+  --glass-chart-grid: rgba(255, 255, 255, 0.05);
+  --glass-chart-dot-fill: #0f0b1e;
+}
+
+/* Blueprint layout vars — light */
+[data-theme="blueprint"] {
+  --bp-bg: #f0f3f8;
+  --bp-bg-secondary: #f0f3f8;
+  --bp-text: #1a2744;
+  --bp-text-muted: #64748b;
+  --bp-text-subtle: #94a3b8;
+  --bp-border: #cbd5e1;
+  --bp-border-inner: #e2e8f0;
+  --bp-border-dashed: #e2e8f0;
+  --bp-card-bg: #ffffff;
+  --bp-card-item-bg: #f0f3f8;
+  --bp-grid-line: rgba(26, 39, 68, 0.06);
+  --bp-grid-inner: rgba(26, 39, 68, 0.03);
+  --bp-hero-bg: linear-gradient(135deg, rgba(26,39,68,0.92) 0%, rgba(26,39,68,0.75) 100%);
+  --bp-nav-bg: #1a2744;
+  --bp-nav-text: rgba(255, 255, 255, 0.6);
+  --bp-nav-text-active: #ffffff;
+  --bp-nav-active-bg: rgba(255, 255, 255, 0.1);
+  --bp-nav-search-bg: rgba(255, 255, 255, 0.08);
+  --bp-nav-search-border: rgba(255, 255, 255, 0.12);
+  --bp-nav-search-text: rgba(255, 255, 255, 0.4);
+  --bp-needle: #1a2744;
+  --bp-gauge-track: #e2e8f0;
+}
+
+/* Blueprint layout vars — dark */
+.dark [data-theme="blueprint"] {
+  --bp-bg: #1a2232;
+  --bp-bg-secondary: #1e2740;
+  --bp-text: #e2e8f0;
+  --bp-text-muted: #94a3b8;
+  --bp-text-subtle: #64748b;
+  --bp-border: #2d3a52;
+  --bp-border-inner: #354363;
+  --bp-border-dashed: #354363;
+  --bp-card-bg: #1e2740;
+  --bp-card-item-bg: #253352;
+  --bp-grid-line: rgba(249, 115, 22, 0.06);
+  --bp-grid-inner: rgba(249, 115, 22, 0.03);
+  --bp-hero-bg: linear-gradient(135deg, rgba(26,39,68,0.95) 0%, rgba(19,26,43,0.9) 100%);
+  --bp-nav-bg: #131a2b;
+  --bp-nav-text: rgba(255, 255, 255, 0.6);
+  --bp-nav-text-active: #ffffff;
+  --bp-nav-active-bg: rgba(255, 255, 255, 0.1);
+  --bp-nav-search-bg: rgba(255, 255, 255, 0.08);
+  --bp-nav-search-border: rgba(255, 255, 255, 0.12);
+  --bp-nav-search-text: rgba(255, 255, 255, 0.4);
+  --bp-needle: #e2e8f0;
+  --bp-gauge-track: #2d3a52;
+}
+
+/* Glass theme: atmospheric background — light */
+[data-theme="glass"] {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(52, 211, 153, 0.03) 0%, transparent 40%);
+  background-color: #f5f3ff;
+  background-attachment: fixed;
+}
+
+/* Glass theme: atmospheric background — dark */
+.dark [data-theme="glass"] {
   background-image:
     radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
     radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
     radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.10) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 40%);
   background-color: #0f0b1e;
-  background-attachment: fixed;
 }
 
 /* Glass backdrop blur on cards and sidebar */
@@ -666,16 +1032,16 @@
 
 /* Glass: dashboard card component */
 .glass-card {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--glass-card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-card-border);
   border-radius: 16px;
   overflow: hidden;
 }
 .glass-card-header {
   padding: 16px 20px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--glass-card-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -684,15 +1050,20 @@
   font-family: var(--font-space-grotesk);
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--glass-text);
   letter-spacing: -0.2px;
 }
 
 /* Glass: site-wide card styling — frosted glass, rounded */
 [data-theme="glass"] [data-slot="card"] {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.dark [data-theme="glass"] [data-slot="card"] {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -700,14 +1071,14 @@
 [data-theme="glass"] [data-slot="card-title"] {
   font-family: var(--font-space-grotesk);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--foreground);
   letter-spacing: -0.2px;
 }
 
 /* Glass: table styling */
 [data-theme="glass"] [data-slot="table-container"] {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -717,23 +1088,23 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 [data-theme="glass"] [data-slot="table-row"] {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
+  border-bottom-color: var(--border);
 }
 [data-theme="glass"] [data-slot="table-row"]:hover {
-  background: rgba(129, 140, 248, 0.06);
+  background: var(--glass-hover-bg);
 }
 
 /* Glass: inputs — frosted, rounded */
 [data-theme="glass"] [data-slot="input"],
 [data-theme="glass"] [data-slot="textarea"] {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--foreground);
   font-family: var(--font-space-grotesk);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -745,7 +1116,7 @@
 }
 [data-theme="glass"] [data-slot="input"]::placeholder,
 [data-theme="glass"] [data-slot="textarea"]::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--muted-foreground);
 }
 
 /* Glass: buttons — rounded, glass effect */
@@ -755,8 +1126,8 @@
   font-weight: 500;
 }
 [data-theme="glass"] [data-slot="button"][data-variant="outline"] {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--card);
+  border-color: var(--border);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -772,11 +1143,11 @@
 
 /* Glass: tabs — frosted pill list */
 [data-theme="glass"] [data-slot="tabs-list"] {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card);
   border-radius: 12px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
 }
 [data-theme="glass"] [data-slot="tabs-trigger"] {
   font-family: var(--font-space-grotesk);
@@ -785,8 +1156,8 @@
   border-radius: 8px;
 }
 [data-theme="glass"] [data-slot="tabs-trigger"][data-state="active"] {
-  background: rgba(129, 140, 248, 0.2);
-  color: #c7d2fe;
+  background: var(--glass-nav-active-bg);
+  color: var(--glass-nav-active-color);
 }
 
 /* Glass: form labels */
@@ -795,7 +1166,7 @@
   font-family: var(--font-space-grotesk);
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--muted-foreground);
   letter-spacing: 0.2px;
 }
 
@@ -803,45 +1174,59 @@
 [data-theme="glass"] [data-slot="breadcrumb-list"] {
   font-family: var(--font-space-grotesk);
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted-foreground);
 }
 
 /* Glass: separator */
 [data-theme="glass"] [data-slot="separator"] {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--border);
 }
 
 /* Glass: dropdowns & popovers — frosted panels */
 [data-theme="glass"] [data-slot="dropdown-menu-content"],
 [data-theme="glass"] [data-slot="popover-content"] {
-  background: rgba(26, 21, 48, 0.9);
+  background: var(--popover);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+.dark [data-theme="glass"] [data-slot="dropdown-menu-content"],
+.dark [data-theme="glass"] [data-slot="popover-content"] {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Glass: dialog — frosted glass panel */
 [data-theme="glass"] [data-slot="dialog-content"] {
-  background: rgba(26, 21, 48, 0.92);
+  background: var(--popover);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+.dark [data-theme="glass"] [data-slot="dialog-content"] {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 
 /* Glass: sheet — frosted side panel */
 [data-theme="glass"] [data-slot="sheet-content"] {
-  background: rgba(26, 21, 48, 0.95);
+  background: var(--popover);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--border);
 }
 
-/* Glass: atmospheric background on main content */
+/* Glass: atmospheric background on main content — light */
 [data-theme="glass"] > main {
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(244, 114, 182, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(52, 211, 153, 0.03) 0%, transparent 40%);
+}
+.dark [data-theme="glass"] > main {
   background-image:
     radial-gradient(ellipse at 15% 50%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
     radial-gradient(ellipse at 85% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
@@ -883,13 +1268,17 @@
 [data-theme="ocean"] [data-slot="card"] {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(148, 163, 184, 0.25);
+  border-color: var(--border);
 }
 [data-theme="ocean"] header {
   background: rgba(255, 255, 255, 0.7) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-color: rgba(148, 163, 184, 0.2);
+}
+.dark [data-theme="ocean"] header {
+  background: rgba(12, 18, 34, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.1);
 }
 /* Ocean: teal top-accent on stat cards */
 [data-theme="ocean"] [data-stat-color] {
@@ -927,24 +1316,24 @@
 /* Blueprint: graph-paper background on main content area */
 [data-theme="blueprint"] > main {
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
-    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
-    #f0f3f8;
+    repeating-linear-gradient(0deg, transparent, transparent 29px, var(--bp-grid-line) 29px, var(--bp-grid-line) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, var(--bp-grid-line) 29px, var(--bp-grid-line) 30px),
+    var(--bp-bg);
 }
 
 /* Blueprint: graph-paper background (explicit class for dashboard) */
 .blueprint-bg {
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
-    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(26, 39, 68, 0.06) 29px, rgba(26, 39, 68, 0.06) 30px),
-    #f0f3f8;
+    repeating-linear-gradient(0deg, transparent, transparent 29px, var(--bp-grid-line) 29px, var(--bp-grid-line) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, var(--bp-grid-line) 29px, var(--bp-grid-line) 30px),
+    var(--bp-bg);
 }
 
 /* Blueprint: inner graph-paper for route map */
 .blueprint-grid-inner {
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(26, 39, 68, 0.03) 19px, rgba(26, 39, 68, 0.03) 20px),
-    repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(26, 39, 68, 0.03) 19px, rgba(26, 39, 68, 0.03) 20px);
+    repeating-linear-gradient(0deg, transparent, transparent 19px, var(--bp-grid-inner) 19px, var(--bp-grid-inner) 20px),
+    repeating-linear-gradient(90deg, transparent, transparent 19px, var(--bp-grid-inner) 19px, var(--bp-grid-inner) 20px);
 }
 
 @keyframes blueprint-route-pulse {
@@ -955,10 +1344,11 @@
 
 /* Blueprint: dashed-border cards with inner border */
 [data-theme="blueprint"] [data-slot="card"] {
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--bp-border);
   border-radius: 4px;
   box-shadow: none;
   position: relative;
+  background: var(--bp-card-bg);
 }
 [data-theme="blueprint"] [data-slot="card"]::before {
   content: '';
@@ -967,7 +1357,7 @@
   left: 4px;
   right: 4px;
   bottom: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--bp-border-inner);
   border-radius: 2px;
   pointer-events: none;
   z-index: 0;
@@ -979,7 +1369,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: #1a2744;
+  color: var(--bp-text);
   font-weight: 600;
 }
 
@@ -991,9 +1381,10 @@
 
 /* Blueprint: table styling — dashed row borders */
 [data-theme="blueprint"] [data-slot="table-container"] {
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--bp-border);
   border-radius: 4px;
   position: relative;
+  background: var(--bp-card-bg);
 }
 [data-theme="blueprint"] [data-slot="table-container"]::before {
   content: '';
@@ -1002,7 +1393,7 @@
   left: 4px;
   right: 4px;
   bottom: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--bp-border-inner);
   border-radius: 2px;
   pointer-events: none;
   z-index: 0;
@@ -1012,12 +1403,12 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #64748b;
+  color: var(--bp-text-muted);
   font-weight: 600;
 }
 [data-theme="blueprint"] [data-slot="table-row"] {
   border-bottom-style: dashed;
-  border-bottom-color: #e2e8f0;
+  border-bottom-color: var(--bp-border-dashed);
 }
 [data-theme="blueprint"] [data-slot="table-row"]:hover {
   background: rgba(26, 39, 68, 0.02);
@@ -1027,7 +1418,7 @@
 [data-theme="blueprint"] [data-slot="input"],
 [data-theme="blueprint"] [data-slot="textarea"] {
   border-style: dashed;
-  border-color: #cbd5e1;
+  border-color: var(--bp-border);
   border-radius: 3px;
   font-family: var(--font-space-grotesk);
 }
@@ -1045,6 +1436,7 @@
 }
 [data-theme="blueprint"] [data-slot="button"][data-variant="outline"] {
   border-style: dashed;
+  border-color: var(--bp-border);
 }
 
 /* Blueprint: badge styling — squared off, monospace */
@@ -1071,7 +1463,7 @@
 /* Blueprint: separator — dashed */
 [data-theme="blueprint"] [data-slot="separator"] {
   border-style: dashed;
-  border-color: #e2e8f0;
+  border-color: var(--bp-border-dashed);
 }
 
 /* Blueprint: breadcrumb — monospace */
@@ -1084,9 +1476,10 @@
 /* Blueprint: dropdown & popover — sharp corners, dashed border */
 [data-theme="blueprint"] [data-slot="dropdown-menu-content"],
 [data-theme="blueprint"] [data-slot="popover-content"] {
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--bp-border);
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(26, 39, 68, 0.08);
+  background: var(--bp-card-bg);
 }
 
 /* Blueprint: form labels — monospace */
@@ -1096,20 +1489,22 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #64748b;
+  color: var(--bp-text-muted);
   font-weight: 600;
 }
 
 /* Blueprint: dialog — dashed border */
 [data-theme="blueprint"] [data-slot="dialog-content"] {
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--bp-border);
   border-radius: 4px;
+  background: var(--bp-card-bg);
 }
 
 /* Blueprint: sheet — dashed border on the side */
 [data-theme="blueprint"] [data-slot="sheet-content"] {
   border-style: dashed;
-  border-color: #cbd5e1;
+  border-color: var(--bp-border);
+  background: var(--bp-card-bg);
 }
 
 @layer base {

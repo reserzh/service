@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   Briefcase,
@@ -15,6 +16,8 @@ import {
   User,
   Wrench,
   Settings,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,6 +53,7 @@ interface GlassTopNavProps {
 
 export function GlassTopNav({ user }: GlassTopNavProps) {
   const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
@@ -67,7 +71,7 @@ export function GlassTopNav({ user }: GlassTopNavProps) {
           >
             <Wrench className="h-5 w-5 text-white" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-white/95" style={{ letterSpacing: "-0.5px" }}>
+          <span className="text-lg font-bold tracking-tight" style={{ letterSpacing: "-0.5px", color: "var(--glass-nav-text)" }}>
             FieldService Pro
           </span>
         </Link>
@@ -76,10 +80,10 @@ export function GlassTopNav({ user }: GlassTopNavProps) {
         <div
           className="flex items-center gap-1 rounded-xl border px-1 py-1"
           style={{
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--glass-nav-bg)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
-            borderColor: "rgba(255,255,255,0.1)",
+            borderColor: "var(--glass-nav-border)",
           }}
         >
           {navLinks.map((link) => {
@@ -91,8 +95,8 @@ export function GlassTopNav({ user }: GlassTopNavProps) {
                 href={link.href}
                 className="rounded-lg px-4 py-1.5 text-xs font-medium transition-colors"
                 style={{
-                  color: isActive ? "#818cf8" : "rgba(255,255,255,0.6)",
-                  background: isActive ? "rgba(129,140,248,0.2)" : "transparent",
+                  color: isActive ? "var(--glass-nav-active-color)" : "var(--glass-nav-text-muted)",
+                  background: isActive ? "var(--glass-nav-active-bg)" : "transparent",
                   fontWeight: isActive ? 600 : 500,
                 }}
               >
@@ -109,15 +113,26 @@ export function GlassTopNav({ user }: GlassTopNavProps) {
             onClick={() => setCommandOpen(true)}
             className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition-colors"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              borderColor: "rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.4)",
+              background: "var(--glass-nav-bg)",
+              borderColor: "var(--glass-nav-border)",
+              color: "var(--glass-text-tertiary)",
             }}
           >
             <Search className="h-3.5 w-3.5" />
-            <kbd className="ml-1 hidden rounded border border-white/10 bg-white/5 px-1 py-0.5 text-[10px] sm:inline-block">
+            <kbd className="ml-1 hidden rounded border px-1 py-0.5 text-[10px] sm:inline-block" style={{ borderColor: "var(--glass-nav-border)", background: "var(--glass-hover-bg)" }}>
               ⌘K
             </kbd>
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+            style={{ color: "var(--glass-nav-text-muted)" }}
+            aria-label="Toggle theme"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </button>
 
           {/* Notifications */}

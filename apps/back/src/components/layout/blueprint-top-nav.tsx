@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   Briefcase,
@@ -15,6 +16,8 @@ import {
   User,
   Zap,
   Settings,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,18 +53,19 @@ interface BlueprintTopNavProps {
 
 export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
   const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
   return (
     <>
-      <nav className="flex h-14 items-center gap-6 px-6" style={{ background: "#1a2744" }}>
+      <nav className="flex h-14 items-center gap-6 px-6" style={{ background: "var(--bp-nav-bg)" }}>
         {/* Brand */}
         <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#f97316]">
             <Zap className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-sm font-bold tracking-tight text-white">
+          <span className="text-sm font-bold tracking-tight" style={{ color: "var(--bp-nav-text-active)" }}>
             FieldService Pro
           </span>
         </Link>
@@ -77,8 +81,8 @@ export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
                 href={link.href}
                 className="rounded px-3 py-1.5 text-[13px] font-medium transition-colors"
                 style={{
-                  color: isActive ? "#ffffff" : "rgba(255,255,255,0.6)",
-                  background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
+                  color: isActive ? "var(--bp-nav-text-active)" : "var(--bp-nav-text)",
+                  background: isActive ? "var(--bp-nav-active-bg)" : "transparent",
                 }}
               >
                 {link.title}
@@ -94,9 +98,9 @@ export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
             onClick={() => setCommandOpen(true)}
             className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs"
             style={{
-              background: "rgba(255,255,255,0.08)",
-              borderColor: "rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.4)",
+              background: "var(--bp-nav-search-bg)",
+              borderColor: "var(--bp-nav-search-border)",
+              color: "var(--bp-nav-search-text)",
             }}
           >
             <Search className="h-3.5 w-3.5" />
@@ -104,6 +108,19 @@ export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
             <kbd className="ml-2 hidden rounded border border-white/10 bg-white/5 px-1 py-0.5 text-[10px] sm:inline-block">
               ⌘K
             </kbd>
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex h-8 w-8 items-center justify-center rounded-md transition-colors"
+            style={{
+              color: "var(--bp-nav-text)",
+            }}
+            aria-label="Toggle theme"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </button>
 
           {/* Notifications */}

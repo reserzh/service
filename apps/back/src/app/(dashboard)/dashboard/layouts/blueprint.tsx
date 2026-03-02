@@ -48,8 +48,7 @@ function BlueprintHero({
       className="flex items-center px-8"
       style={{
         height: 140,
-        background:
-          "linear-gradient(135deg, rgba(26,39,68,0.92) 0%, rgba(26,39,68,0.75) 100%)",
+        background: "var(--bp-hero-bg)",
       }}
     >
       <div className="flex-1">
@@ -114,7 +113,7 @@ function BlueprintCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative rounded bg-white" style={{ border: "2px dashed #cbd5e1" }}>
+    <div className="relative rounded" style={{ background: "var(--bp-card-bg)", border: "2px dashed var(--bp-border)" }}>
       {/* Inner border */}
       <div
         className="pointer-events-none absolute rounded-sm"
@@ -123,12 +122,12 @@ function BlueprintCard({
           left: 4,
           right: 4,
           bottom: 4,
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--bp-border-inner)",
         }}
       />
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[1.5px] text-[#1a2744]">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-[1.5px]" style={{ color: "var(--bp-text)" }}>
           {title}
         </span>
         {badge && (
@@ -179,7 +178,7 @@ function RevenueGaugeCard({ revenueMTD }: { revenueMTD: number }) {
         <svg width="160" height="95" viewBox="0 0 160 95" className="shrink-0">
           <defs>
             <linearGradient id="bpGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#1a2744" />
+              <stop offset="0%" stopColor="var(--bp-text)" />
               <stop offset="80%" stopColor="#f97316" />
               <stop offset="100%" stopColor="#f97316" />
             </linearGradient>
@@ -188,7 +187,7 @@ function RevenueGaugeCard({ revenueMTD }: { revenueMTD: number }) {
           <path
             d="M 15 85 A 65 65 0 0 1 145 85"
             fill="none"
-            stroke="#e2e8f0"
+            stroke="var(--bp-gauge-track)"
             strokeWidth="10"
             strokeLinecap="round"
           />
@@ -202,27 +201,27 @@ function RevenueGaugeCard({ revenueMTD }: { revenueMTD: number }) {
             strokeDasharray={`${dashLen} ${arcLength}`}
           />
           {/* Tick marks */}
-          <line x1="15" y1="85" x2="15" y2="78" stroke="#cbd5e1" strokeWidth="1" />
-          <line x1="40" y1="35" x2="43" y2="41" stroke="#cbd5e1" strokeWidth="1" />
-          <line x1="80" y1="20" x2="80" y2="27" stroke="#cbd5e1" strokeWidth="1" />
-          <line x1="120" y1="35" x2="117" y2="41" stroke="#cbd5e1" strokeWidth="1" />
-          <line x1="145" y1="85" x2="145" y2="78" stroke="#cbd5e1" strokeWidth="1" />
+          <line x1="15" y1="85" x2="15" y2="78" stroke="var(--bp-border)" strokeWidth="1" />
+          <line x1="40" y1="35" x2="43" y2="41" stroke="var(--bp-border)" strokeWidth="1" />
+          <line x1="80" y1="20" x2="80" y2="27" stroke="var(--bp-border)" strokeWidth="1" />
+          <line x1="120" y1="35" x2="117" y2="41" stroke="var(--bp-border)" strokeWidth="1" />
+          <line x1="145" y1="85" x2="145" y2="78" stroke="var(--bp-border)" strokeWidth="1" />
           {/* Tick labels */}
-          <text x="15" y="94" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+          <text x="15" y="94" textAnchor="middle" fill="var(--bp-text-subtle)" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
             $0
           </text>
-          <text x="80" y="16" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+          <text x="80" y="16" textAnchor="middle" fill="var(--bp-text-subtle)" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
             {formatRevShort(safeTarget / 2)}
           </text>
-          <text x="145" y="94" textAnchor="middle" fill="#94a3b8" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
+          <text x="145" y="94" textAnchor="middle" fill="var(--bp-text-subtle)" fontFamily="var(--font-jetbrains-mono)" fontSize="8">
             {formatRevShort(safeTarget)}
           </text>
           {/* Needle */}
-          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#1a2744" strokeWidth="2" strokeLinecap="round" />
-          <circle cx={cx} cy={cy} r="4" fill="#1a2744" />
-          <circle cx={cx} cy={cy} r="2" fill="white" />
+          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="var(--bp-needle)" strokeWidth="2" strokeLinecap="round" />
+          <circle cx={cx} cy={cy} r="4" fill="var(--bp-needle)" />
+          <circle cx={cx} cy={cy} r="2" fill="var(--bp-card-bg)" />
           {/* Center value */}
-          <text x="80" y="75" textAnchor="middle" fill="#1a2744" fontFamily="var(--font-jetbrains-mono)" fontSize="22" fontWeight="700">
+          <text x="80" y="75" textAnchor="middle" fill="var(--bp-text)" fontFamily="var(--font-jetbrains-mono)" fontSize="22" fontWeight="700">
             {formatRevShort(revenueMTD)}
           </text>
         </svg>
@@ -253,12 +252,12 @@ function RevLine({
   return (
     <div
       className="flex items-center justify-between py-1.5"
-      style={last ? undefined : { borderBottom: "1px dashed #e2e8f0" }}
+      style={last ? undefined : { borderBottom: "1px dashed var(--bp-border-dashed)" }}
     >
-      <span className="text-xs text-[#64748b]">{label}</span>
+      <span className="text-xs" style={{ color: "var(--bp-text-muted)" }}>{label}</span>
       <span
         className="font-mono text-sm font-semibold"
-        style={{ color: highlight ? "#f97316" : "#1a2744" }}
+        style={{ color: highlight ? "#f97316" : "var(--bp-text)" }}
       >
         {value}
       </span>
@@ -281,7 +280,7 @@ function RouteMapCard({
   if (stopCount === 0) {
     return (
       <BlueprintCard title="Today&apos;s Route Plan" badge="0 STOPS">
-        <div className="flex items-center justify-center py-12 text-sm text-[#94a3b8]">
+        <div className="flex items-center justify-center py-12 text-sm" style={{ color: "var(--bp-text-subtle)" }}>
           No scheduled stops today.
         </div>
       </BlueprintCard>
@@ -318,7 +317,7 @@ function RouteMapCard({
                 key={i}
                 d={`M ${prev.x} ${prev.y} C ${midX} ${prev.y}, ${midX} ${pos.y}, ${pos.x} ${pos.y}`}
                 fill="none"
-                stroke={isCompleted ? "#1a2744" : "#cbd5e1"}
+                stroke={isCompleted ? "var(--bp-text)" : "var(--bp-border)"}
                 strokeWidth="0.4"
                 strokeDasharray="1.5 1"
                 opacity={isCompleted ? 0.25 : 0.35}
@@ -333,12 +332,12 @@ function RouteMapCard({
           const isCompleted = i < activeIdx;
           const isActive = i === activeIdx;
 
-          let bg = "white";
-          let border = "#1a2744";
-          let textColor = "#1a2744";
+          let bg = "var(--bp-card-bg)";
+          let border = "var(--bp-text)";
+          let textColor = "var(--bp-text)";
           if (isCompleted) {
-            bg = "#1a2744";
-            textColor = "white";
+            bg = "var(--bp-text)";
+            textColor = "var(--bp-card-bg)";
           } else if (isActive) {
             bg = "#f97316";
             border = "#f97316";
@@ -369,8 +368,8 @@ function RouteMapCard({
               </div>
               {/* Label */}
               <div
-                className="whitespace-nowrap font-mono text-[9px] text-[#64748b] tracking-wide"
-                style={{ transform: "translate(-50%, 4px)", textAlign: "center" }}
+                className="whitespace-nowrap font-mono text-[9px] tracking-wide"
+                style={{ transform: "translate(-50%, 4px)", textAlign: "center", color: "var(--bp-text-muted)" }}
               >
                 {labelText}
               </div>
@@ -408,7 +407,7 @@ function JobQueueCard({ upcoming }: { upcoming: UpcomingJob[] }) {
   if (jobs.length === 0) {
     return (
       <BlueprintCard title="Job Queue" badge="0 PENDING">
-        <div className="flex items-center justify-center py-8 text-sm text-[#94a3b8]">
+        <div className="flex items-center justify-center py-8 text-sm" style={{ color: "var(--bp-text-subtle)" }}>
           No pending jobs.
         </div>
       </BlueprintCard>
@@ -437,23 +436,23 @@ function JobQueueCard({ upcoming }: { upcoming: UpcomingJob[] }) {
             <Link
               key={job.id}
               href={`/jobs/${job.id}`}
-              className="flex items-center gap-2.5 rounded-sm border transition-colors hover:border-[#cbd5e1]"
+              className="flex items-center gap-2.5 rounded-sm border transition-colors"
               style={{
                 padding: "8px 12px",
-                background: "#f0f3f8",
-                borderColor: "#e2e8f0",
+                background: "var(--bp-card-item-bg)",
+                borderColor: "var(--bp-border-inner)",
                 borderLeftWidth: 3,
                 borderLeftColor: borderColor,
               }}
             >
-              <span className="w-[50px] shrink-0 font-mono text-[11px] font-semibold text-[#1a2744]">
+              <span className="w-[50px] shrink-0 font-mono text-[11px] font-semibold" style={{ color: "var(--bp-text)" }}>
                 {timeStr}
               </span>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-semibold text-[#1a2744] truncate">
+                <div className="text-xs font-semibold truncate" style={{ color: "var(--bp-text)" }}>
                   {job.summary}
                 </div>
-                <div className="text-[10px] text-[#94a3b8]">{job.jobNumber}</div>
+                <div className="text-[10px]" style={{ color: "var(--bp-text-subtle)" }}>{job.jobNumber}</div>
               </div>
               <span
                 className="shrink-0 rounded-sm font-mono text-[9px] tracking-wide px-1.5 py-0.5"
@@ -462,7 +461,7 @@ function JobQueueCard({ upcoming }: { upcoming: UpcomingJob[] }) {
                     tag === "URGENT"
                       ? "rgba(239,68,68,0.08)"
                       : "rgba(26,39,68,0.06)",
-                  color: tag === "URGENT" ? "#ef4444" : "#64748b",
+                  color: tag === "URGENT" ? "#ef4444" : "var(--bp-text-muted)",
                 }}
               >
                 {tag}
@@ -483,7 +482,7 @@ function TechnicianGridCard({ upcoming }: { upcoming: UpcomingJob[] }) {
   if (techs.length === 0) {
     return (
       <BlueprintCard title="Technicians" badge="0 ACTIVE">
-        <div className="flex items-center justify-center py-8 text-sm text-[#94a3b8]">
+        <div className="flex items-center justify-center py-8 text-sm" style={{ color: "var(--bp-text-subtle)" }}>
           No techs scheduled today.
         </div>
       </BlueprintCard>
@@ -496,8 +495,8 @@ function TechnicianGridCard({ upcoming }: { upcoming: UpcomingJob[] }) {
         {techs.map((tech) => (
           <div
             key={tech.name}
-            className="flex items-center gap-2.5 rounded-sm border border-[#e2e8f0] p-2.5"
-            style={{ background: "#f0f3f8" }}
+            className="flex items-center gap-2.5 rounded-sm border p-2.5"
+            style={{ borderColor: "var(--bp-border-inner)", background: "var(--bp-card-item-bg)" }}
           >
             <div
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
@@ -506,18 +505,18 @@ function TechnicianGridCard({ upcoming }: { upcoming: UpcomingJob[] }) {
               {tech.initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-[#1a2744] truncate">
+              <div className="text-xs font-semibold truncate" style={{ color: "var(--bp-text)" }}>
                 {tech.abbrevName}
               </div>
-              <div className="font-mono text-[9px] text-[#94a3b8] tracking-wide truncate uppercase">
+              <div className="font-mono text-[9px] tracking-wide truncate uppercase" style={{ color: "var(--bp-text-subtle)" }}>
                 {tech.statusText}
               </div>
             </div>
             <div className="text-center shrink-0">
-              <div className="font-mono text-lg font-bold leading-none text-[#1a2744]">
+              <div className="font-mono text-lg font-bold leading-none" style={{ color: "var(--bp-text)" }}>
                 {tech.jobCount}
               </div>
-              <div className="text-[8px] uppercase tracking-wide text-[#94a3b8]">
+              <div className="text-[8px] uppercase tracking-wide" style={{ color: "var(--bp-text-subtle)" }}>
                 TODAY
               </div>
             </div>
@@ -527,17 +526,17 @@ function TechnicianGridCard({ upcoming }: { upcoming: UpcomingJob[] }) {
         {/* Off-duty placeholder */}
         <div
           className="flex items-center gap-2.5 rounded-sm p-2.5"
-          style={{ border: "1px dashed #cbd5e1" }}
+          style={{ border: "1px dashed var(--bp-border)" }}
         >
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold"
-            style={{ background: "#e2e8f0", color: "#94a3b8" }}
+            style={{ background: "var(--bp-border-inner)", color: "var(--bp-text-subtle)" }}
           >
             +
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-[#94a3b8]">Off-Duty</div>
-            <div className="font-mono text-[9px] text-[#94a3b8] tracking-wide">
+            <div className="text-xs font-semibold" style={{ color: "var(--bp-text-subtle)" }}>Off-Duty</div>
+            <div className="font-mono text-[9px] tracking-wide" style={{ color: "var(--bp-text-subtle)" }}>
               SCHEDULED TOMORROW
             </div>
           </div>

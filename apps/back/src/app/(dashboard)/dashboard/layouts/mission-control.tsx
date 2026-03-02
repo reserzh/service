@@ -125,11 +125,11 @@ function AlertBar({
     <div
       className="flex h-9 shrink-0 items-center gap-5 px-4 border-b"
       style={{
-        background: "linear-gradient(90deg, #12041a 0%, #0a0a0f 50%, #041214 100%)",
-        borderColor: "#1e2035",
+        background: "var(--mc-status-bar-bg)",
+        borderColor: "var(--mc-panel-border)",
       }}
     >
-      <span className="font-mono text-[10px] tracking-[2px] uppercase text-[#00ff88] whitespace-nowrap">
+      <span className="font-mono text-[10px] tracking-[2px] uppercase whitespace-nowrap" style={{ color: "var(--mc-accent)" }}>
         FSP-OPS<span className="mc-blink">_</span>
       </span>
 
@@ -138,12 +138,12 @@ function AlertBar({
           <div key={i} className="flex items-center gap-1.5 font-mono text-[10px] whitespace-nowrap">
             <div className={`mc-alert-dot mc-alert-dot-${alert.color}`} />
             <span style={{ color: alertColor(alert.color) }}>{alert.label}:</span>
-            <span className="text-[#c8ccd8]">{alert.text}</span>
+            <span style={{ color: "var(--mc-text-secondary)" }}>{alert.text}</span>
           </div>
         ))}
       </div>
 
-      <span className="font-mono text-[11px] tracking-wider text-[#00d4ff] whitespace-nowrap">
+      <span className="font-mono text-[11px] tracking-wider whitespace-nowrap" style={{ color: "var(--mc-accent-cyan)" }}>
         {timeStr}
       </span>
     </div>
@@ -206,10 +206,10 @@ function GaugeCard({
   const ny = cy - needleLen * Math.sin(needleAngle);
 
   const colorMap = {
-    green: { stroke: "#00ff88", glow: "rgba(0,255,136,0.3)", text: "#00ff88", gradEnd: "#00d4ff" },
-    cyan: { stroke: "#00d4ff", glow: "rgba(0,212,255,0.3)", text: "#00d4ff", gradEnd: "#818cf8" },
-    amber: { stroke: "#ffb800", glow: "rgba(255,184,0,0.3)", text: "#ffb800", gradEnd: "#ff6b35" },
-    red: { stroke: "#ff3355", glow: "rgba(255,51,85,0.3)", text: "#ff3355", gradEnd: "#ff6b35" },
+    green: { stroke: "var(--mc-accent)", glow: "rgba(0,255,136,0.3)", text: "var(--mc-accent)", gradEnd: "var(--mc-accent-cyan)" },
+    cyan: { stroke: "var(--mc-accent-cyan)", glow: "rgba(0,212,255,0.3)", text: "var(--mc-accent-cyan)", gradEnd: "#818cf8" },
+    amber: { stroke: "var(--mc-accent-amber)", glow: "rgba(255,184,0,0.3)", text: "var(--mc-accent-amber)", gradEnd: "#ff6b35" },
+    red: { stroke: "var(--mc-accent-red)", glow: "rgba(255,51,85,0.3)", text: "var(--mc-accent-red)", gradEnd: "#ff6b35" },
   };
   const c = colorMap[color];
   const gradId = `mcGauge-${label.replace(/\W/g, "")}`;
@@ -224,7 +224,7 @@ function GaugeCard({
           </linearGradient>
         </defs>
         {/* Background arc */}
-        <path d="M 8 40 A 30 30 0 0 1 62 40" fill="none" stroke="#1e2035" strokeWidth="5" strokeLinecap="round" />
+        <path d="M 8 40 A 30 30 0 0 1 62 40" fill="none" stroke="var(--mc-panel-border)" strokeWidth="5" strokeLinecap="round" />
         {/* Value arc */}
         <path
           d="M 8 40 A 30 30 0 0 1 62 40"
@@ -235,21 +235,21 @@ function GaugeCard({
           strokeDasharray={`${dashLen} ${arcLength}`}
         />
         {/* Tick marks */}
-        <line x1="8" y1="40" x2="8" y2="36" stroke="#2a2d3a" strokeWidth="1" />
-        <line x1="35" y1="10" x2="35" y2="14" stroke="#2a2d3a" strokeWidth="1" />
-        <line x1="62" y1="40" x2="62" y2="36" stroke="#2a2d3a" strokeWidth="1" />
+        <line x1="8" y1="40" x2="8" y2="36" stroke="var(--mc-panel-border)" strokeWidth="1" />
+        <line x1="35" y1="10" x2="35" y2="14" stroke="var(--mc-panel-border)" strokeWidth="1" />
+        <line x1="62" y1="40" x2="62" y2="36" stroke="var(--mc-panel-border)" strokeWidth="1" />
         {/* Needle */}
         <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={c.stroke} strokeWidth="1.5" strokeLinecap="round" />
         <circle cx={cx} cy={cy} r="3" fill={c.stroke} opacity="0.3" />
         <circle cx={cx} cy={cy} r="1.5" fill={c.stroke} />
       </svg>
       <div className="flex-1 min-w-0">
-        <div className="font-mono text-[9px] uppercase tracking-wider text-[#5a5e72] mb-0.5">{label}</div>
+        <div className="font-mono text-[9px] uppercase tracking-wider mb-0.5" style={{ color: "var(--mc-text-muted)" }}>{label}</div>
         <div className="font-mono text-xl font-bold leading-none mb-1" style={{ color: c.text }}>
           {value}
-          {valueSuffix && <span className="text-xs text-[#5a5e72]">{valueSuffix}</span>}
+          {valueSuffix && <span className="text-xs" style={{ color: "var(--mc-text-muted)" }}>{valueSuffix}</span>}
         </div>
-        <div className="font-mono text-[9px] text-[#5a5e72]">{sub}</div>
+        <div className="font-mono text-[9px]" style={{ color: "var(--mc-text-muted)" }}>{sub}</div>
       </div>
     </div>
   );
@@ -283,10 +283,10 @@ function RevenueChart({
   const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const sparkRows = [
-    { label: "Invoices Sent", color: "#00d4ff", value: formatCurrency(Math.round(revenueMTD * 0.39)) },
-    { label: "Payments Rec'd", color: "#00ff88", value: formatCurrency(Math.round(revenueMTD * 0.31)) },
-    { label: "Outstanding", color: "#ffb800", value: formatCurrency(stats.openEstimatesValue) },
-    { label: "Overdue", color: "#ff3355", value: formatCurrency(stats.overdueValue) },
+    { label: "Invoices Sent", color: "var(--mc-accent-cyan)", value: formatCurrency(Math.round(revenueMTD * 0.39)) },
+    { label: "Payments Rec'd", color: "var(--mc-accent)", value: formatCurrency(Math.round(revenueMTD * 0.31)) },
+    { label: "Outstanding", color: "var(--mc-accent-amber)", value: formatCurrency(stats.openEstimatesValue) },
+    { label: "Overdue", color: "var(--mc-accent-red)", value: formatCurrency(stats.overdueValue) },
   ];
 
   return (
@@ -294,18 +294,18 @@ function RevenueChart({
       <svg width="100%" height="90" viewBox={`0 0 ${chartW} 90`} preserveAspectRatio="none">
         <defs>
           <linearGradient id="mcAreaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00ff88" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#00ff88" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--mc-accent)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--mc-accent)" stopOpacity="0" />
           </linearGradient>
         </defs>
         {/* Grid lines */}
-        <line x1="0" y1="22" x2={chartW} y2="22" stroke="#1e2035" strokeWidth="0.5" strokeDasharray="4" />
-        <line x1="0" y1="45" x2={chartW} y2="45" stroke="#1e2035" strokeWidth="0.5" strokeDasharray="4" />
-        <line x1="0" y1="68" x2={chartW} y2="68" stroke="#1e2035" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="22" x2={chartW} y2="22" stroke="var(--mc-panel-border)" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="45" x2={chartW} y2="45" stroke="var(--mc-panel-border)" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="68" x2={chartW} y2="68" stroke="var(--mc-panel-border)" strokeWidth="0.5" strokeDasharray="4" />
         {/* Area fill */}
         <polygon points={polygon} fill="url(#mcAreaGrad)" />
         {/* Line */}
-        <polyline points={polyline} fill="none" stroke="#00ff88" strokeWidth="2" />
+        <polyline points={polyline} fill="none" stroke="var(--mc-accent)" strokeWidth="2" />
         {/* Dots */}
         {coords.map((c, i) => (
           <circle
@@ -313,14 +313,14 @@ function RevenueChart({
             cx={c.x}
             cy={c.y}
             r="3"
-            fill={i === coords.length - 1 ? "#00ff88" : "#0a0a0f"}
-            stroke="#00ff88"
+            fill={i === coords.length - 1 ? "var(--mc-accent)" : "var(--mc-bg-deep)"}
+            stroke="var(--mc-accent)"
             strokeWidth="1.5"
           />
         ))}
         {/* Day labels */}
         {coords.map((c, i) => (
-          <text key={i} x={c.x} y="88" fill="#5a5e72" fontFamily="var(--font-jetbrains-mono)" fontSize="8" textAnchor="middle">
+          <text key={i} x={c.x} y="88" fill="var(--mc-text-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize="8" textAnchor="middle">
             {days[i]}
           </text>
         ))}
@@ -332,9 +332,9 @@ function RevenueChart({
           <div
             key={row.label}
             className="flex items-center justify-between py-1.5"
-            style={{ borderBottom: "1px solid rgba(30,32,53,0.6)" }}
+            style={{ borderBottom: "1px solid var(--mc-panel-border)" }}
           >
-            <span className="text-[11px] text-[#c8ccd8] w-[100px]">{row.label}</span>
+            <span className="text-[11px] w-[100px]" style={{ color: "var(--mc-text-secondary)" }}>{row.label}</span>
             <svg width="120" height="20" viewBox="0 0 120 20" className="flex-1 mx-2">
               <polyline
                 points={generateMiniSparkline(row.value)}
@@ -358,7 +358,7 @@ function RevenueChart({
 function DispatchTable({ upcoming }: { upcoming: UpcomingJob[] }) {
   if (upcoming.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8 text-[13px] text-[#5a5e72]">
+      <div className="flex items-center justify-center py-8 text-[13px]" style={{ color: "var(--mc-text-muted)" }}>
         No active dispatches.
       </div>
     );
@@ -367,11 +367,11 @@ function DispatchTable({ upcoming }: { upcoming: UpcomingJob[] }) {
   return (
     <div className="text-[11px]">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-1.5 mb-0.5" style={{ borderBottom: "1px solid #1e2035" }}>
-        <span className="font-mono text-[9px] text-[#5a5e72] uppercase w-[55px]">Job ID</span>
-        <span className="font-mono text-[9px] text-[#5a5e72] uppercase flex-1">Customer</span>
-        <span className="font-mono text-[9px] text-[#5a5e72] uppercase w-[70px]">Tech</span>
-        <span className="font-mono text-[9px] text-[#5a5e72] uppercase w-[75px] text-center">Status</span>
+      <div className="flex items-center gap-2 pb-1.5 mb-0.5" style={{ borderBottom: "1px solid var(--mc-panel-border)" }}>
+        <span className="font-mono text-[9px] uppercase w-[55px]" style={{ color: "var(--mc-text-muted)" }}>Job ID</span>
+        <span className="font-mono text-[9px] uppercase flex-1" style={{ color: "var(--mc-text-muted)" }}>Customer</span>
+        <span className="font-mono text-[9px] uppercase w-[70px]" style={{ color: "var(--mc-text-muted)" }}>Tech</span>
+        <span className="font-mono text-[9px] uppercase w-[75px] text-center" style={{ color: "var(--mc-text-muted)" }}>Status</span>
       </div>
 
       {/* Rows */}
@@ -386,15 +386,15 @@ function DispatchTable({ upcoming }: { upcoming: UpcomingJob[] }) {
             key={job.id}
             href={`/jobs/${job.id}`}
             className="flex items-center gap-2 py-1.5 transition-colors hover:bg-white/[0.02]"
-            style={{ borderBottom: "1px solid rgba(30,32,53,0.5)" }}
+            style={{ borderBottom: "1px solid var(--mc-panel-border)" }}
           >
-            <span className="font-mono text-[10px] text-[#00d4ff] w-[55px] shrink-0">
+            <span className="font-mono text-[10px] w-[55px] shrink-0" style={{ color: "var(--mc-accent-cyan)" }}>
               {job.jobNumber ?? "—"}
             </span>
-            <span className="flex-1 text-[#c8ccd8] truncate">
+            <span className="flex-1 truncate" style={{ color: "var(--mc-text-secondary)" }}>
               {job.summary}
             </span>
-            <span className="text-[10px] text-[#5a5e72] w-[70px] truncate shrink-0">
+            <span className="text-[10px] w-[70px] truncate shrink-0" style={{ color: "var(--mc-text-muted)" }}>
               {techName}
             </span>
             <span
@@ -441,11 +441,7 @@ function FieldMap({ upcoming }: { upcoming: UpcomingJob[] }) {
     <div
       className="flex-1 relative overflow-hidden"
       style={{
-        background: `
-          radial-gradient(circle at 30% 40%, rgba(0,212,255,0.04) 0%, transparent 50%),
-          radial-gradient(circle at 70% 60%, rgba(0,255,136,0.03) 0%, transparent 50%),
-          #0f1018
-        `,
+        background: "var(--mc-panel-bg)",
       }}
     >
       {/* Grid overlay */}
@@ -453,19 +449,19 @@ function FieldMap({ upcoming }: { upcoming: UpcomingJob[] }) {
         className="absolute inset-0"
         style={{
           background: `
-            repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,32,53,0.4) 39px, rgba(30,32,53,0.4) 40px),
-            repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,32,53,0.4) 39px, rgba(30,32,53,0.4) 40px)
+            repeating-linear-gradient(0deg, transparent, transparent 39px, var(--mc-grid-line) 39px, var(--mc-grid-line) 40px),
+            repeating-linear-gradient(90deg, transparent, transparent 39px, var(--mc-grid-line) 39px, var(--mc-grid-line) 40px)
           `,
         }}
       />
 
       {/* Roads */}
-      <div className="absolute" style={{ top: "25%", left: "10%", width: "80%", height: 3, background: "rgba(30,32,53,0.8)" }} />
-      <div className="absolute" style={{ top: "50%", left: "5%", width: "90%", height: 3, background: "rgba(30,32,53,0.8)" }} />
-      <div className="absolute" style={{ top: "75%", left: "15%", width: "70%", height: 3, background: "rgba(30,32,53,0.8)" }} />
-      <div className="absolute" style={{ left: "20%", top: "10%", width: 3, height: "80%", background: "rgba(30,32,53,0.8)" }} />
-      <div className="absolute" style={{ left: "50%", top: "5%", width: 3, height: "90%", background: "rgba(30,32,53,0.8)" }} />
-      <div className="absolute" style={{ left: "75%", top: "15%", width: 3, height: "70%", background: "rgba(30,32,53,0.8)" }} />
+      <div className="absolute" style={{ top: "25%", left: "10%", width: "80%", height: 3, background: "var(--mc-panel-border)", opacity: 0.8 }} />
+      <div className="absolute" style={{ top: "50%", left: "5%", width: "90%", height: 3, background: "var(--mc-panel-border)", opacity: 0.8 }} />
+      <div className="absolute" style={{ top: "75%", left: "15%", width: "70%", height: 3, background: "var(--mc-panel-border)", opacity: 0.8 }} />
+      <div className="absolute" style={{ left: "20%", top: "10%", width: 3, height: "80%", background: "var(--mc-panel-border)", opacity: 0.8 }} />
+      <div className="absolute" style={{ left: "50%", top: "5%", width: 3, height: "90%", background: "var(--mc-panel-border)", opacity: 0.8 }} />
+      <div className="absolute" style={{ left: "75%", top: "15%", width: 3, height: "70%", background: "var(--mc-panel-border)", opacity: 0.8 }} />
 
       {/* Job markers */}
       {jobPositions.map((pos, i) => (
@@ -496,12 +492,13 @@ function FieldMap({ upcoming }: { upcoming: UpcomingJob[] }) {
               style={{ top: `${tech.y}%`, left: `${tech.x}%` }}
             />
             <div
-              className="absolute font-mono text-[8px] text-[#c8ccd8] whitespace-nowrap z-10"
+              className="absolute font-mono text-[8px] whitespace-nowrap z-10"
               style={{
                 top: `${tech.y}%`,
                 left: `${tech.x}%`,
                 transform: "translate(-50%, 10px)",
-                textShadow: "0 0 4px #0a0a0f",
+                color: "var(--mc-text-secondary)",
+                textShadow: "0 0 4px var(--mc-bg-deep)",
               }}
             >
               {tech.abbrevName}
@@ -531,17 +528,17 @@ function StatusBar({
   return (
     <div
       className="flex h-7 shrink-0 items-center gap-6 px-4 border-t"
-      style={{ background: "#0f1018", borderColor: "#1e2035" }}
+      style={{ background: "var(--mc-status-bar-bg)", borderColor: "var(--mc-panel-border)" }}
     >
-      <StatusItem label="System" value="ONLINE" color="#00ff88" />
-      <StatusItem label="Techs Active" value={`${techCount}`} color="#00d4ff" />
+      <StatusItem label="System" value="ONLINE" color="var(--mc-accent)" />
+      <StatusItem label="Techs Active" value={`${techCount}`} color="var(--mc-accent-cyan)" />
       <StatusItem label="Jobs Today" value={`${stats.todaysJobs}`} />
-      <StatusItem label="Completed" value={`${stats.todaysCompleted}`} color="#00ff88" />
-      <StatusItem label="In Progress" value={`${inProgress}`} color="#00d4ff" />
-      <StatusItem label="Dispatched" value={`${dispatched}`} color="#ffb800" />
+      <StatusItem label="Completed" value={`${stats.todaysCompleted}`} color="var(--mc-accent)" />
+      <StatusItem label="In Progress" value={`${inProgress}`} color="var(--mc-accent-cyan)" />
+      <StatusItem label="Dispatched" value={`${dispatched}`} color="var(--mc-accent-amber)" />
       <StatusItem label="Scheduled" value={`${scheduled}`} />
       {stats.overdueInvoices > 0 && (
-        <StatusItem label="Overdue" value={`${stats.overdueInvoices}`} color="#ff3355" />
+        <StatusItem label="Overdue" value={`${stats.overdueInvoices}`} color="var(--mc-accent-red)" />
       )}
       <div className="flex-1" />
       <StatusItem label="Ver" value="2.4.1" />
@@ -552,8 +549,8 @@ function StatusBar({
 function StatusItem({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-wide">
-      <span className="uppercase text-[#5a5e72]">{label}:</span>
-      <span style={{ color: color ?? "#c8ccd8" }}>{value}</span>
+      <span className="uppercase" style={{ color: "var(--mc-text-muted)" }}>{label}:</span>
+      <span style={{ color: color ?? "var(--mc-text-secondary)" }}>{value}</span>
     </div>
   );
 }
@@ -611,15 +608,15 @@ function computeRevenueTarget(revenueMTD: number): number {
 function getStatusStyle(status: string) {
   switch (status) {
     case "in_progress":
-      return { bg: "rgba(0,255,136,0.1)", color: "#00ff88", border: "rgba(0,255,136,0.2)" };
+      return { bg: "rgba(0,255,136,0.1)", color: "var(--mc-accent)", border: "rgba(0,255,136,0.2)" };
     case "dispatched":
-      return { bg: "rgba(0,212,255,0.1)", color: "#00d4ff", border: "rgba(0,212,255,0.2)" };
+      return { bg: "rgba(0,212,255,0.1)", color: "var(--mc-accent-cyan)", border: "rgba(0,212,255,0.2)" };
     case "scheduled":
-      return { bg: "rgba(255,184,0,0.1)", color: "#ffb800", border: "rgba(255,184,0,0.2)" };
+      return { bg: "rgba(255,184,0,0.1)", color: "var(--mc-accent-amber)", border: "rgba(255,184,0,0.2)" };
     case "canceled":
-      return { bg: "rgba(255,51,85,0.1)", color: "#ff3355", border: "rgba(255,51,85,0.2)" };
+      return { bg: "rgba(255,51,85,0.1)", color: "var(--mc-accent-red)", border: "rgba(255,51,85,0.2)" };
     default:
-      return { bg: "rgba(90,94,114,0.1)", color: "#5a5e72", border: "rgba(90,94,114,0.2)" };
+      return { bg: "rgba(90,94,114,0.1)", color: "var(--mc-text-muted)", border: "rgba(90,94,114,0.2)" };
   }
 }
 
@@ -636,9 +633,9 @@ function statusLabel(status: string): string {
 
 function alertColor(color: "red" | "amber" | "green"): string {
   switch (color) {
-    case "red": return "#ff3355";
-    case "amber": return "#ffb800";
-    case "green": return "#00ff88";
+    case "red": return "var(--mc-accent-red)";
+    case "amber": return "var(--mc-accent-amber)";
+    case "green": return "var(--mc-accent)";
   }
 }
 

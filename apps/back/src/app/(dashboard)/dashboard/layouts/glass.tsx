@@ -46,7 +46,7 @@ export function GlassLayout({ data }: DashboardLayoutProps) {
         {/* Right column: Donut + Activity (spans 2 rows) */}
         <div className="row-span-2 glass-card flex flex-col overflow-hidden">
           <div className="glass-card-header">
-            <span className="text-[13px] font-semibold text-white/95" style={{ letterSpacing: "-0.2px" }}>
+            <span className="text-[13px] font-semibold" style={{ letterSpacing: "-0.2px", color: "var(--glass-text)" }}>
               Job Status
             </span>
             <span
@@ -67,7 +67,7 @@ export function GlassLayout({ data }: DashboardLayoutProps) {
           {/* Revenue Chart */}
           <div className="glass-card flex flex-col">
             <div className="glass-card-header">
-              <span className="text-[13px] font-semibold text-white/95">Weekly Revenue</span>
+              <span className="text-[13px] font-semibold" style={{ color: "var(--glass-text)" }}>Weekly Revenue</span>
               <span
                 className="text-[10px] font-semibold rounded-full px-2.5 py-0.5"
                 style={{ background: "rgba(52,211,153,0.15)", color: "#34d399" }}
@@ -83,7 +83,7 @@ export function GlassLayout({ data }: DashboardLayoutProps) {
           {/* Active Jobs */}
           <div className="glass-card flex flex-col">
             <div className="glass-card-header">
-              <span className="text-[13px] font-semibold text-white/95">Active Jobs</span>
+              <span className="text-[13px] font-semibold" style={{ color: "var(--glass-text)" }}>Active Jobs</span>
               <span
                 className="text-[10px] font-semibold rounded-full px-2.5 py-0.5"
                 style={{ background: "rgba(52,211,153,0.15)", color: "#34d399" }}
@@ -148,7 +148,7 @@ function RingCard({
             <stop offset="100%" stopColor={gradientTo} />
           </linearGradient>
         </defs>
-        <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+        <circle cx="32" cy="32" r="26" fill="none" stroke="var(--glass-ring-track)" strokeWidth="6" />
         <circle
           cx="32" cy="32" r="26"
           fill="none"
@@ -170,11 +170,11 @@ function RingCard({
         </text>
       </svg>
       <div className="flex-1 min-w-0">
-        <div className="text-[26px] font-light leading-none text-white/95" style={{ letterSpacing: "-1px" }}>
+        <div className="text-[26px] font-light leading-none" style={{ letterSpacing: "-1px", color: "var(--glass-text)" }}>
           {value}
-          {valueSuffix && <span className="text-sm text-white/35">{valueSuffix}</span>}
+          {valueSuffix && <span className="text-sm" style={{ color: "var(--glass-text-tertiary)" }}>{valueSuffix}</span>}
         </div>
-        <div className="mt-0.5 text-[11px] text-white/60">{label}</div>
+        <div className="mt-0.5 text-[11px]" style={{ color: "var(--glass-text-secondary)" }}>{label}</div>
         <div className="mt-1 text-[10px] font-medium" style={{ color: "#34d399" }}>{subLabel}</div>
       </div>
     </div>
@@ -204,7 +204,7 @@ function DonutChart({ stats }: { stats: DashboardLayoutProps["data"]["stats"] })
     <div>
       <div className="flex justify-center my-2">
         <svg width="140" height="140" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="22" />
+          <circle cx="80" cy="80" r="60" fill="none" stroke="var(--glass-donut-track)" strokeWidth="22" />
           {segments.map((seg) => (
             <circle
               key={seg.label}
@@ -218,10 +218,10 @@ function DonutChart({ stats }: { stats: DashboardLayoutProps["data"]["stats"] })
               strokeLinecap="round"
             />
           ))}
-          <text x="80" y="74" textAnchor="middle" fill="white" fontSize="28" fontWeight="300" fontFamily="Inter, sans-serif">
+          <text x="80" y="74" textAnchor="middle" fill="var(--glass-text)" fontSize="28" fontWeight="300" fontFamily="Inter, sans-serif">
             {stats.todaysJobs}
           </text>
-          <text x="80" y="92" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="Inter, sans-serif">
+          <text x="80" y="92" textAnchor="middle" fill="var(--glass-text-tertiary)" fontSize="10" fontFamily="Inter, sans-serif">
             TOTAL
           </text>
         </svg>
@@ -246,8 +246,8 @@ function LegendItem({ color, label, value }: { color: string; label: string; val
   return (
     <div className="flex items-center gap-2 text-[11px]">
       <div className="h-2 w-2 rounded-full shrink-0" style={{ background: color }} />
-      <span className="flex-1 text-white/60">{label}</span>
-      <span className="font-semibold text-white/95">{value}</span>
+      <span className="flex-1" style={{ color: "var(--glass-text-secondary)" }}>{label}</span>
+      <span className="font-semibold" style={{ color: "var(--glass-text)" }}>{value}</span>
     </div>
   );
 }
@@ -260,18 +260,18 @@ function ActivityFeed({ activity }: { activity: DashboardLayoutProps["data"]["ac
   const feedColors = ["#34d399", "#818cf8", "#f472b6", "#fbbf24", "#22d3ee"];
 
   return (
-    <div className="mt-3 pt-3 space-y-2" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+    <div className="mt-3 pt-3 space-y-2" style={{ borderTop: "1px solid var(--glass-card-border)" }}>
       {activity.slice(0, 4).map((item, i) => (
         <div key={item.id} className="flex items-start gap-2">
           <div
             className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
             style={{ background: feedColors[i % feedColors.length] }}
           />
-          <div className="flex-1 min-w-0 text-[11px] leading-snug text-white/60">
-            <span className="font-medium text-white/90">{item.userFirstName}</span>{" "}
+          <div className="flex-1 min-w-0 text-[11px] leading-snug" style={{ color: "var(--glass-text-secondary)" }}>
+            <span className="font-medium" style={{ color: "var(--glass-text)" }}>{item.userFirstName}</span>{" "}
             {formatAction(item.entityType, item.action)}
           </div>
-          <span className="text-[9px] text-white/35 whitespace-nowrap shrink-0">
+          <span className="text-[9px] whitespace-nowrap shrink-0" style={{ color: "var(--glass-text-tertiary)" }}>
             {formatDistanceToNow(new Date(item.createdAt), { addSuffix: false })}
           </span>
         </div>
@@ -312,7 +312,7 @@ function RevenueChart({ revenueMTD }: { revenueMTD: number }) {
       </defs>
       {/* Grid lines */}
       {[40, 80, 120, 160].map((y) => (
-        <line key={y} x1="0" y1={y} x2={chartW} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="4" />
+        <line key={y} x1="0" y1={y} x2={chartW} y2={y} stroke="var(--glass-chart-grid)" strokeWidth="0.5" strokeDasharray="4" />
       ))}
       {/* Area */}
       <polygon points={polygon} fill="url(#glassAreaGrad)" />
@@ -328,7 +328,7 @@ function RevenueChart({ revenueMTD }: { revenueMTD: number }) {
             cx={c.x}
             cy={c.y}
             r={isLast ? 5 : 4}
-            fill={isLast ? dotColor : "#0f0b1e"}
+            fill={isLast ? dotColor : "var(--glass-chart-dot-fill)"}
             stroke={dotColor}
             strokeWidth="2"
           />
@@ -336,7 +336,7 @@ function RevenueChart({ revenueMTD }: { revenueMTD: number }) {
       })}
       {/* Day labels */}
       {coords.map((c, i) => (
-        <text key={i} x={c.x} y={chartH + 5} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="Inter, sans-serif">
+        <text key={i} x={c.x} y={chartH + 5} textAnchor="middle" fill="var(--glass-text-tertiary)" fontSize="10" fontFamily="Inter, sans-serif">
           {days[i]}
         </text>
       ))}
@@ -349,7 +349,7 @@ function RevenueChart({ revenueMTD }: { revenueMTD: number }) {
 function JobList({ upcoming }: { upcoming: UpcomingJob[] }) {
   if (upcoming.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8 text-[13px] text-white/35">
+      <div className="flex items-center justify-center py-8 text-[13px]" style={{ color: "var(--glass-text-tertiary)" }}>
         No active jobs.
       </div>
     );
@@ -370,10 +370,10 @@ function JobList({ upcoming }: { upcoming: UpcomingJob[] }) {
           <Link
             key={job.id}
             href={`/jobs/${job.id}`}
-            className="flex items-center gap-2.5 rounded-lg border px-3 py-2 transition-all hover:border-white/10 hover:bg-white/[0.03]"
+            className="flex items-center gap-2.5 rounded-lg border px-3 py-2 transition-all"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.04)",
+              background: "var(--glass-card-bg)",
+              borderColor: "var(--glass-card-border)",
             }}
           >
             {/* Status bar */}
@@ -382,16 +382,16 @@ function JobList({ upcoming }: { upcoming: UpcomingJob[] }) {
               style={{ background: statusColor }}
             />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-white/95 truncate">{job.summary}</div>
-              <div className="text-[10px] text-white/35">
+              <div className="text-xs font-medium truncate" style={{ color: "var(--glass-text)" }}>{job.summary}</div>
+              <div className="text-[10px]" style={{ color: "var(--glass-text-tertiary)" }}>
                 {job.jobNumber} &bull; {statusLabel(job.status)}
                 {timeStr && ` ${timeStr}`}
               </div>
             </div>
             {techName && (
               <div
-                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] text-white/60 shrink-0"
-                style={{ background: "rgba(255,255,255,0.05)" }}
+                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] shrink-0"
+                style={{ background: "var(--glass-hover-bg)", color: "var(--glass-text-secondary)" }}
               >
                 <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: statusColor }} />
                 {techName}
