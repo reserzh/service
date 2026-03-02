@@ -3,7 +3,28 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "RESEND_API_KEY",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_APP_NAME",
+        "NEXT_PUBLIC_BACK_URL",
+        "NEXT_PUBLIC_PLATFORM_DOMAIN",
+        "NEXT_PUBLIC_DEFAULT_TENANT_SLUG",
+        "QB_CLIENT_ID",
+        "QB_CLIENT_SECRET",
+        "QB_REDIRECT_URI",
+        "QB_ENVIRONMENT",
+        "QB_TOKEN_ENCRYPTION_KEY"
+      ]
     },
     "dev": {
       "cache": false,

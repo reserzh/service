@@ -26,4 +26,11 @@ function validateEnv() {
   };
 }
 
-export const env = validateEnv();
+let _env: ReturnType<typeof validateEnv> | undefined;
+
+export const env = new Proxy({} as ReturnType<typeof validateEnv>, {
+  get(_target, prop) {
+    if (!_env) _env = validateEnv();
+    return _env[prop as keyof typeof _env];
+  },
+});
