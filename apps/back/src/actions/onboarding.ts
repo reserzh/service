@@ -33,45 +33,57 @@ export async function completeOnboardingAction(
   try {
     const ctx = await requireAuth();
 
-    // 1. Update tenant settings with trade + operator type
-    await updateTenantSettings(ctx, {
-      tradeType: input.tradeType,
-      operatorType: input.operatorType,
-    });
-
-    // 2. Create first customer if provided
-    if (input.customer) {
-      await createCustomer(ctx, {
-        firstName: input.customer.firstName,
-        lastName: input.customer.lastName,
-        phone: input.customer.phone,
-        email: input.customer.email || undefined,
-        property: input.customer.addressLine1
-          ? {
-              addressLine1: input.customer.addressLine1,
-              addressLine2: "",
-              city: input.customer.city || "",
-              state: input.customer.state || "",
-              zip: input.customer.zip || "",
-            }
-          : undefined,
-      });
-    }
-
-    // 3. Create pricebook items from selected services
-    for (const service of input.services) {
-      await createPricebookItem(ctx, {
-        name: service.name,
-        unitPrice: service.unitPrice,
-        type: "service",
-      });
-    }
-
-    // 4. Mark onboarding as completed
+    // 1. Mark onboarding as completed first — this is the critical update
     await db
       .update(tenants)
       .set({ onboardingCompleted: true, updatedAt: new Date() })
       .where(eq(tenants.id, ctx.tenantId));
+
+    // 2. Update tenant settings with trade + operator type (best-effort)
+    try {
+      await updateTenantSettings(ctx, {
+        tradeType: input.tradeType,
+        operatorType: input.operatorType,
+      });
+    } catch (e) {
+      console.error("[Onboarding] Settings update failed:", e);
+    }
+
+    // 3. Create first customer if provided (best-effort)
+    if (input.customer) {
+      try {
+        await createCustomer(ctx, {
+          firstName: input.customer.firstName,
+          lastName: input.customer.lastName,
+          phone: input.customer.phone,
+          email: input.customer.email || undefined,
+          property: input.customer.addressLine1
+            ? {
+                addressLine1: input.customer.addressLine1,
+                addressLine2: "",
+                city: input.customer.city || "",
+                state: input.customer.state || "",
+                zip: input.customer.zip || "",
+              }
+            : undefined,
+        });
+      } catch (e) {
+        console.error("[Onboarding] Customer creation failed:", e);
+      }
+    }
+
+    // 4. Create pricebook items from selected services (best-effort)
+    for (const service of input.services) {
+      try {
+        await createPricebookItem(ctx, {
+          name: service.name,
+          unitPrice: service.unitPrice,
+          type: "service",
+        });
+      } catch (e) {
+        console.error("[Onboarding] Pricebook item failed:", e);
+      }
+    }
 
     return {};
   } catch (error) {
