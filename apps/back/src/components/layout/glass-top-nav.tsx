@@ -18,6 +18,7 @@ import {
   Settings,
   Sun,
   Moon,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,7 @@ const navLinks = [
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Reports", href: "/reports", icon: BarChart3 },
   { title: "Settings", href: "/settings", icon: Settings },
+  { title: "AI", href: "/ai-assistant", icon: Bot },
 ];
 
 interface GlassTopNavProps {
@@ -53,7 +55,7 @@ interface GlassTopNavProps {
 
 export function GlassTopNav({ user }: GlassTopNavProps) {
   const pathname = usePathname();
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
@@ -126,8 +128,8 @@ export function GlassTopNav({ user }: GlassTopNavProps) {
 
           {/* Theme toggle */}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="relative flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
             style={{ color: "var(--glass-nav-text-muted)" }}
             aria-label="Toggle theme"
           >

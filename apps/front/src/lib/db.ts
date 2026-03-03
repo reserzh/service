@@ -3,8 +3,16 @@ import postgres from "postgres";
 import * as schema from "@fieldservice/shared/db/schema";
 import { env } from "@/lib/env";
 
-const connectionString = env.DATABASE_URL;
+const globalForDb = globalThis as unknown as { dbFront?: ReturnType<typeof drizzle> };
 
-const client = postgres(connectionString, { prepare: false });
+if (!globalForDb.dbFront) {
+  const client = postgres(env.DATABASE_URL, {
+    prepare: false,
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
+  globalForDb.dbFront = drizzle(client, { schema });
+}
 
-export const db = drizzle(client, { schema });
+export const db = globalForDb.dbFront;

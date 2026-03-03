@@ -18,6 +18,7 @@ import {
   Settings,
   Sun,
   Moon,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,7 @@ const navLinks = [
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Reports", href: "/reports", icon: BarChart3 },
   { title: "Settings", href: "/settings", icon: Settings },
+  { title: "AI", href: "/ai-assistant", icon: Bot },
 ];
 
 interface BlueprintTopNavProps {
@@ -53,7 +55,7 @@ interface BlueprintTopNavProps {
 
 export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
   const pathname = usePathname();
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
@@ -112,8 +114,8 @@ export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
 
           {/* Theme toggle */}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex h-8 w-8 items-center justify-center rounded-md transition-colors"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="relative flex h-8 w-8 items-center justify-center rounded-md transition-colors"
             style={{
               color: "var(--bp-nav-text)",
             }}
