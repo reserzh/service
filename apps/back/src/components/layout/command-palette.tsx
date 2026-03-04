@@ -24,6 +24,8 @@ import {
   Settings,
   Loader2,
   Plus,
+  ClipboardList,
+  Bot,
 } from "lucide-react";
 import { globalSearchAction, type SearchResult } from "@/actions/search";
 
@@ -36,7 +38,9 @@ const pages = [
   { title: "Schedule", href: "/schedule", icon: Calendar },
   { title: "Dispatch", href: "/dispatch", icon: Truck },
   { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Agreements", href: "/agreements", icon: ClipboardList },
   { title: "Website", href: "/website", icon: Globe },
+  { title: "AI Assistant", href: "/ai-assistant", icon: Bot },
   { title: "Settings", href: "/settings", icon: Settings },
 ];
 

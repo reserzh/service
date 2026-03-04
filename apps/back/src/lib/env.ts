@@ -6,6 +6,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
   // Server-side Supabase URL (e.g. host.docker.internal) — falls back to NEXT_PUBLIC_SUPABASE_URL
   SUPABASE_URL: z.url().optional(),
+  // AI Assistant — optional, feature disabled if not set
+  ANTHROPIC_API_KEY: z.string().optional(),
 });
 
 function validateEnv() {

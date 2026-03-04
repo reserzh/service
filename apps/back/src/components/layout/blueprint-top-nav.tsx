@@ -19,6 +19,11 @@ import {
   Sun,
   Moon,
   Bot,
+  Radio,
+  FileText,
+  ClipboardList,
+  Globe,
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,8 +45,15 @@ const navLinks = [
   { title: "Customers", href: "/customers", icon: Users },
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Reports", href: "/reports", icon: BarChart3 },
-  { title: "Settings", href: "/settings", icon: Settings },
   { title: "AI", href: "/ai-assistant", icon: Bot },
+];
+
+const moreLinks = [
+  { title: "Dispatch", href: "/dispatch", icon: Radio },
+  { title: "Estimates", href: "/estimates", icon: FileText },
+  { title: "Agreements", href: "/agreements", icon: ClipboardList },
+  { title: "Website", href: "/website", icon: Globe },
+  { title: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface BlueprintTopNavProps {
@@ -91,6 +103,44 @@ export function BlueprintTopNav({ user }: BlueprintTopNavProps) {
               </Link>
             );
           })}
+
+          {/* More dropdown for additional pages */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="rounded px-2 py-1.5 text-[13px] font-medium transition-colors"
+                style={{
+                  color: moreLinks.some(
+                    (l) =>
+                      pathname === l.href ||
+                      pathname.startsWith(l.href + "/")
+                  )
+                    ? "var(--bp-nav-text-active)"
+                    : "var(--bp-nav-text)",
+                  background: moreLinks.some(
+                    (l) =>
+                      pathname === l.href ||
+                      pathname.startsWith(l.href + "/")
+                  )
+                    ? "var(--bp-nav-active-bg)"
+                    : "transparent",
+                }}
+                aria-label="More pages"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48">
+              {moreLinks.map((link) => (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link href={link.href} className="flex items-center">
+                    <link.icon className="mr-2 h-4 w-4" />
+                    {link.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Right side */}

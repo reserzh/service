@@ -15,6 +15,7 @@ import {
   Globe,
   Settings,
   Zap,
+  Bot,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ const mainNav = [
   { title: "Reports", href: "/reports", icon: BarChart3 },
   { title: "Agreements", href: "/agreements", icon: ClipboardList },
   { title: "Website", href: "/website", icon: Globe },
+  { title: "AI Assistant", href: "/ai-assistant", icon: Bot },
 ];
 
 const settingsNav = [

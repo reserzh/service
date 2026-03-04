@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import { getDashboardStats, getRecentActivity, getUpcomingJobs } from "@/lib/services/reports";
+import { getUserDashboardLayout, getUserAIWidgets } from "@/lib/services/dashboard";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Plus } from "lucide-react";
@@ -9,12 +10,14 @@ import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
-import type { DashboardData, DashboardPresetId, WidgetId } from "./layouts/types";
-import { DEFAULT_PRESET } from "./layouts/types";
+import type { DashboardData, DashboardPresetId, WidgetId, BuiltInWidgetId, AIWidgetData } from "./layouts/types";
+import { DEFAULT_PRESET, DASHBOARD_PRESETS } from "./layouts/types";
 import { ClassicLayout } from "./layouts/classic";
 import { BlueprintLayout } from "./layouts/blueprint";
 import { MissionControlLayout } from "./layouts/mission-control";
 import { GlassLayout } from "./layouts/glass";
+import { CustomizableDashboard } from "./customizable-dashboard";
+import { isAIConfigured } from "@/lib/ai/client";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -23,7 +26,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const ctx = await requireAuth();
 
-  const [stats, activity, upcoming, tenantRow] = await Promise.all([
+  const [stats, activity, upcoming, tenantRow, userLayout, rawAIWidgets] = await Promise.all([
     getDashboardStats(ctx),
     getRecentActivity(ctx, 8),
     getUpcomingJobs(ctx, 8),
@@ -33,6 +36,8 @@ export default async function DashboardPage() {
       .where(eq(tenants.id, ctx.tenantId))
       .limit(1)
       .then((rows) => rows[0]),
+    getUserDashboardLayout(ctx),
+    getUserAIWidgets(ctx),
   ]);
 
   const settings = (tenantRow?.settings ?? {}) as TenantSettings;
@@ -47,6 +52,25 @@ export default async function DashboardPage() {
   };
 
   const showPageHeader = preset === "classic" || preset === "executive" || preset === "arctic" || preset === "ocean";
+
+  // Get supported widgets for this preset
+  const presetConfig = DASHBOARD_PRESETS.find((p) => p.id === preset) ?? DASHBOARD_PRESETS[0];
+  const builtInWidgetIds = presetConfig.supportedWidgets.filter(
+    (w) => !hiddenWidgets.has(w)
+  ) as BuiltInWidgetId[];
+
+  // Map AI widget data
+  const aiWidgets: AIWidgetData[] = rawAIWidgets.map((w) => ({
+    id: w.id,
+    title: w.title,
+    widgetConfig: w.widgetConfig,
+    queryDefinition: w.queryDefinition,
+    cachedData: w.cachedData as Record<string, unknown> | null,
+    conversationId: w.conversationId,
+    lastRefreshedAt: w.lastRefreshedAt,
+  }));
+
+  const aiConfigured = isAIConfigured();
 
   return (
     <div className="space-y-6">
@@ -72,7 +96,21 @@ export default async function DashboardPage() {
         </PageHeader>
       )}
 
-      <DashboardLayout preset={preset} data={data} hiddenWidgets={hiddenWidgets} />
+      <CustomizableDashboard
+        aiWidgets={aiWidgets}
+        userLayout={
+          userLayout
+            ? {
+                widgetOrder: userLayout.widgetOrder,
+                widgetSizes: userLayout.widgetSizes,
+              }
+            : null
+        }
+        builtInWidgetIds={builtInWidgetIds}
+        aiConfigured={aiConfigured}
+      >
+        <DashboardLayout preset={preset} data={data} hiddenWidgets={hiddenWidgets} />
+      </CustomizableDashboard>
     </div>
   );
 }

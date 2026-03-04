@@ -15,3 +15,5 @@ export * from "./portal";
 export * from "./templates";
 export * from "./time-tracking";
 export * from "./quickbooks";
+export * from "./ai";
+export * from "./dashboard";

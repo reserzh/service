@@ -23,7 +23,8 @@
         "QB_CLIENT_SECRET",
         "QB_REDIRECT_URI",
         "QB_ENVIRONMENT",
-        "QB_TOKEN_ENCRYPTION_KEY"
+        "QB_TOKEN_ENCRYPTION_KEY",
+        "ANTHROPIC_API_KEY"
       ]
     },
     "dev": {

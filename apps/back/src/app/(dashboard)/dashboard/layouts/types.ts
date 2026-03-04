@@ -40,7 +40,8 @@ export type DashboardData = {
   firstName: string;
 };
 
-export type WidgetId = "stats" | "quick-actions" | "schedule" | "activity" | "chart" | "team";
+export type BuiltInWidgetId = "stats" | "quick-actions" | "schedule" | "activity" | "chart" | "team";
+export type WidgetId = BuiltInWidgetId | `ai-widget-${string}`;
 
 export type DashboardLayoutProps = {
   data: DashboardData;
@@ -117,3 +118,27 @@ export const DASHBOARD_PRESETS: DashboardPreset[] = [
 ];
 
 export const DEFAULT_PRESET: DashboardPresetId = "classic";
+
+export type AIWidgetData = {
+  id: string;
+  title: string;
+  widgetConfig: {
+    chartType: "bar" | "line" | "area" | "pie";
+    xKey?: string;
+    yKey?: string;
+    nameKey?: string;
+    valueKey?: string;
+  };
+  queryDefinition: {
+    tools: Array<{ name: string; params: Record<string, unknown> }>;
+    prompt: string;
+  };
+  cachedData: Record<string, unknown> | null;
+  conversationId: string | null;
+  lastRefreshedAt: Date | null;
+};
+
+export type UserLayoutConfig = {
+  widgetOrder: string[];
+  widgetSizes: Record<string, "full" | "half">;
+};

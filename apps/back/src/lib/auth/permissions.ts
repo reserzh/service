@@ -19,7 +19,8 @@ type Resource =
   | "communications"
   | "agreements"
   | "portal"
-  | "integrations";
+  | "integrations"
+  | "ai_assistant";
 
 // Permission matrix: role -> resource -> allowed actions
 const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
@@ -41,6 +42,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     agreements: ["create", "read", "update", "delete"],
     portal: ["create", "read", "update", "delete", "manage"],
     integrations: ["create", "read", "update", "delete", "manage"],
+    ai_assistant: ["read"],
   },
   office_manager: {
     settings: ["read"],
@@ -60,6 +62,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     agreements: ["create", "read", "update", "delete"],
     portal: ["create", "read", "update", "delete", "manage"],
     integrations: ["read", "manage"],
+    ai_assistant: ["read"],
   },
   dispatcher: {
     customers: ["read"],
