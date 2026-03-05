@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
   Phone,
+  PhoneCall,
   Mail,
   MapPin,
   Building2,
@@ -133,6 +134,10 @@ export default async function CustomerDetailPage({ params }: PageProps) {
             <Receipt className="mr-1.5 h-3.5 w-3.5" />
             Invoices
           </TabsTrigger>
+          <TabsTrigger value="calls">
+            <PhoneCall className="mr-1.5 h-3.5 w-3.5" />
+            Calls
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="properties" className="space-y-3">
@@ -231,6 +236,19 @@ export default async function CustomerDetailPage({ params }: PageProps) {
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
               No invoices for this customer yet.
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="calls">
+          <Card>
+            <CardContent className="py-8 text-center text-sm text-muted-foreground">
+              View call history for this customer.
+              <div className="mt-3">
+                <Button size="sm" asChild>
+                  <Link href={`/calls?customerId=${id}`}>View Calls</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -8,6 +8,8 @@ import type {
   AgreementStatus,
   BillingFrequency,
   AgreementVisitStatus,
+  CallDirection,
+  CallStatus,
 } from "./enums";
 
 // Valid status transitions (authoritative — backend is source of truth)
@@ -109,6 +111,23 @@ export const AGREEMENT_VISIT_STATUS_LABELS: Record<AgreementVisitStatus, string>
   scheduled: "Scheduled",
   completed: "Completed",
   skipped: "Skipped",
+  canceled: "Canceled",
+};
+
+// Call labels
+export const CALL_DIRECTION_LABELS: Record<CallDirection, string> = {
+  inbound: "Inbound",
+  outbound: "Outbound",
+};
+
+export const CALL_STATUS_LABELS: Record<CallStatus, string> = {
+  initiated: "Initiated",
+  ringing: "Ringing",
+  in_progress: "In Progress",
+  completed: "Completed",
+  busy: "Busy",
+  no_answer: "No Answer",
+  failed: "Failed",
   canceled: "Canceled",
 };
 

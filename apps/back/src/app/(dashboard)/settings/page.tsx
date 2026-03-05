@@ -11,6 +11,7 @@ import {
   CreditCard,
   Package,
   LayoutDashboard,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -46,6 +47,12 @@ const settingsGroups = [
     description: "Manage your catalog of services and materials",
     icon: Package,
     href: "/settings/pricebook",
+  },
+  {
+    title: "Voice & Calls",
+    description: "Twilio phone number, call recording, and voicemail",
+    icon: Phone,
+    href: "/settings/voice",
   },
   {
     title: "Notifications",

@@ -18,6 +18,10 @@ import {
   AGREEMENT_STATUSES,
   BILLING_FREQUENCIES,
   AGREEMENT_VISIT_STATUSES,
+  CALL_DIRECTIONS,
+  CALL_STATUSES,
+  RECORDING_STATUSES,
+  TRANSCRIPTION_STATUSES,
 } from "@fieldservice/api-types/enums";
 
 export const subscriptionStatusEnum = fieldserviceSchema.enum("subscription_status", [
@@ -90,3 +94,9 @@ export const communicationStatusEnum = fieldserviceSchema.enum("communication_st
 export const agreementStatusEnum = fieldserviceSchema.enum("agreement_status", [...AGREEMENT_STATUSES]);
 export const billingFrequencyEnum = fieldserviceSchema.enum("billing_frequency", [...BILLING_FREQUENCIES]);
 export const agreementVisitStatusEnum = fieldserviceSchema.enum("agreement_visit_status", [...AGREEMENT_VISIT_STATUSES]);
+
+// Call / Voice enums
+export const callDirectionEnum = fieldserviceSchema.enum("call_direction", [...CALL_DIRECTIONS]);
+export const callStatusEnum = fieldserviceSchema.enum("call_status", [...CALL_STATUSES]);
+export const recordingStatusEnum = fieldserviceSchema.enum("recording_status", [...RECORDING_STATUSES]);
+export const transcriptionStatusEnum = fieldserviceSchema.enum("transcription_status", [...TRANSCRIPTION_STATUSES]);

@@ -18,6 +18,10 @@ import type {
   AgreementStatus,
   BillingFrequency,
   AgreementVisitStatus,
+  CallDirection,
+  CallStatus,
+  RecordingStatus,
+  TranscriptionStatus,
 } from "./enums";
 
 // ---- Core Models ----
@@ -466,6 +470,47 @@ export interface TimeEntry {
   jobId: string | null;
   notes: string | null;
   createdAt: string;
+}
+
+// ---- Call / Voice Models ----
+
+export interface Call {
+  id: string;
+  tenantId: string;
+  callSid: string;
+  direction: CallDirection;
+  fromNumber: string;
+  toNumber: string;
+  status: CallStatus;
+  duration: number | null;
+  customerId: string | null;
+  jobId: string | null;
+  userId: string | null;
+  notes: string | null;
+  startedAt: string | null;
+  endedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CallRecording {
+  id: string;
+  tenantId: string;
+  callId: string;
+  recordingSid: string;
+  duration: number | null;
+  recordingUrl: string | null;
+  status: RecordingStatus;
+  transcriptionText: string | null;
+  transcriptionStatus: TranscriptionStatus;
+  createdAt: string;
+}
+
+export interface CallWithRelations extends Call {
+  customer: Pick<Customer, "id" | "firstName" | "lastName" | "phone"> | null;
+  job: Pick<Job, "id" | "jobNumber" | "summary"> | null;
+  user: Pick<User, "id" | "firstName" | "lastName"> | null;
+  recordings: CallRecording[];
 }
 
 // ---- Customer Portal Models ----

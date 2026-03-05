@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
+import { CallWidget } from "@/components/calls/call-widget";
 
 const TOP_NAV_THEMES = new Set(["blueprint", "glass"]);
 
@@ -67,6 +68,7 @@ export default async function DashboardLayout({
           </SidebarInset>
         </SidebarProvider>
       )}
+      <CallWidget />
     </div>
   );
 }

@@ -57,4 +57,12 @@ export type TenantSettings = {
     syncEstimates?: boolean;
     defaultPaymentMethodId?: string;
   };
+  voice?: {
+    twilioPhoneNumber?: string;
+    forwardingNumber?: string;
+    autoRecord?: boolean;
+    greetingMessage?: string;
+    voicemailEnabled?: boolean;
+    transcriptionEnabled?: boolean;
+  };
 };

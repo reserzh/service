@@ -36,6 +36,12 @@ export const AGREEMENT_STATUSES = ["draft", "active", "paused", "completed", "ca
 export const BILLING_FREQUENCIES = ["monthly", "quarterly", "semi_annual", "annual", "one_time"] as const;
 export const AGREEMENT_VISIT_STATUSES = ["scheduled", "completed", "skipped", "canceled"] as const;
 
+// Call / Voice enums
+export const CALL_DIRECTIONS = ["inbound", "outbound"] as const;
+export const CALL_STATUSES = ["initiated", "ringing", "in_progress", "completed", "busy", "no_answer", "failed", "canceled"] as const;
+export const RECORDING_STATUSES = ["processing", "completed", "failed", "deleted"] as const;
+export const TRANSCRIPTION_STATUSES = ["none", "processing", "completed", "failed"] as const;
+
 // ---- Union types derived from arrays ----
 
 export type UserRole = (typeof USER_ROLES)[number];
@@ -57,3 +63,7 @@ export type JobAssignmentRole = (typeof JOB_ASSIGNMENT_ROLES)[number];
 export type AgreementStatus = (typeof AGREEMENT_STATUSES)[number];
 export type BillingFrequency = (typeof BILLING_FREQUENCIES)[number];
 export type AgreementVisitStatus = (typeof AGREEMENT_VISIT_STATUSES)[number];
+export type CallDirection = (typeof CALL_DIRECTIONS)[number];
+export type CallStatus = (typeof CALL_STATUSES)[number];
+export type RecordingStatus = (typeof RECORDING_STATUSES)[number];
+export type TranscriptionStatus = (typeof TRANSCRIPTION_STATUSES)[number];

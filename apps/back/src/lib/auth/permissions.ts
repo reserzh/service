@@ -20,7 +20,8 @@ type Resource =
   | "agreements"
   | "portal"
   | "integrations"
-  | "ai_assistant";
+  | "ai_assistant"
+  | "calls";
 
 // Permission matrix: role -> resource -> allowed actions
 const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
@@ -43,6 +44,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     portal: ["create", "read", "update", "delete", "manage"],
     integrations: ["create", "read", "update", "delete", "manage"],
     ai_assistant: ["read"],
+    calls: ["create", "read", "update", "delete"],
   },
   office_manager: {
     settings: ["read"],
@@ -63,6 +65,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     portal: ["create", "read", "update", "delete", "manage"],
     integrations: ["read", "manage"],
     ai_assistant: ["read"],
+    calls: ["create", "read", "update", "delete"],
   },
   dispatcher: {
     customers: ["read"],
@@ -76,6 +79,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     pricebook: ["read"],
     communications: ["read"],
     agreements: ["read"],
+    calls: ["create", "read"],
   },
   csr: {
     customers: ["create", "read", "update"],
@@ -88,6 +92,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     pricebook: ["read"],
     communications: ["read"],
     agreements: ["read"],
+    calls: ["create", "read", "update"],
   },
   technician: {
     customers: ["read"],
@@ -99,6 +104,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     payments: ["create"],
     pricebook: ["read"],
     agreements: ["read"],
+    calls: ["read"],
   },
 };
 
