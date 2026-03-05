@@ -177,8 +177,3 @@ export function useUpdateJob() {
   });
 }
 
-export function useNotifyOnMyWay() {
-  return useMutation({
-    mutationFn: (id: string) => jobsApi.notifyOnMyWay(id),
-  });
-}

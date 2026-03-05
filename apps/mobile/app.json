@@ -27,7 +27,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Take photos of job sites and equipment",
         "NSPhotoLibraryUsageDescription": "Attach photos from your library to jobs",
-        "NSLocationWhenInUseUsageDescription": "Navigate to job sites and show your location on the map"
+        "NSLocationWhenInUseUsageDescription": "Navigate to job sites and show your location on the map",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Share your live location with customers while driving to their job site",
+        "UIBackgroundModes": ["location"]
       }
     },
     "android": {
@@ -41,7 +43,8 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
       ]
     },
     "plugins": [
@@ -63,7 +66,10 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Navigate to job sites and show your location on the map"
+          "locationWhenInUsePermission": "Navigate to job sites and show your location on the map",
+          "locationAlwaysAndWhenInUsePermission": "Share your live location with customers while driving to their job site",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
         }
       ],
       [

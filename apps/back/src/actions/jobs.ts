@@ -146,7 +146,7 @@ export async function updateJobAction(
 
 export async function changeJobStatusAction(
   jobId: string,
-  newStatus: "new" | "scheduled" | "dispatched" | "in_progress" | "completed" | "canceled"
+  newStatus: "new" | "scheduled" | "dispatched" | "en_route" | "in_progress" | "completed" | "canceled"
 ): Promise<{ error?: string }> {
   try {
     const ctx = await requireAuth();

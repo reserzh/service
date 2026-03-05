@@ -513,6 +513,27 @@ export interface CallWithRelations extends Call {
   recordings: CallRecording[];
 }
 
+// ---- Tracking Models ----
+
+export interface TrackingSession {
+  id: string;
+  tenantId: string;
+  jobId: string;
+  technicianId: string;
+  token: string;
+  status: "active" | "completed" | "expired";
+  currentLatitude: string | null;
+  currentLongitude: string | null;
+  destinationLatitude: string | null;
+  destinationLongitude: string | null;
+  etaMinutes: number | null;
+  lastLocationAt: string | null;
+  startedAt: string;
+  endedAt: string | null;
+  expiresAt: string;
+  createdAt: string;
+}
+
 // ---- Customer Portal Models ----
 
 export interface CustomerPortalContext {

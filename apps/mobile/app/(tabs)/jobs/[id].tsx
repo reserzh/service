@@ -13,7 +13,8 @@ import * as Haptics from "expo-haptics";
 import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { useJob, useUpdateJobStatus, useUpdateJob, useNotifyOnMyWay } from "@/hooks/useJobs";
+import { useJob, useUpdateJobStatus, useUpdateJob } from "@/hooks/useJobs";
+import { startLocationTracking, stopLocationTracking } from "@/lib/locationTracking";
 import { useCreateInvoiceFromJob } from "@/hooks/useInvoices";
 import { useSettingsStore } from "@/stores/settings";
 import { FieldModeToggle } from "@/components/common/FieldModeToggle";
@@ -37,7 +38,6 @@ export default function JobDetailScreen() {
   const { data, isLoading, isError, refetch } = useJob(id);
   const updateStatus = useUpdateJobStatus();
   const updateJob = useUpdateJob();
-  const notifyOnMyWay = useNotifyOnMyWay();
   const createInvoice = useCreateInvoiceFromJob();
   const fieldMode = useSettingsStore((s) => s.fieldMode);
   const [activeTab, setActiveTab] = useState<JobTab>("overview");
@@ -61,6 +61,7 @@ export default function JobDetailScreen() {
       if (!job) return;
 
       const labels: Record<string, string> = {
+        en_route: "Go en route and share location with customer?",
         in_progress: "Start this job?",
         completed: "Mark this job as completed?",
         canceled: "Cancel this job?",
@@ -76,9 +77,9 @@ export default function JobDetailScreen() {
             text: "Confirm",
             onPress: async () => {
               try {
-                // Capture GPS for in_progress and completed transitions
+                // Capture GPS for en_route, in_progress and completed transitions
                 let coords: { latitude: number; longitude: number } | undefined;
-                if (newStatus === "in_progress" || newStatus === "completed") {
+                if (newStatus === "en_route" || newStatus === "in_progress" || newStatus === "completed") {
                   try {
                     const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
                     if (permStatus === "granted") {
@@ -93,6 +94,20 @@ export default function JobDetailScreen() {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 await updateStatus.mutateAsync({ id: job.id, status: newStatus, coords });
                 Toast.show({ type: "success", text1: "Status updated" });
+
+                // Start/stop background location tracking
+                if (newStatus === "en_route") {
+                  const started = await startLocationTracking(job.id);
+                  if (!started) {
+                    Toast.show({
+                      type: "info",
+                      text1: "Background location unavailable",
+                      text2: "Enable location permissions for live tracking",
+                    });
+                  }
+                } else if (job.status === "en_route") {
+                  await stopLocationTracking();
+                }
               } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : "Failed to update status";
                 Toast.show({ type: "error", text1: "Error", text2: msg });
@@ -139,17 +154,6 @@ export default function JobDetailScreen() {
     });
   }, [job]);
 
-  const handleOnMyWay = useCallback(async () => {
-    if (!job) return;
-    try {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      await notifyOnMyWay.mutateAsync(job.id);
-      Toast.show({ type: "success", text1: "Customer notified", text2: "On my way notification sent" });
-    } catch {
-      Toast.show({ type: "error", text1: "Failed to notify customer" });
-    }
-  }, [job, notifyOnMyWay]);
-
   if (isError) {
     return <ErrorFallback message="Failed to load job details" onRetry={() => refetch()} />;
   }
@@ -158,7 +162,7 @@ export default function JobDetailScreen() {
     return <LoadingScreen />;
   }
 
-  const showOnMyWay = job.status === "dispatched";
+  const isEnRoute = job.status === "en_route";
   const showCreateInvoice = job.status === "completed";
 
   // Field mode sizing
@@ -225,6 +229,20 @@ export default function JobDetailScreen() {
           ? "bg-[#1A1A1A] border-[#333]"
           : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
       }`}>
+        {/* En route indicator */}
+        {isEnRoute && (
+          <View className={`flex-row items-center justify-center rounded-lg px-3 py-2 mb-3 ${
+            fieldMode ? "bg-indigo-900" : "bg-indigo-50 dark:bg-indigo-900/30"
+          }`}>
+            <Send size={14} color="#6366f1" />
+            <Text className={`ml-2 text-xs font-medium ${
+              fieldMode ? "text-indigo-300" : "text-indigo-700 dark:text-indigo-300"
+            }`}>
+              Sharing live location with customer
+            </Text>
+          </View>
+        )}
+
         {/* Quick action icons */}
         <View className={`flex-row items-center justify-center mb-3 ${fieldMode ? "gap-5" : "gap-4"}`}>
           <Pressable
@@ -282,22 +300,6 @@ export default function JobDetailScreen() {
             </View>
             <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>Photo</Text>
           </Pressable>
-
-          {showOnMyWay && (
-            <Pressable
-              onPress={handleOnMyWay}
-              className="items-center gap-1 active:opacity-70"
-              accessibilityLabel="Notify customer on my way"
-              accessibilityRole="button"
-            >
-              <View className={`rounded-full items-center justify-center ${quickActionSize} ${
-                fieldMode ? "bg-indigo-900" : "bg-indigo-100 dark:bg-indigo-900"
-              }`}>
-                <Send size={quickActionIconSize} color="#6366f1" />
-              </View>
-              <Text className={`${quickActionLabelSize} ${fieldMode ? "text-[#B0B0B0]" : "text-slate-500"}`}>On Way</Text>
-            </Pressable>
-          )}
 
           {showCreateInvoice && (
             <Pressable

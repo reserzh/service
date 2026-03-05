@@ -57,6 +57,15 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     "technicianName",
     "companyName",
   ],
+  tech_en_route: [
+    "customerFirstName",
+    "customerLastName",
+    "jobNumber",
+    "jobSummary",
+    "technicianName",
+    "trackingUrl",
+    "companyName",
+  ],
   job_completed: [
     "customerFirstName",
     "customerLastName",
@@ -108,6 +117,23 @@ export const DEFAULT_TEMPLATES: Record<string, { subject: string; body: string }
 <p><strong>Date:</strong> {{scheduledDate}}<br><strong>Time:</strong> {{scheduledTime}}</p>
 <p><strong>Service:</strong> {{jobSummary}}</p>
 <p>We look forward to helping you!</p>
+<p>— {{companyName}}</p>`,
+  },
+  job_dispatched: {
+    subject: "Your technician has been dispatched — {{companyName}}",
+    body: `<p>Hi {{customerFirstName}},</p>
+<p>A technician has been dispatched for job <strong>{{jobNumber}}</strong>.</p>
+<p><strong>Service:</strong> {{jobSummary}}</p>
+<p>We'll notify you when they're on their way.</p>
+<p>— {{companyName}}</p>`,
+  },
+  tech_en_route: {
+    subject: "Your technician is on the way — {{companyName}}",
+    body: `<p>Hi {{customerFirstName}},</p>
+<p>Great news! <strong>{{technicianName}}</strong> is on the way for job <strong>{{jobNumber}}</strong>.</p>
+<p><strong>Service:</strong> {{jobSummary}}</p>
+<p style="margin: 24px 0;"><a href="{{trackingUrl}}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Track Your Technician Live</a></p>
+<p>You can follow their progress in real time using the link above.</p>
 <p>— {{companyName}}</p>`,
   },
   job_completed: {

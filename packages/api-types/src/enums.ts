@@ -2,7 +2,7 @@
 
 export const USER_ROLES = ["admin", "office_manager", "dispatcher", "csr", "technician"] as const;
 export const CUSTOMER_TYPES = ["residential", "commercial"] as const;
-export const JOB_STATUSES = ["new", "scheduled", "dispatched", "in_progress", "completed", "canceled"] as const;
+export const JOB_STATUSES = ["new", "scheduled", "dispatched", "en_route", "in_progress", "completed", "canceled"] as const;
 export const JOB_PRIORITIES = ["low", "normal", "high", "emergency"] as const;
 export const LINE_ITEM_TYPES = ["service", "material", "labor", "discount", "other"] as const;
 export const ESTIMATE_STATUSES = ["draft", "sent", "viewed", "approved", "declined", "expired"] as const;
@@ -20,6 +20,7 @@ export const COMMUNICATION_TRIGGERS = [
   "estimate_sent",
   "job_scheduled",
   "job_dispatched",
+  "tech_en_route",
   "job_completed",
   "appointment_reminder",
   "custom",

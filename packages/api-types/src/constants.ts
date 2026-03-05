@@ -16,7 +16,8 @@ import type {
 export const VALID_TRANSITIONS: Record<JobStatus, JobStatus[]> = {
   new: ["scheduled", "canceled"],
   scheduled: ["dispatched", "new", "canceled"],
-  dispatched: ["in_progress", "scheduled", "canceled"],
+  dispatched: ["en_route", "in_progress", "scheduled", "canceled"],
+  en_route: ["in_progress", "dispatched", "canceled"],
   in_progress: ["completed", "dispatched", "canceled"],
   completed: [],
   canceled: ["new"],
@@ -24,7 +25,8 @@ export const VALID_TRANSITIONS: Record<JobStatus, JobStatus[]> = {
 
 // For technicians, the primary action for each status
 export const PRIMARY_NEXT_STATUS: Partial<Record<JobStatus, JobStatus>> = {
-  dispatched: "in_progress",
+  dispatched: "en_route",
+  en_route: "in_progress",
   in_progress: "completed",
 };
 
@@ -33,6 +35,7 @@ export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   new: "New",
   scheduled: "Scheduled",
   dispatched: "Dispatched",
+  en_route: "En Route",
   in_progress: "In Progress",
   completed: "Completed",
   canceled: "Canceled",
@@ -66,7 +69,8 @@ export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
 
 // Primary action button labels for technicians
 export const STATUS_ACTION_LABELS: Partial<Record<JobStatus, string>> = {
-  dispatched: "Start Job",
+  dispatched: "On My Way",
+  en_route: "Start Job",
   in_progress: "Complete Job",
 };
 
@@ -85,6 +89,7 @@ export const COMMUNICATION_TRIGGER_LABELS: Record<CommunicationTrigger, string> 
   estimate_sent: "Estimate Sent",
   job_scheduled: "Job Scheduled",
   job_dispatched: "Job Dispatched",
+  tech_en_route: "Tech En Route",
   job_completed: "Job Completed",
   appointment_reminder: "Appointment Reminder",
   custom: "Custom",

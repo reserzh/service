@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireCustomerAuth } from "@/lib/portal-auth";
 import { getPortalJob } from "@/lib/portal-queries";
+import { db } from "@/lib/db";
+import { trackingSessions } from "@fieldservice/shared/db/schema";
+import { eq, and } from "drizzle-orm";
 import {
   JOB_STATUS_LABELS,
   JOB_PRIORITY_LABELS,
@@ -12,6 +15,7 @@ const statusColors: Record<JobStatus, { bg: string; text: string }> = {
   new: { bg: "bg-gray-100", text: "text-gray-700" },
   scheduled: { bg: "bg-yellow-100", text: "text-yellow-800" },
   dispatched: { bg: "bg-purple-100", text: "text-purple-800" },
+  en_route: { bg: "bg-indigo-100", text: "text-indigo-800" },
   in_progress: { bg: "bg-blue-100", text: "text-blue-800" },
   completed: { bg: "bg-green-100", text: "text-green-800" },
   canceled: { bg: "bg-red-100", text: "text-red-700" },
@@ -66,6 +70,23 @@ export default async function PortalJobDetailPage({
     .filter(Boolean)
     .join(", ");
 
+  // Check for active tracking session when en_route
+  let trackingToken: string | null = null;
+  if (status === "en_route") {
+    const [activeSession] = await db
+      .select({ token: trackingSessions.token })
+      .from(trackingSessions)
+      .where(
+        and(
+          eq(trackingSessions.jobId, id),
+          eq(trackingSessions.tenantId, ctx.tenantId),
+          eq(trackingSessions.status, "active")
+        )
+      )
+      .limit(1);
+    trackingToken = activeSession?.token ?? null;
+  }
+
   return (
     <div>
       <Link
@@ -83,11 +104,27 @@ export default async function PortalJobDetailPage({
               {job.summary || "Untitled Job"}
             </h1>
           </div>
-          <span
-            className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${colors.bg} ${colors.text}`}
-          >
-            {JOB_STATUS_LABELS[status] ?? status}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${colors.bg} ${colors.text}`}
+            >
+              {JOB_STATUS_LABELS[status] ?? status}
+            </span>
+            {trackingToken && (
+              <a
+                href={`/track/${trackingToken}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-4 py-1 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Track Your Technician
+              </a>
+            )}
+          </div>
         </div>
 
         {job.description && (

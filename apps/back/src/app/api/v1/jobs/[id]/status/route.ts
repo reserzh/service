@@ -5,7 +5,7 @@ import { changeJobStatus } from "@/lib/services/jobs";
 import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const statusSchema = z.object({
-  status: z.enum(["new", "scheduled", "dispatched", "in_progress", "completed", "canceled"]),
+  status: z.enum(["new", "scheduled", "dispatched", "en_route", "in_progress", "completed", "canceled"]),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
 });

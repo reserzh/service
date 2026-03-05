@@ -21,6 +21,7 @@ const statusLabels: Record<string, string> = {
   new: "New",
   scheduled: "Scheduled",
   dispatched: "Dispatched",
+  en_route: "En Route",
   in_progress: "In Progress",
   completed: "Completed",
   canceled: "Canceled",

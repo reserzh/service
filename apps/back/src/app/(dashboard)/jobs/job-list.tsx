@@ -32,6 +32,7 @@ const statusLabels: Record<string, string> = {
   new: "New",
   scheduled: "Scheduled",
   dispatched: "Dispatched",
+  en_route: "En Route",
   in_progress: "In Progress",
   completed: "Completed",
   canceled: "Canceled",
@@ -77,7 +78,7 @@ interface JobListProps {
   dateTo?: string;
 }
 
-const allStatuses = ["new", "scheduled", "dispatched", "in_progress", "completed", "canceled"];
+const allStatuses = ["new", "scheduled", "dispatched", "en_route", "in_progress", "completed", "canceled"];
 const allPriorities = ["low", "normal", "high", "emergency"];
 
 export function JobList({ jobs, meta, searchQuery, statusFilter, priorityFilter, dateFrom, dateTo }: JobListProps) {

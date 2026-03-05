@@ -49,6 +49,7 @@
   --color-status-new: var(--status-new);
   --color-status-scheduled: var(--status-scheduled);
   --color-status-dispatched: var(--status-dispatched);
+  --color-status-en-route: var(--status-en-route);
   --color-status-in-progress: var(--status-in-progress);
   --color-status-completed: var(--status-completed);
   --color-status-canceled: var(--status-canceled);
@@ -96,6 +97,7 @@
   --status-new: oklch(0.55 0.15 260);
   --status-scheduled: oklch(0.55 0.20 260);
   --status-dispatched: oklch(0.55 0.20 300);
+  --status-en-route: oklch(0.55 0.20 280);
   --status-in-progress: oklch(0.70 0.18 80);
   --status-completed: oklch(0.55 0.17 155);
   --status-canceled: oklch(0.55 0.10 15);
@@ -141,6 +143,7 @@
   --status-new: oklch(0.60 0.15 260);
   --status-scheduled: oklch(0.60 0.20 260);
   --status-dispatched: oklch(0.60 0.20 300);
+  --status-en-route: oklch(0.60 0.20 280);
   --status-in-progress: oklch(0.75 0.17 80);
   --status-completed: oklch(0.60 0.17 155);
   --status-canceled: oklch(0.60 0.10 15);

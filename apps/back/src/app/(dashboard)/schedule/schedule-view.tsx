@@ -21,6 +21,7 @@ const statusBorderColors: Record<string, string> = {
   new: "border-l-status-new",
   scheduled: "border-l-status-scheduled",
   dispatched: "border-l-status-dispatched",
+  en_route: "border-l-status-en-route",
   in_progress: "border-l-status-in-progress",
   completed: "border-l-status-completed",
   canceled: "border-l-status-canceled",

@@ -84,17 +84,19 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   new: { label: "New", color: "bg-status-new" },
   scheduled: { label: "Scheduled", color: "bg-status-scheduled" },
   dispatched: { label: "Dispatched", color: "bg-status-dispatched" },
+  en_route: { label: "En Route", color: "bg-status-en-route" },
   in_progress: { label: "In Progress", color: "bg-status-in-progress" },
   completed: { label: "Completed", color: "bg-status-completed" },
   canceled: { label: "Canceled", color: "bg-status-canceled" },
 };
 
-const statusSteps = ["new", "scheduled", "dispatched", "in_progress", "completed"];
+const statusSteps = ["new", "scheduled", "dispatched", "en_route", "in_progress", "completed"];
 
 const nextStatusMap: Record<string, { status: string; label: string } | null> = {
   new: { status: "scheduled", label: "Schedule" },
   scheduled: { status: "dispatched", label: "Dispatch" },
-  dispatched: { status: "in_progress", label: "Start Work" },
+  dispatched: { status: "en_route", label: "En Route" },
+  en_route: { status: "in_progress", label: "Start Work" },
   in_progress: { status: "completed", label: "Complete" },
   completed: null,
   canceled: { status: "new", label: "Reopen" },

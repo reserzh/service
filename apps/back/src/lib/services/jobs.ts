@@ -466,6 +466,10 @@ export async function changeJobStatus(
   };
 
   if (newStatus === "dispatched") updateData.dispatchedAt = new Date();
+  if (newStatus === "en_route") {
+    if (options?.latitude != null) updateData.startLatitude = String(options.latitude);
+    if (options?.longitude != null) updateData.startLongitude = String(options.longitude);
+  }
   if (newStatus === "in_progress") {
     updateData.actualStart = new Date();
     if (options?.latitude != null) updateData.startLatitude = String(options.latitude);
@@ -489,11 +493,25 @@ export async function changeJobStatus(
     to: newStatus,
   });
 
+  // Handle tracking session lifecycle
+  try {
+    const { createTrackingSession, endTrackingSession } = await import("./tracking");
+    if (newStatus === "en_route") {
+      await createTrackingSession(ctx, jobId);
+    }
+    if (currentStatus === "en_route" && newStatus !== "en_route") {
+      await endTrackingSession(ctx, jobId);
+    }
+  } catch (trackingError) {
+    console.error("[Job] Tracking session error:", trackingError);
+  }
+
   // Send triggered communication for status changes
   try {
     const triggerMap: Record<string, string> = {
       scheduled: "job_scheduled",
       dispatched: "job_dispatched",
+      en_route: "tech_en_route",
       completed: "job_completed",
     };
     const trigger = triggerMap[newStatus];
@@ -511,6 +529,21 @@ export async function changeJobStatus(
               .from(users).where(eq(users.id, job.assignedTo)).limit(1).then((r) => r[0])
           : null;
 
+        // Build tracking URL for en_route communications
+        let trackingUrl = "";
+        if (newStatus === "en_route") {
+          try {
+            const { getActiveTrackingSession } = await import("./tracking");
+            const session = await getActiveTrackingSession(ctx, jobId);
+            if (session) {
+              const appUrl = process.env.NEXT_PUBLIC_FRONT_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3201";
+              trackingUrl = `${appUrl}/track/${session.token}`;
+            }
+          } catch {
+            // tracking URL is best-effort
+          }
+        }
+
         await sendTriggeredCommunication(ctx, trigger as import("@fieldservice/api-types/enums").CommunicationTrigger, {
           recipientEmail: customer.email,
           recipientName: `${customer.firstName} ${customer.lastName}`,
@@ -524,6 +557,7 @@ export async function changeJobStatus(
             scheduledDate: job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : "",
             scheduledTime: job.scheduledStart ? new Date(job.scheduledStart).toLocaleTimeString() : "",
             technicianName: techUser ? `${techUser.firstName} ${techUser.lastName}` : "",
+            trackingUrl,
           },
         });
       }

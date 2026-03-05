@@ -63,7 +63,7 @@ export const jobsApi = {
     return api.patch<ApiResponse<Job>>(`/jobs/${jobId}/checklist/${itemId}`, { completed });
   },
 
-  notifyOnMyWay(id: string) {
-    return api.post<ApiResponse<{ success: boolean }>>(`/jobs/${id}/on-my-way`);
+  updateTrackingLocation(id: string, latitude: number, longitude: number) {
+    return api.post<ApiResponse<unknown>>(`/jobs/${id}/tracking`, { latitude, longitude });
   },
 };

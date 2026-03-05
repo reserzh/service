@@ -8,6 +8,7 @@ const statusColors: Record<JobStatus, { bg: string; text: string }> = {
   new: { bg: "bg-gray-100", text: "text-gray-700" },
   scheduled: { bg: "bg-yellow-100", text: "text-yellow-800" },
   dispatched: { bg: "bg-purple-100", text: "text-purple-800" },
+  en_route: { bg: "bg-indigo-100", text: "text-indigo-800" },
   in_progress: { bg: "bg-blue-100", text: "text-blue-800" },
   completed: { bg: "bg-green-100", text: "text-green-800" },
   canceled: { bg: "bg-red-100", text: "text-red-700" },
