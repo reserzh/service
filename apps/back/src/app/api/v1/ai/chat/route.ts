@@ -249,11 +249,10 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
           controller.close();
         } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "An error occurred";
+          console.error("[AI Chat] Stream error:", error);
           controller.enqueue(
             encoder.encode(
-              `data: ${JSON.stringify({ type: "error", message })}\n\n`
+              `data: ${JSON.stringify({ type: "error", message: "An error occurred while processing your request." })}\n\n`
             )
           );
           controller.close();

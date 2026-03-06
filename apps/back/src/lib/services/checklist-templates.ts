@@ -4,7 +4,7 @@ import {
   checklistTemplateItems,
   jobChecklistItems,
 } from "@fieldservice/shared/db/schema";
-import { eq, and, asc, desc, ilike, sql } from "drizzle-orm";
+import { eq, and, asc, desc, ilike, sql, or, isNull } from "drizzle-orm";
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { NotFoundError } from "@/lib/api/errors";
@@ -24,7 +24,8 @@ export interface CreateChecklistTemplateInput {
   name: string;
   description?: string;
   jobType?: string;
-  items: string[];
+  autoApplyOnDispatch?: boolean;
+  items: { label: string; groupName?: string }[];
 }
 
 export interface UpdateChecklistTemplateInput {
@@ -32,7 +33,8 @@ export interface UpdateChecklistTemplateInput {
   description?: string | null;
   jobType?: string | null;
   isActive?: boolean;
-  items?: string[];
+  autoApplyOnDispatch?: boolean;
+  items?: { label: string; groupName?: string }[];
 }
 
 // ---------- List ----------
@@ -117,15 +119,19 @@ export async function createChecklistTemplate(ctx: UserContext, input: CreateChe
         name: input.name,
         description: input.description || null,
         jobType: input.jobType || null,
+        autoApplyOnDispatch: input.autoApplyOnDispatch ?? false,
       })
       .returning();
 
     if (input.items.length > 0) {
+      const groupOrderMap = computeGroupSortOrder(input.items);
       await tx.insert(checklistTemplateItems).values(
-        input.items.map((label, idx) => ({
+        input.items.map((item, idx) => ({
           tenantId: ctx.tenantId,
           templateId: template.id,
-          label,
+          label: item.label,
+          groupName: item.groupName || null,
+          groupSortOrder: groupOrderMap.get(item.groupName || null) ?? 0,
           sortOrder: idx,
         }))
       );
@@ -144,39 +150,45 @@ export async function updateChecklistTemplate(
 ) {
   assertPermission(ctx, "settings", "update");
 
-  const existing = await getChecklistTemplate(ctx, templateId);
+  await getChecklistTemplate(ctx, templateId);
 
   const updateData: Record<string, unknown> = { updatedAt: new Date() };
   if (input.name !== undefined) updateData.name = input.name;
   if (input.description !== undefined) updateData.description = input.description;
   if (input.jobType !== undefined) updateData.jobType = input.jobType;
   if (input.isActive !== undefined) updateData.isActive = input.isActive;
+  if (input.autoApplyOnDispatch !== undefined) updateData.autoApplyOnDispatch = input.autoApplyOnDispatch;
 
-  const [updated] = await db
-    .update(checklistTemplates)
-    .set(updateData)
-    .where(and(eq(checklistTemplates.id, templateId), eq(checklistTemplates.tenantId, ctx.tenantId)))
-    .returning();
+  return db.transaction(async (tx) => {
+    const [updated] = await tx
+      .update(checklistTemplates)
+      .set(updateData)
+      .where(and(eq(checklistTemplates.id, templateId), eq(checklistTemplates.tenantId, ctx.tenantId)))
+      .returning();
 
-  // Replace items if provided
-  if (input.items !== undefined) {
-    await db
-      .delete(checklistTemplateItems)
-      .where(and(eq(checklistTemplateItems.templateId, templateId), eq(checklistTemplateItems.tenantId, ctx.tenantId)));
+    // Replace items if provided
+    if (input.items !== undefined) {
+      await tx
+        .delete(checklistTemplateItems)
+        .where(and(eq(checklistTemplateItems.templateId, templateId), eq(checklistTemplateItems.tenantId, ctx.tenantId)));
 
-    if (input.items.length > 0) {
-      await db.insert(checklistTemplateItems).values(
-        input.items.map((label, idx) => ({
-          tenantId: ctx.tenantId,
-          templateId,
-          label,
-          sortOrder: idx,
-        }))
-      );
+      if (input.items.length > 0) {
+        const groupOrderMap = computeGroupSortOrder(input.items);
+        await tx.insert(checklistTemplateItems).values(
+          input.items.map((item, idx) => ({
+            tenantId: ctx.tenantId,
+            templateId,
+            label: item.label,
+            groupName: item.groupName || null,
+            groupSortOrder: groupOrderMap.get(item.groupName || null) ?? 0,
+            sortOrder: idx,
+          }))
+        );
+      }
     }
-  }
 
-  return updated;
+    return updated;
+  });
 }
 
 // ---------- Delete ----------
@@ -215,10 +227,42 @@ export async function applyChecklistTemplate(ctx: UserContext, jobId: string, te
         tenantId: ctx.tenantId,
         jobId,
         label: item.label,
+        groupName: item.groupName,
+        groupSortOrder: item.groupSortOrder,
         sortOrder: startOrder + idx,
       }))
     )
     .returning();
 
   return items;
+}
+
+// ---------- Auto-Apply Helpers ----------
+
+export async function getAutoApplyTemplates(ctx: UserContext, jobType: string) {
+  return db
+    .select()
+    .from(checklistTemplates)
+    .where(
+      and(
+        eq(checklistTemplates.tenantId, ctx.tenantId),
+        eq(checklistTemplates.isActive, true),
+        eq(checklistTemplates.autoApplyOnDispatch, true),
+        or(eq(checklistTemplates.jobType, jobType), isNull(checklistTemplates.jobType))
+      )
+    );
+}
+
+// ---------- Helpers ----------
+
+function computeGroupSortOrder(items: { groupName?: string }[]): Map<string | null, number> {
+  const map = new Map<string | null, number>();
+  let order = 0;
+  for (const item of items) {
+    const key = item.groupName || null;
+    if (!map.has(key)) {
+      map.set(key, order++);
+    }
+  }
+  return map;
 }

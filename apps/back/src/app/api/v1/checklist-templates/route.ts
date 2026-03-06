@@ -29,7 +29,13 @@ const createSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
   jobType: z.string().max(100).optional(),
-  items: z.array(z.string().min(1).max(500)),
+  autoApplyOnDispatch: z.boolean().optional(),
+  items: z.array(
+    z.object({
+      label: z.string().min(1).max(500),
+      groupName: z.string().max(255).optional(),
+    })
+  ),
 });
 
 export async function POST(req: NextRequest) {

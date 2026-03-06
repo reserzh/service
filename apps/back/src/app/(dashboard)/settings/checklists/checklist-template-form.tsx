@@ -11,13 +11,19 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, GripVertical, Loader2 } from "lucide-react";
 
+interface GroupedItem {
+  label: string;
+  groupName: string;
+}
+
 interface TemplateData {
   id?: string;
   name: string;
   description: string | null;
   jobType: string | null;
   isActive: boolean;
-  items: { id: string; label: string }[];
+  autoApplyOnDispatch: boolean;
+  items: { id: string; label: string; groupName: string | null }[];
 }
 
 interface Props {
@@ -27,8 +33,37 @@ interface Props {
     description?: string;
     jobType?: string;
     isActive?: boolean;
-    items: string[];
+    autoApplyOnDispatch?: boolean;
+    items: { label: string; groupName?: string }[];
   }) => Promise<{ error?: string }>;
+}
+
+interface GroupState {
+  name: string;
+  items: string[];
+}
+
+function buildGroupsFromTemplate(template?: TemplateData): GroupState[] {
+  if (!template || template.items.length === 0) {
+    return [{ name: "", items: [""] }];
+  }
+
+  const groupMap = new Map<string, string[]>();
+  const groupOrder: string[] = [];
+
+  for (const item of template.items) {
+    const key = item.groupName ?? "";
+    if (!groupMap.has(key)) {
+      groupMap.set(key, []);
+      groupOrder.push(key);
+    }
+    groupMap.get(key)!.push(item.label);
+  }
+
+  return groupOrder.map((name) => ({
+    name,
+    items: groupMap.get(name) ?? [""],
+  }));
 }
 
 export function ChecklistTemplateForm({ template, saveAction }: Props) {
@@ -38,22 +73,55 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
   const [description, setDescription] = useState(template?.description ?? "");
   const [jobType, setJobType] = useState(template?.jobType ?? "");
   const [isActive, setIsActive] = useState(template?.isActive ?? true);
-  const [items, setItems] = useState<string[]>(
-    template?.items.map((i) => i.label) ?? [""]
+  const [autoApplyOnDispatch, setAutoApplyOnDispatch] = useState(
+    template?.autoApplyOnDispatch ?? false
+  );
+  const [groups, setGroups] = useState<GroupState[]>(
+    buildGroupsFromTemplate(template)
   );
 
-  function addItem() {
-    setItems([...items, ""]);
+  function addGroup() {
+    setGroups([...groups, { name: "", items: [""] }]);
   }
 
-  function removeItem(index: number) {
-    setItems(items.filter((_, i) => i !== index));
+  function removeGroup(groupIdx: number) {
+    setGroups(groups.filter((_, i) => i !== groupIdx));
   }
 
-  function updateItem(index: number, value: string) {
-    const updated = [...items];
-    updated[index] = value;
-    setItems(updated);
+  function updateGroupName(groupIdx: number, value: string) {
+    const updated = [...groups];
+    updated[groupIdx] = { ...updated[groupIdx], name: value };
+    setGroups(updated);
+  }
+
+  function addItemToGroup(groupIdx: number) {
+    const updated = [...groups];
+    updated[groupIdx] = {
+      ...updated[groupIdx],
+      items: [...updated[groupIdx].items, ""],
+    };
+    setGroups(updated);
+  }
+
+  function removeItemFromGroup(groupIdx: number, itemIdx: number) {
+    const updated = [...groups];
+    updated[groupIdx] = {
+      ...updated[groupIdx],
+      items: updated[groupIdx].items.filter((_, i) => i !== itemIdx),
+    };
+    // If group has no items left, remove the group
+    if (updated[groupIdx].items.length === 0) {
+      updated.splice(groupIdx, 1);
+    }
+    setGroups(updated);
+  }
+
+  function updateItemInGroup(groupIdx: number, itemIdx: number, value: string) {
+    const updated = [...groups];
+    const items = [...updated[groupIdx].items];
+    items[itemIdx] = value;
+    updated[groupIdx] = { ...updated[groupIdx], items };
+    setGroups(updated);
   }
 
   function handleSubmit() {
@@ -62,8 +130,20 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
       return;
     }
 
-    const validItems = items.filter((i) => i.trim());
-    if (validItems.length === 0) {
+    // Flatten groups into items
+    const flatItems: { label: string; groupName?: string }[] = [];
+    for (const group of groups) {
+      for (const item of group.items) {
+        if (item.trim()) {
+          flatItems.push({
+            label: item.trim(),
+            groupName: group.name.trim() || undefined,
+          });
+        }
+      }
+    }
+
+    if (flatItems.length === 0) {
       showToast.error("Validation", "At least one checklist item is required");
       return;
     }
@@ -74,7 +154,8 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
         description: description.trim() || undefined,
         jobType: jobType.trim() || undefined,
         isActive,
-        items: validItems,
+        autoApplyOnDispatch,
+        items: flatItems,
       });
 
       if (result.error) {
@@ -100,7 +181,7 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Lawn Mowing Checklist"
+              placeholder="e.g., HVAC Install Checklist"
             />
           </div>
           <div className="space-y-2">
@@ -119,9 +200,20 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
               id="jobType"
               value={jobType}
               onChange={(e) => setJobType(e.target.value)}
-              placeholder="e.g., Lawn Mowing"
+              placeholder="e.g., HVAC Install"
             />
           </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={autoApplyOnDispatch}
+              onCheckedChange={setAutoApplyOnDispatch}
+            />
+            <Label>Auto-apply on dispatch</Label>
+          </div>
+          <p className="text-xs text-muted-foreground -mt-1">
+            When enabled, this checklist will be automatically added to jobs of
+            the matching type when they are dispatched.
+          </p>
           {template && (
             <div className="flex items-center gap-2">
               <Switch checked={isActive} onCheckedChange={setIsActive} />
@@ -131,42 +223,74 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Checklist Items</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {items.map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
+      {/* Grouped checklist items */}
+      {groups.map((group, groupIdx) => (
+        <Card key={groupIdx}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
               <Input
-                value={item}
-                onChange={(e) => updateItem(idx, e.target.value)}
-                placeholder={`Item ${idx + 1}`}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addItem();
-                  }
-                }}
+                value={group.name}
+                onChange={(e) => updateGroupName(groupIdx, e.target.value)}
+                placeholder="Group name (optional)"
+                className="text-sm font-medium h-8"
               />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0"
-                onClick={() => removeItem(idx)}
-                disabled={items.length <= 1}
-              >
-                <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
+              {groups.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={() => removeGroup(groupIdx)}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              )}
             </div>
-          ))}
-          <Button variant="outline" size="sm" onClick={addItem} className="mt-2">
-            <Plus className="mr-1.5 h-3.5 w-3.5" />
-            Add Item
-          </Button>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {group.items.map((item, itemIdx) => (
+              <div key={itemIdx} className="flex items-center gap-2">
+                <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
+                <Input
+                  value={item}
+                  onChange={(e) =>
+                    updateItemInGroup(groupIdx, itemIdx, e.target.value)
+                  }
+                  placeholder={`Item ${itemIdx + 1}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addItemToGroup(groupIdx);
+                    }
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={() => removeItemFromGroup(groupIdx, itemIdx)}
+                  disabled={group.items.length <= 1 && groups.length <= 1}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => addItemToGroup(groupIdx)}
+              className="mt-2"
+            >
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
+              Add Item
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+
+      <Button variant="outline" size="sm" onClick={addGroup}>
+        <Plus className="mr-1.5 h-3.5 w-3.5" />
+        Add Group
+      </Button>
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => router.back()}>

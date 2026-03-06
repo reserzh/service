@@ -268,7 +268,7 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
       .orderBy(desc(jobSignatures.createdAt)),
     db.select().from(jobChecklistItems)
       .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
-      .orderBy(asc(jobChecklistItems.sortOrder)),
+      .orderBy(asc(jobChecklistItems.groupSortOrder), asc(jobChecklistItems.sortOrder)),
     db.select({
         id: jobAssignments.id,
         jobId: jobAssignments.jobId,
@@ -504,6 +504,28 @@ export async function changeJobStatus(
     }
   } catch (trackingError) {
     console.error("[Job] Tracking session error:", trackingError);
+  }
+
+  // Auto-apply checklist templates on dispatch
+  if (newStatus === "dispatched") {
+    try {
+      // Only auto-apply if job has no checklist items yet
+      const existingItems = await db
+        .select({ id: jobChecklistItems.id })
+        .from(jobChecklistItems)
+        .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
+        .limit(1);
+
+      if (existingItems.length === 0) {
+        const { getAutoApplyTemplates, applyChecklistTemplate } = await import("./checklist-templates");
+        const templates = await getAutoApplyTemplates(ctx, job.jobType);
+        for (const tmpl of templates) {
+          await applyChecklistTemplate(ctx, jobId, tmpl.id);
+        }
+      }
+    } catch (autoApplyError) {
+      console.error("[Job] Auto-apply checklist error:", autoApplyError);
+    }
   }
 
   // Send triggered communication for status changes
@@ -941,13 +963,14 @@ export async function getJobChecklist(ctx: UserContext, jobId: string) {
     .select()
     .from(jobChecklistItems)
     .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)))
-    .orderBy(asc(jobChecklistItems.sortOrder));
+    .orderBy(asc(jobChecklistItems.groupSortOrder), asc(jobChecklistItems.sortOrder));
 }
 
 export async function createChecklistItem(
   ctx: UserContext,
   jobId: string,
-  label: string
+  label: string,
+  groupName?: string
 ) {
   assertPermission(ctx, "jobs", "update");
   await getJob(ctx, jobId);
@@ -957,12 +980,40 @@ export async function createChecklistItem(
     .from(jobChecklistItems)
     .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)));
 
+  // Resolve groupSortOrder: use existing group's order or assign next
+  let groupSortOrder = 0;
+  if (groupName) {
+    const [existingGroup] = await db
+      .select({ groupSortOrder: jobChecklistItems.groupSortOrder })
+      .from(jobChecklistItems)
+      .where(
+        and(
+          eq(jobChecklistItems.jobId, jobId),
+          eq(jobChecklistItems.tenantId, ctx.tenantId),
+          eq(jobChecklistItems.groupName, groupName)
+        )
+      )
+      .limit(1);
+
+    if (existingGroup) {
+      groupSortOrder = existingGroup.groupSortOrder;
+    } else {
+      const [maxGroup] = await db
+        .select({ max: sql<number>`coalesce(max(${jobChecklistItems.groupSortOrder}), -1)` })
+        .from(jobChecklistItems)
+        .where(and(eq(jobChecklistItems.jobId, jobId), eq(jobChecklistItems.tenantId, ctx.tenantId)));
+      groupSortOrder = Number(maxGroup.max) + 1;
+    }
+  }
+
   const [item] = await db
     .insert(jobChecklistItems)
     .values({
       tenantId: ctx.tenantId,
       jobId,
       label,
+      groupName: groupName || null,
+      groupSortOrder,
       sortOrder: Number(maxSort[0].max) + 1,
     })
     .returning();
@@ -1029,12 +1080,12 @@ export async function deleteChecklistItem(
 export async function bulkCreateChecklistItems(
   ctx: UserContext,
   jobId: string,
-  labels: string[]
+  items: { label: string; groupName?: string; groupSortOrder?: number }[]
 ) {
   assertPermission(ctx, "jobs", "update");
   await getJob(ctx, jobId);
 
-  if (labels.length === 0) return [];
+  if (items.length === 0) return [];
 
   const maxSort = await db
     .select({ max: sql<number>`coalesce(max(${jobChecklistItems.sortOrder}), -1)` })
@@ -1043,17 +1094,19 @@ export async function bulkCreateChecklistItems(
 
   const startOrder = Number(maxSort[0].max) + 1;
 
-  const items = await db
+  const result = await db
     .insert(jobChecklistItems)
     .values(
-      labels.map((label, idx) => ({
+      items.map((item, idx) => ({
         tenantId: ctx.tenantId,
         jobId,
-        label,
+        label: item.label,
+        groupName: item.groupName || null,
+        groupSortOrder: item.groupSortOrder ?? 0,
         sortOrder: startOrder + idx,
       }))
     )
     .returning();
 
-  return items;
+  return result;
 }

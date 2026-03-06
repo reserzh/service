@@ -27,6 +27,7 @@ export const checklistTemplates = fieldserviceSchema.table(
     description: text("description"),
     jobType: varchar("job_type", { length: 100 }),
     isActive: boolean("is_active").default(true).notNull(),
+    autoApplyOnDispatch: boolean("auto_apply_on_dispatch").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -49,6 +50,8 @@ export const checklistTemplateItems = fieldserviceSchema.table(
       .notNull()
       .references(() => checklistTemplates.id, { onDelete: "cascade" }),
     label: varchar("label", { length: 500 }).notNull(),
+    groupName: varchar("group_name", { length: 255 }),
+    groupSortOrder: integer("group_sort_order").default(0).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },

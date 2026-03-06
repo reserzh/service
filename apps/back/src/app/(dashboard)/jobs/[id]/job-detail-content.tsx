@@ -59,6 +59,13 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AddLineItemForm } from "./add-line-item-form";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 
@@ -177,6 +184,8 @@ interface JobData {
     completed: boolean;
     completedAt: Date | null;
     completedBy: string | null;
+    groupName: string | null;
+    groupSortOrder: number;
     sortOrder: number;
     createdAt: Date;
     updatedAt: Date;
@@ -203,6 +212,8 @@ export function JobDetailContent({ job, userRole }: Props) {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [newChecklistLabel, setNewChecklistLabel] = useState("");
   const [showChecklistInput, setShowChecklistInput] = useState(false);
+  const [newItemGroupName, setNewItemGroupName] = useState("");
+  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
 
   const nextAction = nextStatusMap[job.status];
   const currentStepIdx = statusSteps.indexOf(job.status);
@@ -262,12 +273,17 @@ export function JobDetailContent({ job, userRole }: Props) {
     startTransition(async () => {
       const fd = new FormData();
       fd.set("label", newChecklistLabel.trim());
+      if (newItemGroupName.trim()) {
+        fd.set("groupName", newItemGroupName.trim());
+      }
       const result = await addChecklistItemAction(job.id, fd);
       if (result.error) {
         showToast.error("Action failed", result.error);
       } else {
         showToast.created("Checklist item");
         setNewChecklistLabel("");
+        setNewItemGroupName("");
+        setShowNewGroupInput(false);
         setShowChecklistInput(false);
         router.refresh();
       }
@@ -659,7 +675,7 @@ export function JobDetailContent({ job, userRole }: Props) {
           {job.checklist.length > 0 && (
             <Card>
               <CardContent className="pt-4">
-                {/* Progress bar */}
+                {/* Overall progress bar */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                     <div
@@ -672,36 +688,80 @@ export function JobDetailContent({ job, userRole }: Props) {
                   </span>
                 </div>
 
-                {/* Items */}
-                <div className="space-y-1">
-                  {job.checklist.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 group py-1.5">
-                      <Checkbox
-                        checked={item.completed}
-                        onCheckedChange={(checked) =>
-                          handleToggleChecklistItem(item.id, checked === true)
-                        }
-                        disabled={isPending}
-                      />
-                      <span
-                        className={`flex-1 text-sm ${
-                          item.completed ? "line-through text-muted-foreground" : ""
-                        }`}
-                      >
-                        {item.label}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteChecklistItem(item.id)}
-                        disabled={isPending}
-                      >
-                        <Trash2 className="h-3 w-3 text-muted-foreground" />
-                      </Button>
+                {/* Grouped items */}
+                {(() => {
+                  // Group items by groupName, preserving groupSortOrder
+                  const groups: { name: string | null; order: number; items: typeof job.checklist }[] = [];
+                  const groupMap = new Map<string | null, typeof job.checklist>();
+                  const groupOrderMap = new Map<string | null, number>();
+
+                  for (const item of job.checklist) {
+                    const key = item.groupName;
+                    if (!groupMap.has(key)) {
+                      groupMap.set(key, []);
+                      groupOrderMap.set(key, item.groupSortOrder);
+                    }
+                    groupMap.get(key)!.push(item);
+                  }
+
+                  for (const [name, items] of groupMap.entries()) {
+                    groups.push({ name, order: groupOrderMap.get(name) ?? 0, items });
+                  }
+                  groups.sort((a, b) => a.order - b.order);
+
+                  const hasGroups = groups.some((g) => g.name !== null);
+
+                  return (
+                    <div className="space-y-4">
+                      {groups.map((group) => {
+                        const groupCompleted = group.items.filter((i) => i.completed).length;
+                        return (
+                          <div key={group.name ?? "__ungrouped"}>
+                            {(hasGroups) && (
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                  {group.name || "General"}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {groupCompleted}/{group.items.length}
+                                </span>
+                              </div>
+                            )}
+                            <div className="space-y-1">
+                              {group.items.map((item) => (
+                                <div key={item.id} className="flex items-center gap-3 group py-1.5">
+                                  <Checkbox
+                                    checked={item.completed}
+                                    onCheckedChange={(checked) =>
+                                      handleToggleChecklistItem(item.id, checked === true)
+                                    }
+                                    disabled={isPending}
+                                  />
+                                  <span
+                                    className={`flex-1 text-sm ${
+                                      item.completed ? "line-through text-muted-foreground" : ""
+                                    }`}
+                                  >
+                                    {item.label}
+                                  </span>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleDeleteChecklistItem(item.id)}
+                                    disabled={isPending}
+                                  >
+                                    <Trash2 className="h-3 w-3 text-muted-foreground" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           )}
@@ -709,7 +769,7 @@ export function JobDetailContent({ job, userRole }: Props) {
           {/* Add item */}
           {showChecklistInput ? (
             <Card>
-              <CardContent className="pt-4">
+              <CardContent className="pt-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <Input
                     value={newChecklistLabel}
@@ -721,6 +781,8 @@ export function JobDetailContent({ job, userRole }: Props) {
                       if (e.key === "Escape") {
                         setShowChecklistInput(false);
                         setNewChecklistLabel("");
+                        setNewItemGroupName("");
+                        setShowNewGroupInput(false);
                       }
                     }}
                     autoFocus
@@ -739,11 +801,79 @@ export function JobDetailContent({ job, userRole }: Props) {
                     onClick={() => {
                       setShowChecklistInput(false);
                       setNewChecklistLabel("");
+                      setNewItemGroupName("");
+                      setShowNewGroupInput(false);
                     }}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                {/* Group selector */}
+                {(() => {
+                  const existingGroups = [...new Set(job.checklist.map((i) => i.groupName).filter(Boolean))] as string[];
+                  if (existingGroups.length === 0 && !showNewGroupInput) {
+                    return (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground"
+                        onClick={() => setShowNewGroupInput(true)}
+                      >
+                        + Add to group
+                      </Button>
+                    );
+                  }
+                  return (
+                    <div className="flex items-center gap-2">
+                      {!showNewGroupInput && existingGroups.length > 0 ? (
+                        <Select
+                          value={newItemGroupName}
+                          onValueChange={(val) => {
+                            if (val === "__new__") {
+                              setShowNewGroupInput(true);
+                              setNewItemGroupName("");
+                            } else {
+                              setNewItemGroupName(val === "__none__" ? "" : val);
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-48 h-8 text-xs">
+                            <SelectValue placeholder="No group" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">No group</SelectItem>
+                            {existingGroups.map((g) => (
+                              <SelectItem key={g} value={g}>{g}</SelectItem>
+                            ))}
+                            <SelectItem value="__new__">New group...</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={newItemGroupName}
+                            onChange={(e) => setNewItemGroupName(e.target.value)}
+                            placeholder="Group name..."
+                            className="w-48 h-8 text-xs"
+                          />
+                          {existingGroups.length > 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs"
+                              onClick={() => {
+                                setShowNewGroupInput(false);
+                                setNewItemGroupName("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           ) : (

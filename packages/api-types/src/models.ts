@@ -143,6 +143,8 @@ export interface JobChecklistItem {
   completed: boolean;
   completedAt: string | null;
   completedBy: string | null;
+  groupName: string | null;
+  groupSortOrder: number;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;

@@ -260,12 +260,13 @@ export async function addChecklistItemAction(
   try {
     const ctx = await requireAuth();
     const label = formData.get("label") as string;
+    const groupName = formData.get("groupName") as string | null;
 
     if (!label?.trim()) {
       return { error: "Label is required." };
     }
 
-    await createChecklistItem(ctx, jobId, label.trim());
+    await createChecklistItem(ctx, jobId, label.trim(), groupName?.trim() || undefined);
 
     revalidatePath(`/jobs/${jobId}`);
     return {};

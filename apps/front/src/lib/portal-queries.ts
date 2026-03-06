@@ -97,8 +97,8 @@ export const getPortalInvoice = cache(async (ctx: CustomerPortalContext, invoice
   if (!invoice) return null;
 
   const [lineItemsData, paymentsData] = await Promise.all([
-    db.select().from(invoiceLineItems).where(eq(invoiceLineItems.invoiceId, invoiceId)).orderBy(asc(invoiceLineItems.sortOrder)),
-    db.select().from(payments).where(eq(payments.invoiceId, invoiceId)).orderBy(desc(payments.processedAt)),
+    db.select().from(invoiceLineItems).where(and(eq(invoiceLineItems.invoiceId, invoiceId), eq(invoiceLineItems.tenantId, ctx.tenantId))).orderBy(asc(invoiceLineItems.sortOrder)),
+    db.select().from(payments).where(and(eq(payments.invoiceId, invoiceId), eq(payments.tenantId, ctx.tenantId))).orderBy(desc(payments.processedAt)),
   ]);
 
   return { ...invoice, lineItems: lineItemsData, payments: paymentsData };
@@ -134,7 +134,7 @@ export const getPortalEstimate = cache(async (ctx: CustomerPortalContext, estima
   const options = await db
     .select()
     .from(estimateOptions)
-    .where(eq(estimateOptions.estimateId, estimateId))
+    .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)))
     .orderBy(asc(estimateOptions.sortOrder));
 
   const optionIds = options.map((o) => o.id);
@@ -143,7 +143,7 @@ export const getPortalEstimate = cache(async (ctx: CustomerPortalContext, estima
     items = await db
       .select()
       .from(estimateOptionItems)
-      .where(inArray(estimateOptionItems.optionId, optionIds))
+      .where(and(inArray(estimateOptionItems.optionId, optionIds), eq(estimateOptionItems.tenantId, ctx.tenantId)))
       .orderBy(asc(estimateOptionItems.sortOrder));
   }
 
@@ -185,8 +185,8 @@ export const getPortalAgreement = cache(async (ctx: CustomerPortalContext, agree
   if (!agreement) return null;
 
   const [services, visits] = await Promise.all([
-    db.select().from(agreementServices).where(eq(agreementServices.agreementId, agreementId)).orderBy(asc(agreementServices.sortOrder)),
-    db.select().from(agreementVisits).where(eq(agreementVisits.agreementId, agreementId)).orderBy(asc(agreementVisits.visitNumber)),
+    db.select().from(agreementServices).where(and(eq(agreementServices.agreementId, agreementId), eq(agreementServices.tenantId, ctx.tenantId))).orderBy(asc(agreementServices.sortOrder)),
+    db.select().from(agreementVisits).where(and(eq(agreementVisits.agreementId, agreementId), eq(agreementVisits.tenantId, ctx.tenantId))).orderBy(asc(agreementVisits.visitNumber)),
   ]);
 
   return { ...agreement, services, visits };

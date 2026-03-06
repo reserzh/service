@@ -58,11 +58,18 @@ export default async function ChecklistTemplatesPage() {
                       </Badge>
                     )}
                   </div>
-                  {!t.isActive && (
-                    <Badge variant="secondary" className="text-[10px]">
-                      Inactive
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {t.autoApplyOnDispatch && (
+                      <Badge variant="default" className="text-[10px]">
+                        Auto-apply
+                      </Badge>
+                    )}
+                    {!t.isActive && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        Inactive
+                      </Badge>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </Link>

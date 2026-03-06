@@ -31,7 +31,15 @@ const updateSchema = z.object({
   description: z.string().nullable().optional(),
   jobType: z.string().max(100).nullable().optional(),
   isActive: z.boolean().optional(),
-  items: z.array(z.string().min(1).max(500)).optional(),
+  autoApplyOnDispatch: z.boolean().optional(),
+  items: z
+    .array(
+      z.object({
+        label: z.string().min(1).max(500),
+        groupName: z.string().max(255).optional(),
+      })
+    )
+    .optional(),
 });
 
 export async function PATCH(req: NextRequest, context: RouteContext) {

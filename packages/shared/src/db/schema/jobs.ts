@@ -212,6 +212,8 @@ export const jobChecklistItems = fieldserviceSchema.table(
     completed: boolean("completed").default(false).notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     completedBy: uuid("completed_by").references(() => users.id),
+    groupName: varchar("group_name", { length: 255 }),
+    groupSortOrder: integer("group_sort_order").default(0).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

@@ -24,6 +24,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
 const createSchema = z.object({
   label: z.string().min(1).max(500),
+  groupName: z.string().max(255).optional(),
 });
 
 export async function POST(req: NextRequest, context: RouteContext) {
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const body = await req.json();
     const parsed = createSchema.parse(body);
 
-    const item = await createChecklistItem(ctx, id, parsed.label);
+    const item = await createChecklistItem(ctx, id, parsed.label, parsed.groupName);
 
     return NextResponse.json({ data: item }, { status: 201 });
   } catch (error) {

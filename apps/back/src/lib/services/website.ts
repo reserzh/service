@@ -30,7 +30,13 @@ import { addDomainToVercel, removeDomainFromVercel } from "./vercel-domains";
  * injected HTML cannot escape the style element context.
  */
 function sanitizeCss(css: string): string {
-  return css.replace(/</g, "\\3c ");
+  let sanitized = css.replace(/</g, "\\3c ");
+  // Strip dangerous CSS functions and directives
+  sanitized = sanitized.replace(/@import\b/gi, "/* blocked */");
+  sanitized = sanitized.replace(/expression\s*\(/gi, "/* blocked */(");
+  sanitized = sanitized.replace(/-moz-binding\s*:/gi, "/* blocked */:");
+  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*javascript\s*:/gi, "url(/* blocked */");
+  return sanitized;
 }
 
 // ─── Site Settings ─────────────────────────────────────────────

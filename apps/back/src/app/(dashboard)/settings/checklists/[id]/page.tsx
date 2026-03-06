@@ -28,7 +28,8 @@ export default async function EditChecklistTemplatePage({ params }: PageProps) {
     description?: string;
     jobType?: string;
     isActive?: boolean;
-    items: string[];
+    autoApplyOnDispatch?: boolean;
+    items: { label: string; groupName?: string }[];
   }): Promise<{ error?: string }> {
     "use server";
     try {

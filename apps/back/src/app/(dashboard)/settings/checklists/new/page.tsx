@@ -14,7 +14,8 @@ export default async function NewChecklistTemplatePage() {
     name: string;
     description?: string;
     jobType?: string;
-    items: string[];
+    autoApplyOnDispatch?: boolean;
+    items: { label: string; groupName?: string }[];
   }): Promise<{ error?: string }> {
     "use server";
     try {
