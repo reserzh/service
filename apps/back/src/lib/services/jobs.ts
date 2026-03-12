@@ -106,9 +106,20 @@ export async function listJobs(ctx: UserContext, params: ListJobsParams = {}) {
 
   const conditions: ReturnType<typeof eq>[] = [eq(jobs.tenantId, ctx.tenantId)];
 
-  // Technicians only see their own jobs
+  // Technicians only see their own jobs (via assignedTo or jobAssignments)
   if (ctx.role === "technician") {
-    conditions.push(eq(jobs.assignedTo, ctx.userId));
+    const assignedJobIds = db
+      .select({ jobId: jobAssignments.jobId })
+      .from(jobAssignments)
+      .where(
+        and(
+          eq(jobAssignments.userId, ctx.userId),
+          eq(jobAssignments.tenantId, ctx.tenantId)
+        )
+      );
+    conditions.push(
+      or(eq(jobs.assignedTo, ctx.userId), inArray(jobs.id, assignedJobIds))!
+    );
   } else if (assignedTo) {
     conditions.push(eq(jobs.assignedTo, assignedTo));
   }
@@ -218,7 +229,19 @@ export async function getJob(ctx: UserContext, jobId: string) {
   if (!job) throw new NotFoundError("Job");
 
   if (ctx.role === "technician" && job.assignedTo !== ctx.userId) {
-    throw new NotFoundError("Job");
+    // Also check multi-tech assignments table
+    const [assignment] = await db
+      .select({ id: jobAssignments.id })
+      .from(jobAssignments)
+      .where(
+        and(
+          eq(jobAssignments.jobId, jobId),
+          eq(jobAssignments.userId, ctx.userId),
+          eq(jobAssignments.tenantId, ctx.tenantId)
+        )
+      )
+      .limit(1);
+    if (!assignment) throw new NotFoundError("Job");
   }
 
   return job;
@@ -854,7 +877,18 @@ export async function getSchedule(
   ];
 
   if (ctx.role === "technician") {
-    conditions.push(eq(jobs.assignedTo, ctx.userId));
+    const assignedJobIds = db
+      .select({ jobId: jobAssignments.jobId })
+      .from(jobAssignments)
+      .where(
+        and(
+          eq(jobAssignments.userId, ctx.userId),
+          eq(jobAssignments.tenantId, ctx.tenantId)
+        )
+      );
+    conditions.push(
+      or(eq(jobs.assignedTo, ctx.userId), inArray(jobs.id, assignedJobIds))!
+    );
   } else if (technicianId) {
     conditions.push(eq(jobs.assignedTo, technicianId));
   }

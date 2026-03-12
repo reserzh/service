@@ -11,6 +11,31 @@
         "simulator": true
       }
     },
+    "device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://zflthhekspraorschtft.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmbHRoaGVrc3ByYW9yc2NodGZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzOTg0NzksImV4cCI6MjA4Nzk3NDQ3OX0.RO4JzuAmH-Du4haN3R_Di1wrVoYDNQvZEIxBqFLaGjI",
+        "EXPO_PUBLIC_API_BASE_URL": "https://service-ruddy-beta.vercel.app/api/v1"
+      }
+    },
+    "device-release": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://zflthhekspraorschtft.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmbHRoaGVrc3ByYW9yc2NodGZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzOTg0NzksImV4cCI6MjA4Nzk3NDQ3OX0.RO4JzuAmH-Du4haN3R_Di1wrVoYDNQvZEIxBqFLaGjI",
+        "EXPO_PUBLIC_API_BASE_URL": "https://service-ruddy-beta.vercel.app/api/v1"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "channel": "preview"

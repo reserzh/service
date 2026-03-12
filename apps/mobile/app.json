@@ -13,7 +13,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/YOUR_PROJECT_ID",
-      "enabled": true,
+      "enabled": false,
       "fallbackToCacheTimeout": 3000
     },
     "splash": {
