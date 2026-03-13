@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest) {
     const currentSettings = (tenant?.settings ?? {}) as TenantSettings;
     const updatedSettings: TenantSettings = {
       ...currentSettings,
-      ...input,
+      ...input as Partial<TenantSettings>,
     };
 
     await db
