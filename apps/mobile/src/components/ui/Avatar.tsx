@@ -9,15 +9,15 @@ interface AvatarProps {
 }
 
 const sizeClasses = {
-  sm: "w-8 h-8",
-  md: "w-10 h-10",
-  lg: "w-14 h-14",
+  sm: "w-10 h-10",
+  md: "w-12 h-12",
+  lg: "w-16 h-16",
 };
 
 const textSizeClasses = {
-  sm: "text-xs",
-  md: "text-sm",
-  lg: "text-lg",
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-xl",
 };
 
 export function Avatar({ imageUrl, initials, size = "md", color = "#3b82f6" }: AvatarProps) {

@@ -9,7 +9,6 @@ import { JobChecklist } from "./JobChecklist";
 import { TimeTracker } from "./TimeTracker";
 import { useAddJobNote, useToggleChecklistItem } from "@/hooks/useJobs";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
-import { useSettingsStore } from "@/stores/settings";
 import { useVoiceNote } from "@/hooks/useVoiceNote";
 import { formatCurrency } from "@/lib/format";
 import { VALID_TRANSITIONS } from "@/lib/constants";
@@ -26,7 +25,6 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
   const addNote = useAddJobNote();
   const toggleChecklist = useToggleChecklistItem();
   const { isOffline } = useNetworkStatus();
-  const fieldMode = useSettingsStore((s) => s.fieldMode);
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
   const { startListening, isListening } = useVoiceNote({
@@ -83,7 +81,6 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             onToggle={(itemId, completed) => {
               toggleChecklist.mutate({ jobId: job.id, itemId, completed });
             }}
-            fieldMode={fieldMode}
           />
         </Card>
       )}
@@ -113,7 +110,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               className="flex-row items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800"
             >
               <View className="flex-1 mr-3">
-                <Text className="text-sm text-slate-900 dark:text-white" numberOfLines={1}>
+                <Text className="text-base text-slate-900 dark:text-white" numberOfLines={1}>
                   {item.description}
                 </Text>
                 <Text className="text-xs text-slate-500">
@@ -121,7 +118,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
-                <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                <Text className="text-base font-medium text-slate-900 dark:text-white">
                   {formatCurrency(item.total)}
                 </Text>
                 {item.id.startsWith("temp_") && (
@@ -131,7 +128,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             </View>
           ))
         ) : (
-          <Text className="text-sm text-slate-400 italic">No line items yet</Text>
+          <Text className="text-base text-slate-400 italic">No line items yet</Text>
         )}
       </Card>
 
@@ -164,27 +161,19 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
                 placeholder="Write a note..."
                 placeholderTextColor="#94a3b8"
                 multiline
-                className={`bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-slate-900 dark:text-white ${
-                  fieldMode
-                    ? "py-4 pr-14 text-base min-h-[100px]"
-                    : "py-3 pr-12 text-sm min-h-[80px]"
-                }`}
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 pr-14 text-base min-h-[100px] text-slate-900 dark:text-white"
                 textAlignVertical="top"
               />
               {/* Voice-to-text button */}
               <Pressable
                 onPress={startListening}
-                className={`absolute right-2 bottom-2 items-center justify-center rounded-full ${
-                  isListening
-                    ? "bg-red-500"
-                    : fieldMode
-                      ? "bg-orange-500"
-                      : "bg-blue-500"
-                } ${fieldMode ? "w-10 h-10" : "w-8 h-8"}`}
+                className={`absolute right-2 bottom-2 items-center justify-center rounded-full w-10 h-10 ${
+                  isListening ? "bg-red-500" : "bg-blue-500"
+                }`}
                 accessibilityLabel="Voice to text"
                 accessibilityRole="button"
               >
-                <Mic size={fieldMode ? 18 : 14} color="#fff" />
+                <Mic size={18} color="#fff" />
               </Pressable>
             </View>
             <View className="flex-row justify-end gap-2">
@@ -216,7 +205,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
                 className="py-2 border-b border-slate-100 dark:border-slate-800"
               >
                 <View className="flex-row items-start gap-2">
-                  <Text className="text-sm text-slate-700 dark:text-slate-300 flex-1" numberOfLines={2}>
+                  <Text className="text-base text-slate-700 dark:text-slate-300 flex-1" numberOfLines={2}>
                     {note.content}
                   </Text>
                   {note.id.startsWith("temp_") && (
@@ -231,7 +220,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               </View>
             ))
           : !showNoteInput && (
-              <Text className="text-sm text-slate-400 italic">No notes yet</Text>
+              <Text className="text-base text-slate-400 italic">No notes yet</Text>
             )}
       </Card>
 
@@ -246,11 +235,9 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               <Pressable
                 key={status}
                 onPress={() => onStatusChange(status as JobStatus)}
-                className={`flex-row items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg px-3 active:bg-slate-50 dark:active:bg-slate-800 ${
-                  fieldMode ? "py-3.5" : "py-2"
-                }`}
+                className="flex-row items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-3.5 active:bg-slate-50 dark:active:bg-slate-800"
               >
-                <Text className={`text-slate-600 dark:text-slate-400 ${fieldMode ? "text-base" : "text-sm"}`}>
+                <Text className="text-base text-slate-600 dark:text-slate-400">
                   {status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </Text>
                 <ChevronRight size={14} color="#94a3b8" />

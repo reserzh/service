@@ -45,13 +45,13 @@ export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
                 Haptics.selectionAsync();
                 onTabChange(tab.key);
               }}
-              className="flex-1 items-center py-3"
+              className="flex-1 items-center py-4 min-h-[56px]"
               accessibilityLabel={`${tab.label} tab`}
               accessibilityRole="tab"
               accessibilityState={{ selected: isActive }}
             >
               <Text
-                className={`text-sm font-medium ${
+                className={`text-base font-semibold ${
                   isActive
                     ? "text-blue-600 dark:text-blue-400"
                     : "text-slate-500 dark:text-slate-400"
@@ -63,7 +63,7 @@ export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
           );
         })}
         <Animated.View
-          className="absolute bottom-0 h-0.5 bg-blue-600 dark:bg-blue-400"
+          className="absolute bottom-0 h-1 bg-blue-600 dark:bg-blue-400"
           style={[{ width: "25%" }, underlineStyle]}
         />
       </View>

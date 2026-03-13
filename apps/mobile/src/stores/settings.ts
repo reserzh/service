@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { TradeType } from "@fieldservice/api-types/constants";
 
 type MapApp = "default" | "google" | "waze";
 type DarkModeOverride = "system" | "light" | "dark";
@@ -10,14 +11,14 @@ interface SettingsState {
   notifyJobAssigned: boolean;
   notifyJobUpdated: boolean;
   notifyNewEstimate: boolean;
-  fieldMode: boolean;
+  tradeType: TradeType | null;
 
   setPreferredMapApp: (app: MapApp) => void;
   setDarkModeOverride: (mode: DarkModeOverride) => void;
   setNotifyJobAssigned: (enabled: boolean) => void;
   setNotifyJobUpdated: (enabled: boolean) => void;
   setNotifyNewEstimate: (enabled: boolean) => void;
-  setFieldMode: (enabled: boolean) => void;
+  setTradeType: (tradeType: TradeType | null) => void;
   restore: () => Promise<void>;
 }
 
@@ -30,18 +31,18 @@ async function persist(state: Partial<SettingsState>) {
     notifyJobAssigned: state.notifyJobAssigned,
     notifyJobUpdated: state.notifyJobUpdated,
     notifyNewEstimate: state.notifyNewEstimate,
-    fieldMode: state.fieldMode,
+    tradeType: state.tradeType,
   };
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   preferredMapApp: "default",
-  darkModeOverride: "system",
+  darkModeOverride: "dark",
   notifyJobAssigned: true,
   notifyJobUpdated: true,
   notifyNewEstimate: true,
-  fieldMode: false,
+  tradeType: null,
 
   setPreferredMapApp: (preferredMapApp) => {
     set({ preferredMapApp });
@@ -63,8 +64,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set({ notifyNewEstimate });
     persist(get());
   },
-  setFieldMode: (fieldMode) => {
-    set({ fieldMode });
+  setTradeType: (tradeType) => {
+    set({ tradeType });
     persist(get());
   },
 
@@ -75,15 +76,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         const data = JSON.parse(raw);
         set({
           preferredMapApp: data.preferredMapApp ?? "default",
-          darkModeOverride: data.darkModeOverride ?? "system",
+          darkModeOverride: data.darkModeOverride ?? "dark",
           notifyJobAssigned: data.notifyJobAssigned ?? true,
           notifyJobUpdated: data.notifyJobUpdated ?? true,
           notifyNewEstimate: data.notifyNewEstimate ?? true,
-          fieldMode: data.fieldMode ?? false,
+          tradeType: data.tradeType ?? null,
         });
       }
     } catch {
       // ignore
     }
   },
-}));
+});

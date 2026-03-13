@@ -30,14 +30,15 @@ export function FilterChips({ chips, activeKey, onSelect }: FilterChipsProps) {
             }}
             accessibilityRole="button"
             accessibilityLabel={`${chip.label} filter${active ? ", selected" : ""}`}
-            className={`px-4 py-2 rounded-full border ${
+            style={{ minHeight: 48 }}
+            className={`px-5 py-3 rounded-full border ${
               active
                 ? "bg-blue-600 border-blue-600"
                 : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
             }`}
           >
             <Text
-              className={`text-sm font-medium ${
+              className={`text-base font-semibold ${
                 active
                   ? "text-white"
                   : "text-slate-600 dark:text-slate-400"

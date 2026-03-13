@@ -90,20 +90,20 @@ export function NextJobCard({ job }: NextJobCardProps) {
       </View>
 
       <Text
-        className="text-base font-semibold text-slate-900 dark:text-white mb-1"
+        className="text-lg font-semibold text-slate-900 dark:text-white mb-1"
         numberOfLines={1}
       >
         {job.summary}
       </Text>
 
       {customerName ? (
-        <Text className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+        <Text className="text-base text-slate-600 dark:text-slate-400 mb-1">
           {customerName}
         </Text>
       ) : null}
 
       {job.scheduledStart && (
-        <Text className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+        <Text className="text-sm text-slate-500 dark:text-slate-400 mb-3">
           {formatTimeRange(job.scheduledStart, job.scheduledEnd)}
         </Text>
       )}
@@ -114,23 +114,25 @@ export function NextJobCard({ job }: NextJobCardProps) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             router.push(`/(tabs)/jobs/${job.id}`);
           }}
-          className="flex-row items-center gap-1.5 bg-blue-600 rounded-lg px-3 py-2 active:bg-blue-700"
+          className="flex-row items-center gap-1.5 bg-blue-600 rounded-xl px-4 py-3 active:bg-blue-700"
+          style={{ minHeight: 48 }}
           accessibilityLabel="Navigate to job location"
           accessibilityRole="button"
         >
           <Navigation size={14} color="#ffffff" />
-          <Text className="text-xs font-semibold text-white">Navigate</Text>
+          <Text className="text-sm font-semibold text-white">Navigate</Text>
         </Pressable>
 
         {job.customerPhone && (
           <Pressable
             onPress={handleCall}
-            className="flex-row items-center gap-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-lg px-3 py-2 active:bg-emerald-200"
+            className="flex-row items-center gap-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-xl px-4 py-3 active:bg-emerald-200"
+            style={{ minHeight: 48 }}
             accessibilityLabel="Call customer"
             accessibilityRole="button"
           >
             <Phone size={14} color="#10b981" />
-            <Text className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+            <Text className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
               Call
             </Text>
           </Pressable>

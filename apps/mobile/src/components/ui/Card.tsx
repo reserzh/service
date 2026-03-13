@@ -12,7 +12,7 @@ export function Card({ children, onPress, className = "", style }: CardProps) {
     return (
       <Pressable
         onPress={onPress}
-        className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 active:scale-[0.98] ${className}`}
+        className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 active:scale-[0.98] ${className}`}
         style={style}
       >
         {children}
@@ -22,7 +22,7 @@ export function Card({ children, onPress, className = "", style }: CardProps) {
 
   return (
     <View
-      className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 ${className}`}
+      className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 ${className}`}
       style={style}
     >
       {children}

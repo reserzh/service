@@ -30,15 +30,21 @@ const textVariantClasses = {
 };
 
 const sizeClasses = {
-  sm: "px-3 py-1.5 rounded-lg",
-  md: "px-4 py-2.5 rounded-xl",
-  lg: "px-6 py-3.5 rounded-xl",
+  sm: "px-4 py-3 rounded-xl",
+  md: "px-5 py-4 rounded-xl",
+  lg: "px-8 py-5 rounded-2xl",
+};
+
+const sizeMinHeights = {
+  sm: 48,
+  md: 56,
+  lg: 64,
 };
 
 const textSizeClasses = {
-  sm: "text-sm",
-  md: "text-base",
-  lg: "text-lg",
+  sm: "text-base",
+  md: "text-lg",
+  lg: "text-xl",
 };
 
 export function Button({
@@ -66,7 +72,7 @@ export function Button({
       onPress={handlePress}
       disabled={isDisabled}
       className={`flex-row items-center justify-center gap-2 ${variantClasses[variant]} ${sizeClasses[size]} ${isDisabled ? "opacity-50" : ""} ${className}`}
-      style={style}
+      style={[{ minHeight: sizeMinHeights[size] }, style]}
     >
       {loading ? (
         <ActivityIndicator

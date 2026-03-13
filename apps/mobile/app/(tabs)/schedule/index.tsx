@@ -189,12 +189,12 @@ export default function ScheduleScreen() {
               <Pressable
                 key={mode}
                 onPress={() => handleViewModeChange(mode)}
-                className={`px-4 py-1.5 rounded-md ${
+                className={`px-5 py-2.5 rounded-md ${
                   viewMode === mode ? "bg-white dark:bg-slate-700 shadow-sm" : ""
                 }`}
               >
                 <Text
-                  className={`text-sm font-medium capitalize ${
+                  className={`text-base font-medium capitalize ${
                     viewMode === mode
                       ? "text-slate-900 dark:text-white"
                       : "text-slate-500"
@@ -226,11 +226,11 @@ export default function ScheduleScreen() {
             )}
             <Pressable
               onPress={() => setSelectedDate(new Date())}
-              className="px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950"
+              className="px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-950"
               accessibilityLabel="Go to today"
               accessibilityRole="button"
             >
-              <Text className="text-sm font-medium text-blue-600 dark:text-blue-400">
+              <Text className="text-base font-medium text-blue-600 dark:text-blue-400">
                 Today
               </Text>
             </Pressable>
@@ -240,15 +240,15 @@ export default function ScheduleScreen() {
         {/* Date navigation */}
         <View className="flex-row items-center justify-between">
           <Pressable onPress={handlePrev} hitSlop={12} className="p-1" accessibilityLabel="Previous" accessibilityRole="button">
-            <ChevronLeft size={24} color="#64748b" />
+            <ChevronLeft size={28} color="#64748b" />
           </Pressable>
-          <Text className="text-lg font-semibold text-slate-900 dark:text-white">
+          <Text className="text-xl font-semibold text-slate-900 dark:text-white">
             {viewMode === "day"
               ? format(selectedDate, "EEEE, MMM d")
               : `${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")} - ${format(endOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")}`}
           </Text>
           <Pressable onPress={handleNext} hitSlop={12} className="p-1" accessibilityLabel="Next" accessibilityRole="button">
-            <ChevronRight size={24} color="#64748b" />
+            <ChevronRight size={28} color="#64748b" />
           </Pressable>
         </View>
       </View>
@@ -265,19 +265,19 @@ export default function ScheduleScreen() {
               <Pressable
                 key={day.toISOString()}
                 onPress={() => setSelectedDate(day)}
-                className={`flex-1 items-center py-2 rounded-xl mx-0.5 ${
+                className={`flex-1 items-center py-3 rounded-xl mx-0.5 ${
                   selected ? "bg-blue-600" : ""
                 }`}
               >
                 <Text
-                  className={`text-xs font-medium mb-1 ${
+                  className={`text-sm font-medium mb-1 ${
                     selected ? "text-blue-200" : "text-slate-500"
                   }`}
                 >
                   {format(day, "EEE")}
                 </Text>
                 <Text
-                  className={`text-lg font-bold ${
+                  className={`text-xl font-bold ${
                     selected
                       ? "text-white"
                       : isToday(day)
@@ -424,7 +424,7 @@ function TimelineView({
               style={{ height: HOUR_HEIGHT }}
               className="justify-start"
             >
-              <Text className="text-xs text-slate-400 text-right pr-2 -mt-1.5">
+              <Text className="text-sm text-slate-400 text-right pr-2 -mt-1.5">
                 {format(setHours(new Date(), hour), "h a")}
               </Text>
             </View>
@@ -535,7 +535,7 @@ function TimelineBlock({ job, onLongPress }: { job: Job; onLongPress: (job: Job)
       }}
     >
       <Text
-        className="text-xs font-semibold text-slate-900"
+        className="text-sm font-semibold text-slate-900"
         numberOfLines={1}
       >
         {job.summary}

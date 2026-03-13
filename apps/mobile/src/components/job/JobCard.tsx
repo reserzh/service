@@ -30,11 +30,11 @@ export function JobCard({ job, onPress }: JobCardProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${job.summary}, status: ${job.status}`}
-      className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 active:scale-[0.98]"
+      className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 active:scale-[0.98]"
     >
       {/* Top row: job type + badges */}
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+        <Text className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
           {job.jobNumber} · {job.jobType}
         </Text>
         <View className="flex-row items-center gap-1.5">
@@ -44,13 +44,13 @@ export function JobCard({ job, onPress }: JobCardProps) {
       </View>
 
       {/* Summary */}
-      <Text className="text-base font-semibold text-slate-900 dark:text-white mb-1" numberOfLines={2}>
+      <Text className="text-lg font-bold text-slate-900 dark:text-white mb-1" numberOfLines={2}>
         {job.summary}
       </Text>
 
       {/* Customer name */}
       {customerName ? (
-        <Text className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+        <Text className="text-base text-slate-600 dark:text-slate-400 mb-2">
           {customerName}
         </Text>
       ) : null}
@@ -59,16 +59,16 @@ export function JobCard({ job, onPress }: JobCardProps) {
       <View className="flex-row items-center gap-4">
         {job.scheduledStart && (
           <View className="flex-row items-center gap-1">
-            <Clock size={14} color="#64748b" />
-            <Text className="text-xs text-slate-500 dark:text-slate-400">
+            <Clock size={18} color="#64748b" />
+            <Text className="text-sm text-slate-500 dark:text-slate-400">
               {formatTimeRange(job.scheduledStart, job.scheduledEnd)}
             </Text>
           </View>
         )}
         {location ? (
           <View className="flex-row items-center gap-1">
-            <MapPin size={14} color="#64748b" />
-            <Text className="text-xs text-slate-500 dark:text-slate-400">
+            <MapPin size={18} color="#64748b" />
+            <Text className="text-sm text-slate-500 dark:text-slate-400">
               {location}
             </Text>
           </View>

@@ -8,7 +8,6 @@ import type { JobChecklistItem } from "@/types/models";
 interface JobChecklistProps {
   items: JobChecklistItem[];
   onToggle: (itemId: string, completed: boolean) => void;
-  fieldMode?: boolean;
 }
 
 interface ChecklistGroup {
@@ -42,7 +41,7 @@ function groupItems(items: JobChecklistItem[]): ChecklistGroup[] {
   return groups;
 }
 
-export function JobChecklist({ items, onToggle, fieldMode = false }: JobChecklistProps) {
+export function JobChecklist({ items, onToggle }: JobChecklistProps) {
   if (items.length === 0) {
     return (
       <Text className="text-sm text-slate-400 italic">No checklist items</Text>
@@ -54,20 +53,20 @@ export function JobChecklist({ items, onToggle, fieldMode = false }: JobChecklis
   const groups = groupItems(items);
   const hasGroups = groups.some((g) => g.name !== null);
 
-  const iconSize = fieldMode ? 32 : 20;
+  const iconSize = 32;
 
   return (
     <View>
       {/* Overall progress bar */}
       <View className="flex-row items-center gap-2 mb-3">
-        <View className={`flex-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden ${fieldMode ? "h-3" : "h-2"}`}>
+        <View className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden h-3">
           <Animated.View
             className="h-full bg-emerald-500 rounded-full"
             style={{ width: `${progress * 100}%` }}
             layout={Layout.springify()}
           />
         </View>
-        <Text className={`font-medium text-slate-500 ${fieldMode ? "text-sm" : "text-xs"}`}>
+        <Text className="text-sm font-medium text-slate-500">
           {completedCount}/{items.length}
         </Text>
       </View>
@@ -79,7 +78,6 @@ export function JobChecklist({ items, onToggle, fieldMode = false }: JobChecklis
             key={group.name ?? "__ungrouped"}
             group={group}
             onToggle={onToggle}
-            fieldMode={fieldMode}
             iconSize={iconSize}
           />
         ))
@@ -90,7 +88,6 @@ export function JobChecklist({ items, onToggle, fieldMode = false }: JobChecklis
             key={item.id}
             item={item}
             onToggle={onToggle}
-            fieldMode={fieldMode}
             iconSize={iconSize}
           />
         ))
@@ -102,12 +99,10 @@ export function JobChecklist({ items, onToggle, fieldMode = false }: JobChecklis
 function GroupSection({
   group,
   onToggle,
-  fieldMode,
   iconSize,
 }: {
   group: ChecklistGroup;
   onToggle: (itemId: string, completed: boolean) => void;
-  fieldMode: boolean;
   iconSize: number;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -122,32 +117,24 @@ function GroupSection({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           setCollapsed(!collapsed);
         }}
-        className={`flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 ${
-          fieldMode ? "py-3" : "py-2"
-        }`}
-        style={fieldMode ? { minHeight: 56 } : undefined}
+        className="flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 py-3"
+        style={{ minHeight: 56 }}
         accessibilityLabel={`${group.name || "General"} group, ${groupCompleted} of ${group.items.length} completed`}
         accessibilityRole="button"
       >
         <View className="flex-row items-center gap-2">
           <ChevronIcon
-            size={fieldMode ? 24 : 16}
-            color={fieldMode ? "#FF6B00" : "#64748b"}
+            size={24}
+            color="#64748b"
           />
           <Text
-            className={`font-semibold uppercase tracking-wide ${
-              fieldMode
-                ? "text-base text-white"
-                : "text-xs text-slate-500 dark:text-slate-400"
-            }`}
+            className="text-base font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
           >
             {group.name || "General"}
           </Text>
         </View>
         <Text
-          className={`font-medium ${
-            fieldMode ? "text-sm text-white" : "text-xs text-slate-500"
-          }`}
+          className="text-sm font-medium text-slate-500"
         >
           {groupCompleted}/{group.items.length}
         </Text>
@@ -160,7 +147,6 @@ function GroupSection({
             key={item.id}
             item={item}
             onToggle={onToggle}
-            fieldMode={fieldMode}
             iconSize={iconSize}
           />
         ))}
@@ -171,12 +157,10 @@ function GroupSection({
 function ChecklistItemRow({
   item,
   onToggle,
-  fieldMode,
   iconSize,
 }: {
   item: JobChecklistItem;
   onToggle: (itemId: string, completed: boolean) => void;
-  fieldMode: boolean;
   iconSize: number;
 }) {
   return (
@@ -186,28 +170,22 @@ function ChecklistItemRow({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onToggle(item.id, !item.completed);
         }}
-        className={`flex-row items-center border-b border-slate-100 dark:border-slate-800 ${
-          fieldMode ? "gap-4 py-4" : "gap-3 py-2.5"
-        }`}
-        style={fieldMode ? { minHeight: 56 } : undefined}
+        className="flex-row items-center border-b border-slate-100 dark:border-slate-800 gap-4 py-4"
+        style={{ minHeight: 56 }}
         accessibilityLabel={`${item.label}: ${item.completed ? "completed" : "not completed"}`}
         accessibilityRole="checkbox"
         accessibilityState={{ checked: item.completed }}
       >
         {item.completed ? (
-          <CheckSquare size={iconSize} color={fieldMode ? "#00E676" : "#10b981"} />
+          <CheckSquare size={iconSize} color="#10b981" />
         ) : (
           <Square size={iconSize} color="#94a3b8" />
         )}
         <Text
-          className={`flex-1 ${
-            fieldMode ? "text-lg" : "text-sm"
-          } ${
+          className={`flex-1 text-lg ${
             item.completed
               ? "text-slate-400 line-through"
-              : fieldMode
-                ? "text-white"
-                : "text-slate-900 dark:text-white"
+              : "text-slate-900 dark:text-white"
           }`}
         >
           {item.label}

@@ -112,18 +112,18 @@ export default function LoginScreen() {
         >
           {/* Animated Logo / Brand */}
           <Animated.View entering={BounceIn.duration(600)} className="items-center mb-10">
-            <View className="w-16 h-16 bg-blue-600 rounded-2xl items-center justify-center mb-4 shadow-lg">
-              <Wrench size={32} color="#ffffff" />
+            <View className="w-20 h-20 bg-blue-600 rounded-2xl items-center justify-center mb-4 shadow-lg">
+              <Wrench size={40} color="#ffffff" />
             </View>
             <Animated.Text
               entering={FadeInDown.delay(200).duration(400)}
-              className="text-2xl font-bold text-slate-900 dark:text-white"
+              className="text-3xl font-bold text-slate-900 dark:text-white"
             >
               FieldService Pro
             </Animated.Text>
             <Animated.Text
               entering={FadeInDown.delay(300).duration(400)}
-              className="text-sm text-slate-500 dark:text-slate-400 mt-1"
+              className="text-base text-slate-500 dark:text-slate-400 mt-1"
             >
               Sign in to your account
             </Animated.Text>
@@ -184,7 +184,7 @@ export default function LoginScreen() {
               accessibilityState={{ checked: rememberMe }}
             >
               <View
-                className={`w-5 h-5 rounded border items-center justify-center ${
+                className={`w-6 h-6 rounded border items-center justify-center ${
                   rememberMe
                     ? "bg-blue-600 border-blue-600"
                     : "border-slate-300 dark:border-slate-600"
@@ -192,7 +192,7 @@ export default function LoginScreen() {
               >
                 {rememberMe && <Check size={14} color="#fff" />}
               </View>
-              <Text className="text-sm text-slate-700 dark:text-slate-300">
+              <Text className="text-base text-slate-700 dark:text-slate-300">
                 Remember me
               </Text>
             </Pressable>
@@ -209,12 +209,12 @@ export default function LoginScreen() {
             {biometricLabel && (
               <Pressable
                 onPress={handleBiometricLogin}
-                className="flex-row items-center justify-center gap-2 py-3 rounded-xl border border-slate-200 dark:border-slate-700 active:bg-slate-50 dark:active:bg-slate-800"
+                className="flex-row items-center justify-center gap-2 py-4 min-h-[56px] rounded-xl border border-slate-200 dark:border-slate-700 active:bg-slate-50 dark:active:bg-slate-800"
                 accessibilityLabel={`Sign in with ${biometricLabel}`}
                 accessibilityRole="button"
               >
-                <Fingerprint size={20} color="#3b82f6" />
-                <Text className="text-base font-medium text-slate-700 dark:text-slate-300">
+                <Fingerprint size={24} color="#3b82f6" />
+                <Text className="text-lg font-medium text-slate-700 dark:text-slate-300">
                   Sign in with {biometricLabel}
                 </Text>
               </Pressable>

@@ -7,7 +7,6 @@ import { Camera } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
 import { useUploadPhoto } from "@/hooks/usePhotos";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
-import { useSettingsStore } from "@/stores/settings";
 import type { PhotoType } from "@/types/models";
 
 const PHOTO_TYPE_OPTIONS: { value: PhotoType; label: string }[] = [
@@ -23,7 +22,6 @@ interface PhotoCaptureProps {
 export function PhotoCapture({ jobId }: PhotoCaptureProps) {
   const uploadPhoto = useUploadPhoto();
   const { isOffline } = useNetworkStatus();
-  const fieldMode = useSettingsStore((s) => s.fieldMode);
   const [caption, setCaption] = useState("");
   const [photoType, setPhotoType] = useState<PhotoType>("general");
   const [showCaption, setShowCaption] = useState(false);
@@ -120,23 +118,17 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
             <Pressable
               key={opt.value}
               onPress={() => setPhotoType(opt.value)}
-              className={`flex-1 items-center rounded-lg border ${
-                fieldMode ? "py-3.5" : "py-2"
-              } ${
+              className={`flex-1 items-center rounded-lg border py-3.5 ${
                 photoType === opt.value
-                  ? fieldMode
-                    ? "bg-orange-500 border-orange-500"
-                    : "bg-blue-500 border-blue-500"
+                  ? "bg-blue-500 border-blue-500"
                   : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
               }`}
             >
               <Text
-                className={`font-medium ${fieldMode ? "text-sm" : "text-xs"} ${
+                className={`text-sm font-medium ${
                   photoType === opt.value
                     ? "text-white"
-                    : fieldMode
-                      ? "text-white"
-                      : "text-slate-600 dark:text-slate-300"
+                    : "text-slate-600 dark:text-slate-300"
                 }`}
               >
                 {opt.label}
@@ -149,9 +141,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
           onChangeText={setCaption}
           placeholder="Add a caption (optional)"
           placeholderTextColor="#94a3b8"
-          className={`bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-slate-900 dark:text-white ${
-            fieldMode ? "py-4 text-base" : "py-3 text-sm"
-          }`}
+          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 text-base text-slate-900 dark:text-white"
         />
         <View className="flex-row gap-2">
           <Button

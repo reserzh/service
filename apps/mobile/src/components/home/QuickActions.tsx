@@ -17,25 +17,25 @@ interface QuickActionsProps {
 export function QuickActions({ onClockIn }: QuickActionsProps) {
   const actions: QuickAction[] = [
     {
-      icon: <Clock size={22} color="#3b82f6" />,
+      icon: <Clock size={28} color="#3b82f6" />,
       label: "Clock In",
       onPress: onClockIn ?? (() => {}),
       bgClass: "bg-blue-50 dark:bg-blue-950",
     },
     {
-      icon: <FileText size={22} color="#8b5cf6" />,
+      icon: <FileText size={28} color="#8b5cf6" />,
       label: "Estimate",
       onPress: () => router.push("/(tabs)/more/estimates/create"),
       bgClass: "bg-violet-50 dark:bg-violet-950",
     },
     {
-      icon: <Users size={22} color="#f59e0b" />,
+      icon: <Users size={28} color="#f59e0b" />,
       label: "Customers",
       onPress: () => router.push("/(tabs)/more/customers"),
       bgClass: "bg-amber-50 dark:bg-amber-950",
     },
     {
-      icon: <Receipt size={22} color="#10b981" />,
+      icon: <Receipt size={28} color="#10b981" />,
       label: "Invoices",
       onPress: () => router.push("/(tabs)/more/invoices"),
       bgClass: "bg-emerald-50 dark:bg-emerald-950",
@@ -52,11 +52,12 @@ export function QuickActions({ onClockIn }: QuickActionsProps) {
             action.onPress();
           }}
           className={`flex-1 items-center rounded-2xl py-3 ${action.bgClass} active:opacity-80`}
+          style={{ minHeight: 64 }}
           accessibilityLabel={action.label}
           accessibilityRole="button"
         >
           <View className="mb-1.5">{action.icon}</View>
-          <Text className="text-xs font-medium text-slate-700 dark:text-slate-300">
+          <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {action.label}
           </Text>
         </Pressable>

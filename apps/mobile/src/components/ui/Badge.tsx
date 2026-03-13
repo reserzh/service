@@ -20,13 +20,13 @@ export function Badge({
   return (
     <View
       className={`flex-row items-center gap-1.5 rounded-full ${bgClass} ${
-        size === "sm" ? "px-2.5 py-0.5" : "px-3 py-1"
+        size === "sm" ? "px-3 py-1" : "px-4 py-1.5"
       }`}
     >
-      {showDot && <View className={`w-1.5 h-1.5 rounded-full ${dotClass}`} />}
+      {showDot && <View className={`w-2 h-2 rounded-full ${dotClass}`} />}
       <Text
         className={`font-medium ${textClass} ${
-          size === "sm" ? "text-xs" : "text-sm"
+          size === "sm" ? "text-sm" : "text-base"
         }`}
       >
         {label}

@@ -52,12 +52,12 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: isDark ? "#0f172a" : "#ffffff",
           borderTopColor: isDark ? "#1e293b" : "#e2e8f0",
-          height: Platform.OS === "ios" ? 88 : 64,
+          height: Platform.OS === "ios" ? 96 : 72,
           paddingBottom: Platform.OS === "ios" ? 28 : 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: "600",
         },
       }}
