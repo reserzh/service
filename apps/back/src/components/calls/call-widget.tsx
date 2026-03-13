@@ -50,7 +50,7 @@ export function CallWidget() {
 
         const device = new Device(data.token, {
           logLevel: 1,
-          codecPreferences: [Device.Codec.Opus, Device.Codec.PCMU],
+          codecPreferences: ["opus" as any, "pcmu" as any],
         });
 
         device.on("registered", () => {
