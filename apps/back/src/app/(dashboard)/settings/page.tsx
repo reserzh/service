@@ -12,6 +12,7 @@ import {
   Package,
   LayoutDashboard,
   Phone,
+  Layers,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -71,6 +72,12 @@ const settingsGroups = [
     description: "Subscription plan, payment method, and invoices",
     icon: CreditCard,
     href: "/settings/billing",
+  },
+  {
+    title: "Platform Features",
+    description: "Complete feature inventory across all components",
+    icon: Layers,
+    href: "/settings/features",
   },
 ];
 
