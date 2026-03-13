@@ -1,5 +1,6 @@
 import { api } from "../client";
 import type { ApiResponse } from "@/types/models";
+import type { TradeType } from "@fieldservice/api-types/constants";
 
 interface CompanyProfile {
   name: string;
@@ -14,8 +15,17 @@ interface CompanyProfile {
   logoUrl: string | null;
 }
 
+interface TenantSettingsResponse {
+  tradeType?: TradeType;
+  operatorType?: "solo" | "crew";
+  [key: string]: unknown;
+}
+
 export const settingsApi = {
   getCompany() {
     return api.get<ApiResponse<CompanyProfile>>("/settings/company");
+  },
+  getTenantSettings() {
+    return api.get<ApiResponse<TenantSettingsResponse>>("/settings");
   },
 };

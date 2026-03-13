@@ -18,6 +18,7 @@ import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { OfflineBanner } from "@/components/common/OfflineBanner";
 import { useSyncQueueStore } from "@/stores/syncQueue";
 import { startSyncListeners } from "@/lib/syncProcessor";
+import { useTradeTypeSync } from "@/hooks/useTradeType";
 
 // Sync TanStack Query online state with NetInfo
 onlineManager.setEventListener((setOnline) => {
@@ -39,6 +40,7 @@ const queryClient = new QueryClient({
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   useAuthInit();
+  useTradeTypeSync();
 
   useEffect(() => {
     const cleanup = setupNotificationHandler();
