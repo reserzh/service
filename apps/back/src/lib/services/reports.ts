@@ -208,6 +208,7 @@ export async function getUpcomingJobs(ctx: UserContext, limit: number = 5) {
 
 export async function getRecentActivity(ctx: UserContext, limit: number = 10) {
   assertPermission(ctx, "reports", "read");
+  const safeLimit = Math.min(Math.max(1, limit), 100);
 
   const data = await db
     .select({
@@ -224,7 +225,7 @@ export async function getRecentActivity(ctx: UserContext, limit: number = 10) {
     .leftJoin(users, and(eq(activityLog.userId, users.id), eq(users.tenantId, ctx.tenantId)))
     .where(eq(activityLog.tenantId, ctx.tenantId))
     .orderBy(desc(activityLog.createdAt))
-    .limit(limit);
+    .limit(safeLimit);
 
   return data;
 }

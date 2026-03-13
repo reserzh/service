@@ -49,6 +49,7 @@ import {
   FileText,
   MessageSquare,
   Image as ImageIcon,
+  ArrowLeftRight,
   PenLine,
   Trash2,
   Loader2,
@@ -150,6 +151,9 @@ interface JobData {
     longitude: string | null;
     state: string;
     zip: string;
+    lotSizeSqft: number | null;
+    lawnAreaSqft: number | null;
+    propertyMetadata: import("@fieldservice/api-types/constants").PropertyMetadata | null;
   };
   assignedUser: {
     id: string;
@@ -214,6 +218,8 @@ export function JobDetailContent({ job, userRole }: Props) {
   const [showChecklistInput, setShowChecklistInput] = useState(false);
   const [newItemGroupName, setNewItemGroupName] = useState("");
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [comparisonSlider, setComparisonSlider] = useState(50);
 
   const nextAction = nextStatusMap[job.status];
   const currentStepIdx = statusSteps.indexOf(job.status);
@@ -222,7 +228,7 @@ export function JobDetailContent({ job, userRole }: Props) {
     startTransition(async () => {
       const result = await changeJobStatusAction(
         job.id,
-        newStatus as "new" | "scheduled" | "dispatched" | "in_progress" | "completed" | "canceled"
+        newStatus as "new" | "scheduled" | "dispatched" | "en_route" | "in_progress" | "completed" | "canceled"
       );
       if (result.error) {
         showToast.error("Status change failed", result.error);
@@ -907,6 +913,75 @@ export function JobDetailContent({ job, userRole }: Props) {
             </Card>
           ) : (
             <div className="space-y-6">
+              {/* Comparison view */}
+              {beforePhotos.length > 0 && afterPhotos.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Button
+                      variant={showComparison ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowComparison(!showComparison)}
+                    >
+                      <ArrowLeftRight className="mr-1.5 h-3.5 w-3.5" />
+                      Compare
+                    </Button>
+                  </div>
+                  {showComparison && (
+                    <Card className="overflow-hidden mb-4">
+                      <CardContent className="p-0">
+                        <div
+                          className="relative w-full select-none"
+                          style={{ aspectRatio: "16/9" }}
+                        >
+                          {/* After (full) */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={getPhotoUrl(afterPhotos[0].storagePath)}
+                            alt="After"
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                          {/* Before (clipped) */}
+                          <div
+                            className="absolute inset-0 overflow-hidden"
+                            style={{ width: `${comparisonSlider}%` }}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={getPhotoUrl(beforePhotos[0].storagePath)}
+                              alt="Before"
+                              className="absolute inset-0 w-full h-full object-cover"
+                              style={{ minWidth: "100%", width: `${10000 / comparisonSlider}%`, maxWidth: "none" }}
+                            />
+                          </div>
+                          {/* Divider line */}
+                          <div
+                            className="absolute top-0 bottom-0 w-0.5 bg-white shadow"
+                            style={{ left: `${comparisonSlider}%` }}
+                          />
+                          {/* Labels */}
+                          <div className="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-xs text-white font-medium">
+                            Before
+                          </div>
+                          <div className="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded text-xs text-white font-medium">
+                            After
+                          </div>
+                        </div>
+                        <div className="px-4 py-3">
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={comparisonSlider}
+                            onChange={(e) => setComparisonSlider(Number(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
               {beforePhotos.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-3">Before</h4>

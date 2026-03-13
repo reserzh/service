@@ -304,7 +304,7 @@ export async function getJobWithRelations(ctx: UserContext, jobId: string) {
         userColor: users.color,
       })
       .from(jobAssignments)
-      .leftJoin(users, eq(jobAssignments.userId, users.id))
+      .leftJoin(users, and(eq(jobAssignments.userId, users.id), eq(users.tenantId, ctx.tenantId)))
       .where(and(eq(jobAssignments.jobId, jobId), eq(jobAssignments.tenantId, ctx.tenantId))),
   ]);
 
@@ -571,7 +571,7 @@ export async function changeJobStatus(
         const { sendTriggeredCommunication } = await import("./communications");
         const techUser = job.assignedTo
           ? await db.select({ firstName: users.firstName, lastName: users.lastName })
-              .from(users).where(eq(users.id, job.assignedTo)).limit(1).then((r) => r[0])
+              .from(users).where(and(eq(users.id, job.assignedTo), eq(users.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
           : null;
 
         // Build tracking URL for en_route communications

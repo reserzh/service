@@ -36,6 +36,10 @@ function sanitizeCss(css: string): string {
   sanitized = sanitized.replace(/expression\s*\(/gi, "/* blocked */(");
   sanitized = sanitized.replace(/-moz-binding\s*:/gi, "/* blocked */:");
   sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*javascript\s*:/gi, "url(/* blocked */");
+  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*data\s*:/gi, "url(/* blocked */");
+  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*blob\s*:/gi, "url(/* blocked */");
+  sanitized = sanitized.replace(/behavior\s*:/gi, "/* blocked */:");
+  sanitized = sanitized.replace(/@charset\b/gi, "/* blocked */");
   return sanitized;
 }
 

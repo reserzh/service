@@ -3,12 +3,14 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireAuth } from "@/lib/auth";
+import { assertPermission } from "@/lib/auth/permissions";
 import {
   updateCompanyProfile,
   updateTenantSettings,
 } from "@/lib/services/settings";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 import { getActionErrorMessage } from "@/lib/api/errors";
+import { TRADE_TYPES } from "@fieldservice/api-types/constants";
 
 // ---------- Schemas ----------
 
@@ -130,5 +132,38 @@ export async function updateDashboardSettingsAction(
     return {};
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to update dashboard settings.") };
+  }
+}
+
+// ---------- Update industry settings ----------
+
+const industrySettingsSchema = z.object({
+  tradeType: z.enum(TRADE_TYPES as unknown as [string, ...string[]]),
+  operatorType: z.enum(["solo", "crew"]),
+  landscaping: z
+    .object({
+      defaultServiceZones: z.array(z.string().max(100)).max(20).optional(),
+      measurementUnit: z.enum(["sqft", "acre"]).optional(),
+      seasonalScheduling: z.boolean().optional(),
+    })
+    .optional(),
+});
+
+export async function updateIndustrySettingsAction(
+  input: z.infer<typeof industrySettingsSchema>
+): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    assertPermission(ctx, "settings", "update");
+    const parsed = industrySettingsSchema.parse(input);
+    await updateTenantSettings(ctx, parsed as Partial<TenantSettings>);
+
+    revalidatePath("/settings");
+    revalidatePath("/settings/industry");
+    revalidatePath("/", "layout");
+
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update industry settings.") };
   }
 }

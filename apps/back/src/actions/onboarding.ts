@@ -1,15 +1,17 @@
 "use server";
 
 import { requireAuth } from "@/lib/auth";
+import { assertPermission } from "@/lib/auth/permissions";
 import { updateTenantSettings } from "@/lib/services/settings";
 import { createCustomer } from "@/lib/services/customers";
 import { createPricebookItem } from "@/lib/services/pricebook";
 import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
+import type { TradeType } from "@fieldservice/api-types/constants";
 
 interface OnboardingInput {
-  tradeType: string;
+  tradeType: TradeType;
   operatorType: "solo" | "crew";
   customer?: {
     firstName: string;
@@ -32,6 +34,7 @@ export async function completeOnboardingAction(
 ): Promise<{ error?: string }> {
   try {
     const ctx = await requireAuth();
+    assertPermission(ctx, "settings", "update");
 
     // 1. Mark onboarding as completed first — this is the critical update
     await db
