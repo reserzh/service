@@ -136,6 +136,120 @@ export const CALL_STATUS_LABELS: Record<CallStatus, string> = {
   canceled: "Canceled",
 };
 
+// ---- Trade types ----
+
+export const TRADE_TYPES = ["landscaping", "hvac", "plumbing", "electrical", "general"] as const;
+export type TradeType = (typeof TRADE_TYPES)[number];
+
+export const TRADE_TYPE_LABELS: Record<TradeType, string> = {
+  landscaping: "Landscaping",
+  hvac: "HVAC",
+  plumbing: "Plumbing",
+  electrical: "Electrical",
+  general: "General / Other",
+};
+
+// ---- Seasons & landscaping templates ----
+
+export const SEASONS = ["spring", "summer", "fall", "winter"] as const;
+export type Season = (typeof SEASONS)[number];
+
+export const SEASON_LABELS: Record<Season, string> = {
+  spring: "Spring (Mar–May)",
+  summer: "Summer (Jun–Aug)",
+  fall: "Fall (Sep–Nov)",
+  winter: "Winter (Dec–Feb)",
+};
+
+export const SEASON_MONTHS: Record<Season, [number, number]> = {
+  spring: [3, 5],
+  summer: [6, 8],
+  fall: [9, 11],
+  winter: [12, 2],
+};
+
+export interface SeasonalVisitTemplate {
+  season: Season;
+  services: string[];
+  frequency: "weekly" | "bi-weekly" | "monthly" | "as-needed";
+  visitsPerSeason: number;
+}
+
+export const LANDSCAPING_SEASONAL_TEMPLATES: SeasonalVisitTemplate[] = [
+  {
+    season: "spring",
+    services: ["Weekly Mowing", "Spring Cleanup", "Fertilization"],
+    frequency: "weekly",
+    visitsPerSeason: 12,
+  },
+  {
+    season: "summer",
+    services: ["Weekly Mowing", "Edging", "Irrigation Check"],
+    frequency: "weekly",
+    visitsPerSeason: 12,
+  },
+  {
+    season: "fall",
+    services: ["Bi-Weekly Mowing", "Leaf Removal", "Aeration"],
+    frequency: "bi-weekly",
+    visitsPerSeason: 6,
+  },
+  {
+    season: "winter",
+    services: ["Snow Removal", "Equipment Maintenance"],
+    frequency: "as-needed",
+    visitsPerSeason: 4,
+  },
+];
+
+// ---- Property metadata types ----
+
+export type IrrigationType = "none" | "sprinkler" | "drip" | "manual";
+export type SlopeType = "flat" | "slight" | "moderate" | "steep";
+export type MeasurementUnit = "sqft" | "acre";
+
+export interface ServiceZone {
+  name: string;
+  areaSqft?: number;
+  notes?: string;
+}
+
+export interface PropertyMetadata {
+  serviceZones?: ServiceZone[];
+  irrigationType?: IrrigationType;
+  grassType?: string;
+  slope?: SlopeType;
+  gateCode?: string;
+  obstacles?: string[];
+}
+
+export const DEFAULT_SERVICE_ZONES = [
+  "Front Yard",
+  "Back Yard",
+  "Side Yard (Left)",
+  "Side Yard (Right)",
+  "Garden Beds",
+  "Driveway Edge",
+];
+
+export const IRRIGATION_TYPES: IrrigationType[] = ["none", "sprinkler", "drip", "manual"];
+export const IRRIGATION_TYPE_LABELS: Record<IrrigationType, string> = {
+  none: "None",
+  sprinkler: "Sprinkler System",
+  drip: "Drip Irrigation",
+  manual: "Manual Watering",
+};
+
+export const SLOPE_TYPES: SlopeType[] = ["flat", "slight", "moderate", "steep"];
+export const SLOPE_TYPE_LABELS: Record<SlopeType, string> = {
+  flat: "Flat",
+  slight: "Slight",
+  moderate: "Moderate",
+  steep: "Steep",
+};
+
+export const COMMON_OBSTACLES = ["Pool", "Trampoline", "Shed", "Patio", "Deck", "Playground", "Garden", "Fence"];
+
 // Valid agreement status transitions
 export const VALID_AGREEMENT_TRANSITIONS: Record<AgreementStatus, AgreementStatus[]> = {
   draft: ["active", "canceled"],

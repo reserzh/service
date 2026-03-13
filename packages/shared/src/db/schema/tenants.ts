@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { subscriptionStatusEnum } from "./enums";
 import { fieldserviceSchema } from "./pg-schema";
+import type { TradeType, MeasurementUnit } from "@fieldservice/api-types/constants";
 
 export const tenants = fieldserviceSchema.table("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -49,7 +50,12 @@ export type TenantSettings = {
   dashboardPreset?: string;
   dashboardHiddenWidgets?: string[];
   operatorType?: "solo" | "crew";
-  tradeType?: string;
+  tradeType?: TradeType;
+  landscaping?: {
+    defaultServiceZones?: string[];
+    measurementUnit?: MeasurementUnit;
+    seasonalScheduling?: boolean;
+  };
   quickbooks?: {
     incomeAccountId?: string;
     expenseAccountId?: string;

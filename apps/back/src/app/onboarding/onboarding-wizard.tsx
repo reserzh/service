@@ -26,66 +26,53 @@ import {
   Check,
 } from "lucide-react";
 import { completeOnboardingAction } from "@/actions/onboarding";
+import { TRADE_TYPES, TRADE_TYPE_LABELS, type TradeType } from "@fieldservice/api-types/constants";
 
-const TRADE_PRESETS = {
-  landscaping: {
-    label: "Landscaping",
-    icon: Leaf,
-    services: [
-      { name: "Lawn Mowing", unitPrice: 45 },
-      { name: "Hedge Trimming", unitPrice: 65 },
-      { name: "Mulching", unitPrice: 120 },
-      { name: "Spring Cleanup", unitPrice: 200 },
-      { name: "Leaf Removal", unitPrice: 150 },
-    ],
-  },
-  hvac: {
-    label: "HVAC",
-    icon: Flame,
-    services: [
-      { name: "AC Tune-Up", unitPrice: 150 },
-      { name: "Furnace Repair", unitPrice: 250 },
-      { name: "Duct Cleaning", unitPrice: 350 },
-      { name: "Filter Replacement", unitPrice: 75 },
-      { name: "System Install", unitPrice: 5000 },
-    ],
-  },
-  plumbing: {
-    label: "Plumbing",
-    icon: Droplets,
-    services: [
-      { name: "Drain Cleaning", unitPrice: 175 },
-      { name: "Leak Repair", unitPrice: 200 },
-      { name: "Water Heater", unitPrice: 1200 },
-      { name: "Fixture Install", unitPrice: 250 },
-      { name: "Sewer Line", unitPrice: 3000 },
-    ],
-  },
-  electrical: {
-    label: "Electrical",
-    icon: Zap,
-    services: [
-      { name: "Panel Upgrade", unitPrice: 2000 },
-      { name: "Outlet Install", unitPrice: 150 },
-      { name: "Lighting", unitPrice: 300 },
-      { name: "Wiring Repair", unitPrice: 250 },
-      { name: "Generator Install", unitPrice: 5000 },
-    ],
-  },
-  general: {
-    label: "General / Other",
-    icon: Wrench,
-    services: [
-      { name: "Service Call", unitPrice: 100 },
-      { name: "Repair", unitPrice: 200 },
-      { name: "Installation", unitPrice: 500 },
-      { name: "Maintenance", unitPrice: 150 },
-      { name: "Inspection", unitPrice: 100 },
-    ],
-  },
-} as const;
+const TRADE_ICONS: Record<TradeType, typeof Leaf> = {
+  landscaping: Leaf,
+  hvac: Flame,
+  plumbing: Droplets,
+  electrical: Zap,
+  general: Wrench,
+};
 
-type TradeKey = keyof typeof TRADE_PRESETS;
+const TRADE_SERVICES: Record<TradeType, { name: string; unitPrice: number }[]> = {
+  landscaping: [
+    { name: "Lawn Mowing", unitPrice: 45 },
+    { name: "Hedge Trimming", unitPrice: 65 },
+    { name: "Mulching", unitPrice: 120 },
+    { name: "Spring Cleanup", unitPrice: 200 },
+    { name: "Leaf Removal", unitPrice: 150 },
+  ],
+  hvac: [
+    { name: "AC Tune-Up", unitPrice: 150 },
+    { name: "Furnace Repair", unitPrice: 250 },
+    { name: "Duct Cleaning", unitPrice: 350 },
+    { name: "Filter Replacement", unitPrice: 75 },
+    { name: "System Install", unitPrice: 5000 },
+  ],
+  plumbing: [
+    { name: "Drain Cleaning", unitPrice: 175 },
+    { name: "Leak Repair", unitPrice: 200 },
+    { name: "Water Heater", unitPrice: 1200 },
+    { name: "Fixture Install", unitPrice: 250 },
+    { name: "Sewer Line", unitPrice: 3000 },
+  ],
+  electrical: [
+    { name: "Panel Upgrade", unitPrice: 2000 },
+    { name: "Outlet Install", unitPrice: 150 },
+    { name: "Lighting", unitPrice: 300 },
+    { name: "Wiring Repair", unitPrice: 250 },
+    { name: "Generator Install", unitPrice: 5000 },
+  ],
+  general: [
+    { name: "Service Call", unitPrice: 100 },
+    { name: "Repair", unitPrice: 200 },
+    { name: "Installation", unitPrice: 500 },
+    { name: "Maintenance", unitPrice: 150 },
+    { name: "Inspection", unitPrice: 100 },
+  ],
+};
 
 interface ServiceItem {
   name: string;
@@ -100,7 +87,7 @@ export function OnboardingWizard() {
   const [error, setError] = useState<string | null>(null);
 
   // Step 1
-  const [tradeType, setTradeType] = useState<TradeKey | null>(null);
+  const [tradeType, setTradeType] = useState<TradeType | null>(null);
   const [operatorType, setOperatorType] = useState<"solo" | "crew" | null>(null);
 
   // Step 2
@@ -127,9 +114,9 @@ export function OnboardingWizard() {
   function goToStep3() {
     // Initialize services from trade preset
     if (tradeType) {
-      const preset = TRADE_PRESETS[tradeType];
+      const services = TRADE_SERVICES[tradeType];
       setServices(
-        preset.services.map((s) => ({ ...s, selected: true }))
+        services.map((s) => ({ ...s, selected: true }))
       );
     }
     setStep(3);
@@ -215,9 +202,8 @@ export function OnboardingWizard() {
             <div className="space-y-3">
               <Label className="text-base font-medium">What trade are you in?</Label>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {(Object.entries(TRADE_PRESETS) as [TradeKey, (typeof TRADE_PRESETS)[TradeKey]][]).map(
-                  ([key, preset]) => {
-                    const Icon = preset.icon;
+                {TRADE_TYPES.map((key) => {
+                    const Icon = TRADE_ICONS[key];
                     return (
                       <button
                         key={key}
@@ -230,11 +216,10 @@ export function OnboardingWizard() {
                         }`}
                       >
                         <Icon className="h-6 w-6" />
-                        <span className="text-sm font-medium">{preset.label}</span>
+                        <span className="text-sm font-medium">{TRADE_TYPE_LABELS[key]}</span>
                       </button>
                     );
-                  }
-                )}
+                  })}
               </div>
             </div>
 

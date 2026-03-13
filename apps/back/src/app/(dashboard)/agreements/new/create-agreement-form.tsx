@@ -16,9 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Leaf } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import { BILLING_FREQUENCY_LABELS } from "@fieldservice/api-types/constants";
+import { BILLING_FREQUENCY_LABELS, LANDSCAPING_SEASONAL_TEMPLATES, SEASON_LABELS } from "@fieldservice/api-types/constants";
+import { useTradeType } from "@/lib/hooks/use-trade-type";
 
 interface CustomerSummary {
   id: string;
@@ -33,6 +34,8 @@ export function CreateAgreementForm({ customers }: { customers: CustomerSummary[
   const router = useRouter();
   const lastProcessedRef = useRef<string | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState("");
+  const { isLandscaping } = useTradeType();
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
 
   useEffect(() => {
     const stateKey = state.success ? `success-${state.agreementId}` : state.error ? `error-${state.error}` : null;
@@ -60,9 +63,46 @@ export function CreateAgreementForm({ customers }: { customers: CustomerSummary[
             </div>
           )}
 
+          {isLandscaping && (
+            <div className="rounded-lg border border-dashed border-green-300 bg-green-50/50 dark:bg-green-950/20 p-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-green-700 dark:text-green-400">
+                <Leaf className="h-4 w-4" />
+                Seasonal Template
+              </div>
+              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Start from a seasonal template (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No template</SelectItem>
+                  {LANDSCAPING_SEASONAL_TEMPLATES.map((t) => (
+                    <SelectItem key={t.season} value={t.season}>
+                      {SEASON_LABELS[t.season]} — {t.frequency} ({t.visitsPerSeason} visits)
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="full-year">Full Year (all seasons, ~34 visits)</SelectItem>
+                </SelectContent>
+              </Select>
+              {selectedTemplate && selectedTemplate !== "none" && (
+                <div className="text-xs text-muted-foreground">
+                  {selectedTemplate === "full-year" ? (
+                    <span>Includes all 4 seasonal schedules with ~34 total visits per year.</span>
+                  ) : (
+                    (() => {
+                      const t = LANDSCAPING_SEASONAL_TEMPLATES.find((t) => t.season === selectedTemplate);
+                      return t ? (
+                        <span>Services: {t.services.join(", ")} — {t.frequency}, {t.visitsPerSeason} visits/season</span>
+                      ) : null;
+                    })()
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="name">Agreement Name *</Label>
-            <Input id="name" name="name" required placeholder="e.g. Annual HVAC Maintenance" />
+            <Input id="name" name="name" required placeholder={isLandscaping ? "e.g. Annual Lawn Care Plan" : "e.g. Annual HVAC Maintenance"} />
           </div>
 
           <div className="space-y-2">

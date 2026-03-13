@@ -23,6 +23,7 @@ import type {
   RecordingStatus,
   TranscriptionStatus,
 } from "./enums";
+import type { PropertyMetadata } from "./constants";
 
 // ---- Core Models ----
 
@@ -81,6 +82,9 @@ export interface Property {
   zip: string;
   latitude: string | null;
   longitude: string | null;
+  lotSizeSqft: number | null;
+  lawnAreaSqft: number | null;
+  propertyMetadata: PropertyMetadata | null;
   accessNotes: string | null;
   isPrimary: boolean;
 }

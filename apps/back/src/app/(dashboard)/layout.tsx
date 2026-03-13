@@ -10,6 +10,8 @@ import { tenants } from "@fieldservice/shared/db/schema";
 import { eq } from "drizzle-orm";
 import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 import { CallWidget } from "@/components/calls/call-widget";
+import { TradeTypeProvider } from "@/components/providers/trade-type-provider";
+import type { TradeType } from "@fieldservice/api-types/constants";
 
 const TOP_NAV_THEMES = new Set(["blueprint", "glass"]);
 
@@ -46,29 +48,31 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div
-      data-theme={preset === "classic" ? undefined : preset}
-      className="min-h-screen bg-background text-foreground font-sans"
-    >
-      {hasTopNav ? (
-        <>
-          {preset === "blueprint" ? (
-            <BlueprintTopNav user={userProps} />
-          ) : (
-            <GlassTopNav user={userProps} />
-          )}
-          <main className="flex-1 overflow-auto p-6">{children}</main>
-        </>
-      ) : (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <Topbar user={userProps} />
+    <TradeTypeProvider tradeType={settings.tradeType as TradeType | undefined}>
+      <div
+        data-theme={preset === "classic" ? undefined : preset}
+        className="min-h-screen bg-background text-foreground font-sans"
+      >
+        {hasTopNav ? (
+          <>
+            {preset === "blueprint" ? (
+              <BlueprintTopNav user={userProps} />
+            ) : (
+              <GlassTopNav user={userProps} />
+            )}
             <main className="flex-1 overflow-auto p-6">{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      )}
-      <CallWidget />
-    </div>
+          </>
+        ) : (
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <Topbar user={userProps} />
+              <main className="flex-1 overflow-auto p-6">{children}</main>
+            </SidebarInset>
+          </SidebarProvider>
+        )}
+        <CallWidget />
+      </div>
+    </TradeTypeProvider>
   );
 }

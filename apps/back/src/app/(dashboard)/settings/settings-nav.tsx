@@ -12,9 +12,11 @@ import {
   CreditCard,
   CheckSquare,
   FileStack,
+  Factory,
 } from "lucide-react";
 
 const navItems = [
+  { label: "Industry", href: "/settings/industry", icon: Factory },
   { label: "Company Profile", href: "/settings/company", icon: Building2 },
   { label: "Team Members", href: "/settings/team", icon: Users },
   { label: "Services & Pricing", href: "/settings/services", icon: Wrench },

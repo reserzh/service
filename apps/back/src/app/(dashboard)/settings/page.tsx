@@ -13,12 +13,19 @@ import {
   LayoutDashboard,
   Phone,
   Layers,
+  Factory,
 } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Settings" };
 
 const settingsGroups = [
+  {
+    title: "Industry",
+    description: "Trade type, operator type, and industry-specific configuration",
+    icon: Factory,
+    href: "/settings/industry",
+  },
   {
     title: "Company Profile",
     description: "Business name, address, logo, and license info",

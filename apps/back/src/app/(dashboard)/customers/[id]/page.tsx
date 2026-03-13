@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PortalAccessCard } from "./portal-access-card";
+import { PropertyDetailsCard } from "@/components/properties/property-details-card";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -149,33 +150,41 @@ export default async function CustomerDetailPage({ params }: PageProps) {
             </Card>
           ) : (
             customer.properties.map((prop) => (
-              <Card key={prop.id}>
-                <CardContent className="flex items-start gap-3 pt-6">
-                  <div className="rounded-md bg-muted p-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    {prop.name && <p className="text-sm font-medium">{prop.name}</p>}
-                    <p className="text-sm">
-                      {prop.addressLine1}
-                      {prop.addressLine2 && `, ${prop.addressLine2}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {prop.city}, {prop.state} {prop.zip}
-                    </p>
-                    {prop.accessNotes && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Access: {prop.accessNotes}
+              <div key={prop.id} className="space-y-3">
+                <Card>
+                  <CardContent className="flex items-start gap-3 pt-6">
+                    <div className="rounded-md bg-muted p-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      {prop.name && <p className="text-sm font-medium">{prop.name}</p>}
+                      <p className="text-sm">
+                        {prop.addressLine1}
+                        {prop.addressLine2 && `, ${prop.addressLine2}`}
                       </p>
-                    )}
-                    {prop.isPrimary && (
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        Primary
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      <p className="text-sm text-muted-foreground">
+                        {prop.city}, {prop.state} {prop.zip}
+                      </p>
+                      {prop.accessNotes && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Access: {prop.accessNotes}
+                        </p>
+                      )}
+                      {prop.isPrimary && (
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          Primary
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+                <PropertyDetailsCard
+                  propertyId={prop.id}
+                  lotSizeSqft={prop.lotSizeSqft}
+                  lawnAreaSqft={prop.lawnAreaSqft}
+                  propertyMetadata={prop.propertyMetadata}
+                />
+              </div>
             ))
           )}
         </TabsContent>

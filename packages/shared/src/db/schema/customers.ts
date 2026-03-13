@@ -3,16 +3,19 @@ import {
   varchar,
   text,
   boolean,
+  integer,
   timestamp,
   index,
   date,
   decimal,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { customerTypeEnum } from "./enums";
 import { tenants } from "./tenants";
 import { users } from "./users";
 import { fieldserviceSchema } from "./pg-schema";
+import type { PropertyMetadata } from "@fieldservice/api-types/constants";
 
 export const customers = fieldserviceSchema.table(
   "customers",
@@ -81,6 +84,9 @@ export const properties = fieldserviceSchema.table(
     zip: varchar("zip", { length: 20 }).notNull(),
     latitude: decimal("latitude", { precision: 10, scale: 7 }),
     longitude: decimal("longitude", { precision: 10, scale: 7 }),
+    lotSizeSqft: integer("lot_size_sqft"),
+    lawnAreaSqft: integer("lawn_area_sqft"),
+    propertyMetadata: jsonb("property_metadata").$type<PropertyMetadata>(),
     accessNotes: text("access_notes"),
     isPrimary: boolean("is_primary").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
