@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth";
-import { getPage, listSections } from "@/lib/services/website";
+import { getPage, listSections, getSiteSettings } from "@/lib/services/website";
 import { PageHeader } from "@/components/layout/page-header";
 import { PageEditorContent } from "./page-editor-content";
 import { notFound } from "next/navigation";
@@ -19,7 +19,10 @@ export default async function PageEditorPage({
     notFound();
   }
 
-  const sections = await listSections(ctx, id);
+  const [sections, settings] = await Promise.all([
+    listSections(ctx, id),
+    getSiteSettings(ctx).catch(() => null),
+  ]);
 
   return (
     <>
@@ -27,7 +30,11 @@ export default async function PageEditorPage({
         title={`Edit: ${page.title}`}
         description={`/${page.slug}`}
       />
-      <PageEditorContent page={page} initialSections={sections} />
+      <PageEditorContent
+        page={page}
+        initialSections={sections}
+        siteTheme={settings?.theme}
+      />
     </>
   );
 }

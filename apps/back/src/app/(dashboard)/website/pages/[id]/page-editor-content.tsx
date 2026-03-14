@@ -1,27 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 import {
   updatePageAction,
   publishPageAction,
@@ -32,18 +36,11 @@ import {
   reorderSectionsAction,
 } from "@/actions/website";
 import { showToast } from "@/lib/toast";
-import {
-  Plus,
-  Trash2,
-  GripVertical,
-  Eye,
-  EyeOff,
-  ArrowUp,
-  ArrowDown,
-  Save,
-} from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import { Plus, Trash2, Save } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { SortableSectionCard } from "./sortable-section-card";
+import { SectionPickerDialog } from "./section-picker-dialog";
+import { PreviewPanel } from "./preview-panel";
 
 type Section = {
   id: string;
@@ -65,43 +62,61 @@ type Page = {
   seo: Record<string, unknown> | null;
 };
 
-const SECTION_TYPES = [
-  { value: "hero", label: "Hero Banner", description: "Large hero section with heading and CTA" },
-  { value: "services", label: "Services Grid", description: "Display your service catalog" },
-  { value: "about", label: "About", description: "About your business" },
-  { value: "testimonials", label: "Testimonials", description: "Customer reviews and testimonials" },
-  { value: "gallery", label: "Gallery", description: "Image gallery" },
-  { value: "contact_form", label: "Contact Form", description: "Contact form with map" },
-  { value: "booking_widget", label: "Booking Widget", description: "Online booking form" },
-  { value: "cta_banner", label: "CTA Banner", description: "Call-to-action banner" },
-  { value: "faq", label: "FAQ", description: "Frequently asked questions" },
-  { value: "team", label: "Team", description: "Team members" },
-  { value: "map", label: "Map", description: "Location map" },
-  { value: "features", label: "Features", description: "Feature highlights" },
-  { value: "pricing", label: "Pricing", description: "Pricing plans" },
-  { value: "custom_html", label: "Custom HTML", description: "Raw HTML content" },
-];
+type SiteTheme = {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  fontHeading: string;
+  fontBody: string;
+  borderRadius: string;
+};
 
 export function PageEditorContent({
   page,
   initialSections,
+  siteTheme,
 }: {
   page: Page;
   initialSections: Section[];
+  siteTheme?: SiteTheme | null;
 }) {
   const router = useRouter();
   const [sections, setSections] = useState(initialSections);
   const [saving, setSaving] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState(false);
   const [addSectionOpen, setAddSectionOpen] = useState(false);
-  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
   const [pageTitle, setPageTitle] = useState(page.title);
   const [pageSlug, setPageSlug] = useState(page.slug);
   const [confirmDeletePage, setConfirmDeletePage] = useState(false);
   const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
+  const [dirtySections, setDirtySections] = useState<Set<string>>(new Set());
+
+  // Ref to keep latest sections for drag rollback
+  const sectionsRef = useRef(sections);
+  sectionsRef.current = sections;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const markDirty = useCallback((id: string) => {
+    setDirtySections((prev) => new Set(prev).add(id));
+  }, []);
+
+  const markClean = useCallback((id: string) => {
+    setDirtySections((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
 
   const handlePublish = async () => {
+    if (actionInProgress) return;
+    setActionInProgress(true);
     const result = await publishPageAction(page.id);
+    setActionInProgress(false);
     if (result.error) {
       showToast.error(result.error);
     } else {
@@ -138,15 +153,18 @@ export function PageEditorContent({
   };
 
   const handleAddSection = async (type: string) => {
+    if (actionInProgress) return;
+    setActionInProgress(true);
     const result = await createSectionAction({
       pageId: page.id,
       type,
       content: getDefaultContent(type),
     });
+    setActionInProgress(false);
     if (result.error) {
       showToast.error(result.error);
     } else {
-      setSections([...sections, result.data as Section]);
+      setSections((prev) => [...prev, result.data as Section]);
       showToast.created("Section");
     }
     setAddSectionOpen(false);
@@ -154,77 +172,106 @@ export function PageEditorContent({
 
   const handleDeleteSection = async () => {
     if (!deleteSectionId) return;
-    const result = await deleteSectionAction(deleteSectionId, page.id);
+    const id = deleteSectionId;
+    setDeleteSectionId(null);
+    const result = await deleteSectionAction(id, page.id);
     if (result.error) {
       showToast.error(result.error);
     } else {
-      setSections(sections.filter((s) => s.id !== deleteSectionId));
+      setSections((prev) => prev.filter((s) => s.id !== id));
+      markClean(id);
       showToast.deleted("Section");
     }
-    setDeleteSectionId(null);
   };
 
-  const handleToggleVisibility = async (section: Section) => {
+  const handleToggleVisibility = useCallback(async (sectionId: string, currentlyVisible: boolean) => {
     const result = await updateSectionAction({
-      sectionId: section.id,
+      sectionId,
       pageId: page.id,
-      isVisible: !section.isVisible,
+      isVisible: !currentlyVisible,
     });
     if (result.error) {
       showToast.error(result.error);
     } else {
-      setSections(
-        sections.map((s) =>
-          s.id === section.id ? { ...s, isVisible: !s.isVisible } : s
+      setSections((prev) =>
+        prev.map((s) =>
+          s.id === sectionId ? { ...s, isVisible: !currentlyVisible } : s
         )
       );
     }
-  };
+  }, [page.id]);
 
-  const handleMoveSection = async (index: number, direction: "up" | "down") => {
-    const newSections = [...sections];
-    const swapIndex = direction === "up" ? index - 1 : index + 1;
-    if (swapIndex < 0 || swapIndex >= newSections.length) return;
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    [newSections[index], newSections[swapIndex]] = [newSections[swapIndex], newSections[index]];
-    setSections(newSections);
+    const snapshot = sectionsRef.current;
+
+    setSections((prev) => {
+      const oldIndex = prev.findIndex((s) => s.id === active.id);
+      const newIndex = prev.findIndex((s) => s.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return prev;
+      const next = [...prev];
+      const [removed] = next.splice(oldIndex, 1);
+      next.splice(newIndex, 0, removed);
+      return next;
+    });
+
+    const reordered = (() => {
+      const oldIndex = snapshot.findIndex((s) => s.id === active.id);
+      const newIndex = snapshot.findIndex((s) => s.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return null;
+      const next = [...snapshot];
+      const [removed] = next.splice(oldIndex, 1);
+      next.splice(newIndex, 0, removed);
+      return next;
+    })();
+
+    if (!reordered) return;
 
     const result = await reorderSectionsAction(
       page.id,
-      newSections.map((s) => s.id)
+      reordered.map((s) => s.id)
     );
     if (result.error) {
-      setSections(sections);
+      setSections(snapshot);
       showToast.error(result.error);
     }
   };
 
-  const handleSaveContent = async (sectionId: string) => {
-    try {
-      const content = JSON.parse(editContent);
-      const result = await updateSectionAction({
-        sectionId,
-        pageId: page.id,
-        content,
-      });
-      if (result.error) {
-        showToast.error(result.error);
-      } else {
-        setSections(
-          sections.map((s) =>
-            s.id === sectionId ? { ...s, content } : s
-          )
-        );
-        setEditingSectionId(null);
-        showToast.saved("Section");
-      }
-    } catch {
-      showToast.error("Invalid JSON content");
+  const handleContentChange = useCallback((sectionId: string, content: Record<string, unknown>) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, content } : s))
+    );
+    markDirty(sectionId);
+  }, [markDirty]);
+
+  const handleSettingsChange = useCallback((sectionId: string, settings: Record<string, unknown>) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, settings } : s))
+    );
+    markDirty(sectionId);
+  }, [markDirty]);
+
+  const handleSaveSection = useCallback(async (sectionId: string) => {
+    const section = sectionsRef.current.find((s) => s.id === sectionId);
+    if (!section) return;
+    const result = await updateSectionAction({
+      sectionId: section.id,
+      pageId: page.id,
+      content: section.content ?? {},
+      settings: section.settings ?? {},
+    });
+    if (result.error) {
+      showToast.error(result.error);
+    } else {
+      markClean(section.id);
+      showToast.saved("Section");
     }
-  };
+  }, [page.id, markClean]);
 
   return (
-    <div className="mt-6 space-y-6">
+    <div className="mt-6 space-y-4">
       {/* Page Settings Bar */}
       <Card>
         <CardContent className="flex items-center gap-4 py-4">
@@ -258,146 +305,81 @@ export function PageEditorContent({
             {saving ? "Saving..." : "Save"}
           </Button>
           {page.status !== "published" && (
-            <Button size="sm" onClick={handlePublish}>Publish</Button>
+            <Button size="sm" onClick={handlePublish} disabled={actionInProgress}>Publish</Button>
           )}
-          <Button variant="destructive" size="sm" onClick={() => setConfirmDeletePage(true)}>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setConfirmDeletePage(true)}
+            aria-label="Delete page"
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </CardContent>
       </Card>
 
-      {/* Sections */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Sections</h3>
-          <Dialog open={addSectionOpen} onOpenChange={setAddSectionOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
+      {/* Editor + Preview Split */}
+      <ResizablePanelGroup orientation="horizontal" className="min-h-[600px] rounded-lg border">
+        {/* Editor Panel */}
+        <ResizablePanel defaultSize={55} minSize={35}>
+          <div className="h-full overflow-y-auto p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Sections</h3>
+              <Button size="sm" onClick={() => setAddSectionOpen(true)} disabled={actionInProgress}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Section
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Add Section</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-2 mt-4">
-                {SECTION_TYPES.map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => handleAddSection(type.value)}
-                    className="flex flex-col items-start gap-1 rounded-lg border p-3 text-left hover:bg-accent transition-colors"
-                  >
-                    <span className="font-medium text-sm">{type.label}</span>
-                    <span className="text-xs text-muted-foreground">{type.description}</span>
-                  </button>
-                ))}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+            </div>
 
-        {sections.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-muted-foreground">
-              No sections yet. Click &quot;Add Section&quot; to start building your page.
-            </CardContent>
-          </Card>
-        ) : (
-          sections.map((section, index) => (
-            <Card key={section.id} className={!section.isVisible ? "opacity-50" : ""}>
-              <CardContent className="flex items-center gap-3 py-3">
-                <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="capitalize">
-                      {section.type.replace(/_/g, " ")}
-                    </Badge>
-                    {!section.isVisible && (
-                      <Badge variant="secondary">Hidden</Badge>
-                    )}
+            {sections.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center text-muted-foreground">
+                  No sections yet. Click &quot;Add Section&quot; to start building your page.
+                </CardContent>
+              </Card>
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={sections.map((s) => s.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-3">
+                    {sections.map((section) => (
+                      <SortableSectionCard
+                        key={section.id}
+                        section={section}
+                        isDirty={dirtySections.has(section.id)}
+                        onToggleVisibility={() => handleToggleVisibility(section.id, section.isVisible)}
+                        onDelete={() => setDeleteSectionId(section.id)}
+                        onContentChange={(content) => handleContentChange(section.id, content)}
+                        onSettingsChange={(settings) => handleSettingsChange(section.id, settings)}
+                        onSave={() => handleSaveSection(section.id)}
+                      />
+                    ))}
                   </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMoveSection(index, "up")}
-                    disabled={index === 0}
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMoveSection(index, "down")}
-                    disabled={index === sections.length - 1}
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => {
-                      setEditingSectionId(editingSectionId === section.id ? null : section.id);
-                      setEditContent(JSON.stringify(section.content ?? {}, null, 2));
-                    }}
-                  >
-                    <Save className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleToggleVisibility(section)}
-                  >
-                    {section.isVisible ? (
-                      <Eye className="h-4 w-4" />
-                    ) : (
-                      <EyeOff className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => setDeleteSectionId(section.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-              {editingSectionId === section.id && (
-                <div className="border-t px-4 pb-4 pt-3">
-                  <Label htmlFor={`content-${section.id}`}>Content (JSON)</Label>
-                  <Textarea
-                    id={`content-${section.id}`}
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    className="mt-2 font-mono text-sm"
-                    rows={10}
-                  />
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" onClick={() => handleSaveContent(section.id)}>
-                      Save Content
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setEditingSectionId(null)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </Card>
-          ))
-        )}
-      </div>
+                </SortableContext>
+              </DndContext>
+            )}
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        {/* Preview Panel */}
+        <ResizablePanel defaultSize={45} minSize={25}>
+          <PreviewPanel sections={sections} siteTheme={siteTheme} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+
+      <SectionPickerDialog
+        open={addSectionOpen}
+        onOpenChange={setAddSectionOpen}
+        onSelect={handleAddSection}
+      />
 
       <ConfirmDialog
         open={confirmDeletePage}
