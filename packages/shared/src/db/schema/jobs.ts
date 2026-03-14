@@ -21,7 +21,6 @@ import {
 import { tenants } from "./tenants";
 import { users } from "./users";
 import { customers, properties } from "./customers";
-import { estimates } from "./estimates";
 import { fieldserviceSchema } from "./pg-schema";
 
 export const jobs = fieldserviceSchema.table(
@@ -163,7 +162,7 @@ export const jobPhotos = fieldserviceSchema.table(
     storagePath: text("storage_path").notNull(),
     caption: varchar("caption", { length: 255 }),
     photoType: photoTypeEnum("photo_type").default("general").notNull(),
-    estimateId: uuid("estimate_id").references(() => estimates.id),
+    estimateId: uuid("estimate_id"),
     takenAt: timestamp("taken_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
