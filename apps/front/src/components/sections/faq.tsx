@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
 
 interface FaqSectionProps {
   content: Record<string, unknown>;
@@ -64,9 +65,10 @@ export function FaqSection({ content, settings }: FaqSectionProps) {
                 </dt>
                 {isOpen && (
                   <dd className="mt-3 pr-12">
-                    <p className="text-base leading-7 text-gray-600">
-                      {item.answer}
-                    </p>
+                    <div
+                      className="prose prose-base text-gray-600"
+                      dangerouslySetInnerHTML={{ __html: sanitizeRichText(item.answer) }}
+                    />
                   </dd>
                 )}
               </div>

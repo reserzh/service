@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ListEditor } from "./list-editor";
 
 type SectionEditorProps = {
@@ -59,11 +59,10 @@ export function TeamEditor({ content, onChange }: SectionEditorProps) {
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Bio</Label>
-              <Textarea
+              <RichTextEditor
                 value={item.bio}
-                onChange={(e) => updateField("bio", e.target.value)}
+                onChange={(html) => updateField("bio", html)}
                 placeholder="Brief bio..."
-                rows={2}
               />
             </div>
             <div className="space-y-1">

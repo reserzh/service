@@ -1,3 +1,5 @@
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
+
 export function AboutSection({
   content,
   settings,
@@ -42,11 +44,10 @@ export function AboutSection({
                 </h2>
               )}
               {body && (
-                <div className="mt-6 space-y-4 text-lg leading-relaxed text-gray-700">
-                  {body.split("\n").map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
-                </div>
+                <div
+                  className="mt-6 prose prose-lg text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: sanitizeRichText(body) }}
+                />
               )}
             </div>
           </div>
@@ -58,11 +59,10 @@ export function AboutSection({
               </h2>
             )}
             {body && (
-              <div className="mt-6 space-y-4 text-lg leading-relaxed text-gray-700">
-                {body.split("\n").map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
+              <div
+                className="mt-6 prose prose-lg text-gray-700"
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(body) }}
+              />
             )}
           </div>
         )}

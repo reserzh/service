@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -76,11 +76,10 @@ export function TestimonialsEditor({ content, onChange }: SectionEditorProps) {
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Review Text</Label>
-              <Textarea
+              <RichTextEditor
                 value={item.text}
-                onChange={(e) => updateField("text", e.target.value)}
+                onChange={(html) => updateField("text", html)}
                 placeholder="Great service!"
-                rows={2}
               />
             </div>
             <div className="space-y-1">

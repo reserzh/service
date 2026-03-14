@@ -1,3 +1,5 @@
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
+
 export function TestimonialsSection({
   content,
   settings,
@@ -65,7 +67,10 @@ export function TestimonialsSection({
 
                   {text && (
                     <blockquote className="flex-1 text-gray-700">
-                      <p className="leading-relaxed">&ldquo;{text}&rdquo;</p>
+                      <div
+                        className="leading-relaxed prose prose-sm before:content-['\201C'] after:content-['\201D']"
+                        dangerouslySetInnerHTML={{ __html: sanitizeRichText(text) }}
+                      />
                     </blockquote>
                   )}
 

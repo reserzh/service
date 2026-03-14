@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ListEditor } from "./list-editor";
 
 type SectionEditorProps = {
@@ -47,11 +47,10 @@ export function FaqEditor({ content, onChange }: SectionEditorProps) {
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Answer</Label>
-              <Textarea
+              <RichTextEditor
                 value={item.answer}
-                onChange={(e) => updateField("answer", e.target.value)}
+                onChange={(html) => updateField("answer", html)}
                 placeholder="We serve the greater metro area."
-                rows={3}
               />
             </div>
           </div>

@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { SANITIZE_CONFIG_CUSTOM_HTML } from "@fieldservice/shared/sanitize";
 
 interface CustomHtmlSectionProps {
   content: Record<string, unknown>;
@@ -7,23 +8,7 @@ interface CustomHtmlSectionProps {
 
 export function CustomHtmlSection({ content, settings }: CustomHtmlSectionProps) {
   const rawHtml = (content.html as string) || "";
-  const html = sanitizeHtml(rawHtml, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-      "img", "figure", "figcaption", "video", "source", "iframe",
-      "details", "summary", "mark", "section", "article", "aside",
-      "header", "footer", "nav", "main",
-    ]),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      "*": ["class", "id", "style"],
-      img: ["src", "alt", "width", "height", "loading"],
-      iframe: ["src", "width", "height", "frameborder", "allowfullscreen", "title"],
-      video: ["src", "controls", "width", "height", "poster"],
-      source: ["src", "type"],
-      a: ["href", "target", "rel"],
-    },
-    allowedIframeHostnames: ["www.youtube.com", "www.google.com", "player.vimeo.com"],
-  });
+  const html = sanitizeHtml(rawHtml, SANITIZE_CONFIG_CUSTOM_HTML);
 
   const backgroundColor = (settings.backgroundColor as string) || undefined;
 

@@ -1,3 +1,5 @@
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
+
 interface FeaturesSectionProps {
   content: Record<string, unknown>;
   settings: Record<string, unknown>;
@@ -35,9 +37,10 @@ export function FeaturesSection({ content, settings }: FeaturesSectionProps) {
           </h2>
         )}
         {description && (
-          <p className="mt-4 text-center text-lg text-gray-600 max-w-2xl mx-auto">
-            {description}
-          </p>
+          <div
+            className="mt-4 text-center text-lg text-gray-600 max-w-2xl mx-auto prose"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(description) }}
+          />
         )}
         <div className={`mt-12 grid grid-cols-1 gap-8 ${gridColsClass}`}>
           {items.map((item, index) => (

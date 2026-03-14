@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
 
 export function ContactFormSection({
   content,
@@ -48,9 +49,10 @@ export function ContactFormSection({
         )}
 
         {description && (
-          <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-600">
-            {description}
-          </p>
+          <div
+            className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-600 prose"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(description) }}
+          />
         )}
 
         <div className="mt-12 flex flex-col gap-12 lg:flex-row">

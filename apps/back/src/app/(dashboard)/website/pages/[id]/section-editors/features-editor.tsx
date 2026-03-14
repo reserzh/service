@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ListEditor } from "./list-editor";
 
 type SectionEditorProps = {
@@ -34,11 +34,10 @@ export function FeaturesEditor({ content, onChange }: SectionEditorProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Description</Label>
-          <Textarea
+          <RichTextEditor
             value={(content.description as string) || ""}
-            onChange={(e) => update("description", e.target.value)}
+            onChange={(html) => update("description", html)}
             placeholder="Optional description..."
-            rows={2}
           />
         </div>
         <div className="space-y-2">

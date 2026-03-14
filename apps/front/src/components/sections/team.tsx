@@ -1,3 +1,5 @@
+import { sanitizeRichText } from "@fieldservice/shared/sanitize";
+
 interface TeamSectionProps {
   content: Record<string, unknown>;
   settings: Record<string, unknown>;
@@ -77,9 +79,10 @@ export function TeamSection({ content, settings }: TeamSectionProps) {
                 {member.role}
               </p>
               {member.bio && (
-                <p className="mt-3 text-center text-sm text-gray-600 leading-relaxed">
-                  {member.bio}
-                </p>
+                <div
+                  className="mt-3 text-center text-sm text-gray-600 leading-relaxed prose prose-sm"
+                  dangerouslySetInnerHTML={{ __html: sanitizeRichText(member.bio) }}
+                />
               )}
             </div>
           ))}

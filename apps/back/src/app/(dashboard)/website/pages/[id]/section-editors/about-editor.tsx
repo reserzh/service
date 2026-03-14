@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -33,11 +33,10 @@ export function AboutEditor({ content, onChange }: SectionEditorProps) {
       </div>
       <div className="space-y-2">
         <Label>Content</Label>
-        <Textarea
+        <RichTextEditor
           value={(content.content as string) || ""}
-          onChange={(e) => update("content", e.target.value)}
+          onChange={(html) => update("content", html)}
           placeholder="Tell your story here..."
-          rows={6}
         />
       </div>
       <div className="grid grid-cols-2 gap-4">

@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Switch } from "@/components/ui/switch";
 
 type SectionEditorProps = {
@@ -27,11 +27,10 @@ export function ContactFormEditor({ content, onChange }: SectionEditorProps) {
       </div>
       <div className="space-y-2">
         <Label>Description</Label>
-        <Textarea
+        <RichTextEditor
           value={(content.description as string) || ""}
-          onChange={(e) => update("description", e.target.value)}
+          onChange={(html) => update("description", html)}
           placeholder="Get in touch with us..."
-          rows={3}
         />
       </div>
       <div className="flex flex-col gap-3">

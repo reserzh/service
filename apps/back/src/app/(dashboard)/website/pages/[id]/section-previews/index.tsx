@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { sanitizeRichText, SANITIZE_CONFIG_CUSTOM_HTML } from "@fieldservice/shared/sanitize";
 
 type PreviewProps = {
   content: Record<string, unknown>;
@@ -23,23 +24,6 @@ function safeUrl(v: unknown): string | undefined {
   return undefined;
 }
 
-const SANITIZE_CONFIG: sanitizeHtml.IOptions = {
-  allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-    "img", "figure", "figcaption", "video", "source", "iframe",
-    "details", "summary", "mark", "section", "article", "aside",
-    "header", "footer", "nav", "main",
-  ]),
-  allowedAttributes: {
-    ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class", "id", "style"],
-    img: ["src", "alt", "width", "height", "loading"],
-    iframe: ["src", "width", "height", "frameborder", "allowfullscreen", "title"],
-    video: ["src", "controls", "width", "height", "poster"],
-    source: ["src", "type"],
-    a: ["href", "target", "rel"],
-  },
-  allowedIframeHostnames: ["www.youtube.com", "www.google.com", "player.vimeo.com"],
-};
 
 function HeroPreview({ content, theme }: PreviewProps) {
   const alignment = (content.alignment as string) || "center";
@@ -90,9 +74,10 @@ function AboutPreview({ content, theme }: PreviewProps) {
       <h2 style={{ fontFamily: theme?.fontHeading, fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>
         {str(content.heading) || "About Us"}
       </h2>
-      <p style={{ fontFamily: theme?.fontBody, fontSize: "0.9rem", color: "#666", lineHeight: 1.6 }}>
-        {str(content.content) || "About content..."}
-      </p>
+      <div
+        style={{ fontFamily: theme?.fontBody, fontSize: "0.9rem", color: "#666", lineHeight: 1.6 }}
+        dangerouslySetInnerHTML={{ __html: sanitizeRichText(str(content.content)) || "About content..." }}
+      />
     </div>
   );
 }
@@ -108,7 +93,7 @@ function TestimonialsPreview({ content, theme }: PreviewProps) {
         {items.map((item, i) => (
           <div key={i} style={{ border: "1px solid #e5e7eb", borderRadius: theme?.borderRadius || "0.375rem", padding: "1rem" }}>
             <div style={{ color: "#f59e0b", marginBottom: "0.25rem" }}>{"★".repeat(item.rating || 5)}</div>
-            <p style={{ fontFamily: theme?.fontBody, fontSize: "0.85rem", color: "#666", marginBottom: "0.5rem" }}>{item.text}</p>
+            <div style={{ fontFamily: theme?.fontBody, fontSize: "0.85rem", color: "#666", marginBottom: "0.5rem" }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(item.text) }} />
             <p style={{ fontFamily: theme?.fontBody, fontSize: "0.8rem", fontWeight: 600 }}>{item.name}</p>
           </div>
         ))}
@@ -128,7 +113,7 @@ function FaqPreview({ content, theme }: PreviewProps) {
         {items.map((item, i) => (
           <div key={i} style={{ borderBottom: "1px solid #e5e7eb", paddingBottom: "0.75rem" }}>
             <p style={{ fontFamily: theme?.fontBody, fontWeight: 600, fontSize: "0.9rem" }}>{item.question}</p>
-            <p style={{ fontFamily: theme?.fontBody, fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>{item.answer}</p>
+            <div style={{ fontFamily: theme?.fontBody, fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(item.answer) }} />
           </div>
         ))}
       </div>
@@ -310,7 +295,7 @@ function FeaturesPreview({ content, theme }: PreviewProps) {
               <div style={{ width: "1rem", height: "1rem", backgroundColor: theme?.primaryColor || "#1e40af", borderRadius: "0.125rem" }} />
             </div>
             <p style={{ fontFamily: theme?.fontBody, fontWeight: 600, fontSize: "0.9rem" }}>{item.title}</p>
-            <p style={{ fontFamily: theme?.fontBody, fontSize: "0.8rem", color: "#666", marginTop: "0.25rem" }}>{item.description}</p>
+            <div style={{ fontFamily: theme?.fontBody, fontSize: "0.8rem", color: "#666", marginTop: "0.25rem" }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(item.description) }} />
           </div>
         ))}
       </div>
@@ -365,7 +350,7 @@ function BookingWidgetPreview({ content, theme }: PreviewProps) {
 }
 
 function CustomHtmlPreview({ content }: PreviewProps) {
-  const html = sanitizeHtml(str(content.html), SANITIZE_CONFIG) || "<p style='color:#999'>Custom HTML content</p>";
+  const html = sanitizeHtml(str(content.html), SANITIZE_CONFIG_CUSTOM_HTML) || "<p style='color:#999'>Custom HTML content</p>";
   return (
     <div className="py-6 px-8">
       <div
