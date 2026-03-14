@@ -70,6 +70,8 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Job checklists", description: "Configurable checklists with template auto-apply on dispatch", status: "complete" },
           { name: "Search & filters", description: "Filter by status, priority, technician, date range", status: "complete" },
           { name: "Bulk export", description: "Export job data to CSV", status: "complete" },
+          { name: "Job costing", description: "Labor hours × hourly rate, material costs, P&L analysis per job", status: "complete" },
+          { name: "Daily snapshots", description: "Multi-day job progress tracking with completion %, labor, and material cost snapshots", status: "complete" },
         ],
       },
       {
@@ -111,6 +113,7 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Technician report", description: "Productivity metrics, jobs completed, revenue per technician", status: "complete" },
           { name: "Timesheets report", description: "Time tracking records, clock in/out, break tracking", status: "complete" },
           { name: "AI custom reports", description: "AI-powered custom report creation with saved queries and widgets", status: "complete" },
+          { name: "Daily reports", description: "End-of-day technician reports with material requests, equipment issues, and office notes", status: "complete" },
         ],
       },
       {
@@ -189,6 +192,7 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Estimate templates", description: "Reusable estimate templates with pre-configured items", status: "complete" },
           { name: "Voice & calls config", description: "Twilio phone number, recording, voicemail, transcription settings", status: "complete" },
           { name: "Notification settings", description: "Email template management and trigger configuration", status: "complete" },
+          { name: "Company equipment", description: "Equipment registry with maintenance logs and assignment tracking", status: "complete" },
           { name: "QuickBooks integration", description: "OAuth connection, sync invoices/customers, error tracking", status: "complete" },
           { name: "Billing & subscription", description: "Subscription plan and payment method management", status: "planned" },
         ],

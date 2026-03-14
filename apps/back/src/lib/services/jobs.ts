@@ -194,6 +194,11 @@ export async function listJobs(ctx: UserContext, params: ListJobsParams = {}) {
         assignedFirstName: users.firstName,
         assignedLastName: users.lastName,
         assignedColor: users.color,
+        customerPhone: customers.phone,
+        propertyId: jobs.propertyId,
+        propertyAddress: properties.addressLine1,
+        propertyLatitude: properties.latitude,
+        propertyLongitude: properties.longitude,
       })
       .from(jobs)
       .leftJoin(customers, and(eq(jobs.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
@@ -481,6 +486,30 @@ export async function changeJobStatus(
       `Cannot transition from "${currentStatus}" to "${newStatus}"`,
       422
     );
+  }
+
+  // Phase 2A: Enforce minimum after-photos on completion
+  if (newStatus === "completed") {
+    const afterPhotos = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(jobPhotos)
+      .where(
+        and(
+          eq(jobPhotos.jobId, jobId),
+          eq(jobPhotos.tenantId, ctx.tenantId),
+          eq(jobPhotos.photoType, "after")
+        )
+      );
+
+    const MIN_AFTER_PHOTOS = 3;
+    const afterCount = Number(afterPhotos[0].count);
+    if (afterCount < MIN_AFTER_PHOTOS) {
+      throw new AppError(
+        "PHOTOS_REQUIRED",
+        `At least ${MIN_AFTER_PHOTOS} after photos are required to complete this job (${afterCount}/${MIN_AFTER_PHOTOS} uploaded)`,
+        422
+      );
+    }
   }
 
   const updateData: Record<string, unknown> = {

@@ -206,6 +206,7 @@ export interface JobPhoto {
   storagePath: string;
   caption: string | null;
   photoType: PhotoType;
+  estimateId: string | null;
   takenAt: string | null;
   createdAt: string;
 }
@@ -538,6 +539,80 @@ export interface TrackingSession {
   endedAt: string | null;
   expiresAt: string;
   createdAt: string;
+}
+
+// ---- Daily Report Models ----
+
+export interface DailyReport {
+  id: string;
+  tenantId: string;
+  userId: string;
+  reportDate: string;
+  materialRequests: string | null;
+  equipmentIssues: string | null;
+  officeNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---- Company Equipment Models ----
+
+export interface CompanyEquipment {
+  id: string;
+  tenantId: string;
+  name: string;
+  type: string;
+  serialNumber: string | null;
+  brand: string | null;
+  model: string | null;
+  purchaseDate: string | null;
+  purchaseCost: string | null;
+  lastServiceDate: string | null;
+  nextServiceDue: string | null;
+  hoursUsed: number;
+  status: string;
+  assignedTo: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EquipmentMaintenanceLogEntry {
+  id: string;
+  tenantId: string;
+  equipmentId: string;
+  type: string;
+  description: string | null;
+  cost: string | null;
+  performedBy: string | null;
+  performedAt: string;
+  hoursAtService: number | null;
+  createdAt: string;
+}
+
+// ---- Job Costing Models ----
+
+export interface JobCosting {
+  jobId: string;
+  estimateBudget: number;
+  actualLaborHours: number;
+  actualLaborCost: number;
+  actualMaterialCost: number;
+  totalActualCost: number;
+  profitLoss: number;
+  profitMargin: number;
+  daysScheduled: number;
+  daysElapsed: number;
+  budgetUsedPercent: number;
+  snapshots: JobDailySnapshot[];
+}
+
+export interface JobDailySnapshot {
+  date: string;
+  completionPercent: number | null;
+  laborCost: number;
+  materialCost: number;
+  notes: string | null;
 }
 
 // ---- Customer Portal Models ----

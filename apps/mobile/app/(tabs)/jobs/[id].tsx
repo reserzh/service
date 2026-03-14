@@ -54,65 +54,70 @@ export default function JobDetailScreen() {
   }, [job]);
 
   const handleStatusChange = useCallback(
-    (newStatus: JobStatus) => {
+    async (newStatus: JobStatus) => {
       if (!job) return;
 
-      const labels: Record<string, string> = {
-        en_route: "Go en route and share location with customer?",
-        in_progress: "Start this job?",
-        completed: "Mark this job as completed?",
-        canceled: "Cancel this job?",
-        dispatched: "Move back to dispatched?",
+      // Forward transitions skip confirmation; backward/cancel require it
+      const isForwardTransition = ["en_route", "in_progress", "completed"].includes(newStatus);
+
+      const doTransition = async () => {
+        try {
+          // Capture GPS for en_route, in_progress and completed transitions
+          let coords: { latitude: number; longitude: number } | undefined;
+          if (newStatus === "en_route" || newStatus === "in_progress" || newStatus === "completed") {
+            try {
+              const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
+              if (permStatus === "granted") {
+                const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+                coords = { latitude: loc.coords.latitude, longitude: loc.coords.longitude };
+              }
+            } catch {
+              // GPS capture is best-effort, proceed without coords
+            }
+          }
+
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          await updateStatus.mutateAsync({ id: job.id, status: newStatus, coords });
+          Toast.show({ type: "success", text1: "Status updated" });
+
+          // Start/stop background location tracking
+          if (newStatus === "en_route") {
+            const started = await startLocationTracking(job.id);
+            if (!started) {
+              Toast.show({
+                type: "info",
+                text1: "Background location unavailable",
+                text2: "Enable location permissions for live tracking",
+              });
+            }
+          } else if (job.status === "en_route") {
+            await stopLocationTracking();
+          }
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : "Failed to update status";
+          Toast.show({ type: "error", text1: "Error", text2: msg });
+        }
       };
 
-      Alert.alert(
-        labels[newStatus] ?? `Change status to ${newStatus}?`,
-        "This action will update the job status.",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Confirm",
-            onPress: async () => {
-              try {
-                // Capture GPS for en_route, in_progress and completed transitions
-                let coords: { latitude: number; longitude: number } | undefined;
-                if (newStatus === "en_route" || newStatus === "in_progress" || newStatus === "completed") {
-                  try {
-                    const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
-                    if (permStatus === "granted") {
-                      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-                      coords = { latitude: loc.coords.latitude, longitude: loc.coords.longitude };
-                    }
-                  } catch {
-                    // GPS capture is best-effort, proceed without coords
-                  }
-                }
+      if (isForwardTransition) {
+        // No confirmation for standard forward transitions
+        await doTransition();
+      } else {
+        // Backward/cancel transitions still need confirmation
+        const labels: Record<string, string> = {
+          canceled: "Cancel this job?",
+          dispatched: "Move back to dispatched?",
+        };
 
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                await updateStatus.mutateAsync({ id: job.id, status: newStatus, coords });
-                Toast.show({ type: "success", text1: "Status updated" });
-
-                // Start/stop background location tracking
-                if (newStatus === "en_route") {
-                  const started = await startLocationTracking(job.id);
-                  if (!started) {
-                    Toast.show({
-                      type: "info",
-                      text1: "Background location unavailable",
-                      text2: "Enable location permissions for live tracking",
-                    });
-                  }
-                } else if (job.status === "en_route") {
-                  await stopLocationTracking();
-                }
-              } catch (err: unknown) {
-                const msg = err instanceof Error ? err.message : "Failed to update status";
-                Toast.show({ type: "error", text1: "Error", text2: msg });
-              }
-            },
-          },
-        ]
-      );
+        Alert.alert(
+          labels[newStatus] ?? `Change status to ${newStatus}?`,
+          "This action will update the job status.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Confirm", onPress: doTransition },
+          ]
+        );
+      }
     },
     [job, updateStatus]
   );

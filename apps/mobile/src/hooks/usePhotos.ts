@@ -43,6 +43,7 @@ export function useUploadPhoto() {
             storagePath: "",
             caption: caption ?? null,
             photoType: photoType ?? "general",
+            estimateId: null,
             takenAt: null,
             createdAt: new Date().toISOString(),
             _offlineUri: fileUri,

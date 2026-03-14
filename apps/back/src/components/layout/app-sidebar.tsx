@@ -17,6 +17,7 @@ import {
   Settings,
   Zap,
   Bot,
+  ClipboardCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ const mainNav = [
   { title: "Estimates", href: "/estimates", icon: FileText },
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Daily Reports", href: "/daily-reports", icon: ClipboardCheck },
   { title: "Calls", href: "/calls", icon: PhoneCall },
   { title: "Agreements", href: "/agreements", icon: ClipboardList },
   { title: "Website", href: "/website", icon: Globe },

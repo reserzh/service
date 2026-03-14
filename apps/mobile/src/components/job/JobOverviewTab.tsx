@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { NavigateButton } from "@/components/common/NavigateButton";
 import { DistanceBadge } from "@/components/job/DistanceBadge";
 import { PropertyDetailsCard } from "@/components/PropertyDetailsCard";
+import { PropertyHistoryBanner } from "@/components/job/PropertyHistoryBanner";
 import {
   formatTimeRange,
   formatPhone,
@@ -87,8 +88,16 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         </Card>
       </Animated.View>
 
-      {/* Property Details Card */}
+      {/* Property History — access info, last visit, substitute context */}
       <Animated.View className="mb-3" entering={FadeInDown.delay(120).duration(400).springify()}>
+        <PropertyHistoryBanner
+          propertyId={job.propertyId}
+          assignedTo={job.assignedTo}
+        />
+      </Animated.View>
+
+      {/* Property Details Card */}
+      <Animated.View className="mb-3" entering={FadeInDown.delay(160).duration(400).springify()}>
         <PropertyDetailsCard
           lotSizeSqft={job.property.lotSizeSqft}
           lawnAreaSqft={job.property.lawnAreaSqft}

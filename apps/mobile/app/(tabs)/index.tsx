@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { ClipboardList, CheckCircle2 } from "lucide-react-native";
+import { ClipboardList, CheckCircle2, MapPin } from "lucide-react-native";
 import { useJobStats } from "@/hooks/useJobStats";
 import { useAuthStore } from "@/stores/auth";
 import { useTimeTrackingStore } from "@/stores/timeTracking";
@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
+import { setupJobGeofences } from "@/lib/geofencing";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function HomeScreen() {
@@ -26,6 +27,28 @@ export default function HomeScreen() {
   useEffect(() => {
     restoreTimeTracking();
   }, [restoreTimeTracking]);
+
+  // Phase 8: Set up geofences when schedule loads
+  useEffect(() => {
+    if (jobs.length > 0) {
+      const jobsForGeofence = jobs as Array<typeof jobs[number] & {
+        customerFirstName?: string;
+        customerLastName?: string;
+        propertyLatitude?: string | null;
+        propertyLongitude?: string | null;
+      }>;
+      setupJobGeofences(
+        jobsForGeofence.map((j) => ({
+          id: j.id,
+          summary: j.summary,
+          customerFirstName: j.customerFirstName,
+          customerLastName: j.customerLastName,
+          propertyLatitude: j.propertyLatitude,
+          propertyLongitude: j.propertyLongitude,
+        }))
+      );
+    }
+  }, [jobs]);
 
   const today = useMemo(() => new Date(), []);
 
@@ -107,10 +130,13 @@ export default function HomeScreen() {
               </View>
             )}
 
-            {/* Section header */}
-            <Text className="text-xl font-semibold text-slate-900 dark:text-white">
-              Today's Schedule
-            </Text>
+            {/* Section header — Route Sheet */}
+            <View className="flex-row items-center gap-2">
+              <MapPin size={18} color="#64748b" />
+              <Text className="text-xl font-semibold text-slate-900 dark:text-white">
+                Today's Route
+              </Text>
+            </View>
           </View>
         }
         renderItem={({ item, index }) => (

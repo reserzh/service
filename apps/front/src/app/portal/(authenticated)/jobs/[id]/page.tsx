@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireCustomerAuth } from "@/lib/portal-auth";
-import { getPortalJob } from "@/lib/portal-queries";
+import { getPortalJob, getPortalJobPhotos } from "@/lib/portal-queries";
 import { db } from "@/lib/db";
 import { trackingSessions } from "@fieldservice/shared/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -48,7 +48,10 @@ export default async function PortalJobDetailPage({
 }) {
   const { id } = await params;
   const ctx = await requireCustomerAuth();
-  const job = await getPortalJob(ctx, id);
+  const [job, photos] = await Promise.all([
+    getPortalJob(ctx, id),
+    getPortalJobPhotos(ctx, id),
+  ]);
 
   if (!job) {
     notFound();
@@ -196,6 +199,66 @@ export default async function PortalJobDetailPage({
             <p className="mt-1 whitespace-pre-wrap text-gray-900">
               {job.customerNotes}
             </p>
+          </div>
+        )}
+
+        {/* Progress Photos */}
+        {photos.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-sm font-medium text-gray-500 mb-3">
+              Progress Photos ({photos.length})
+            </h2>
+            <div className="space-y-4">
+              {/* Group photos by date */}
+              {Object.entries(
+                photos.reduce<Record<string, typeof photos>>((groups, photo) => {
+                  const dateKey = photo.createdAt
+                    ? new Date(photo.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "Unknown";
+                  if (!groups[dateKey]) groups[dateKey] = [];
+                  groups[dateKey].push(photo);
+                  return groups;
+                }, {})
+              ).map(([date, datePhotos]) => (
+                <div key={date}>
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                    {date}
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {datePhotos.map((photo) => (
+                      <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/job-photos/${photo.storagePath}`}
+                          alt={photo.caption || "Job photo"}
+                          className="h-full w-full object-cover"
+                        />
+                        {photo.caption && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                            <p className="text-xs text-white truncate">
+                              {photo.caption}
+                            </p>
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2">
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            photo.photoType === "after"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-600"
+                          }`}>
+                            {photo.photoType === "after" ? "After" : "Progress"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

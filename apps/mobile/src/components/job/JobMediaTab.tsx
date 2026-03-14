@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import { useMemo, useState } from "react";
-import { PenTool, ArrowLeftRight } from "lucide-react-native";
+import { PenTool, ArrowLeftRight, Camera, AlertCircle } from "lucide-react-native";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -12,6 +12,8 @@ import { PhotoComparisonSlider } from "@/components/PhotoComparisonSlider";
 import type { JobWithRelations } from "@/types/models";
 import { SUPABASE_URL } from "@/lib/constants";
 
+const MIN_AFTER_PHOTOS = 3;
+
 interface JobMediaTabProps {
   job: JobWithRelations;
 }
@@ -19,6 +21,14 @@ interface JobMediaTabProps {
 export function JobMediaTab({ job }: JobMediaTabProps) {
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+
+  const afterPhotoCount = useMemo(
+    () => job.photos.filter((p) => p.photoType === "after").length,
+    [job.photos]
+  );
+
+  const photosNeeded = Math.max(0, MIN_AFTER_PHOTOS - afterPhotoCount);
+  const isInProgress = job.status === "in_progress";
 
   const comparisonPhotos = useMemo(() => {
     const before = job.photos.find((p) => p.photoType === "before");
@@ -32,6 +42,34 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
 
   return (
     <ScrollView className="flex-1" contentContainerClassName="px-4 pt-3 pb-8">
+      {/* Photo Requirement Banner */}
+      {isInProgress && (
+        <View
+          className={`flex-row items-center gap-2 rounded-xl px-4 py-3 mb-3 ${
+            photosNeeded > 0
+              ? "bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800"
+              : "bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800"
+          }`}
+          role="alert"
+        >
+          {photosNeeded > 0 ? (
+            <>
+              <Camera size={18} color="#d97706" />
+              <Text className="text-sm font-medium text-amber-800 dark:text-amber-300 flex-1">
+                After Photos: {afterPhotoCount}/{MIN_AFTER_PHOTOS} required
+              </Text>
+            </>
+          ) : (
+            <>
+              <Camera size={18} color="#10b981" />
+              <Text className="text-sm font-medium text-emerald-800 dark:text-emerald-300 flex-1">
+                After Photos: {afterPhotoCount}/{MIN_AFTER_PHOTOS} — Ready to complete
+              </Text>
+            </>
+          )}
+        </View>
+      )}
+
       {/* Photos */}
       <Card className="mb-3">
         <View className="flex-row items-center justify-between mb-3">
