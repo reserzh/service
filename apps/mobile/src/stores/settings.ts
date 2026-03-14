@@ -12,7 +12,6 @@ interface SettingsState {
   notifyJobUpdated: boolean;
   notifyNewEstimate: boolean;
   tradeType: TradeType | null;
-
   setPreferredMapApp: (app: MapApp) => void;
   setDarkModeOverride: (mode: DarkModeOverride) => void;
   setNotifyJobAssigned: (enabled: boolean) => void;
@@ -36,55 +35,59 @@ async function persist(state: Partial<SettingsState>) {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export const useSettingsStore = create<SettingsState>((set, get) => ({
-  preferredMapApp: "default",
-  darkModeOverride: "dark",
-  notifyJobAssigned: true,
-  notifyJobUpdated: true,
-  notifyNewEstimate: true,
-  tradeType: null,
+function createSettingsStore() {
+  return create<SettingsState>((set, get) => ({
+    preferredMapApp: "default" as MapApp,
+    darkModeOverride: "dark" as DarkModeOverride,
+    notifyJobAssigned: true,
+    notifyJobUpdated: true,
+    notifyNewEstimate: true,
+    tradeType: null,
 
-  setPreferredMapApp: (preferredMapApp) => {
-    set({ preferredMapApp });
-    persist(get());
-  },
-  setDarkModeOverride: (darkModeOverride) => {
-    set({ darkModeOverride });
-    persist(get());
-  },
-  setNotifyJobAssigned: (notifyJobAssigned) => {
-    set({ notifyJobAssigned });
-    persist(get());
-  },
-  setNotifyJobUpdated: (notifyJobUpdated) => {
-    set({ notifyJobUpdated });
-    persist(get());
-  },
-  setNotifyNewEstimate: (notifyNewEstimate) => {
-    set({ notifyNewEstimate });
-    persist(get());
-  },
-  setTradeType: (tradeType) => {
-    set({ tradeType });
-    persist(get());
-  },
+    setPreferredMapApp: (preferredMapApp: MapApp) => {
+      set({ preferredMapApp });
+      persist(get());
+    },
+    setDarkModeOverride: (darkModeOverride: DarkModeOverride) => {
+      set({ darkModeOverride });
+      persist(get());
+    },
+    setNotifyJobAssigned: (notifyJobAssigned: boolean) => {
+      set({ notifyJobAssigned });
+      persist(get());
+    },
+    setNotifyJobUpdated: (notifyJobUpdated: boolean) => {
+      set({ notifyJobUpdated });
+      persist(get());
+    },
+    setNotifyNewEstimate: (notifyNewEstimate: boolean) => {
+      set({ notifyNewEstimate });
+      persist(get());
+    },
+    setTradeType: (tradeType: TradeType | null) => {
+      set({ tradeType });
+      persist(get());
+    },
 
-  restore: async () => {
-    try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const data = JSON.parse(raw);
-        set({
-          preferredMapApp: data.preferredMapApp ?? "default",
-          darkModeOverride: data.darkModeOverride ?? "dark",
-          notifyJobAssigned: data.notifyJobAssigned ?? true,
-          notifyJobUpdated: data.notifyJobUpdated ?? true,
-          notifyNewEstimate: data.notifyNewEstimate ?? true,
-          tradeType: data.tradeType ?? null,
-        });
+    restore: async () => {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          set({
+            preferredMapApp: data.preferredMapApp ?? "default",
+            darkModeOverride: data.darkModeOverride ?? "dark",
+            notifyJobAssigned: data.notifyJobAssigned ?? true,
+            notifyJobUpdated: data.notifyJobUpdated ?? true,
+            notifyNewEstimate: data.notifyNewEstimate ?? true,
+            tradeType: data.tradeType ?? null,
+          });
+        }
+      } catch (_e) {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  },
-});
+    },
+  }));
+}
+
+export const useSettingsStore = createSettingsStore();

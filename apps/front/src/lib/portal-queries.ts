@@ -2,6 +2,7 @@ import { cache } from "react";
 import { db } from "./db";
 import {
   jobs,
+  jobPhotos,
   invoices,
   invoiceLineItems,
   estimates,
@@ -36,7 +37,7 @@ export const getPortalJobs = cache(async (ctx: CustomerPortalContext) => {
       propertyState: properties.state,
     })
     .from(jobs)
-    .leftJoin(properties, eq(jobs.propertyId, properties.id))
+    .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))
     .where(and(eq(jobs.customerId, ctx.customerId), eq(jobs.tenantId, ctx.tenantId)))
     .orderBy(desc(jobs.createdAt));
 });
@@ -62,11 +63,37 @@ export const getPortalJob = cache(async (ctx: CustomerPortalContext, jobId: stri
       propertyZip: properties.zip,
     })
     .from(jobs)
-    .leftJoin(properties, eq(jobs.propertyId, properties.id))
+    .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))
     .where(and(eq(jobs.id, jobId), eq(jobs.customerId, ctx.customerId), eq(jobs.tenantId, ctx.tenantId)))
     .limit(1);
 
   return job ?? null;
+});
+
+// Get photos for a portal job (only general and after types — not internal before photos)
+export const getPortalJobPhotos = cache(async (ctx: CustomerPortalContext, jobId: string) => {
+  // Verify the job belongs to this customer first
+  const job = await getPortalJob(ctx, jobId);
+  if (!job) return [];
+
+  return db
+    .select({
+      id: jobPhotos.id,
+      storagePath: jobPhotos.storagePath,
+      caption: jobPhotos.caption,
+      photoType: jobPhotos.photoType,
+      takenAt: jobPhotos.takenAt,
+      createdAt: jobPhotos.createdAt,
+    })
+    .from(jobPhotos)
+    .where(
+      and(
+        eq(jobPhotos.jobId, jobId),
+        eq(jobPhotos.tenantId, ctx.tenantId),
+        inArray(jobPhotos.photoType, ["general", "after"])
+      )
+    )
+    .orderBy(desc(jobPhotos.createdAt));
 });
 
 // ---------- Invoices ----------

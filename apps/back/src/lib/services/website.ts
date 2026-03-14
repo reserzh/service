@@ -33,13 +33,14 @@ function sanitizeCss(css: string): string {
   let sanitized = css.replace(/</g, "\\3c ");
   // Strip dangerous CSS functions and directives
   sanitized = sanitized.replace(/@import\b/gi, "/* blocked */");
+  sanitized = sanitized.replace(/@charset\b/gi, "/* blocked */");
+  sanitized = sanitized.replace(/@font-face\b/gi, "/* blocked */");
+  sanitized = sanitized.replace(/@namespace\b/gi, "/* blocked */");
   sanitized = sanitized.replace(/expression\s*\(/gi, "/* blocked */(");
   sanitized = sanitized.replace(/-moz-binding\s*:/gi, "/* blocked */:");
-  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*javascript\s*:/gi, "url(/* blocked */");
-  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*data\s*:/gi, "url(/* blocked */");
-  sanitized = sanitized.replace(/url\s*\(\s*['"]?\s*blob\s*:/gi, "url(/* blocked */");
   sanitized = sanitized.replace(/behavior\s*:/gi, "/* blocked */:");
-  sanitized = sanitized.replace(/@charset\b/gi, "/* blocked */");
+  // Block all url() calls to prevent data exfiltration via external requests
+  sanitized = sanitized.replace(/url\s*\(/gi, "/* blocked */(");
   return sanitized;
 }
 
