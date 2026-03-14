@@ -5,23 +5,39 @@ export async function exportTableToExcel(
   columns: string[],
   rows: string[][]
 ) {
-  const XLSX = await import("xlsx");
+  const ExcelJS = await import("exceljs");
 
   // Sanitize cells to prevent formula injection (=, +, -, @, \t, \r)
   const sanitize = (val: string) =>
     /^[=+\-@\t\r]/.test(val) ? `'${val}` : val;
-  const safeRows = rows.map((row) => row.map(sanitize));
-  const data = [columns, ...safeRows];
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 31));
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet(title.slice(0, 31));
+
+  // Add header row
+  sheet.addRow(columns);
+
+  // Add data rows
+  for (const row of rows) {
+    sheet.addRow(row.map(sanitize));
+  }
 
   // Auto-size columns
-  const maxWidths = columns.map((col, i) => {
+  sheet.columns.forEach((col, i) => {
     const dataLengths = rows.map((row) => (row[i] || "").length);
-    return Math.max(col.length, ...dataLengths);
+    const maxWidth = Math.max(columns[i]?.length ?? 0, ...dataLengths);
+    col.width = Math.min(maxWidth + 2, 40);
   });
-  ws["!cols"] = maxWidths.map((w) => ({ wch: Math.min(w + 2, 40) }));
 
-  XLSX.writeFile(wb, `${title.replace(/\s+/g, "-").toLowerCase()}.xlsx`);
+  // Write to buffer and trigger download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${title.replace(/\s+/g, "-").toLowerCase()}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
