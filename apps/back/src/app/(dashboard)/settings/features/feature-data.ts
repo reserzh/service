@@ -142,7 +142,12 @@ export const featureComponents: FeatureComponent[] = [
         name: "Website Builder",
         description: "Multi-tenant CMS for public business websites",
         features: [
-          { name: "Page builder", description: "Drag-and-drop section builder with 13+ section types", status: "complete" },
+          { name: "Visual section editors", description: "14 dedicated form editors for all section types — no raw JSON editing", status: "complete" },
+          { name: "Drag-and-drop reordering", description: "Reorder sections via drag handle with dnd-kit sortable", status: "complete" },
+          { name: "Live preview panel", description: "Split-pane layout with real-time section preview using tenant theme", status: "complete" },
+          { name: "Visual section picker", description: "Categorized icon grid dialog for adding new sections", status: "complete" },
+          { name: "Section settings", description: "Per-section background color, text color, padding, max width, and full-width toggle", status: "complete" },
+          { name: "Sanitized HTML preview", description: "Custom HTML sections render with XSS-safe sanitization in preview", status: "complete" },
           { name: "Page templates", description: "Pre-built page templates for quick setup", status: "complete" },
           { name: "Theme & branding", description: "Custom colors, fonts, logo, border radius, and CSS injection", status: "complete" },
           { name: "SEO management", description: "Per-page title, meta description, and slug configuration", status: "complete" },
