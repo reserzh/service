@@ -563,6 +563,202 @@ async function recalculateEstimateTotal(tenantId: string, estimateId: string) {
     .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, tenantId)));
 }
 
+// ---------- Delete draft estimate ----------
+
+export async function deleteEstimate(ctx: UserContext, estimateId: string) {
+  assertPermission(ctx, "estimates", "delete");
+
+  const estimate = await getEstimate(ctx, estimateId);
+
+  if (estimate.status !== "draft") {
+    throw new AppError("INVALID_STATE", "Only draft estimates can be deleted", 422);
+  }
+
+  // Delete items, options, then estimate (cascading manually for safety)
+  await db.transaction(async (tx) => {
+    const optionIds = await tx
+      .select({ id: estimateOptions.id })
+      .from(estimateOptions)
+      .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)));
+
+    if (optionIds.length > 0) {
+      await tx
+        .delete(estimateOptionItems)
+        .where(
+          and(
+            inArray(estimateOptionItems.optionId, optionIds.map((o) => o.id)),
+            eq(estimateOptionItems.tenantId, ctx.tenantId)
+          )
+        );
+    }
+
+    await tx
+      .delete(estimateOptions)
+      .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)));
+
+    await tx
+      .delete(estimates)
+      .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)));
+  });
+
+  await logActivity(ctx, "estimate", estimateId, "deleted");
+}
+
+// ---------- Update estimate with options (full edit) ----------
+
+export interface UpdateEstimateFullInput {
+  summary?: string;
+  notes?: string | null;
+  internalNotes?: string | null;
+  validUntil?: string | null;
+  options?: CreateEstimateOption[];
+}
+
+export async function updateEstimateFull(ctx: UserContext, estimateId: string, input: UpdateEstimateFullInput) {
+  assertPermission(ctx, "estimates", "update");
+
+  const estimate = await getEstimate(ctx, estimateId);
+
+  if (estimate.status !== "draft") {
+    throw new AppError("INVALID_STATE", "Only draft estimates can be edited", 422);
+  }
+
+  await db.transaction(async (tx) => {
+    // Update estimate fields
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    if (input.summary !== undefined) updateData.summary = input.summary;
+    if (input.notes !== undefined) updateData.notes = input.notes;
+    if (input.internalNotes !== undefined) updateData.internalNotes = input.internalNotes;
+    if (input.validUntil !== undefined) updateData.validUntil = input.validUntil;
+
+    await tx
+      .update(estimates)
+      .set(updateData)
+      .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)));
+
+    // If options provided, replace all options and items
+    if (input.options) {
+      // Delete existing items and options
+      const existingOptions = await tx
+        .select({ id: estimateOptions.id })
+        .from(estimateOptions)
+        .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)));
+
+      if (existingOptions.length > 0) {
+        await tx
+          .delete(estimateOptionItems)
+          .where(
+            and(
+              inArray(estimateOptionItems.optionId, existingOptions.map((o) => o.id)),
+              eq(estimateOptionItems.tenantId, ctx.tenantId)
+            )
+          );
+      }
+
+      await tx
+        .delete(estimateOptions)
+        .where(and(eq(estimateOptions.estimateId, estimateId), eq(estimateOptions.tenantId, ctx.tenantId)));
+
+      // Re-create options and items
+      let maxTotal = 0;
+
+      for (let i = 0; i < input.options.length; i++) {
+        const opt = input.options[i];
+        const optionTotal = opt.items.reduce(
+          (sum, item) => sum + item.quantity * item.unitPrice,
+          0
+        );
+        if (optionTotal > maxTotal) maxTotal = optionTotal;
+
+        const [option] = await tx
+          .insert(estimateOptions)
+          .values({
+            tenantId: ctx.tenantId,
+            estimateId,
+            name: opt.name,
+            description: opt.description || null,
+            isRecommended: opt.isRecommended ?? false,
+            total: String(optionTotal),
+            sortOrder: i,
+          })
+          .returning();
+
+        if (opt.items.length > 0) {
+          const items = opt.items.map((item, idx) => ({
+            tenantId: ctx.tenantId,
+            optionId: option.id,
+            description: item.description,
+            quantity: String(item.quantity),
+            unitPrice: String(item.unitPrice),
+            total: String(item.quantity * item.unitPrice),
+            type: (item.type || "service") as LineItemType,
+            sortOrder: idx,
+          }));
+          await tx.insert(estimateOptionItems).values(items);
+        }
+      }
+
+      // Update estimate total
+      await tx
+        .update(estimates)
+        .set({ totalAmount: String(maxTotal) })
+        .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)));
+    }
+  });
+
+  await logActivity(ctx, "estimate", estimateId, "updated");
+  triggerQBSync(ctx.tenantId, "estimate", estimateId, "update");
+}
+
+// ---------- Convert estimate to job ----------
+
+export async function convertEstimateToJob(ctx: UserContext, estimateId: string) {
+  assertPermission(ctx, "estimates", "read");
+  assertPermission(ctx, "jobs", "create");
+
+  const estimate = await getEstimateWithRelations(ctx, estimateId);
+
+  if (estimate.status !== "approved") {
+    throw new AppError("INVALID_STATE", "Only approved estimates can be converted to a job", 422);
+  }
+
+  // Find the approved option
+  const approvedOption = estimate.options.find((o) => o.id === estimate.approvedOptionId);
+  if (!approvedOption) throw new AppError("INVALID_STATE", "Approved option not found", 422);
+
+  const { createJob } = await import("./jobs");
+
+  const job = await createJob(ctx, {
+    customerId: estimate.customerId,
+    propertyId: estimate.propertyId,
+    jobType: "service",
+    summary: estimate.summary,
+    lineItems: approvedOption.items.map((item) => ({
+      description: item.description,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice),
+      type: item.type as LineItemType,
+    })),
+  });
+
+  // Link the job to the estimate and vice versa (atomic)
+  await db.transaction(async (tx) => {
+    await tx
+      .update(jobs)
+      .set({ estimateId: estimate.id, updatedAt: new Date() })
+      .where(and(eq(jobs.id, job.id), eq(jobs.tenantId, ctx.tenantId)));
+
+    await tx
+      .update(estimates)
+      .set({ jobId: job.id, updatedAt: new Date() })
+      .where(and(eq(estimates.id, estimateId), eq(estimates.tenantId, ctx.tenantId)));
+  });
+
+  await logActivity(ctx, "estimate", estimateId, "converted_to_job", { jobId: job.id });
+
+  return { jobId: job.id };
+}
+
 // ---------- Convert estimate to invoice ----------
 
 export async function convertEstimateToInvoice(ctx: UserContext, estimateId: string) {

@@ -83,6 +83,70 @@ export async function createCustomerAction(
   }
 }
 
+// ---------- Update ----------
+
+const updateCustomerSchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(100),
+  lastName: z.string().min(1, "Last name is required").max(100),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  phone: z.string().min(1, "Phone is required").max(50),
+  altPhone: z.string().max(50).optional().or(z.literal("")),
+  companyName: z.string().max(255).optional().or(z.literal("")),
+  type: z.enum(["residential", "commercial"]).optional(),
+  source: z.string().max(100).optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+  doNotContact: z.string().optional(),
+});
+
+export async function updateCustomerAction(
+  customerId: string,
+  _prevState: CustomerActionState,
+  formData: FormData
+): Promise<CustomerActionState> {
+  try {
+    const ctx = await requireAuth();
+
+    const raw = Object.fromEntries(formData);
+    const parsed = updateCustomerSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      return {
+        error: "Please fix the errors below.",
+        fieldErrors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
+      };
+    }
+
+    const input = parsed.data;
+
+    const updateData: import("@/lib/services/customers").UpdateCustomerInput = {
+      firstName: input.firstName,
+      lastName: input.lastName,
+      email: input.email || null,
+      phone: input.phone,
+      altPhone: input.altPhone || null,
+      companyName: input.companyName || null,
+      type: input.type,
+      source: input.source || null,
+      notes: input.notes || null,
+    };
+    // Only include doNotContact if explicitly set in form data
+    if (input.doNotContact !== undefined) {
+      updateData.doNotContact = input.doNotContact === "true";
+    }
+
+    await updateCustomer(ctx, customerId, updateData);
+
+    revalidatePath("/customers");
+    revalidatePath(`/customers/${customerId}`);
+
+    return { success: true, customerId };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update customer. Please try again.") };
+  }
+}
+
+// ---------- Delete ----------
+
 export async function deleteCustomerAction(customerId: string): Promise<{ error?: string }> {
   try {
     const ctx = await requireAuth();

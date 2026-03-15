@@ -7,6 +7,7 @@ import {
   createAgreement,
   updateAgreement,
   changeAgreementStatus,
+  updateAgreementServices,
 } from "@/lib/services/agreements";
 import { getActionErrorMessage } from "@/lib/api/errors";
 
@@ -142,5 +143,22 @@ export async function changeAgreementStatusAction(
     return { success: true };
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to change agreement status") };
+  }
+}
+
+// ---------- Update Agreement Services ----------
+
+export async function updateAgreementServicesAction(
+  agreementId: string,
+  services: { pricebookItemId?: string; name: string; description?: string; quantity: number; unitPrice: number }[]
+): Promise<{ error?: string; success?: boolean }> {
+  try {
+    const ctx = await requireAuth();
+    await updateAgreementServices(ctx, agreementId, services);
+    revalidatePath("/agreements");
+    revalidatePath(`/agreements/${agreementId}`);
+    return { success: true };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update agreement services") };
   }
 }

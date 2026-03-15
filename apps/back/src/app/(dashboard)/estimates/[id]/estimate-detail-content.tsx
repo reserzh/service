@@ -37,6 +37,7 @@ import {
   MapPin,
   Calendar,
   Briefcase,
+  Pencil,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -149,10 +150,18 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
             <StatusBadge type="estimate" status={estimate.status} />
 
             {isDraft && (
-              <Button size="sm" onClick={handleSend} disabled={loading === "send"}>
-                <Send className="mr-2 h-3.5 w-3.5" />
-                Send to Customer
-              </Button>
+              <>
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/estimates/${estimate.id}/edit`}>
+                    <Pencil className="mr-2 h-3.5 w-3.5" />
+                    Edit
+                  </Link>
+                </Button>
+                <Button size="sm" onClick={handleSend} disabled={loading === "send"}>
+                  <Send className="mr-2 h-3.5 w-3.5" />
+                  Send to Customer
+                </Button>
+              </>
             )}
 
             {canApprove && (

@@ -324,6 +324,47 @@ export async function updateAgreement(ctx: UserContext, agreementId: string, inp
   return updated;
 }
 
+// ---------- Update agreement services ----------
+
+export async function updateAgreementServices(
+  ctx: UserContext,
+  agreementId: string,
+  services: CreateAgreementServiceInput[]
+) {
+  assertPermission(ctx, "agreements", "update");
+
+  const agreement = await getAgreement(ctx, agreementId);
+
+  if (agreement.status !== "draft") {
+    throw new AppError("INVALID_STATE", "Only draft agreements can have services edited", 422);
+  }
+
+  await db.transaction(async (tx) => {
+    // Delete existing services
+    await tx
+      .delete(agreementServices)
+      .where(and(eq(agreementServices.agreementId, agreementId), eq(agreementServices.tenantId, ctx.tenantId)));
+
+    // Insert new services
+    if (services.length > 0) {
+      await tx.insert(agreementServices).values(
+        services.map((svc, idx) => ({
+          tenantId: ctx.tenantId,
+          agreementId,
+          pricebookItemId: svc.pricebookItemId || null,
+          name: svc.name,
+          description: svc.description || null,
+          quantity: String(svc.quantity),
+          unitPrice: String(svc.unitPrice),
+          sortOrder: idx,
+        }))
+      );
+    }
+  });
+
+  await logActivity(ctx, "agreement", agreementId, "services_updated");
+}
+
 // ---------- Status transitions ----------
 
 export async function changeAgreementStatus(ctx: UserContext, agreementId: string, newStatus: AgreementStatus) {

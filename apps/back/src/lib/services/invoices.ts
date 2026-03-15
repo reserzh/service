@@ -528,6 +528,182 @@ export async function voidInvoice(ctx: UserContext, invoiceId: string) {
   return updated;
 }
 
+// ---------- Delete draft invoice ----------
+
+export async function deleteInvoice(ctx: UserContext, invoiceId: string) {
+  assertPermission(ctx, "invoices", "delete");
+
+  const invoice = await getInvoice(ctx, invoiceId);
+
+  if (invoice.status !== "draft") {
+    throw new AppError("INVALID_STATE", "Only draft invoices can be deleted", 422);
+  }
+
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(invoiceLineItems)
+      .where(and(eq(invoiceLineItems.invoiceId, invoiceId), eq(invoiceLineItems.tenantId, ctx.tenantId)));
+
+    await tx
+      .delete(invoices)
+      .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)));
+  });
+
+  await logActivity(ctx, "invoice", invoiceId, "deleted");
+}
+
+// ---------- Update invoice line item ----------
+
+export async function updateInvoiceLineItem(
+  ctx: UserContext,
+  invoiceId: string,
+  itemId: string,
+  input: { description?: string; quantity?: number; unitPrice?: number; type?: LineItemType }
+) {
+  assertPermission(ctx, "invoices", "update");
+  const invoice = await getInvoice(ctx, invoiceId);
+
+  if (!["draft", "sent", "viewed"].includes(invoice.status)) {
+    throw new AppError("INVALID_STATE", "Cannot modify items on this invoice", 422);
+  }
+
+  const updateData: Record<string, unknown> = {};
+  if (input.description !== undefined) updateData.description = input.description;
+  if (input.type !== undefined) updateData.type = input.type;
+
+  // Recalculate item total if qty or price changed
+  if (input.quantity !== undefined || input.unitPrice !== undefined) {
+    // Get current values for fields not being updated
+    const [currentItem] = await db
+      .select()
+      .from(invoiceLineItems)
+      .where(
+        and(
+          eq(invoiceLineItems.id, itemId),
+          eq(invoiceLineItems.invoiceId, invoiceId),
+          eq(invoiceLineItems.tenantId, ctx.tenantId)
+        )
+      )
+      .limit(1);
+
+    if (!currentItem) throw new NotFoundError("Line item");
+
+    const qty = input.quantity ?? Number(currentItem.quantity);
+    const price = input.unitPrice ?? Number(currentItem.unitPrice);
+    updateData.quantity = String(qty);
+    updateData.unitPrice = String(price);
+    updateData.total = String(qty * price);
+  }
+
+  await db
+    .update(invoiceLineItems)
+    .set(updateData)
+    .where(
+      and(
+        eq(invoiceLineItems.id, itemId),
+        eq(invoiceLineItems.invoiceId, invoiceId),
+        eq(invoiceLineItems.tenantId, ctx.tenantId)
+      )
+    );
+
+  await recalculateInvoiceTotals(ctx.tenantId, invoiceId);
+}
+
+// ---------- Full update (with line items replacement) ----------
+
+export async function updateInvoiceFull(
+  ctx: UserContext,
+  invoiceId: string,
+  input: {
+    dueDate?: string;
+    taxRate?: number;
+    notes?: string | null;
+    internalNotes?: string | null;
+    lineItems?: CreateInvoiceLineItem[];
+  }
+) {
+  assertPermission(ctx, "invoices", "update");
+
+  const invoice = await getInvoice(ctx, invoiceId);
+
+  if (!["draft", "sent", "viewed"].includes(invoice.status)) {
+    throw new AppError("INVALID_STATE", "Only draft, sent, or viewed invoices can be edited", 422);
+  }
+
+  await db.transaction(async (tx) => {
+    // If line items provided, replace all
+    if (input.lineItems) {
+      await tx
+        .delete(invoiceLineItems)
+        .where(and(eq(invoiceLineItems.invoiceId, invoiceId), eq(invoiceLineItems.tenantId, ctx.tenantId)));
+
+      const subtotal = input.lineItems.reduce(
+        (sum, item) => sum + item.quantity * item.unitPrice,
+        0
+      );
+      const taxRate = input.taxRate ?? Number(invoice.taxRate);
+      const taxAmount = subtotal * taxRate;
+      const total = subtotal + taxAmount;
+      const balanceDue = total - Number(invoice.amountPaid);
+
+      const items = input.lineItems.map((item, idx) => ({
+        tenantId: ctx.tenantId,
+        invoiceId,
+        description: item.description,
+        quantity: String(item.quantity),
+        unitPrice: String(item.unitPrice),
+        total: String(item.quantity * item.unitPrice),
+        type: (item.type || "service") as LineItemType,
+        sortOrder: idx,
+      }));
+      await tx.insert(invoiceLineItems).values(items);
+
+      const updateData: Record<string, unknown> = {
+        subtotal: String(subtotal),
+        taxRate: String(taxRate),
+        taxAmount: String(taxAmount),
+        total: String(total),
+        balanceDue: String(balanceDue),
+        updatedAt: new Date(),
+      };
+      if (input.dueDate !== undefined) updateData.dueDate = input.dueDate;
+      if (input.notes !== undefined) updateData.notes = input.notes;
+      if (input.internalNotes !== undefined) updateData.internalNotes = input.internalNotes;
+
+      await tx
+        .update(invoices)
+        .set(updateData)
+        .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)));
+    } else {
+      // Just update metadata
+      const updateData: Record<string, unknown> = { updatedAt: new Date() };
+      if (input.dueDate !== undefined) updateData.dueDate = input.dueDate;
+      if (input.notes !== undefined) updateData.notes = input.notes;
+      if (input.internalNotes !== undefined) updateData.internalNotes = input.internalNotes;
+
+      if (input.taxRate !== undefined) {
+        const subtotal = Number(invoice.subtotal);
+        const taxAmount = subtotal * input.taxRate;
+        const total = subtotal + taxAmount;
+        const balanceDue = total - Number(invoice.amountPaid);
+
+        updateData.taxRate = String(input.taxRate);
+        updateData.taxAmount = String(taxAmount);
+        updateData.total = String(total);
+        updateData.balanceDue = String(balanceDue);
+      }
+
+      await tx
+        .update(invoices)
+        .set(updateData)
+        .where(and(eq(invoices.id, invoiceId), eq(invoices.tenantId, ctx.tenantId)));
+    }
+  });
+
+  await logActivity(ctx, "invoice", invoiceId, "updated");
+  triggerQBSync(ctx.tenantId, "invoice", invoiceId, "update");
+}
+
 // ---------- Payments ----------
 
 export async function recordPayment(ctx: UserContext, invoiceId: string, input: RecordPaymentInput) {

@@ -5,12 +5,14 @@ import { revalidatePath } from "next/cache";
 import { requireAuth } from "@/lib/auth";
 import {
   createEstimate,
+  updateEstimateFull,
   updateEstimate,
   sendEstimate,
   approveEstimate,
   declineEstimate,
   addEstimateOption,
   deleteEstimateOption,
+  deleteEstimate,
 } from "@/lib/services/estimates";
 import { getActionErrorMessage } from "@/lib/api/errors";
 
@@ -206,5 +208,70 @@ export async function deleteEstimateOptionAction(
     return {};
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to delete option.") };
+  }
+}
+
+// ---------- Delete Estimate ----------
+
+export async function deleteEstimateAction(estimateId: string): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    await deleteEstimate(ctx, estimateId);
+
+    revalidatePath("/estimates");
+    revalidatePath("/dashboard");
+
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to delete estimate.") };
+  }
+}
+
+// ---------- Full Update (with options/items) ----------
+
+const updateEstimateFullSchema = z.object({
+  summary: z.string().min(1, "Summary is required").max(500),
+  notes: z.string().optional().or(z.literal("")),
+  internalNotes: z.string().optional().or(z.literal("")),
+  validUntil: z.string().optional().or(z.literal("")),
+  options: z.array(optionSchema).min(1, "At least one option is required"),
+});
+
+export async function updateEstimateFullAction(
+  estimateId: string,
+  input: z.infer<typeof updateEstimateFullSchema>
+): Promise<EstimateActionState> {
+  try {
+    const ctx = await requireAuth();
+    const parsed = updateEstimateFullSchema.safeParse(input);
+
+    if (!parsed.success) {
+      return {
+        error: "Please fix the errors below.",
+        fieldErrors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
+      };
+    }
+
+    const data = parsed.data;
+    await updateEstimateFull(ctx, estimateId, {
+      summary: data.summary,
+      notes: data.notes || null,
+      internalNotes: data.internalNotes || null,
+      validUntil: data.validUntil || null,
+      options: data.options.map((opt) => ({
+        name: opt.name,
+        description: opt.description || undefined,
+        isRecommended: opt.isRecommended,
+        items: opt.items,
+      })),
+    });
+
+    revalidatePath("/estimates");
+    revalidatePath(`/estimates/${estimateId}`);
+    revalidatePath("/dashboard");
+
+    return { success: true, estimateId };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update estimate.") };
   }
 }

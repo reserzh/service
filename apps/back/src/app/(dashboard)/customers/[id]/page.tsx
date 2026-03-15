@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { PortalAccessCard } from "./portal-access-card";
 import { PropertyDetailsCard } from "@/components/properties/property-details-card";
+import { PropertyManager } from "./property-manager";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -56,9 +57,11 @@ export default async function CustomerDetailPage({ params }: PageProps) {
         <Badge variant={customer.type === "commercial" ? "default" : "secondary"}>
           {customer.type}
         </Badge>
-        <Button variant="outline" size="sm">
-          <Pencil className="mr-2 h-3.5 w-3.5" />
-          Edit
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/customers/${id}/edit`}>
+            <Pencil className="mr-2 h-3.5 w-3.5" />
+            Edit
+          </Link>
         </Button>
       </PageHeader>
 
@@ -142,51 +145,16 @@ export default async function CustomerDetailPage({ params }: PageProps) {
         </TabsList>
 
         <TabsContent value="properties" className="space-y-3">
-          {customer.properties.length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                No properties yet. Add a property to start scheduling jobs.
-              </CardContent>
-            </Card>
-          ) : (
-            customer.properties.map((prop) => (
-              <div key={prop.id} className="space-y-3">
-                <Card>
-                  <CardContent className="flex items-start gap-3 pt-6">
-                    <div className="rounded-md bg-muted p-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      {prop.name && <p className="text-sm font-medium">{prop.name}</p>}
-                      <p className="text-sm">
-                        {prop.addressLine1}
-                        {prop.addressLine2 && `, ${prop.addressLine2}`}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {prop.city}, {prop.state} {prop.zip}
-                      </p>
-                      {prop.accessNotes && (
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Access: {prop.accessNotes}
-                        </p>
-                      )}
-                      {prop.isPrimary && (
-                        <Badge variant="outline" className="mt-1 text-xs">
-                          Primary
-                        </Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-                <PropertyDetailsCard
-                  propertyId={prop.id}
-                  lotSizeSqft={prop.lotSizeSqft}
-                  lawnAreaSqft={prop.lawnAreaSqft}
-                  propertyMetadata={prop.propertyMetadata}
-                />
-              </div>
-            ))
-          )}
+          <PropertyManager customerId={id} properties={customer.properties} />
+          {customer.properties.map((prop) => (
+            <PropertyDetailsCard
+              key={prop.id}
+              propertyId={prop.id}
+              lotSizeSqft={prop.lotSizeSqft}
+              lawnAreaSqft={prop.lawnAreaSqft}
+              propertyMetadata={prop.propertyMetadata}
+            />
+          ))}
         </TabsContent>
 
         <TabsContent value="equipment" className="space-y-3">

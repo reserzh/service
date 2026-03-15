@@ -6,8 +6,10 @@ import { requireAuth } from "@/lib/auth";
 import {
   createInvoice,
   updateInvoice,
+  updateInvoiceFull,
   sendInvoice,
   voidInvoice,
+  deleteInvoice,
   addInvoiceLineItem,
   deleteInvoiceLineItem,
   recordPayment,
@@ -212,6 +214,60 @@ export async function recordPaymentAction(
     return {};
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to record payment.") };
+  }
+}
+
+// ---------- Delete (draft only) ----------
+
+export async function deleteInvoiceAction(invoiceId: string): Promise<{ error?: string }> {
+  try {
+    const ctx = await requireAuth();
+    await deleteInvoice(ctx, invoiceId);
+
+    revalidatePath("/invoices");
+    revalidatePath("/dashboard");
+
+    return {};
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to delete invoice.") };
+  }
+}
+
+// ---------- Full Update (with line items replacement) ----------
+
+export async function updateInvoiceFullAction(
+  invoiceId: string,
+  input: {
+    dueDate?: string;
+    taxRate?: number;
+    notes?: string;
+    internalNotes?: string;
+    lineItems?: { description: string; quantity: number; unitPrice: number; type?: string }[];
+  }
+): Promise<InvoiceActionState> {
+  try {
+    const ctx = await requireAuth();
+
+    await updateInvoiceFull(ctx, invoiceId, {
+      dueDate: input.dueDate,
+      taxRate: input.taxRate,
+      notes: input.notes !== undefined ? (input.notes || null) : undefined,
+      internalNotes: input.internalNotes !== undefined ? (input.internalNotes || null) : undefined,
+      lineItems: input.lineItems?.map((item) => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        type: item.type as "service" | "material" | "labor" | "discount" | "other" | undefined,
+      })),
+    });
+
+    revalidatePath("/invoices");
+    revalidatePath(`/invoices/${invoiceId}`);
+    revalidatePath("/dashboard");
+
+    return { success: true, invoiceId };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update invoice.") };
   }
 }
 
