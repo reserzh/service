@@ -7,8 +7,12 @@ const monorepoRoot = path.resolve(projectRoot, "../..");
 
 const config = getDefaultConfig(projectRoot);
 
-// Watch the monorepo root so Metro can resolve workspace packages
-config.watchFolders = [monorepoRoot];
+// Watch only the workspace packages the mobile app depends on
+config.watchFolders = [
+  path.resolve(monorepoRoot, "packages/api-types"),
+  path.resolve(monorepoRoot, "packages/shared"),
+  path.resolve(monorepoRoot, "node_modules"),
+];
 
 // Tell Metro where to find node_modules (local first, then monorepo root)
 config.resolver.nodeModulesPaths = [

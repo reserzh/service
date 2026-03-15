@@ -1,5 +1,7 @@
 import "../global.css";
 import { useEffect } from "react";
+import { Appearance } from "react-native";
+import { useColorScheme } from "nativewind";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -37,6 +39,22 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function DarkModeEnforcer() {
+  const darkModeOverride = useSettingsStore((s) => s.darkModeOverride);
+  const { setColorScheme } = useColorScheme();
+
+  useEffect(() => {
+    // Set NativeWind color scheme (controls dark: classes)
+    setColorScheme(darkModeOverride === "system" ? "system" : darkModeOverride);
+    // Set RN Appearance (controls StatusBar, native components)
+    Appearance.setColorScheme(
+      darkModeOverride === "system" ? null : darkModeOverride
+    );
+  }, [darkModeOverride, setColorScheme]);
+
+  return null;
+}
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   useAuthInit();
@@ -80,6 +98,7 @@ export default function RootLayout() {
           persistOptions={{ persister: queryPersister }}
         >
           <AuthProvider>
+            <DarkModeEnforcer />
             <SessionGuard>
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />

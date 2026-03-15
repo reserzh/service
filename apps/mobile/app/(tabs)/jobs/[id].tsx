@@ -33,7 +33,7 @@ import type { JobStatus } from "@/types/models";
 
 export default function JobDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data, isLoading, isError, refetch } = useJob(id);
+  const { data, isLoading, isError, error, refetch } = useJob(id);
   const updateStatus = useUpdateJobStatus();
   const updateJob = useUpdateJob();
   const createInvoice = useCreateInvoiceFromJob();
@@ -157,7 +157,7 @@ export default function JobDetailScreen() {
   }, [job]);
 
   if (isError) {
-    return <ErrorFallback message="Failed to load job details" onRetry={() => refetch()} />;
+    return <ErrorFallback message={`Failed to load job details: ${error?.message ?? "unknown"}`} onRetry={() => refetch()} />;
   }
 
   if (isLoading || !job) {
