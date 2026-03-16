@@ -1,5 +1,5 @@
 import { getTenant } from "@/lib/get-tenant";
-import { getBookableServices } from "@/lib/queries";
+import { getBookableServices, getTenantSettings } from "@/lib/queries";
 import { BookingForm } from "./booking-form";
 import type { Metadata } from "next";
 
@@ -10,7 +10,10 @@ export const metadata: Metadata = {
 
 export default async function BookPage() {
   const site = await getTenant();
-  const services = await getBookableServices(site.tenantId);
+  const [services, settings] = await Promise.all([
+    getBookableServices(site.tenantId),
+    getTenantSettings(site.tenantId),
+  ]);
 
   const branding = (site.branding ?? {}) as Record<string, string>;
 
@@ -31,6 +34,7 @@ export default async function BookPage() {
           estimatedDuration: s.estimatedDuration,
           priceDisplay: s.priceDisplay,
         }))}
+        quoteAvailability={settings.quoteAvailability}
       />
     </div>
   );

@@ -135,6 +135,39 @@ export async function updateDashboardSettingsAction(
   }
 }
 
+// ---------- Update quote availability ----------
+
+const timeWindowSchema = z.object({ start: z.string(), end: z.string() }).refine(
+  (w) => w.start < w.end,
+  { message: "Start time must be before end time" }
+);
+const quoteAvailabilitySchema = z.object({
+  enabled: z.boolean(),
+  windows: z.record(z.string(), z.array(timeWindowSchema).nullable()),
+  leadTimeDays: z.number().int().min(0).max(90).optional(),
+  maxAdvanceDays: z.number().int().min(1).max(365).optional(),
+});
+
+export async function updateQuoteAvailabilityAction(
+  _prevState: SettingsActionState,
+  formData: FormData
+): Promise<SettingsActionState> {
+  try {
+    const ctx = await requireAuth();
+    assertPermission(ctx, "settings", "update");
+    const raw = formData.get("data");
+    if (!raw || typeof raw !== "string") return { error: "Invalid data" };
+    const parsed = quoteAvailabilitySchema.safeParse(JSON.parse(raw));
+    if (!parsed.success) return { error: "Invalid availability configuration" };
+
+    await updateTenantSettings(ctx, { quoteAvailability: parsed.data as TenantSettings["quoteAvailability"] });
+    revalidatePath("/settings/booking-availability");
+    return { success: true };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Failed to update availability") };
+  }
+}
+
 // ---------- Update industry settings ----------
 
 const industrySettingsSchema = z.object({

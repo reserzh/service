@@ -32,9 +32,12 @@ export const getPortalJobs = cache(async (ctx: CustomerPortalContext) => {
       scheduledEnd: jobs.scheduledEnd,
       completedAt: jobs.completedAt,
       createdAt: jobs.createdAt,
+      propertyId: properties.id,
+      propertyName: properties.name,
       propertyAddress: properties.addressLine1,
       propertyCity: properties.city,
       propertyState: properties.state,
+      propertyZip: properties.zip,
     })
     .from(jobs)
     .leftJoin(properties, and(eq(jobs.propertyId, properties.id), eq(properties.tenantId, ctx.tenantId)))

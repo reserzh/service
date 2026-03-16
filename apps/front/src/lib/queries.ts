@@ -5,8 +5,10 @@ import {
   siteSections,
   serviceCatalog,
   bookingRequests,
+  tenants,
 } from "@fieldservice/shared/db/schema";
 import { eq, and, asc } from "drizzle-orm";
+import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 
 export const getPublishedPage = cache(async (tenantId: string, slug: string) => {
   const [page] = await db
@@ -79,6 +81,16 @@ export const getBookableServices = cache(async (tenantId: string) => {
       )
     )
     .orderBy(asc(serviceCatalog.sortOrder));
+});
+
+export const getTenantSettings = cache(async (tenantId: string): Promise<TenantSettings> => {
+  const [tenant] = await db
+    .select({ settings: tenants.settings })
+    .from(tenants)
+    .where(eq(tenants.id, tenantId))
+    .limit(1);
+
+  return (tenant?.settings ?? {}) as TenantSettings;
 });
 
 export async function createBookingRequest(tenantId: string, input: {

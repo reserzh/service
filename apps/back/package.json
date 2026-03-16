@@ -13,7 +13,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/lib/db/seed.ts",
-    "db:seed:production": "tsx src/lib/db/seed-production.ts"
+    "db:seed:production": "tsx src/lib/db/seed-production.ts",
+    "db:seed:checklists": "tsx src/lib/db/seed-checklist-templates.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

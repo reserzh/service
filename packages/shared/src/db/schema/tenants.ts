@@ -71,4 +71,12 @@ export type TenantSettings = {
     voicemailEnabled?: boolean;
     transcriptionEnabled?: boolean;
   };
+  quoteAvailability?: {
+    enabled: boolean;
+    windows: {
+      [day: string]: { start: string; end: string }[] | null;
+    };
+    leadTimeDays?: number;
+    maxAdvanceDays?: number;
+  };
 };

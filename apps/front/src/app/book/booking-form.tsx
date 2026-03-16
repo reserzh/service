@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type Service = {
   id: string;
@@ -9,16 +9,63 @@ type Service = {
   priceDisplay: string | null;
 };
 
+type TimeWindow = { start: string; end: string };
+
+type QuoteAvailability = {
+  enabled: boolean;
+  windows: { [day: string]: TimeWindow[] | null };
+  leadTimeDays?: number;
+  maxAdvanceDays?: number;
+};
+
 type Step = "service" | "datetime" | "contact" | "review" | "confirmed";
+
+const DAY_KEYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
+function formatTime(time24: string): string {
+  const [h, m] = time24.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
+
+function formatWindowLabel(window: TimeWindow): string {
+  return `${formatTime(window.start)} - ${formatTime(window.end)}`;
+}
+
+function getDateDayKey(dateStr: string): string {
+  const date = new Date(dateStr + "T00:00:00");
+  return DAY_KEYS[date.getDay()];
+}
+
+function getMinDate(leadTimeDays: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + leadTimeDays);
+  return d.toISOString().split("T")[0];
+}
+
+function getMaxDate(maxAdvanceDays: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + maxAdvanceDays);
+  return d.toISOString().split("T")[0];
+}
+
+function isDateAllowed(dateStr: string, availability: QuoteAvailability): boolean {
+  const dayKey = getDateDayKey(dateStr);
+  const dayWindows = availability.windows[dayKey];
+  return dayWindows !== null && dayWindows !== undefined && dayWindows.length > 0;
+}
 
 export function BookingForm({
   tenantId,
   services,
+  quoteAvailability,
 }: {
   tenantId: string;
   services: Service[];
+  quoteAvailability?: QuoteAvailability;
 }) {
-  const [step, setStep] = useState<Step>(services.length > 0 ? "service" : "contact");
+  const [step, setStep] = useState<Step>(services.length > 0 ? "service" : "datetime");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +83,38 @@ export function BookingForm({
   const [message, setMessage] = useState("");
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
+  const availEnabled = quoteAvailability?.enabled === true;
+
+  // Compute available time slots for the selected date
+  const timeSlots = useMemo(() => {
+    if (!availEnabled || !preferredDate || !quoteAvailability) {
+      return null; // Use default morning/afternoon/evening
+    }
+    const dayKey = getDateDayKey(preferredDate);
+    const dayWindows = quoteAvailability.windows[dayKey];
+    if (!dayWindows || dayWindows.length === 0) return [];
+    return dayWindows.map((w) => ({
+      value: `${w.start}-${w.end}`,
+      label: formatWindowLabel(w),
+    }));
+  }, [availEnabled, preferredDate, quoteAvailability]);
+
+  // Reset time slot when date changes
+  const handleDateChange = (val: string) => {
+    setPreferredDate(val);
+    setPreferredTimeSlot("");
+  };
+
+  // Date input constraints
+  const minDate = availEnabled
+    ? getMinDate(quoteAvailability?.leadTimeDays ?? 0)
+    : new Date().toISOString().split("T")[0];
+  const maxDate = availEnabled && quoteAvailability?.maxAdvanceDays
+    ? getMaxDate(quoteAvailability.maxAdvanceDays)
+    : undefined;
+
+  // Check if selected date is valid when availability is enabled
+  const dateInvalid = availEnabled && preferredDate && !isDateAllowed(preferredDate, quoteAvailability!);
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -170,34 +249,72 @@ export function BookingForm({
               <input
                 type="date"
                 value={preferredDate}
-                onChange={(e) => setPreferredDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => handleDateChange(e.target.value)}
+                min={minDate}
+                max={maxDate}
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
+              {dateInvalid && (
+                <p className="mt-1 text-sm text-red-600">
+                  Bookings are not available on this day of the week. Please choose another date.
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Preferred Time</label>
-              <div className="mt-2 grid grid-cols-3 gap-3">
-                {["morning", "afternoon", "evening"].map((slot) => (
-                  <button
-                    key={slot}
-                    type="button"
-                    className={`rounded-md border px-4 py-2 text-sm font-medium capitalize transition-colors ${
-                      preferredTimeSlot === slot
-                        ? "border-2 bg-blue-50 text-gray-900"
-                        : "border-gray-200 text-gray-600 hover:border-gray-300"
-                    }`}
-                    style={
-                      preferredTimeSlot === slot
-                        ? { borderColor: "var(--color-primary)" }
-                        : undefined
-                    }
-                    onClick={() => setPreferredTimeSlot(slot)}
-                  >
-                    {slot}
-                  </button>
-                ))}
-              </div>
+              {timeSlots === null ? (
+                /* Default slots when availability is not enabled */
+                <div className="mt-2 grid grid-cols-3 gap-3">
+                  {["morning", "afternoon", "evening"].map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      className={`rounded-md border px-4 py-2 text-sm font-medium capitalize transition-colors ${
+                        preferredTimeSlot === slot
+                          ? "border-2 bg-blue-50 text-gray-900"
+                          : "border-gray-200 text-gray-600 hover:border-gray-300"
+                      }`}
+                      style={
+                        preferredTimeSlot === slot
+                          ? { borderColor: "var(--color-primary)" }
+                          : undefined
+                      }
+                      onClick={() => setPreferredTimeSlot(slot)}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              ) : timeSlots.length === 0 ? (
+                <p className="mt-2 text-sm text-gray-500">
+                  {preferredDate
+                    ? "No time slots available for this date."
+                    : "Select a date to see available time slots."}
+                </p>
+              ) : (
+                /* Configured time windows */
+                <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot.value}
+                      type="button"
+                      className={`rounded-md border px-4 py-2 text-sm font-medium transition-colors ${
+                        preferredTimeSlot === slot.value
+                          ? "border-2 bg-blue-50 text-gray-900"
+                          : "border-gray-200 text-gray-600 hover:border-gray-300"
+                      }`}
+                      style={
+                        preferredTimeSlot === slot.value
+                          ? { borderColor: "var(--color-primary)" }
+                          : undefined
+                      }
+                      onClick={() => setPreferredTimeSlot(slot.value)}
+                    >
+                      {slot.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="mt-6 flex justify-between">
@@ -210,8 +327,9 @@ export function BookingForm({
             </button>
             <button
               type="button"
-              className="rounded-md px-6 py-2.5 text-sm font-semibold text-white"
+              className="rounded-md px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
               style={{ backgroundColor: "var(--color-primary)" }}
+              disabled={dateInvalid === true}
               onClick={() => setStep("contact")}
             >
               Continue
@@ -356,7 +474,11 @@ export function BookingForm({
                     month: "long",
                     day: "numeric",
                   })}
-                  {preferredTimeSlot && ` - ${preferredTimeSlot}`}
+                  {preferredTimeSlot && ` - ${
+                    preferredTimeSlot.includes("-")
+                      ? preferredTimeSlot.split("-").map((t) => formatTime(t.trim())).join(" - ")
+                      : preferredTimeSlot
+                  }`}
                 </p>
               </div>
             )}
