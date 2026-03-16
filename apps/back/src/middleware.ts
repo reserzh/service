@@ -37,6 +37,13 @@ export async function middleware(request: NextRequest) {
     if (!result.allowed) return rateLimitResponse(result.resetMs);
   }
 
+  // Rate limit public read endpoints (prevent tenant enumeration)
+  if (pathname.startsWith("/api/v1/public/") && request.method === "GET") {
+    const ip = getClientIp(request);
+    const result = await checkRateLimit(`public-read:${ip}`, RATE_LIMITS.publicRead);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
   // General API rate limit
   if (pathname.startsWith("/api/v1/") && !pathname.startsWith("/api/v1/public/")) {
     const ip = getClientIp(request);

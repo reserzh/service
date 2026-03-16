@@ -5,7 +5,10 @@ import { handleApiError } from "@/lib/api/errors";
 import { listDomains, addDomain } from "@/lib/services/website";
 
 const addDomainSchema = z.object({
-  domain: z.string().min(1).max(255),
+  domain: z.string().min(1).max(255).regex(
+    /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i,
+    "Invalid domain format"
+  ),
 });
 
 export async function GET(req: NextRequest) {

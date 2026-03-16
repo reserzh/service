@@ -108,4 +108,6 @@ export const RATE_LIMITS = {
   publicForm: { maxRequests: 10, windowMs: 60_000 },
   /** General API: 100 requests per minute per user/IP */
   api: { maxRequests: 100, windowMs: 60_000 },
+  /** Public read endpoints: 30 requests per minute per IP */
+  publicRead: { maxRequests: 30, windowMs: 60_000 },
 } as const;

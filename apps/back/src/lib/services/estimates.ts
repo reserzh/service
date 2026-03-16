@@ -42,6 +42,7 @@ export interface ListEstimatesParams {
 }
 
 export interface CreateEstimateOptionItem {
+  pricebookItemId?: string;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -306,6 +307,7 @@ export async function createEstimate(ctx: UserContext, input: CreateEstimateInpu
         const items = opt.items.map((item, idx) => ({
           tenantId: ctx.tenantId,
           optionId: option.id,
+          pricebookItemId: item.pricebookItemId || null,
           description: item.description,
           quantity: String(item.quantity),
           unitPrice: String(item.unitPrice),

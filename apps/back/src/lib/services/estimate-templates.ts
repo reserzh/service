@@ -25,6 +25,8 @@ export interface CreateEstimateTemplateInput {
   description?: string;
   summary?: string;
   notes?: string;
+  jobType?: string;
+  autoApplyForJobType?: boolean;
   options: {
     name: string;
     description?: string;
@@ -35,6 +37,8 @@ export interface CreateEstimateTemplateInput {
       quantity: number;
       unitPrice: number;
       type?: LineItemType;
+      quantityFormula?: string;
+      baseQuantity?: number;
     }[];
   }[];
 }
@@ -44,6 +48,8 @@ export interface UpdateEstimateTemplateInput {
   description?: string | null;
   summary?: string | null;
   notes?: string | null;
+  jobType?: string | null;
+  autoApplyForJobType?: boolean;
   isActive?: boolean;
   options?: CreateEstimateTemplateInput["options"];
 }
@@ -138,6 +144,8 @@ export async function createEstimateTemplate(ctx: UserContext, input: CreateEsti
         description: input.description || null,
         summary: input.summary || null,
         notes: input.notes || null,
+        jobType: input.jobType || null,
+        autoApplyForJobType: input.autoApplyForJobType ?? false,
       })
       .returning();
 
@@ -165,6 +173,8 @@ export async function createEstimateTemplate(ctx: UserContext, input: CreateEsti
             quantity: String(item.quantity),
             unitPrice: String(item.unitPrice),
             type: (item.type || "service") as LineItemType,
+            quantityFormula: item.quantityFormula || null,
+            baseQuantity: item.baseQuantity != null ? String(item.baseQuantity) : null,
             sortOrder: ii,
           }))
         );
@@ -192,6 +202,8 @@ export async function updateEstimateTemplate(
     if (input.description !== undefined) updateData.description = input.description;
     if (input.summary !== undefined) updateData.summary = input.summary;
     if (input.notes !== undefined) updateData.notes = input.notes;
+    if (input.jobType !== undefined) updateData.jobType = input.jobType;
+    if (input.autoApplyForJobType !== undefined) updateData.autoApplyForJobType = input.autoApplyForJobType;
     if (input.isActive !== undefined) updateData.isActive = input.isActive;
 
     const [updated] = await tx
@@ -231,6 +243,8 @@ export async function updateEstimateTemplate(
               quantity: String(item.quantity),
               unitPrice: String(item.unitPrice),
               type: (item.type || "service") as LineItemType,
+              quantityFormula: item.quantityFormula || null,
+              baseQuantity: item.baseQuantity != null ? String(item.baseQuantity) : null,
               sortOrder: ii,
             }))
           );
@@ -276,6 +290,7 @@ export async function createEstimateFromTemplate(
       description: opt.description || undefined,
       isRecommended: opt.isRecommended,
       items: opt.items.map((item) => ({
+        pricebookItemId: item.pricebookItemId ?? undefined,
         description: item.description,
         quantity: Number(item.quantity),
         unitPrice: Number(item.unitPrice),

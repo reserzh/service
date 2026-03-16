@@ -41,6 +41,8 @@ function sanitizeCss(css: string): string {
   sanitized = sanitized.replace(/behavior\s*:/gi, "/* blocked */:");
   // Block all url() calls to prevent data exfiltration via external requests
   sanitized = sanitized.replace(/url\s*\(/gi, "/* blocked */(");
+  // Block @keyframes to prevent CSS-based data exfiltration via font loading timing
+  sanitized = sanitized.replace(/@keyframes\b/gi, "/* blocked */");
   return sanitized;
 }
 

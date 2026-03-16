@@ -66,4 +66,51 @@ export const estimatesApi = {
       }[];
     }>>("/estimates/calculate", data);
   },
+
+  analyzePhoto(fileUri: string, mimeType: string, context?: string) {
+    const formData = new FormData();
+    const fileName = fileUri.split("/").pop() || "photo.jpg";
+    formData.append("photo", {
+      uri: fileUri,
+      name: fileName,
+      type: mimeType,
+    } as unknown as Blob);
+    if (context) {
+      formData.append("context", context);
+    }
+    return api.upload<ApiResponse<{
+      estimatedSqft: number;
+      confidence: "low" | "medium" | "high";
+      reasoning: string;
+      range: { min: number; max: number };
+      zones?: { name: string; estimatedSqft: number }[];
+    }>>("/estimates/analyze-photo", formData);
+  },
+
+  generateBOM(data: {
+    jobType: string;
+    areaSqft?: number;
+    length?: number;
+    width?: number;
+    useAI?: boolean;
+    description?: string;
+  }) {
+    return api.post<ApiResponse<{
+      source: "template" | "ai";
+      options: {
+        name: string;
+        description: string;
+        isRecommended: boolean;
+        items: {
+          pricebookItemId?: string;
+          description: string;
+          quantity: number;
+          unitPrice: number;
+          type: string;
+          isEstimated?: boolean;
+        }[];
+        total: number;
+      }[];
+    }>>("/estimates/generate-bom", data);
+  },
 };

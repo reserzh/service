@@ -75,6 +75,8 @@ export const estimateTemplates = fieldserviceSchema.table(
     description: text("description"),
     summary: varchar("summary", { length: 500 }),
     notes: text("notes"),
+    jobType: varchar("job_type", { length: 100 }),
+    autoApplyForJobType: boolean("auto_apply_for_job_type").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
@@ -125,6 +127,8 @@ export const estimateTemplateItems = fieldserviceSchema.table(
     quantity: decimal("quantity", { precision: 10, scale: 2 }).default("1").notNull(),
     unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).notNull(),
     type: lineItemTypeEnum("type").default("service").notNull(),
+    quantityFormula: varchar("quantity_formula", { length: 255 }),
+    baseQuantity: decimal("base_quantity", { precision: 10, scale: 2 }),
     sortOrder: integer("sort_order").default(0).notNull(),
   },
   (table) => [index("estimate_template_items_option_idx").on(table.tenantId, table.optionId)]
