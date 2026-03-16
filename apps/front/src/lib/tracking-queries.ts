@@ -23,6 +23,8 @@ export async function getTrackingSessionByToken(token: string) {
       endedAt: trackingSessions.endedAt,
       expiresAt: trackingSessions.expiresAt,
       techFirstName: users.firstName,
+      techAvatarUrl: users.avatarUrl,
+      techBio: users.bio,
       companyName: tenants.name,
       companyPhone: tenants.phone,
       jobNumber: jobs.jobNumber,

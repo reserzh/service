@@ -20,6 +20,8 @@ export interface CreateCompanyEquipmentInput {
   purchaseCost?: number;
   assignedTo?: string;
   notes?: string;
+  serviceIntervalDays?: number;
+  serviceIntervalHours?: number;
 }
 
 export interface UpdateCompanyEquipmentInput {
@@ -36,6 +38,8 @@ export interface UpdateCompanyEquipmentInput {
   status?: string;
   assignedTo?: string | null;
   notes?: string | null;
+  serviceIntervalDays?: number | null;
+  serviceIntervalHours?: number | null;
 }
 
 export async function listCompanyEquipment(
@@ -66,6 +70,8 @@ export async function listCompanyEquipment(
       lastServiceDate: companyEquipment.lastServiceDate,
       nextServiceDue: companyEquipment.nextServiceDue,
       hoursUsed: companyEquipment.hoursUsed,
+      serviceIntervalDays: companyEquipment.serviceIntervalDays,
+      serviceIntervalHours: companyEquipment.serviceIntervalHours,
       status: companyEquipment.status,
       assignedTo: companyEquipment.assignedTo,
       assignedFirstName: users.firstName,
@@ -108,6 +114,8 @@ export async function createCompanyEquipmentItem(ctx: UserContext, input: Create
       purchaseCost: input.purchaseCost ? String(input.purchaseCost) : null,
       assignedTo: input.assignedTo || null,
       notes: input.notes || null,
+      serviceIntervalDays: input.serviceIntervalDays ?? null,
+      serviceIntervalHours: input.serviceIntervalHours ?? null,
     })
     .returning();
 
@@ -136,6 +144,8 @@ export async function updateCompanyEquipmentItem(
   if (input.status !== undefined) updateData.status = input.status;
   if (input.assignedTo !== undefined) updateData.assignedTo = input.assignedTo;
   if (input.notes !== undefined) updateData.notes = input.notes;
+  if (input.serviceIntervalDays !== undefined) updateData.serviceIntervalDays = input.serviceIntervalDays;
+  if (input.serviceIntervalHours !== undefined) updateData.serviceIntervalHours = input.serviceIntervalHours;
 
   const [updated] = await db
     .update(companyEquipment)
@@ -177,11 +187,17 @@ export async function addMaintenanceLog(
     })
     .returning();
 
-  // Update equipment's last service date
-  await db
-    .update(companyEquipment)
-    .set({ lastServiceDate: input.performedAt, updatedAt: new Date() })
-    .where(eq(companyEquipment.id, equipmentId));
+  // Update equipment's last service date and auto-advance nextServiceDue if interval configured
+  const updateFields: Record<string, unknown> = {
+    lastServiceDate: input.performedAt,
+    updatedAt: new Date(),
+  };
+  if (item.serviceIntervalDays) {
+    const performed = new Date(input.performedAt);
+    performed.setDate(performed.getDate() + item.serviceIntervalDays);
+    updateFields.nextServiceDue = performed.toISOString().split("T")[0];
+  }
+  await db.update(companyEquipment).set(updateFields).where(eq(companyEquipment.id, equipmentId));
 
   return log;
 }

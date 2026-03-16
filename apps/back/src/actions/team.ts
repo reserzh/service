@@ -20,6 +20,7 @@ const updateUserSchema = z.object({
   hourlyRate: z.coerce.number().min(0).optional().or(z.literal("")).transform((v) => v || null),
   canBeDispatched: z.boolean().optional(),
   color: z.string().max(7).optional(),
+  bio: z.string().max(500).optional().or(z.literal("")).transform((v) => v || null),
 });
 
 // ---------- Types ----------
@@ -64,6 +65,7 @@ export async function updateTeamMemberAction(
       hourlyRate: parsed.data.hourlyRate as number | null,
       canBeDispatched: parsed.data.canBeDispatched,
       color: parsed.data.color,
+      bio: parsed.data.bio as string | null,
     });
 
     revalidatePath("/settings/team");

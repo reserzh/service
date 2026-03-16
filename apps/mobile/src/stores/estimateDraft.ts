@@ -23,6 +23,7 @@ interface EstimateDraftState {
   customerName: string;
   propertyId: string;
   propertyAddress: string;
+  areaSqft: number;
   options: DraftOption[];
   summary: string;
   notes: string;
@@ -32,6 +33,7 @@ interface EstimateDraftState {
   setStep: (step: number) => void;
   setCustomer: (id: string, name: string) => void;
   setProperty: (id: string, address: string) => void;
+  setAreaSqft: (areaSqft: number) => void;
   setOptions: (options: DraftOption[]) => void;
   setDetails: (summary: string, notes: string, validUntil: string) => void;
   save: () => Promise<void>;
@@ -47,6 +49,7 @@ export const useEstimateDraftStore = create<EstimateDraftState>((set, get) => ({
   customerName: "",
   propertyId: "",
   propertyAddress: "",
+  areaSqft: 0,
   options: [{ name: "", description: "", isRecommended: false, items: [{ description: "", quantity: "1", unitPrice: "", type: "service" }] }],
   summary: "",
   notes: "",
@@ -63,6 +66,10 @@ export const useEstimateDraftStore = create<EstimateDraftState>((set, get) => ({
   },
   setProperty: (propertyId, propertyAddress) => {
     set({ propertyId, propertyAddress });
+    get().save();
+  },
+  setAreaSqft: (areaSqft) => {
+    set({ areaSqft });
     get().save();
   },
   setOptions: (options) => {
@@ -83,6 +90,7 @@ export const useEstimateDraftStore = create<EstimateDraftState>((set, get) => ({
         customerName: state.customerName,
         propertyId: state.propertyId,
         propertyAddress: state.propertyAddress,
+        areaSqft: state.areaSqft,
         options: state.options,
         summary: state.summary,
         notes: state.notes,
@@ -113,6 +121,7 @@ export const useEstimateDraftStore = create<EstimateDraftState>((set, get) => ({
       customerName: "",
       propertyId: "",
       propertyAddress: "",
+      areaSqft: 0,
       options: [{ name: "", description: "", isRecommended: false, items: [{ description: "", quantity: "1", unitPrice: "", type: "service" }] }],
       summary: "",
       notes: "",

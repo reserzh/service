@@ -38,7 +38,9 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/register") ||
     request.nextUrl.pathname.startsWith("/forgot-password");
 
-  const isApiRoute = request.nextUrl.pathname.startsWith("/api/v1/");
+  const isApiRoute =
+    request.nextUrl.pathname.startsWith("/api/v1/") ||
+    request.nextUrl.pathname.startsWith("/api/cron/");
 
   const isPublicPage =
     request.nextUrl.pathname === "/" ||

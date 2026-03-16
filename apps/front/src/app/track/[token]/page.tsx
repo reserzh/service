@@ -75,6 +75,8 @@ export default async function TrackingPage({
       token={token}
       companyName={session.companyName}
       techFirstName={session.techFirstName}
+      techAvatarUrl={session.techAvatarUrl}
+      techBio={session.techBio}
       jobNumber={session.jobNumber!}
       address={address}
       initialData={{

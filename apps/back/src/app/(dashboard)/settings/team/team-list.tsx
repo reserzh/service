@@ -71,6 +71,7 @@ interface TeamMember {
   color: string;
   hourlyRate: string | null;
   canBeDispatched: boolean;
+  bio: string | null;
   lastLoginAt: Date | null;
   createdAt: Date;
 }
@@ -95,6 +96,7 @@ export function TeamList({ members, meta, searchQuery, showInactive, currentUser
   const [editPhone, setEditPhone] = useState("");
   const [editRate, setEditRate] = useState("");
   const [editDispatch, setEditDispatch] = useState(false);
+  const [editBio, setEditBio] = useState("");
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -117,6 +119,7 @@ export function TeamList({ members, meta, searchQuery, showInactive, currentUser
     setEditPhone(member.phone ?? "");
     setEditRate(member.hourlyRate ?? "");
     setEditDispatch(member.canBeDispatched);
+    setEditBio(member.bio ?? "");
   }
 
   async function handleSaveEdit() {
@@ -128,6 +131,7 @@ export function TeamList({ members, meta, searchQuery, showInactive, currentUser
     formData.set("phone", editPhone);
     formData.set("hourlyRate", editRate);
     formData.set("canBeDispatched", editDispatch ? "true" : "false");
+    formData.set("bio", editBio);
 
     const result = await updateTeamMemberAction(editMember.id, {} as TeamActionState, formData);
     setLoading(null);
@@ -373,6 +377,19 @@ export function TeamList({ members, meta, searchQuery, showInactive, currentUser
                 min={0}
                 step={0.01}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Bio</Label>
+              <textarea
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+                placeholder="Short bio shown to customers on tracking page..."
+                rows={3}
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground">{editBio.length}/500 — shown on customer tracking page</p>
             </div>
 
             <div className="flex items-center gap-2">

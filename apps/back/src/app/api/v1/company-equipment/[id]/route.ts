@@ -26,6 +26,8 @@ const updateSchema = z.object({
   status: z.string().max(50).optional(),
   assignedTo: z.string().uuid().nullable().optional(),
   notes: z.string().nullable().optional(),
+  serviceIntervalDays: z.number().int().min(1).nullable().optional(),
+  serviceIntervalHours: z.number().int().min(1).nullable().optional(),
 });
 
 export async function GET(req: NextRequest, context: RouteContext) {

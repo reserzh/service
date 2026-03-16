@@ -26,6 +26,7 @@ export const users = fieldserviceSchema.table(
     phone: varchar("phone", { length: 50 }),
     role: userRoleEnum("role").default("technician").notNull(),
     avatarUrl: text("avatar_url"),
+    bio: text("bio"),
     isActive: boolean("is_active").default(true).notNull(),
     color: varchar("color", { length: 7 }).default("#3b82f6").notNull(),
     hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),

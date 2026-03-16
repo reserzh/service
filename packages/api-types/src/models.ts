@@ -45,6 +45,7 @@ export interface User {
   phone: string | null;
   role: UserRole;
   avatarUrl: string | null;
+  bio: string | null;
   isActive: boolean;
   color: string;
   hourlyRate: string | null;
@@ -570,6 +571,8 @@ export interface CompanyEquipment {
   lastServiceDate: string | null;
   nextServiceDue: string | null;
   hoursUsed: number;
+  serviceIntervalDays: number | null;
+  serviceIntervalHours: number | null;
   status: string;
   assignedTo: string | null;
   notes: string | null;

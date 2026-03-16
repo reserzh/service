@@ -17,6 +17,8 @@ const createSchema = z.object({
   purchaseCost: z.number().optional(),
   assignedTo: z.string().uuid().optional(),
   notes: z.string().optional(),
+  serviceIntervalDays: z.number().int().min(1).optional(),
+  serviceIntervalHours: z.number().int().min(1).optional(),
 });
 
 export async function GET(req: NextRequest) {

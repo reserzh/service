@@ -144,4 +144,14 @@ export const DEFAULT_TEMPLATES: Record<string, { subject: string; body: string }
 <p>Thank you for choosing {{companyName}}!</p>
 <p>— {{companyName}}</p>`,
   },
+  appointment_reminder: {
+    subject: "Reminder: Your appointment tomorrow — {{companyName}}",
+    body: `<p>Hi {{customerFirstName}},</p>
+<p>This is a friendly reminder that you have a service appointment scheduled for tomorrow.</p>
+<p><strong>Date:</strong> {{scheduledDate}}<br><strong>Time:</strong> {{scheduledTime}}</p>
+<p><strong>Service:</strong> {{jobSummary}}</p>
+<p><strong>Technician:</strong> {{technicianName}}</p>
+<p>If you need to reschedule or have any questions, please give us a call.</p>
+<p>— {{companyName}}</p>`,
+  },
 };

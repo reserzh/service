@@ -54,4 +54,16 @@ export const estimatesApi = {
   convertToJob(estimateId: string) {
     return api.post<ApiResponse<{ jobId: string }>>(`/estimates/${estimateId}/convert-to-job`);
   },
+
+  calculateArea(data: { propertyId?: string; areaSqft: number; serviceCategories: string[] }) {
+    return api.post<ApiResponse<{
+      options: {
+        name: string;
+        description: string;
+        isRecommended: boolean;
+        items: { pricebookItemId: string; description: string; quantity: number; unitPrice: number; type: string }[];
+        total: number;
+      }[];
+    }>>("/estimates/calculate", data);
+  },
 };

@@ -15,6 +15,8 @@ interface TrackingMapProps {
   token: string;
   companyName: string;
   techFirstName: string;
+  techAvatarUrl: string | null;
+  techBio: string | null;
   jobNumber: string;
   address: string;
   initialData: TrackingData;
@@ -33,6 +35,8 @@ export function TrackingMap({
   token,
   companyName,
   techFirstName,
+  techAvatarUrl,
+  techBio,
   jobNumber,
   address,
   initialData,
@@ -240,6 +244,25 @@ export function TrackingMap({
             <div>
               <p className="text-sm font-medium text-gray-900">{companyName}</p>
               <p className="text-xs text-gray-500">Job #{jobNumber}</p>
+              <div className="mt-2 flex items-center gap-2">
+                {techAvatarUrl ? (
+                  <img
+                    src={techAvatarUrl}
+                    alt={techFirstName}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-medium text-indigo-600">
+                    {techFirstName[0]}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-800">{techFirstName}</p>
+                  {techBio && (
+                    <p className="truncate text-xs text-gray-500">{techBio}</p>
+                  )}
+                </div>
+              </div>
             </div>
             {data.etaMinutes != null && (
               <div className="text-right">

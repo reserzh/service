@@ -63,6 +63,7 @@ export const jobs = fieldserviceSchema.table(
     endLongitude: decimal("end_longitude", { precision: 10, scale: 7 }),
     isRecurring: boolean("is_recurring").default(false).notNull(),
     recurrenceRule: jsonb("recurrence_rule"),
+    reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id),

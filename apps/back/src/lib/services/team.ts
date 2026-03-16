@@ -36,6 +36,7 @@ export interface UpdateUserInput {
   hourlyRate?: number | null;
   canBeDispatched?: boolean;
   color?: string;
+  bio?: string | null;
 }
 
 // ---------- List ----------
@@ -87,6 +88,7 @@ export async function listTeamMembers(ctx: UserContext, params: ListTeamParams =
         color: users.color,
         hourlyRate: users.hourlyRate,
         canBeDispatched: users.canBeDispatched,
+        bio: users.bio,
         lastLoginAt: users.lastLoginAt,
         createdAt: users.createdAt,
       })
@@ -193,6 +195,7 @@ export async function updateTeamMember(ctx: UserContext, userId: string, input: 
   if (input.hourlyRate !== undefined) updateData.hourlyRate = input.hourlyRate ? String(input.hourlyRate) : null;
   if (input.canBeDispatched !== undefined) updateData.canBeDispatched = input.canBeDispatched;
   if (input.color !== undefined) updateData.color = input.color;
+  if (input.bio !== undefined) updateData.bio = input.bio;
 
   const [updated] = await db
     .update(users)

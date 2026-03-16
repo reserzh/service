@@ -195,6 +195,9 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Company equipment", description: "Equipment registry with maintenance logs and assignment tracking", status: "complete" },
           { name: "QuickBooks integration", description: "OAuth connection, sync invoices/customers, error tracking", status: "complete" },
           { name: "Billing & subscription", description: "Subscription plan and payment method management", status: "planned" },
+          { name: "Vehicle & trailer maintenance", description: "Periodic reminders for vehicle maintenance, tire checks, battery checks, trailer inspections", status: "complete" },
+          { name: "Day-before appointment reminders", description: "Automated SMS/email reminder to customers the day before scheduled appointments", status: "complete" },
+          { name: "Landscape area calculator", description: "Area measurement with instant good/better/best pricing for landscaping estimates", status: "complete" },
         ],
       },
     ],
@@ -227,6 +230,7 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Line items", description: "Add labor, material, service items with pricing", status: "complete" },
           { name: "Job notes", description: "Add notes with voice-to-text input support", status: "complete" },
           { name: "Photo capture", description: "Camera integration with offline storage and auto-upload", status: "complete" },
+          { name: "Photo gate on completion", description: "Minimum 3 after photos required before job can be completed, server-enforced", status: "complete" },
           { name: "Signature capture", description: "Customer signature collection with canvas", status: "complete" },
           { name: "Quick action bar", description: "Call, Navigate, Add Note, Take Photo, Create Invoice shortcuts", status: "complete" },
           { name: "GPS navigation", description: "Launch Apple Maps, Google Maps, or Waze to job location", status: "complete" },
@@ -272,6 +276,7 @@ export const featureComponents: FeatureComponent[] = [
         features: [
           { name: "Clock in/out", description: "One-tap with optional GPS capture, persists across app restarts", status: "complete" },
           { name: "Break tracking", description: "Start/end breaks within clocked-in sessions", status: "complete" },
+          { name: "Clock-out prompts", description: "End-of-day prompt for material requests, equipment issues, and office notes for tomorrow", status: "complete" },
           { name: "Offline queueing", description: "Clock events queued when offline with exponential backoff retry", status: "complete" },
         ],
       },
@@ -295,6 +300,16 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Location capture on status change", description: "GPS snapshot on en_route, in_progress, completed transitions", status: "complete" },
           { name: "Navigation integration", description: "Launch preferred map app (Apple Maps, Google Maps, Waze)", status: "complete" },
           { name: "En route indicator", description: "Shows live location sharing status on job detail", status: "complete" },
+          { name: "Geofencing", description: "Auto-triggers job details when arriving at property (100m radius), requires dispatched status to avoid false triggers", status: "complete" },
+        ],
+      },
+      {
+        name: "Property & Context",
+        description: "Job site context and history for field workers",
+        features: [
+          { name: "Property history banner", description: "Shows gate codes, obstacles, last visit info, and previous job notes when arriving at a property", status: "complete" },
+          { name: "Substitute tech context", description: "Detects when a different technician is covering and surfaces all prior property history", status: "complete" },
+          { name: "Daily reports", description: "End-of-day report submission with material requests, equipment issues, and notes", status: "complete" },
         ],
       },
       {

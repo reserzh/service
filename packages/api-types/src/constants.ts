@@ -250,6 +250,39 @@ export const SLOPE_TYPE_LABELS: Record<SlopeType, string> = {
 
 export const COMMON_OBSTACLES = ["Pool", "Trampoline", "Shed", "Patio", "Deck", "Playground", "Garden", "Fence"];
 
+// ---- Equipment types ----
+
+export const EQUIPMENT_TYPES = [
+  "mower",
+  "trimmer",
+  "blower",
+  "edger",
+  "chainsaw",
+  "spreader",
+  "compactor",
+  "vehicle",
+  "trailer",
+  "dump_trailer",
+  "skid_steer",
+  "other",
+] as const;
+export type EquipmentType = (typeof EQUIPMENT_TYPES)[number];
+
+export const EQUIPMENT_TYPE_LABELS: Record<EquipmentType, string> = {
+  mower: "Mower",
+  trimmer: "Trimmer",
+  blower: "Blower",
+  edger: "Edger",
+  chainsaw: "Chainsaw",
+  spreader: "Spreader",
+  compactor: "Compactor",
+  vehicle: "Vehicle",
+  trailer: "Trailer",
+  dump_trailer: "Dump Trailer",
+  skid_steer: "Skid Steer",
+  other: "Other",
+};
+
 // Valid agreement status transitions
 export const VALID_AGREEMENT_TRANSITIONS: Record<AgreementStatus, AgreementStatus[]> = {
   draft: ["active", "canceled"],
