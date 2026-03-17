@@ -31,6 +31,8 @@ import { addDomainToVercel, removeDomainFromVercel } from "./vercel-domains";
  */
 function sanitizeCss(css: string): string {
   let sanitized = css.replace(/</g, "\\3c ");
+  // Normalize backslash escapes that could bypass keyword detection (e.g. ur\l())
+  sanitized = sanitized.replace(/\\([a-zA-Z(])/g, "$1");
   // Strip dangerous CSS functions and directives
   sanitized = sanitized.replace(/@import\b/gi, "/* blocked */");
   sanitized = sanitized.replace(/@charset\b/gi, "/* blocked */");
