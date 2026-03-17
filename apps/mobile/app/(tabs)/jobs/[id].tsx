@@ -61,6 +61,20 @@ export default function JobDetailScreen() {
 
       const isForwardTransition = ["en_route", "in_progress", "completed"].includes(newStatus);
 
+      // Photo gate: require minimum 3 after photos before completion
+      if (newStatus === "completed") {
+        const afterPhotoCount = job.photos.filter((p) => p.photoType === "after").length;
+        if (afterPhotoCount < 3) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          Alert.alert(
+            "After Photos Required",
+            `You need at least 3 after photos before completing this job. You currently have ${afterPhotoCount}.`,
+            [{ text: "OK", onPress: () => setActiveTab("media") }]
+          );
+          return;
+        }
+      }
+
       const doTransition = async () => {
         try {
           let coords: { latitude: number; longitude: number } | undefined;

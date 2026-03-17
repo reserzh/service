@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { ClipboardList, CheckCircle2, MapPin } from "lucide-react-native";
+import { ClipboardList, CheckCircle2, MapPin, DollarSign } from "lucide-react-native";
 import { useJobStats } from "@/hooks/useJobStats";
 import { useAuthStore } from "@/stores/auth";
 import { useTimeTrackingStore } from "@/stores/timeTracking";
@@ -127,6 +127,34 @@ export default function HomeScreen() {
                 />
               </Animated.View>
             </View>
+
+            {/* Daily Earnings */}
+            {stats.earnings > 0 && (
+              <Animated.View className="mb-5" entering={FadeInDown.delay(160).duration(400).springify()}>
+                <View
+                  className="bg-white dark:bg-stone-800 rounded-xl p-4"
+                  style={{
+                    borderTopWidth: 3,
+                    borderTopColor: "#16A34A",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 3,
+                  }}
+                  accessibilityLabel={`Today's earnings: $${stats.earnings.toFixed(2)}`}
+                  accessibilityRole="text"
+                >
+                  <View className="mb-2">
+                    <DollarSign size={24} color="#16A34A" />
+                  </View>
+                  <Text className="text-3xl font-extrabold text-green-600 dark:text-green-400" numberOfLines={1} adjustsFontSizeToFit>
+                    ${stats.earnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </Text>
+                  <Text className="text-sm font-bold text-stone-500 dark:text-stone-400">Today's Earnings</Text>
+                </View>
+              </Animated.View>
+            )}
 
             {/* Next Job Card */}
             {nextJob && (

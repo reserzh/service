@@ -24,6 +24,8 @@ import Toast from "react-native-toast-message";
 import { useCustomers, useCustomer } from "@/hooks/useCustomers";
 import { useCreateEstimate } from "@/hooks/useEstimates";
 import { useEstimateDraftStore } from "@/stores/estimateDraft";
+import { AreaCalculatorStep } from "@/screens/estimates/AreaCalculatorStep";
+import { BOMStep } from "@/screens/estimates/BOMStep";
 import { StepIndicator } from "@/components/common/StepIndicator";
 import { SearchBar } from "@/components/common/SearchBar";
 import { Card } from "@/components/ui/Card";
@@ -34,7 +36,7 @@ import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { formatCustomerName, formatAddress } from "@/lib/format";
 import type { LineItemType, Customer, Property } from "@/types/models";
 
-const STEPS = ["Customer", "Property", "Options", "Details", "Review"];
+const STEPS = ["Customer", "Property", "Area & BOM", "Options", "Details", "Review"];
 
 const LINE_ITEM_TYPES: { key: LineItemType; label: string }[] = [
   { key: "service", label: "Service" },
@@ -123,6 +125,37 @@ export default function CreateEstimateScreen() {
     }
   }, [step, customerId, propertyId, options, summary, notes, validUntil]);
 
+  // Area/BOM step state
+  const [serviceCategories] = useState<string[]>(["lawn_care", "landscaping"]);
+
+  const handleAreaBOMSelect = (option: {
+    name: string;
+    description: string;
+    isRecommended: boolean;
+    items: { pricebookItemId?: string; description: string; quantity: string; unitPrice: string; type: string }[];
+  }) => {
+    // Add or replace an option with the selected pricing/BOM data
+    const newOption: EstimateOption = {
+      name: option.name,
+      description: option.description,
+      isRecommended: option.isRecommended,
+      items: option.items.map((item) => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        type: (item.type as LineItemType) || "material",
+      })),
+    };
+    setOptions((prev) => {
+      // If first option is empty, replace it
+      if (prev.length === 1 && !prev[0].name.trim() && prev[0].items.length === 1 && !prev[0].items[0].description.trim()) {
+        return [newOption];
+      }
+      return [...prev, newOption];
+    });
+    Toast.show({ type: "success", text1: `Added "${option.name}" option` });
+  };
+
   const canGoNext = (): boolean => {
     switch (step) {
       case 1:
@@ -130,6 +163,8 @@ export default function CreateEstimateScreen() {
       case 2:
         return !!propertyId;
       case 3:
+        return true; // Area/BOM step is optional
+      case 4:
         return options.every(
           (opt) =>
             opt.name.trim() &&
@@ -138,7 +173,7 @@ export default function CreateEstimateScreen() {
               (item) => item.description.trim() && parseFloat(item.unitPrice) > 0
             )
         );
-      case 4:
+      case 5:
         return !!summary.trim();
       default:
         return true;
@@ -151,7 +186,7 @@ export default function CreateEstimateScreen() {
       return;
     }
     Haptics.selectionAsync();
-    setStep((s) => Math.min(s + 1, 5));
+    setStep((s) => Math.min(s + 1, 6));
   };
 
   const handleBack = () => {
@@ -227,9 +262,32 @@ export default function CreateEstimateScreen() {
           />
         )}
         {step === 3 && (
-          <OptionsStep options={options} onChange={setOptions} />
+          <ScrollView className="flex-1" contentContainerClassName="pb-4">
+            <View className="px-4 pt-2 pb-3">
+              <Text className="text-lg font-bold text-stone-900 dark:text-stone-50 mb-1">
+                Area Calculator & Bill of Materials
+              </Text>
+              <Text className="text-sm text-stone-500 mb-3">
+                Optionally use AI area measurement or auto-generate materials. Skip if not needed.
+              </Text>
+            </View>
+            <View className="mb-4">
+              <AreaCalculatorStep
+                onSelectOption={handleAreaBOMSelect}
+                categories={serviceCategories}
+              />
+            </View>
+            <View className="border-t border-stone-200 dark:border-stone-700 mt-2">
+              <BOMStep
+                onSelectOption={handleAreaBOMSelect}
+              />
+            </View>
+          </ScrollView>
         )}
         {step === 4 && (
+          <OptionsStep options={options} onChange={setOptions} />
+        )}
+        {step === 5 && (
           <DetailsStep
             summary={summary}
             onSummaryChange={setSummary}
@@ -239,7 +297,7 @@ export default function CreateEstimateScreen() {
             onValidUntilChange={setValidUntil}
           />
         )}
-        {step === 5 && (
+        {step === 6 && (
           <ReviewStep
             customerName={customerName}
             propertyAddress={propertyAddress}
@@ -259,9 +317,9 @@ export default function CreateEstimateScreen() {
           variant="outline"
           className="flex-1"
         />
-        {step < 5 ? (
+        {step < 6 ? (
           <Button
-            title="Next"
+            title={step === 3 ? "Skip / Next" : "Next"}
             onPress={handleNext}
             disabled={!canGoNext()}
             className="flex-1"

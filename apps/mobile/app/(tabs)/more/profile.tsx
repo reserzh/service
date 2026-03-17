@@ -11,6 +11,7 @@ import {
   Bell,
   BellOff,
   Info,
+  Star,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useAuthStore } from "@/stores/auth";
@@ -98,6 +99,13 @@ export default function ProfileScreen() {
                 label="Revenue"
                 value={formatCurrency(stats.revenue)}
               />
+              {stats.rating != null && (
+                <MetricRow
+                  icon={<Star size={16} color="#f59e0b" />}
+                  label="Satisfaction Rating"
+                  value={`${stats.rating.toFixed(1)} / 5.0`}
+                />
+              )}
             </View>
           ) : (
             <Text className="text-sm text-stone-400 italic">

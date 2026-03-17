@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { getJobWithRelations } from "@/lib/services/jobs";
+import { getJobCosting, type JobCostingResult } from "@/lib/services/job-costing";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { JobDetailContent } from "./job-detail-content";
@@ -25,5 +26,13 @@ export default async function JobDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <JobDetailContent job={job} userRole={ctx.role} />;
+  // Fetch costing data (non-blocking — page still renders if this fails)
+  let costing: JobCostingResult | null = null;
+  try {
+    costing = await getJobCosting(ctx, id);
+  } catch {
+    // Costing data is supplementary; swallow errors
+  }
+
+  return <JobDetailContent job={job} userRole={ctx.role} costing={costing} />;
 }

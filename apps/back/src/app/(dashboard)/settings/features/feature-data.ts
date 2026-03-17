@@ -29,7 +29,7 @@ export const featureComponents: FeatureComponent[] = [
         name: "Dashboard & Navigation",
         description: "Home screen and site-wide features",
         features: [
-          { name: "Customizable dashboard", description: "7 theme presets (Classic, Blueprint, Mission Control, Glass, Executive, Arctic, Ocean) with widget management", status: "complete" },
+          { name: "Customizable dashboard", description: "8 theme presets (Classic, Blueprint, Mission Control, Glass, Executive, Arctic, Forge, Copper) with widget management", status: "complete" },
           { name: "Command palette", description: "Quick search and navigation across the entire app", status: "complete" },
           { name: "Notification center", description: "Real-time notification dropdown with mark-as-read", status: "complete" },
           { name: "Role-based access control", description: "5 roles (Admin, Office Manager, Dispatcher, CSR, Technician) with granular permissions", status: "complete" },
@@ -41,8 +41,8 @@ export const featureComponents: FeatureComponent[] = [
         description: "Job scheduling and real-time dispatch",
         features: [
           { name: "Calendar schedule view", description: "Week/day view with technician filtering and date navigation", status: "complete" },
-          { name: "Dispatch board", description: "Real-time dispatch with unassigned queue, technician list, and drag assignment", status: "complete" },
-          { name: "Live technician tracking", description: "Real-time GPS location of en-route technicians on a map", status: "complete" },
+          { name: "Dispatch board", description: "Real-time dispatch with unassigned queue, technician list, and dropdown assignment", status: "complete" },
+          { name: "Live technician tracking", description: "Customer-facing real-time GPS tracking of en-route technicians on a map (via tracking link)", status: "complete" },
         ],
       },
       {
@@ -196,10 +196,10 @@ export const featureComponents: FeatureComponent[] = [
           { name: "Estimate templates", description: "Reusable estimate templates with pre-configured items", status: "complete" },
           { name: "Voice & calls config", description: "Twilio phone number, recording, voicemail, transcription settings", status: "complete" },
           { name: "Notification settings", description: "Email template management and trigger configuration", status: "complete" },
-          { name: "Company equipment", description: "Equipment registry with maintenance logs and assignment tracking", status: "complete" },
+          { name: "Company equipment", description: "Equipment registry with maintenance logs, assignment tracking, and admin dashboard management", status: "complete" },
           { name: "QuickBooks integration", description: "OAuth connection, sync invoices/customers, error tracking", status: "complete" },
           { name: "Billing & subscription", description: "Subscription plan and payment method management", status: "planned" },
-          { name: "Vehicle & trailer maintenance", description: "Periodic reminders for vehicle maintenance, tire checks, battery checks, trailer inspections", status: "complete" },
+          { name: "Vehicle & trailer maintenance", description: "Periodic maintenance reminders via equipment registry (vehicles, trailers, and all company equipment)", status: "complete" },
           { name: "Day-before appointment reminders", description: "Automated SMS/email reminder to customers the day before scheduled appointments", status: "complete" },
           { name: "Landscape area calculator", description: "Area measurement with instant good/better/best pricing for landscaping estimates", status: "complete" },
           { name: "AI photo area measurement", description: "Snap a photo on-site and Claude Vision estimates sqft with confidence rating — pre-fills area calculator", status: "complete" },
@@ -506,7 +506,7 @@ export const featureComponents: FeatureComponent[] = [
         name: "API",
         description: "REST API for mobile and integrations",
         features: [
-          { name: "Versioned REST API", description: "110+ endpoints under /api/v1/* for mobile app and integrations", status: "complete" },
+          { name: "Versioned REST API", description: "170+ endpoints under /api/v1/* for mobile app and integrations", status: "complete" },
           { name: "Public API", description: "Unauthenticated endpoints for website and booking", status: "complete" },
           { name: "Webhook endpoints", description: "Stripe, Twilio voice/recording/transcription webhooks", status: "complete" },
           { name: "Shared type system", description: "@fieldservice/api-types package for type-safe API contracts", status: "complete" },
@@ -516,10 +516,10 @@ export const featureComponents: FeatureComponent[] = [
         name: "Database",
         description: "Data layer and ORM",
         features: [
-          { name: "Drizzle ORM", description: "Type-safe PostgreSQL access with 34 tables across all modules", status: "complete" },
+          { name: "Drizzle ORM", description: "Type-safe PostgreSQL access with 57 tables across all modules", status: "complete" },
           { name: "Schema namespacing", description: "All tables under 'fieldservice' PostgreSQL schema", status: "complete" },
           { name: "Seed scripts", description: "Dev and production seed scripts for initial data setup", status: "complete" },
-          { name: "Row-level security", description: "Supabase RLS policies for additional data protection", status: "complete" },
+          { name: "Row-level security", description: "Application-layer tenant isolation with tenant_id filtering on all queries", status: "complete" },
         ],
       },
       {

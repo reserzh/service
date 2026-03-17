@@ -38,6 +38,7 @@ import {
   Calendar,
   Briefcase,
   Pencil,
+  Download,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -148,6 +149,17 @@ export function EstimateDetailContent({ estimate }: { estimate: EstimateData }) 
         >
           <div className="flex items-center gap-2">
             <StatusBadge type="estimate" status={estimate.status} />
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                window.open(`/api/v1/estimates/${estimate.id}/pdf`, "_blank");
+              }}
+            >
+              <Download className="mr-2 h-3.5 w-3.5" />
+              Download PDF
+            </Button>
 
             {isDraft && (
               <>

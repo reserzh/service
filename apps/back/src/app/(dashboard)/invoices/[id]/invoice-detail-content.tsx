@@ -57,6 +57,7 @@ import {
   CreditCard,
   Loader2,
   Pencil,
+  Download,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -192,6 +193,17 @@ export function InvoiceDetailContent({ invoice }: { invoice: InvoiceData }) {
         >
           <div className="flex items-center gap-2">
             <StatusBadge type="invoice" status={invoice.status} />
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                window.open(`/api/v1/invoices/${invoice.id}/pdf`, "_blank");
+              }}
+            >
+              <Download className="mr-2 h-3.5 w-3.5" />
+              Download PDF
+            </Button>
 
             {["draft", "sent", "viewed"].includes(invoice.status) && (
               <Button size="sm" variant="outline" asChild>

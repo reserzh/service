@@ -13,6 +13,20 @@ import {
   Globe,
   Bot,
   Settings,
+  Factory,
+  Building2,
+  Palette,
+  Wrench,
+  BookOpen,
+  CheckSquare,
+  FileStack,
+  CalendarClock,
+  Bell,
+  Phone,
+  ToggleLeft,
+  Link2,
+  CreditCard,
+  Truck,
   type LucideIcon,
 } from "lucide-react";
 import type { UserRole } from "@/lib/auth";
@@ -167,7 +181,7 @@ export interface QuickAction {
 }
 
 export const quickActions: QuickAction[] = [
-  { title: "New Customer", href: "/customers/new", resource: "customers", action: "create" },
+  { title: "New Customer", href: "/customers", resource: "customers", action: "create" },
   { title: "New Job", href: "/jobs/new", resource: "jobs", action: "create" },
   { title: "New Estimate", href: "/estimates/new", resource: "estimates", action: "create" },
   { title: "New Invoice", href: "/invoices/new", resource: "invoices", action: "create" },
@@ -182,22 +196,6 @@ export function getFilteredQuickActions(role: string): QuickAction[] {
 }
 
 // ---- Settings sub-nav ----
-
-import {
-  Factory,
-  Building2,
-  Palette,
-  Wrench,
-  BookOpen,
-  CheckSquare,
-  FileStack,
-  CalendarClock,
-  Bell,
-  Phone,
-  ToggleLeft,
-  Link2,
-  CreditCard,
-} from "lucide-react";
 
 export interface SettingsNavItem {
   label: string;
@@ -217,6 +215,7 @@ export const settingsNavItems: SettingsNavItem[] = [
   { label: "Checklist Templates", href: "/settings/checklists", icon: CheckSquare, section: "Services" },
   { label: "Estimate Templates", href: "/settings/estimate-templates", icon: FileStack, section: "Services" },
   { label: "Booking Availability", href: "/settings/booking-availability", icon: CalendarClock, section: "Services" },
+  { label: "Equipment", href: "/settings/equipment", icon: Truck, section: "Services" },
   // Communications
   { label: "Notifications", href: "/settings/notifications", icon: Bell, section: "Communications" },
   { label: "Voice", href: "/settings/voice", icon: Phone, section: "Communications" },
