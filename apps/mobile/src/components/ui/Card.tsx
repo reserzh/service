@@ -1,4 +1,4 @@
-import { View, Pressable, type ViewStyle } from "react-native";
+import { View, Pressable, useColorScheme, type ViewStyle } from "react-native";
 
 interface CardProps {
   children: React.ReactNode;
@@ -19,15 +19,16 @@ const shadowStyle: ViewStyle = {
   elevation: 3,
 };
 
-const accentStyle: ViewStyle = {
-  borderTopWidth: 3,
-  borderTopColor: "#EA580C",
-};
-
 export function Card({ children, onPress, className = "", style, accent = false }: CardProps) {
+  const colorScheme = useColorScheme();
+
+  const accentStyle: ViewStyle = accent
+    ? { borderTopWidth: 3, borderTopColor: colorScheme === "dark" ? "#FB923C" : "#EA580C" }
+    : {};
+
   const combinedStyle: ViewStyle[] = [
     shadowStyle,
-    accent ? accentStyle : {},
+    accentStyle,
     style ?? {},
   ];
 
@@ -35,7 +36,7 @@ export function Card({ children, onPress, className = "", style, accent = false 
     return (
       <Pressable
         onPress={onPress}
-        className={`${baseClasses} active:scale-[0.98] ${className}`}
+        className={`${baseClasses} active:scale-[0.97] active:opacity-90 ${className}`}
         style={combinedStyle}
       >
         {children}

@@ -213,7 +213,7 @@ export default function ScheduleScreen() {
                   Haptics.selectionAsync();
                   setViewStyle((s) => (s === "list" ? "timeline" : "list"));
                 }}
-                className="p-2 rounded-lg bg-stone-100 dark:bg-stone-800"
+                className="p-3 rounded-lg bg-stone-100 dark:bg-stone-800"
                 accessibilityLabel={viewStyle === "list" ? "Switch to timeline view" : "Switch to list view"}
                 accessibilityRole="button"
               >
@@ -239,7 +239,7 @@ export default function ScheduleScreen() {
 
         {/* Date navigation */}
         <View className="flex-row items-center justify-between">
-          <Pressable onPress={handlePrev} hitSlop={12} className="p-1" accessibilityLabel="Previous" accessibilityRole="button">
+          <Pressable onPress={handlePrev} hitSlop={16} className="p-1 min-w-[48px] min-h-[48px] items-center justify-center" accessibilityLabel="Previous" accessibilityRole="button">
             <ChevronLeft size={28} color="#78716C" />
           </Pressable>
           <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">
@@ -247,7 +247,7 @@ export default function ScheduleScreen() {
               ? format(selectedDate, "EEEE, MMM d")
               : `${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")} - ${format(endOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")}`}
           </Text>
-          <Pressable onPress={handleNext} hitSlop={12} className="p-1" accessibilityLabel="Next" accessibilityRole="button">
+          <Pressable onPress={handleNext} hitSlop={16} className="p-1 min-w-[48px] min-h-[48px] items-center justify-center" accessibilityLabel="Next" accessibilityRole="button">
             <ChevronRight size={28} color="#78716C" />
           </Pressable>
         </View>
@@ -424,7 +424,7 @@ function TimelineView({
               style={{ height: HOUR_HEIGHT }}
               className="justify-start"
             >
-              <Text className="text-sm text-stone-400 text-right pr-2 -mt-1.5">
+              <Text className="text-sm text-stone-500 text-right pr-2 -mt-1.5">
                 {format(setHours(new Date(), hour), "h a")}
               </Text>
             </View>

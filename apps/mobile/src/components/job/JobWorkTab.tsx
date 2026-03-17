@@ -121,7 +121,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               className="flex-row items-center gap-1"
             >
               <Plus size={14} color="#EA580C" />
-              <Text className="text-sm font-medium text-blue-600">Add</Text>
+              <Text className="text-sm font-medium text-orange-600 dark:text-orange-400">Add</Text>
             </Pressable>
           </View>
         </View>
@@ -277,7 +277,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             className="flex-row items-center gap-1"
           >
             <Plus size={14} color="#EA580C" />
-            <Text className="text-sm font-medium text-blue-600">Add</Text>
+            <Text className="text-sm font-medium text-orange-600 dark:text-orange-400">Add</Text>
           </Pressable>
         </View>
 

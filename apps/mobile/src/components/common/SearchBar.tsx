@@ -1,6 +1,6 @@
-import { View, TextInput } from "react-native";
+import { useState } from "react";
+import { View, TextInput, Pressable } from "react-native";
 import { Search, X } from "lucide-react-native";
-import { Pressable } from "react-native";
 
 interface SearchBarProps {
   value: string;
@@ -14,6 +14,8 @@ export function SearchBar({
   onChangeText,
   placeholder = "Search...",
 }: SearchBarProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View
       className="flex-row items-center bg-white dark:bg-stone-800 rounded-xl px-4 py-3.5 gap-2"
@@ -24,9 +26,11 @@ export function SearchBar({
         shadowOpacity: 0.08,
         shadowRadius: 6,
         elevation: 2,
+        borderLeftWidth: focused ? 3 : 0,
+        borderLeftColor: "#EA580C",
       }}
     >
-      <Search size={22} color="#A8A29E" />
+      <Search size={22} color={focused ? "#EA580C" : "#A8A29E"} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -36,6 +40,8 @@ export function SearchBar({
         autoCapitalize="none"
         autoCorrect={false}
         accessibilityLabel="Search"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       />
       {value.length > 0 && (
         <Pressable onPress={() => onChangeText("")} hitSlop={8}>

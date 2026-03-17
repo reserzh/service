@@ -72,7 +72,7 @@ export function Button({
     <Pressable
       onPress={handlePress}
       disabled={isDisabled}
-      className={`flex-row items-center justify-center gap-2 ${variantClasses[variant]} ${sizeClasses[size]} ${isDisabled ? "opacity-50" : ""} ${className}`}
+      className={`flex-row items-center justify-center gap-2 active:scale-[0.96] ${variantClasses[variant]} ${sizeClasses[size]} ${isDisabled ? "opacity-50" : ""} ${className}`}
       style={[{ minHeight: sizeMinHeights[size] }, style]}
     >
       {loading ? (

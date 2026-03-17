@@ -127,7 +127,7 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         <Animated.View className="mb-3" entering={FadeInDown.delay(280).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
-              <Users size={16} color="#6366f1" />
+              <Users size={16} color="#EA580C" />
               <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Crew
               </Text>
@@ -138,15 +138,15 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
                   className="w-6 h-6 rounded-full items-center justify-center"
                   style={{ backgroundColor: a.user?.color ?? "#A8A29E" }}
                 >
-                  <Text className="text-[10px] font-bold text-white">
+                  <Text className="text-xs font-bold text-white">
                     {a.user?.firstName?.[0]}{a.user?.lastName?.[0]}
                   </Text>
                 </View>
                 <Text className="text-base text-stone-700 dark:text-stone-300">
                   {a.user?.firstName} {a.user?.lastName}
                 </Text>
-                <View className={`px-1.5 py-0.5 rounded ${a.role === "lead" ? "bg-blue-100 dark:bg-blue-900" : "bg-stone-100 dark:bg-stone-800"}`}>
-                  <Text className={`text-[10px] font-medium ${a.role === "lead" ? "text-blue-700 dark:text-blue-300" : "text-stone-600 dark:text-stone-400"}`}>
+                <View className={`px-1.5 py-0.5 rounded ${a.role === "lead" ? "bg-orange-100 dark:bg-orange-900" : "bg-stone-100 dark:bg-stone-800"}`}>
+                  <Text className={`text-xs font-medium ${a.role === "lead" ? "text-orange-700 dark:text-orange-300" : "text-stone-600 dark:text-stone-400"}`}>
                     {a.role}
                   </Text>
                 </View>

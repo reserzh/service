@@ -35,7 +35,7 @@ export function FilterChips({ chips, activeKey, onSelect }: FilterChipsProps) {
             className={`px-5 py-3 rounded-xl ${
               active
                 ? "bg-orange-600 dark:bg-orange-400"
-                : "bg-white dark:bg-stone-800"
+                : "bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700"
             }`}
           >
             <Text
