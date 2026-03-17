@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, useColorScheme } from "react-native";
 import { router } from "expo-router";
 import { Clock, FileText, Users, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
@@ -7,38 +7,37 @@ interface QuickAction {
   icon: React.ReactNode;
   label: string;
   onPress: () => void;
-  bgClass: string;
 }
 
 interface QuickActionsProps {
   onClockIn?: () => void;
 }
 
+// Signal design — warm orange-tinted quick actions with bold labels
 export function QuickActions({ onClockIn }: QuickActionsProps) {
+  const isDark = useColorScheme() === "dark";
+  const accent = isDark ? "#FB923C" : "#EA580C";
+
   const actions: QuickAction[] = [
     {
-      icon: <Clock size={28} color="#3b82f6" />,
+      icon: <Clock size={28} color={accent} />,
       label: "Clock In",
       onPress: onClockIn ?? (() => {}),
-      bgClass: "bg-blue-50 dark:bg-blue-950",
     },
     {
-      icon: <FileText size={28} color="#8b5cf6" />,
+      icon: <FileText size={28} color={accent} />,
       label: "Estimate",
       onPress: () => router.push("/(tabs)/more/estimates/create"),
-      bgClass: "bg-violet-50 dark:bg-violet-950",
     },
     {
-      icon: <Users size={28} color="#f59e0b" />,
+      icon: <Users size={28} color={accent} />,
       label: "Customers",
       onPress: () => router.push("/(tabs)/more/customers"),
-      bgClass: "bg-amber-50 dark:bg-amber-950",
     },
     {
-      icon: <Receipt size={28} color="#10b981" />,
+      icon: <Receipt size={28} color={accent} />,
       label: "Invoices",
       onPress: () => router.push("/(tabs)/more/invoices"),
-      bgClass: "bg-emerald-50 dark:bg-emerald-950",
     },
   ];
 
@@ -51,13 +50,20 @@ export function QuickActions({ onClockIn }: QuickActionsProps) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             action.onPress();
           }}
-          className={`flex-1 items-center rounded-2xl py-3 ${action.bgClass} active:opacity-80`}
-          style={{ minHeight: 64 }}
+          className="flex-1 items-center bg-white dark:bg-stone-800 rounded-xl py-3 active:scale-[0.97]"
+          style={{
+            minHeight: 72,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 6,
+            elevation: 2,
+          }}
           accessibilityLabel={action.label}
           accessibilityRole="button"
         >
           <View className="mb-1.5">{action.icon}</View>
-          <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <Text className="text-sm font-bold text-stone-700 dark:text-stone-300">
             {action.label}
           </Text>
         </Pressable>

@@ -44,7 +44,7 @@ function groupItems(items: JobChecklistItem[]): ChecklistGroup[] {
 export function JobChecklist({ items, onToggle }: JobChecklistProps) {
   if (items.length === 0) {
     return (
-      <Text className="text-sm text-slate-400 italic">No checklist items</Text>
+      <Text className="text-sm text-stone-400 italic">No checklist items</Text>
     );
   }
 
@@ -59,14 +59,14 @@ export function JobChecklist({ items, onToggle }: JobChecklistProps) {
     <View>
       {/* Overall progress bar */}
       <View className="flex-row items-center gap-2 mb-3">
-        <View className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden h-3">
+        <View className="flex-1 bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden h-3">
           <Animated.View
             className="h-full bg-emerald-500 rounded-full"
             style={{ width: `${progress * 100}%` }}
             layout={Layout.springify()}
           />
         </View>
-        <Text className="text-sm font-medium text-slate-500">
+        <Text className="text-sm font-medium text-stone-500">
           {completedCount}/{items.length}
         </Text>
       </View>
@@ -117,7 +117,7 @@ function GroupSection({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           setCollapsed(!collapsed);
         }}
-        className="flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 py-3"
+        className="flex-row items-center justify-between border-b border-stone-200 dark:border-stone-700 py-3"
         style={{ minHeight: 56 }}
         accessibilityLabel={`${group.name || "General"} group, ${groupCompleted} of ${group.items.length} completed`}
         accessibilityRole="button"
@@ -125,16 +125,16 @@ function GroupSection({
         <View className="flex-row items-center gap-2">
           <ChevronIcon
             size={24}
-            color="#64748b"
+            color="#78716C"
           />
           <Text
-            className="text-base font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+            className="text-base font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400"
           >
             {group.name || "General"}
           </Text>
         </View>
         <Text
-          className="text-sm font-medium text-slate-500"
+          className="text-sm font-medium text-stone-500"
         >
           {groupCompleted}/{group.items.length}
         </Text>
@@ -170,7 +170,7 @@ function ChecklistItemRow({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onToggle(item.id, !item.completed);
         }}
-        className="flex-row items-center border-b border-slate-100 dark:border-slate-800 gap-4 py-4"
+        className="flex-row items-center border-b border-stone-100 dark:border-stone-700 gap-4 py-4"
         style={{ minHeight: 56 }}
         accessibilityLabel={`${item.label}: ${item.completed ? "completed" : "not completed"}`}
         accessibilityRole="checkbox"
@@ -179,13 +179,13 @@ function ChecklistItemRow({
         {item.completed ? (
           <CheckSquare size={iconSize} color="#10b981" />
         ) : (
-          <Square size={iconSize} color="#94a3b8" />
+          <Square size={iconSize} color="#A8A29E" />
         )}
         <Text
           className={`flex-1 text-lg ${
             item.completed
-              ? "text-slate-400 line-through"
-              : "text-slate-900 dark:text-white"
+              ? "text-stone-400 line-through"
+              : "text-stone-900 dark:text-white"
           }`}
         >
           {item.label}

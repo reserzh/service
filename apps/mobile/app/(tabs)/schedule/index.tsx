@@ -179,25 +179,25 @@ export default function ScheduleScreen() {
   }, [jobs, viewMode, selectedDate, gaps]);
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900" edges={["top"]}>
       {/* Header */}
       <View className="px-4 pt-2 pb-3">
         {/* View toggle */}
         <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5">
+          <View className="flex-row bg-stone-100 dark:bg-stone-800 rounded-lg p-0.5">
             {(["day", "week"] as ViewMode[]).map((mode) => (
               <Pressable
                 key={mode}
                 onPress={() => handleViewModeChange(mode)}
                 className={`px-5 py-2.5 rounded-md ${
-                  viewMode === mode ? "bg-white dark:bg-slate-700 shadow-sm" : ""
+                  viewMode === mode ? "bg-white dark:bg-stone-700 shadow-sm" : ""
                 }`}
               >
                 <Text
                   className={`text-base font-medium capitalize ${
                     viewMode === mode
-                      ? "text-slate-900 dark:text-white"
-                      : "text-slate-500"
+                      ? "text-stone-900 dark:text-stone-50"
+                      : "text-stone-500"
                   }`}
                 >
                   {mode}
@@ -213,24 +213,24 @@ export default function ScheduleScreen() {
                   Haptics.selectionAsync();
                   setViewStyle((s) => (s === "list" ? "timeline" : "list"));
                 }}
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800"
+                className="p-2 rounded-lg bg-stone-100 dark:bg-stone-800"
                 accessibilityLabel={viewStyle === "list" ? "Switch to timeline view" : "Switch to list view"}
                 accessibilityRole="button"
               >
                 {viewStyle === "list" ? (
-                  <Clock size={18} color="#64748b" />
+                  <Clock size={18} color="#78716C" />
                 ) : (
-                  <List size={18} color="#64748b" />
+                  <List size={18} color="#78716C" />
                 )}
               </Pressable>
             )}
             <Pressable
               onPress={() => setSelectedDate(new Date())}
-              className="px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-950"
+              className="px-4 py-2.5 rounded-lg bg-orange-50 dark:bg-orange-950"
               accessibilityLabel="Go to today"
               accessibilityRole="button"
             >
-              <Text className="text-base font-medium text-blue-600 dark:text-blue-400">
+              <Text className="text-base font-medium text-orange-600 dark:text-orange-400">
                 Today
               </Text>
             </Pressable>
@@ -240,15 +240,15 @@ export default function ScheduleScreen() {
         {/* Date navigation */}
         <View className="flex-row items-center justify-between">
           <Pressable onPress={handlePrev} hitSlop={12} className="p-1" accessibilityLabel="Previous" accessibilityRole="button">
-            <ChevronLeft size={28} color="#64748b" />
+            <ChevronLeft size={28} color="#78716C" />
           </Pressable>
-          <Text className="text-xl font-semibold text-slate-900 dark:text-white">
+          <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">
             {viewMode === "day"
               ? format(selectedDate, "EEEE, MMM d")
               : `${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")} - ${format(endOfWeek(selectedDate, { weekStartsOn: 1 }), "MMM d")}`}
           </Text>
           <Pressable onPress={handleNext} hitSlop={12} className="p-1" accessibilityLabel="Next" accessibilityRole="button">
-            <ChevronRight size={28} color="#64748b" />
+            <ChevronRight size={28} color="#78716C" />
           </Pressable>
         </View>
       </View>
@@ -266,12 +266,12 @@ export default function ScheduleScreen() {
                 key={day.toISOString()}
                 onPress={() => setSelectedDate(day)}
                 className={`flex-1 items-center py-3 rounded-xl mx-0.5 ${
-                  selected ? "bg-blue-600" : ""
+                  selected ? "bg-orange-600" : ""
                 }`}
               >
                 <Text
                   className={`text-sm font-medium mb-1 ${
-                    selected ? "text-blue-200" : "text-slate-500"
+                    selected ? "text-orange-200" : "text-stone-500"
                   }`}
                 >
                   {format(day, "EEE")}
@@ -281,14 +281,14 @@ export default function ScheduleScreen() {
                     selected
                       ? "text-white"
                       : isToday(day)
-                      ? "text-blue-600"
-                      : "text-slate-900 dark:text-white"
+                      ? "text-orange-600"
+                      : "text-stone-900 dark:text-stone-50"
                   }`}
                 >
                   {format(day, "d")}
                 </Text>
                 {hasJobs && !selected && (
-                  <View className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1" />
+                  <View className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1" />
                 )}
               </Pressable>
             );
@@ -346,7 +346,7 @@ export default function ScheduleScreen() {
             isLoading ? (
               <View className="gap-3">
                 {[1, 2].map((i) => (
-                  <View key={i} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 gap-2">
+                  <View key={i} className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 gap-2">
                     <Skeleton className="h-3 w-32" />
                     <Skeleton className="h-5 w-48" />
                   </View>
@@ -356,7 +356,7 @@ export default function ScheduleScreen() {
               <QueryErrorState onRetry={() => refetch()} />
             ) : (
               <EmptyState
-                icon={<Calendar size={28} color="#94a3b8" />}
+                icon={<Calendar size={28} color="#A8A29E" />}
                 title="No jobs scheduled"
                 description="Nothing on the schedule for this day"
               />
@@ -424,7 +424,7 @@ function TimelineView({
               style={{ height: HOUR_HEIGHT }}
               className="justify-start"
             >
-              <Text className="text-sm text-slate-400 text-right pr-2 -mt-1.5">
+              <Text className="text-sm text-stone-400 text-right pr-2 -mt-1.5">
                 {format(setHours(new Date(), hour), "h a")}
               </Text>
             </View>
@@ -436,7 +436,7 @@ function TimelineView({
             <View
               key={hour}
               style={{ height: HOUR_HEIGHT }}
-              className="border-t border-slate-200 dark:border-slate-800"
+              className="border-t border-stone-200 dark:border-stone-700"
             />
           ))}
 
@@ -458,7 +458,7 @@ function TimelineView({
 
       {unscheduledJobs.length > 0 && (
         <View className="px-4 mt-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2 px-1">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2 px-1">
             Unscheduled
           </Text>
           {unscheduledJobs.map((job) => (
@@ -475,7 +475,7 @@ function TimelineView({
       {jobs.length === 0 && unscheduledJobs.length === 0 && (
         <View className="-mt-40">
           <EmptyState
-            icon={<Calendar size={28} color="#94a3b8" />}
+            icon={<Calendar size={28} color="#A8A29E" />}
             title="No jobs scheduled"
             description="Nothing on the schedule for this day"
           />
@@ -502,20 +502,22 @@ function TimelineBlock({ job, onLongPress }: { job: Job; onLongPress: (job: Job)
 
   const statusColors = JOB_STATUS_COLORS[job.status as JobStatus];
   const bgColorMap: Record<string, string> = {
-    "bg-slate-100": "#f1f5f9",
-    "bg-blue-100": "#dbeafe",
-    "bg-indigo-100": "#e0e7ff",
+    "bg-stone-200": "#e7e5e4",
+    "bg-orange-100": "#ffedd5",
+    "bg-orange-200": "#fed7aa",
     "bg-amber-100": "#fef3c7",
+    "bg-blue-100": "#dbeafe",
     "bg-emerald-100": "#d1fae5",
     "bg-red-100": "#fee2e2",
   };
   const dotColorMap: Record<string, string> = {
-    "bg-slate-400": "#94a3b8",
-    "bg-blue-500": "#3b82f6",
-    "bg-indigo-500": "#6366f1",
+    "bg-stone-500": "#78716c",
+    "bg-orange-500": "#f97316",
+    "bg-orange-600": "#ea580c",
     "bg-amber-500": "#f59e0b",
+    "bg-blue-500": "#3b82f6",
     "bg-emerald-500": "#10b981",
-    "bg-red-400": "#f87171",
+    "bg-red-500": "#ef4444",
   };
 
   const bgColor = bgColorMap[statusColors.bg] ?? "#f1f5f9";
@@ -535,12 +537,12 @@ function TimelineBlock({ job, onLongPress }: { job: Job; onLongPress: (job: Job)
       }}
     >
       <Text
-        className="text-sm font-semibold text-slate-900"
+        className="text-sm font-semibold text-stone-900"
         numberOfLines={1}
       >
         {job.summary}
       </Text>
-      <Text className="text-[10px] text-slate-600">
+      <Text className="text-[10px] text-stone-600">
         {formatTime(job.scheduledStart)}
         {job.scheduledEnd ? ` - ${formatTime(job.scheduledEnd)}` : ""}
       </Text>

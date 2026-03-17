@@ -53,17 +53,17 @@ export function BiometricLock({ visible, onUnlock }: BiometricLockProps) {
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="absolute inset-0 bg-slate-950 items-center justify-center z-50"
+      className="absolute inset-0 bg-stone-900 items-center justify-center z-50"
       style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <View className="items-center">
-        <View className="w-20 h-20 rounded-full bg-slate-800 items-center justify-center mb-6">
-          <Lock size={36} color="#94a3b8" />
+        <View className="w-20 h-20 rounded-full bg-stone-800 items-center justify-center mb-6">
+          <Lock size={36} color="#A8A29E" />
         </View>
         <Text className="text-xl font-bold text-white mb-2">
           FieldService Pro
         </Text>
-        <Text className="text-sm text-slate-400 mb-8">
+        <Text className="text-sm text-stone-400 mb-8">
           Session locked
         </Text>
         <Pressable

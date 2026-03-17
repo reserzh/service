@@ -61,17 +61,17 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
         className="flex-1 justify-end"
       >
         <View className="flex-1 bg-black/50" />
-        <View className="bg-white dark:bg-slate-900 rounded-t-3xl px-5 pt-6 pb-10">
+        <View className="bg-white dark:bg-stone-800 rounded-t-3xl px-5 pt-6 pb-10">
           <View className="flex-row items-center justify-between mb-5">
-            <Text className="text-xl font-bold text-slate-900 dark:text-white">
+            <Text className="text-xl font-bold text-stone-900 dark:text-white">
               End of Day Report
             </Text>
             <Pressable onPress={handleSkip} className="p-2" accessibilityLabel="Close">
-              <X size={24} color="#94a3b8" />
+              <X size={24} color="#A8A29E" />
             </Pressable>
           </View>
 
-          <Text className="text-sm text-slate-500 dark:text-slate-400 mb-5">
+          <Text className="text-sm text-stone-500 dark:text-stone-400 mb-5">
             Anything the office needs to know for tomorrow?
           </Text>
 
@@ -79,7 +79,7 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
           <View className="mb-4">
             <View className="flex-row items-center gap-2 mb-1.5">
               <Package size={16} color="#f59e0b" />
-              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Materials needed for tomorrow?
               </Text>
             </View>
@@ -87,9 +87,9 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
               value={materialRequests}
               onChangeText={setMaterialRequests}
               placeholder="e.g., 2 bags of base course, 50 pavers..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#A8A29E"
               multiline
-              className="bg-slate-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white min-h-[60px]"
+              className="bg-stone-100 dark:bg-stone-800 rounded-xl px-4 py-3 text-base text-stone-900 dark:text-white min-h-[60px]"
               style={{ textAlignVertical: "top" }}
             />
           </View>
@@ -98,7 +98,7 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
           <View className="mb-4">
             <View className="flex-row items-center gap-2 mb-1.5">
               <Wrench size={16} color="#ef4444" />
-              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Equipment issues?
               </Text>
             </View>
@@ -106,9 +106,9 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
               value={equipmentIssues}
               onChangeText={setEquipmentIssues}
               placeholder="e.g., Compactor running rough, need oil change..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#A8A29E"
               multiline
-              className="bg-slate-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white min-h-[60px]"
+              className="bg-stone-100 dark:bg-stone-800 rounded-xl px-4 py-3 text-base text-stone-900 dark:text-white min-h-[60px]"
               style={{ textAlignVertical: "top" }}
             />
           </View>
@@ -116,8 +116,8 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
           {/* Office Notes */}
           <View className="mb-6">
             <View className="flex-row items-center gap-2 mb-1.5">
-              <MessageSquare size={16} color="#3b82f6" />
-              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <MessageSquare size={16} color="#EA580C" />
+              <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Notes for office?
               </Text>
             </View>
@@ -125,9 +125,9 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
               value={officeNotes}
               onChangeText={setOfficeNotes}
               placeholder="e.g., Customer asked about adding sprinklers..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#A8A29E"
               multiline
-              className="bg-slate-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white min-h-[60px]"
+              className="bg-stone-100 dark:bg-stone-800 rounded-xl px-4 py-3 text-base text-stone-900 dark:text-white min-h-[60px]"
               style={{ textAlignVertical: "top" }}
             />
           </View>
@@ -146,10 +146,10 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
             </Pressable>
             <Pressable
               onPress={handleSkip}
-              className="rounded-2xl py-4 items-center active:bg-slate-100"
+              className="rounded-2xl py-4 items-center active:bg-stone-100"
               style={{ minHeight: 56 }}
             >
-              <Text className="text-base font-medium text-slate-500">
+              <Text className="text-base font-medium text-stone-500">
                 Skip & Clock Out
               </Text>
             </Pressable>

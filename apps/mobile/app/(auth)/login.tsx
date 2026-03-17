@@ -101,7 +101,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -112,18 +112,18 @@ export default function LoginScreen() {
         >
           {/* Animated Logo / Brand */}
           <Animated.View entering={BounceIn.duration(600)} className="items-center mb-10">
-            <View className="w-20 h-20 bg-blue-600 rounded-2xl items-center justify-center mb-4 shadow-lg">
+            <View className="w-20 h-20 bg-orange-600 rounded-xl items-center justify-center mb-4 shadow-lg">
               <Wrench size={40} color="#ffffff" />
             </View>
             <Animated.Text
               entering={FadeInDown.delay(200).duration(400)}
-              className="text-3xl font-bold text-slate-900 dark:text-white"
+              className="text-3xl font-bold text-stone-900 dark:text-stone-50"
             >
               FieldService Pro
             </Animated.Text>
             <Animated.Text
               entering={FadeInDown.delay(300).duration(400)}
-              className="text-base text-slate-500 dark:text-slate-400 mt-1"
+              className="text-base text-stone-500 dark:text-stone-400 mt-1"
             >
               Sign in to your account
             </Animated.Text>
@@ -165,9 +165,9 @@ export default function LoginScreen() {
                 accessibilityRole="button"
               >
                 {showPassword ? (
-                  <EyeOff size={20} color="#64748b" />
+                  <EyeOff size={20} color="#78716C" />
                 ) : (
-                  <Eye size={20} color="#64748b" />
+                  <Eye size={20} color="#78716C" />
                 )}
               </Pressable>
             </View>
@@ -186,13 +186,13 @@ export default function LoginScreen() {
               <View
                 className={`w-6 h-6 rounded border items-center justify-center ${
                   rememberMe
-                    ? "bg-blue-600 border-blue-600"
-                    : "border-slate-300 dark:border-slate-600"
+                    ? "bg-orange-600 border-orange-600"
+                    : "border-stone-300 dark:border-stone-600"
                 }`}
               >
                 {rememberMe && <Check size={14} color="#fff" />}
               </View>
-              <Text className="text-base text-slate-700 dark:text-slate-300">
+              <Text className="text-base text-stone-700 dark:text-stone-300">
                 Remember me
               </Text>
             </Pressable>
@@ -209,12 +209,12 @@ export default function LoginScreen() {
             {biometricLabel && (
               <Pressable
                 onPress={handleBiometricLogin}
-                className="flex-row items-center justify-center gap-2 py-4 min-h-[56px] rounded-xl border border-slate-200 dark:border-slate-700 active:bg-slate-50 dark:active:bg-slate-800"
+                className="flex-row items-center justify-center gap-2 py-4 min-h-[56px] rounded-xl border border-stone-200 dark:border-stone-700 active:bg-stone-50 dark:active:bg-stone-800"
                 accessibilityLabel={`Sign in with ${biometricLabel}`}
                 accessibilityRole="button"
               >
-                <Fingerprint size={24} color="#3b82f6" />
-                <Text className="text-lg font-medium text-slate-700 dark:text-slate-300">
+                <Fingerprint size={24} color="#EA580C" />
+                <Text className="text-lg font-medium text-stone-700 dark:text-stone-300">
                   Sign in with {biometricLabel}
                 </Text>
               </Pressable>
@@ -224,7 +224,7 @@ export default function LoginScreen() {
           {/* Footer */}
           <View className="items-center mt-8">
             <Pressable>
-              <Text className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+              <Text className="text-sm text-orange-600 dark:text-orange-400 font-medium">
                 Forgot your password?
               </Text>
             </Pressable>

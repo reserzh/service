@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
+import { View, FlatList, RefreshControl, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Wrench } from "lucide-react-native";
@@ -28,6 +28,8 @@ export default function JobListScreen() {
   const [filter, setFilter] = useState("active");
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const isDark = useColorScheme() === "dark";
+  const accent = isDark ? "#FB923C" : "#EA580C";
 
   const params = useMemo(
     () => ({
@@ -50,7 +52,7 @@ export default function JobListScreen() {
   }, [refetch]);
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900" edges={["top"]}>
       {/* Header */}
       <View className="px-4 pt-2 pb-3 gap-3">
         <SearchBar
@@ -67,7 +69,7 @@ export default function JobListScreen() {
         keyExtractor={(item) => item.id}
         contentContainerClassName="px-4 pb-8"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={accent} />
         }
         renderItem={({ item, index }) => (
           <AnimatedListItem index={index}>
@@ -83,7 +85,7 @@ export default function JobListScreen() {
           isLoading ? (
             <View className="gap-3">
               {[1, 2, 3, 4].map((i) => (
-                <View key={i} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 gap-2">
+                <View key={i} className="bg-white dark:bg-stone-800 rounded-xl p-4 gap-2" style={{ shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 }}>
                   <Skeleton className="h-3 w-32" />
                   <Skeleton className="h-5 w-48" />
                   <Skeleton className="h-3 w-24" />
@@ -94,7 +96,7 @@ export default function JobListScreen() {
             <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
-              icon={<Wrench size={28} color="#94a3b8" />}
+              icon={<Wrench size={28} color="#A8A29E" />}
               title="No jobs found"
               description={search ? "Try a different search term" : "No jobs match the current filter"}
             />

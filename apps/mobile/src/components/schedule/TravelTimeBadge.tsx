@@ -48,9 +48,9 @@ export function TravelTimeBadge({ latitude, longitude }: TravelTimeBadgeProps) {
   if (!travelTime) return null;
 
   return (
-    <View className="flex-row items-center gap-1.5 bg-slate-100 dark:bg-slate-800 rounded-full px-2.5 py-1">
-      <Car size={12} color="#64748b" />
-      <Text className="text-xs text-slate-600 dark:text-slate-400">
+    <View className="flex-row items-center gap-1.5 bg-stone-100 dark:bg-stone-800 rounded-full px-2.5 py-1">
+      <Car size={12} color="#78716C" />
+      <Text className="text-xs text-stone-600 dark:text-stone-400">
         {travelTime}
       </Text>
     </View>

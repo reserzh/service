@@ -24,7 +24,7 @@ export function SignatureList({ signatures }: SignatureListProps) {
   const [viewSignature, setViewSignature] = useState<JobSignature | null>(null);
 
   if (signatures.length === 0) {
-    return <Text className="text-sm text-slate-400 italic">No signatures yet</Text>;
+    return <Text className="text-sm text-stone-400 italic">No signatures yet</Text>;
   }
 
   return (
@@ -35,16 +35,16 @@ export function SignatureList({ signatures }: SignatureListProps) {
           <Pressable
             key={sig.id}
             onPress={() => setViewSignature(sig)}
-            className="flex-row items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
+            className="flex-row items-center gap-3 py-2.5 border-b border-stone-100 dark:border-stone-700 last:border-0"
           >
-            <View className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-lg items-center justify-center">
-              <FileCheck size={16} color="#64748b" />
+            <View className="w-8 h-8 bg-stone-100 dark:bg-stone-800 rounded-lg items-center justify-center">
+              <FileCheck size={16} color="#78716C" />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+              <Text className="text-sm font-medium text-stone-900 dark:text-white">
                 {sig.signerName}
               </Text>
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-stone-400">
                 {formatRelativeTime(sig.signedAt)}
               </Text>
             </View>

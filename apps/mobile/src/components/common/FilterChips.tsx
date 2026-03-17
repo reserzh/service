@@ -12,6 +12,7 @@ interface FilterChipsProps {
   onSelect: (key: string) => void;
 }
 
+// Signal design — orange active state, warm stone inactive, bold text
 export function FilterChips({ chips, activeKey, onSelect }: FilterChipsProps) {
   return (
     <ScrollView
@@ -31,17 +32,17 @@ export function FilterChips({ chips, activeKey, onSelect }: FilterChipsProps) {
             accessibilityRole="button"
             accessibilityLabel={`${chip.label} filter${active ? ", selected" : ""}`}
             style={{ minHeight: 48 }}
-            className={`px-5 py-3 rounded-full border ${
+            className={`px-5 py-3 rounded-xl ${
               active
-                ? "bg-blue-600 border-blue-600"
-                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                ? "bg-orange-600 dark:bg-orange-400"
+                : "bg-white dark:bg-stone-800"
             }`}
           >
             <Text
-              className={`text-base font-semibold ${
+              className={`text-base font-extrabold tracking-wide ${
                 active
-                  ? "text-white"
-                  : "text-slate-600 dark:text-slate-400"
+                  ? "text-white dark:text-stone-900"
+                  : "text-stone-600 dark:text-stone-400"
               }`}
             >
               {chip.label}

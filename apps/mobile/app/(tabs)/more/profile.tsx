@@ -50,15 +50,15 @@ export default function ProfileScreen() {
   const stats = statsData?.data;
 
   return (
-    <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-950" contentContainerClassName="pb-8">
+    <ScrollView className="flex-1 bg-orange-50/50 dark:bg-stone-900" contentContainerClassName="pb-8">
       {/* Header */}
-      <View className="items-center py-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <View className="items-center py-8 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
         <Avatar
           initials={getInitials(user.firstName, user.lastName)}
           size="lg"
-          color="#3b82f6"
+          color="#EA580C"
         />
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mt-3">
+        <Text className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-3">
           {user.firstName} {user.lastName}
         </Text>
         <Badge
@@ -72,7 +72,7 @@ export default function ProfileScreen() {
       {/* Performance Metrics */}
       <View className="px-4 mt-4">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Performance
           </Text>
           {statsLoading ? (
@@ -84,7 +84,7 @@ export default function ProfileScreen() {
           ) : stats ? (
             <View className="gap-3">
               <MetricRow
-                icon={<Briefcase size={16} color="#3b82f6" />}
+                icon={<Briefcase size={16} color="#EA580C" />}
                 label="Jobs Completed"
                 value={String(stats.jobsCompleted)}
               />
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
               />
             </View>
           ) : (
-            <Text className="text-sm text-slate-400 italic">
+            <Text className="text-sm text-stone-400 italic">
               Stats unavailable
             </Text>
           )}
@@ -110,16 +110,16 @@ export default function ProfileScreen() {
       {/* Account Info */}
       <View className="px-4 mt-4">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Account Info
           </Text>
           <InfoRow
-            icon={<Mail size={16} color="#64748b" />}
+            icon={<Mail size={16} color="#78716C" />}
             label="Email"
             value={user.email}
           />
           <InfoRow
-            icon={<Shield size={16} color="#64748b" />}
+            icon={<Shield size={16} color="#78716C" />}
             label="Role"
             value={ROLE_LABELS[user.role] ?? user.role}
           />
@@ -129,11 +129,11 @@ export default function ProfileScreen() {
       {/* Notifications */}
       <View className="px-4 mt-4">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Notifications
           </Text>
           <ToggleRow
-            icon={<Bell size={16} color="#3b82f6" />}
+            icon={<Bell size={16} color="#EA580C" />}
             label="Job Assigned"
             value={settings.notifyJobAssigned}
             onToggle={(v) => {
@@ -165,15 +165,15 @@ export default function ProfileScreen() {
       {/* App Settings */}
       <View className="px-4 mt-4">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             App Settings
           </Text>
 
           {/* Default Map App */}
           <View className="mb-4">
             <View className="flex-row items-center gap-2 mb-2">
-              <Map size={16} color="#64748b" />
-              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+              <Map size={16} color="#78716C" />
+              <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                 Default Map App
               </Text>
             </View>
@@ -187,15 +187,15 @@ export default function ProfileScreen() {
                   }}
                   className={`px-3 py-2 rounded-lg border ${
                     settings.preferredMapApp === opt.key
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-                      : "border-slate-200 dark:border-slate-700"
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950"
+                      : "border-stone-200 dark:border-stone-700"
                   }`}
                 >
                   <Text
                     className={`text-sm ${
                       settings.preferredMapApp === opt.key
-                        ? "font-medium text-blue-700 dark:text-blue-400"
-                        : "text-slate-600 dark:text-slate-400"
+                        ? "font-medium text-orange-700 dark:text-orange-400"
+                        : "text-stone-600 dark:text-stone-400"
                     }`}
                   >
                     {opt.label}
@@ -208,8 +208,8 @@ export default function ProfileScreen() {
           {/* Dark mode override */}
           <View>
             <View className="flex-row items-center gap-2 mb-2">
-              <Moon size={16} color="#64748b" />
-              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+              <Moon size={16} color="#78716C" />
+              <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                 Appearance
               </Text>
             </View>
@@ -223,15 +223,15 @@ export default function ProfileScreen() {
                   }}
                   className={`px-3 py-2 rounded-lg border ${
                     settings.darkModeOverride === mode
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-                      : "border-slate-200 dark:border-slate-700"
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950"
+                      : "border-stone-200 dark:border-stone-700"
                   }`}
                 >
                   <Text
                     className={`text-sm capitalize ${
                       settings.darkModeOverride === mode
-                        ? "font-medium text-blue-700 dark:text-blue-400"
-                        : "text-slate-600 dark:text-slate-400"
+                        ? "font-medium text-orange-700 dark:text-orange-400"
+                        : "text-stone-600 dark:text-stone-400"
                     }`}
                   >
                     {mode}
@@ -247,15 +247,15 @@ export default function ProfileScreen() {
       <View className="px-4 mt-4">
         <Card>
           <View className="flex-row items-center gap-2 mb-2">
-            <Info size={16} color="#64748b" />
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Info size={16} color="#78716C" />
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               About
             </Text>
           </View>
-          <Text className="text-sm text-slate-600 dark:text-slate-400">
+          <Text className="text-sm text-stone-600 dark:text-stone-400">
             FieldService Pro v1.0.0
           </Text>
-          <Text className="text-xs text-slate-400 mt-1">
+          <Text className="text-xs text-stone-400 mt-1">
             Built for field service professionals
           </Text>
         </Card>
@@ -266,11 +266,11 @@ export default function ProfileScreen() {
 
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <View className="flex-row items-center gap-3 py-3 border-b border-slate-100 dark:border-slate-800 last:border-0">
+    <View className="flex-row items-center gap-3 py-3 border-b border-stone-100 dark:border-stone-700 last:border-0">
       {icon}
       <View>
-        <Text className="text-xs text-slate-500">{label}</Text>
-        <Text className="text-sm font-medium text-slate-900 dark:text-white">{value}</Text>
+        <Text className="text-xs text-stone-500">{label}</Text>
+        <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">{value}</Text>
       </View>
     </View>
   );
@@ -281,9 +281,9 @@ function MetricRow({ icon, label, value }: { icon: React.ReactNode; label: strin
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-2">
         {icon}
-        <Text className="text-sm text-slate-600 dark:text-slate-400">{label}</Text>
+        <Text className="text-sm text-stone-600 dark:text-stone-400">{label}</Text>
       </View>
-      <Text className="text-sm font-semibold text-slate-900 dark:text-white">{value}</Text>
+      <Text className="text-sm font-semibold text-stone-900 dark:text-stone-50">{value}</Text>
     </View>
   );
 }
@@ -300,16 +300,16 @@ function ToggleRow({
   onToggle: (v: boolean) => void;
 }) {
   return (
-    <View className="flex-row items-center justify-between py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0">
+    <View className="flex-row items-center justify-between py-2.5 border-b border-stone-100 dark:border-stone-700 last:border-0">
       <View className="flex-row items-center gap-2">
         {icon}
-        <Text className="text-sm text-slate-900 dark:text-white">{label}</Text>
+        <Text className="text-sm text-stone-900 dark:text-stone-50">{label}</Text>
       </View>
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: "#cbd5e1", true: "#93c5fd" }}
-        thumbColor={value ? "#3b82f6" : "#f4f4f5"}
+        trackColor={{ false: "#D6D3D1", true: "#FDBA74" }}
+        thumbColor={value ? "#EA580C" : "#f4f4f5"}
       />
     </View>
   );

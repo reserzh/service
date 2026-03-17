@@ -1,4 +1,4 @@
-import { View, Text, FlatList, RefreshControl } from "react-native";
+import { View, Text, FlatList, RefreshControl, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +23,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const { stats, jobs, isLoading, isError, refetch } = useJobStats();
   const restoreTimeTracking = useTimeTrackingStore((s) => s.restore);
+  const isDark = useColorScheme() === "dark";
 
   useEffect(() => {
     restoreTimeTracking();
@@ -74,22 +75,25 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
+  // Signal accent color
+  const accent = isDark ? "#FB923C" : "#EA580C";
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900" edges={["top"]}>
       <FlatList
         data={jobs}
         keyExtractor={(item) => item.id}
         contentContainerClassName="px-4 pb-8"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={accent} />
         }
         ListHeaderComponent={
           <View className="pt-2 pb-4">
-            {/* Greeting */}
-            <Text className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+            {/* Greeting — Signal: extra bold */}
+            <Text className="text-3xl font-extrabold text-stone-900 dark:text-stone-50 mb-1">
               {getGreeting()}, {user?.firstName || "Tech"}
             </Text>
-            <Text className="text-base text-slate-500 dark:text-slate-400 mb-5">
+            <Text className="text-base font-semibold text-stone-500 dark:text-stone-400 mb-5">
               {format(today, "EEEE, MMMM d")}
             </Text>
 
@@ -103,22 +107,23 @@ export default function HomeScreen() {
               <QuickActions />
             </View>
 
-            {/* Stats */}
+            {/* Stats — Signal: orange accent, top border accent */}
             <View className="flex-row gap-3 mb-5">
               <Animated.View className="flex-1" entering={FadeInDown.delay(0).duration(400).springify()}>
                 <StatCard
-                  icon={<ClipboardList size={24} color="#3b82f6" />}
+                  icon={<ClipboardList size={24} color={accent} />}
                   label="Today's Jobs"
                   value={String(stats.total)}
-                  bgClass="bg-blue-50 dark:bg-blue-950"
+                  isDark={isDark}
                 />
               </Animated.View>
               <Animated.View className="flex-1" entering={FadeInDown.delay(80).duration(400).springify()}>
                 <StatCard
-                  icon={<CheckCircle2 size={24} color="#10b981" />}
+                  icon={<CheckCircle2 size={24} color="#16A34A" />}
                   label="Completed"
                   value={String(stats.completed)}
-                  bgClass="bg-emerald-50 dark:bg-emerald-950"
+                  isDark={isDark}
+                  green
                 />
               </Animated.View>
             </View>
@@ -132,8 +137,8 @@ export default function HomeScreen() {
 
             {/* Section header — Route Sheet */}
             <View className="flex-row items-center gap-2">
-              <MapPin size={18} color="#64748b" />
-              <Text className="text-xl font-semibold text-slate-900 dark:text-white">
+              <MapPin size={18} color={accent} />
+              <Text className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
                 Today's Route
               </Text>
             </View>
@@ -153,7 +158,7 @@ export default function HomeScreen() {
           isLoading ? (
             <View className="gap-3">
               {[1, 2, 3].map((i) => (
-                <View key={i} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 gap-2">
+                <View key={i} className="bg-white dark:bg-stone-800 rounded-xl p-4 gap-2" style={{ shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 }}>
                   <Skeleton className="h-3 w-32" />
                   <Skeleton className="h-5 w-48" />
                   <Skeleton className="h-3 w-24" />
@@ -174,28 +179,40 @@ export default function HomeScreen() {
   );
 }
 
+// Signal stat card — orange top border accent
 function StatCard({
   icon,
   label,
   value,
-  bgClass,
+  isDark,
+  green,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
-  bgClass: string;
+  isDark: boolean;
+  green?: boolean;
 }) {
   return (
     <View
-      className={`rounded-2xl p-4 ${bgClass}`}
+      className="bg-white dark:bg-stone-800 rounded-xl p-4"
+      style={{
+        borderTopWidth: 3,
+        borderTopColor: green ? "#16A34A" : (isDark ? "#FB923C" : "#EA580C"),
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+      }}
       accessibilityLabel={`${label}: ${value}`}
       accessibilityRole="text"
     >
       <View className="mb-2">{icon}</View>
-      <Text className="text-2xl font-bold text-slate-900 dark:text-white" numberOfLines={1} adjustsFontSizeToFit>
+      <Text className="text-3xl font-extrabold text-orange-600 dark:text-orange-400" numberOfLines={1} adjustsFontSizeToFit>
         {value}
       </Text>
-      <Text className="text-sm text-slate-500 dark:text-slate-400">{label}</Text>
+      <Text className="text-sm font-bold text-stone-500 dark:text-stone-400">{label}</Text>
     </View>
   );
 }

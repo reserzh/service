@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Linking } from "react-native";
+import { View, Text, Pressable, Linking, useColorScheme } from "react-native";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -36,6 +36,8 @@ interface NextJobCardProps {
 export function NextJobCard({ job }: NextJobCardProps) {
   const [countdown, setCountdown] = useState("");
   const updateStatus = useUpdateJobStatus();
+  const isDark = useColorScheme() === "dark";
+  const accent = isDark ? "#FB923C" : "#EA580C";
 
   // Fetch property history for access info
   const { data: historyData } = useQuery({
@@ -87,12 +89,10 @@ export function NextJobCard({ job }: NextJobCardProps) {
   };
 
   // Phase 1B: One-Tap GO button
-  // Sets status to en_route + starts location tracking + opens Maps — all in one tap
   const handleGo = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      // Capture GPS
       let coords: { latitude: number; longitude: number } | undefined;
       try {
         const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
@@ -104,31 +104,24 @@ export function NextJobCard({ job }: NextJobCardProps) {
         // GPS is best-effort
       }
 
-      // Determine next status - skip confirmations for forward transitions
       let nextStatus: JobStatus = "en_route";
       if (job.status === "scheduled") {
-        // Need to go through dispatched first, but do it silently
         await updateStatus.mutateAsync({ id: job.id, status: "dispatched" as JobStatus });
       } else if (job.status === "en_route") {
         nextStatus = "in_progress";
       } else if (job.status === "in_progress") {
-        // Already working, just navigate
         navigateToJob();
         return;
       }
 
       await updateStatus.mutateAsync({ id: job.id, status: nextStatus, coords });
 
-      // Start location tracking for en_route
       if (nextStatus === "en_route") {
         await startLocationTracking(job.id);
       }
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      // Open Maps navigation
       navigateToJob();
-
       Toast.show({ type: "success", text1: nextStatus === "en_route" ? "On your way!" : "Job started" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to update status";
@@ -156,51 +149,54 @@ export function NextJobCard({ job }: NextJobCardProps) {
   return (
     <Card
       onPress={() => router.push(`/(tabs)/jobs/${job.id}`)}
-      className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950"
+      accent
+      className="bg-orange-50 dark:bg-stone-800"
     >
-      <View className="flex-row items-center justify-between mb-2">
+      {/* Header */}
+      <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center gap-2">
-          <View className="w-2 h-2 rounded-full bg-blue-500" />
-          <Text className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-            Next Job
+          <View className="w-2.5 h-2.5 rounded-full bg-orange-500 dark:bg-orange-400" />
+          <Text className="text-xs font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-widest">
+            Next Up
           </Text>
         </View>
         {countdown ? (
-          <View className="flex-row items-center gap-1 bg-blue-100 dark:bg-blue-900 rounded-full px-2.5 py-0.5">
-            <Clock size={12} color="#3b82f6" />
-            <Text className="text-xs font-medium text-blue-600 dark:text-blue-400">
+          <View className="flex-row items-center gap-1 bg-orange-100 dark:bg-orange-900/40 rounded-lg px-2.5 py-1">
+            <Clock size={12} color={accent} />
+            <Text className="text-xs font-extrabold text-orange-600 dark:text-orange-400">
               {countdown}
             </Text>
           </View>
         ) : null}
       </View>
 
+      {/* Job info */}
       <Text
-        className="text-lg font-semibold text-slate-900 dark:text-white mb-1"
+        className="text-lg font-extrabold text-stone-900 dark:text-stone-50 mb-1"
         numberOfLines={1}
       >
         {job.summary}
       </Text>
 
       {customerName ? (
-        <Text className="text-base text-slate-600 dark:text-slate-400 mb-1">
+        <Text className="text-base font-semibold text-stone-600 dark:text-stone-400 mb-1">
           {customerName}
         </Text>
       ) : null}
 
       {job.scheduledStart && (
-        <Text className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+        <Text className="text-sm font-bold text-orange-600 dark:text-orange-400 mb-2">
           {formatTimeRange(job.scheduledStart, job.scheduledEnd)}
         </Text>
       )}
 
-      {/* Property Access Info — gate codes, obstacles */}
+      {/* Property Access Info */}
       {propertyInfo && (propertyInfo.gateCode || (propertyInfo.obstacles && propertyInfo.obstacles.length > 0)) && (
         <View className="bg-amber-100/60 dark:bg-amber-900/30 rounded-lg px-3 py-2 mb-3">
           {propertyInfo.gateCode && (
             <View className="flex-row items-center gap-1.5 mb-0.5">
               <Key size={12} color="#d97706" />
-              <Text className="text-xs font-medium text-amber-800 dark:text-amber-300">
+              <Text className="text-xs font-bold text-amber-800 dark:text-amber-300">
                 Gate: {propertyInfo.gateCode}
               </Text>
             </View>
@@ -208,7 +204,7 @@ export function NextJobCard({ job }: NextJobCardProps) {
           {propertyInfo.obstacles && propertyInfo.obstacles.length > 0 && (
             <View className="flex-row items-center gap-1.5">
               <AlertTriangle size={12} color="#d97706" />
-              <Text className="text-xs text-amber-700 dark:text-amber-400">
+              <Text className="text-xs font-semibold text-amber-700 dark:text-amber-400">
                 {propertyInfo.obstacles.join(", ")}
               </Text>
             </View>
@@ -216,19 +212,19 @@ export function NextJobCard({ job }: NextJobCardProps) {
         </View>
       )}
 
+      {/* Action buttons */}
       <View className="flex-row items-center gap-2">
-        {/* GO button — one tap dispatch + navigate */}
         {showGoButton && (
           <Pressable
             onPress={handleGo}
             disabled={updateStatus.isPending}
-            className="flex-row items-center gap-1.5 bg-emerald-600 rounded-xl px-5 py-3 active:bg-emerald-700"
-            style={{ minHeight: 48 }}
+            className="flex-row items-center gap-2 bg-orange-600 dark:bg-orange-500 rounded-xl px-6 py-3.5 active:bg-orange-700"
+            style={{ minHeight: 52 }}
             accessibilityLabel="Go to job — updates status and opens navigation"
             accessibilityRole="button"
           >
-            <Navigation size={16} color="#ffffff" />
-            <Text className="text-base font-bold text-white">
+            <Navigation size={18} color="#ffffff" />
+            <Text className="text-base font-extrabold text-white tracking-wide">
               {updateStatus.isPending ? "..." : "GO"}
             </Text>
           </Pressable>
@@ -237,26 +233,30 @@ export function NextJobCard({ job }: NextJobCardProps) {
         {!showGoButton && (
           <Pressable
             onPress={() => router.push(`/(tabs)/jobs/${job.id}`)}
-            className="flex-row items-center gap-1.5 bg-blue-600 rounded-xl px-4 py-3 active:bg-blue-700"
-            style={{ minHeight: 48 }}
+            className="flex-row items-center gap-2 bg-orange-600 dark:bg-orange-500 rounded-xl px-5 py-3.5 active:bg-orange-700"
+            style={{ minHeight: 52 }}
             accessibilityLabel="Open job details"
             accessibilityRole="button"
           >
-            <MapPin size={14} color="#ffffff" />
-            <Text className="text-sm font-semibold text-white">Open</Text>
+            <MapPin size={16} color="#ffffff" />
+            <Text className="text-sm font-extrabold text-white tracking-wide">Open</Text>
           </Pressable>
         )}
 
         {job.customerPhone && (
           <Pressable
             onPress={handleCall}
-            className="flex-row items-center gap-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-xl px-4 py-3 active:bg-emerald-200"
-            style={{ minHeight: 48 }}
+            className="flex-row items-center gap-1.5 bg-white dark:bg-stone-700 rounded-xl px-4 py-3.5 active:bg-stone-100"
+            style={{
+              minHeight: 52,
+              borderWidth: 2,
+              borderColor: isDark ? "#FB923C" : "#EA580C",
+            }}
             accessibilityLabel="Call customer"
             accessibilityRole="button"
           >
-            <Phone size={14} color="#10b981" />
-            <Text className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+            <Phone size={16} color={accent} />
+            <Text className="text-sm font-extrabold text-orange-600 dark:text-orange-400">
               Call
             </Text>
           </Pressable>

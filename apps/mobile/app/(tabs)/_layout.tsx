@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Tabs } from "expo-router";
 import { Home, Wrench, Calendar, Menu } from "lucide-react-native";
-import { Platform, useColorScheme } from "react-native";
+import { Platform, View, useColorScheme } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,6 +20,7 @@ function AnimatedTabIcon({
   focused: boolean;
 }) {
   const scale = useSharedValue(1);
+  const isDark = useColorScheme() === "dark";
 
   useEffect(() => {
     scale.value = withSpring(focused ? 1.15 : 1, {
@@ -31,6 +32,26 @@ function AnimatedTabIcon({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
+
+  // Signal design: active tab gets orange circle background
+  if (focused) {
+    return (
+      <Animated.View style={animatedStyle}>
+        <View
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: isDark ? "#FB923C" : "#EA580C",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon size={size - 2} color="#FFFFFF" />
+        </View>
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View style={animatedStyle}>
@@ -47,18 +68,24 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#2563eb",
-        tabBarInactiveTintColor: isDark ? "#64748b" : "#94a3b8",
+        tabBarActiveTintColor: isDark ? "#FB923C" : "#EA580C",
+        tabBarInactiveTintColor: isDark ? "#78716C" : "#A8A29E",
         tabBarStyle: {
-          backgroundColor: isDark ? "#0f172a" : "#ffffff",
-          borderTopColor: isDark ? "#1e293b" : "#e2e8f0",
+          backgroundColor: isDark ? "#292524" : "#FFFFFF",
+          borderTopColor: isDark ? "#44403C" : "#F5F0EB",
           height: Platform.OS === "ios" ? 96 : 72,
           paddingBottom: Platform.OS === "ios" ? 28 : 8,
           paddingTop: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarLabelStyle: {
           fontSize: 13,
-          fontWeight: "600",
+          fontWeight: "800",
+          letterSpacing: 0.3,
         },
       }}
     >

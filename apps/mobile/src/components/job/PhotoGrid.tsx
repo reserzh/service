@@ -62,7 +62,7 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
   };
 
   if (photos.length === 0) {
-    return <Text className="text-sm text-slate-400 italic">No photos yet</Text>;
+    return <Text className="text-sm text-stone-400 italic">No photos yet</Text>;
   }
 
   // Group photos: Before > After > General
@@ -79,7 +79,7 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
           key={photo.id}
           onPress={() => setSelectedPhoto(photo)}
           onLongPress={() => handleLongPress(photo)}
-          className="rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700"
+          className="rounded-lg overflow-hidden bg-stone-200 dark:bg-stone-700"
         >
           <Image
             source={{ uri: getPhotoUrl(photo) }}
@@ -116,19 +116,19 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
         <View className="gap-3">
           {beforePhotos.length > 0 && (
             <View>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Before</Text>
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">Before</Text>
               {renderGrid(beforePhotos)}
             </View>
           )}
           {afterPhotos.length > 0 && (
             <View>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">After</Text>
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">After</Text>
               {renderGrid(afterPhotos)}
             </View>
           )}
           {generalPhotos.length > 0 && (
             <View>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">General</Text>
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">General</Text>
               {renderGrid(generalPhotos)}
             </View>
           )}

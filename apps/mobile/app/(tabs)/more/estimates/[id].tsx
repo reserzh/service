@@ -49,7 +49,7 @@ export default function EstimateDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       <ScrollView
         contentContainerClassName="pb-32"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
@@ -57,7 +57,7 @@ export default function EstimateDetailScreen() {
         {/* Header */}
         <View className="px-4 pt-4 pb-3">
           <View className="flex-row items-center gap-2 mb-1">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               {estimate.estimateNumber}
             </Text>
             <Badge
@@ -66,10 +66,10 @@ export default function EstimateDetailScreen() {
               textClass={colors.text}
             />
           </View>
-          <Text className="text-xl font-bold text-slate-900 dark:text-white mb-1">
+          <Text className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-1">
             {estimate.summary}
           </Text>
-          <Text className="text-sm text-slate-500">
+          <Text className="text-sm text-stone-500">
             Created {formatDate(estimate.createdAt)}
           </Text>
         </View>
@@ -77,13 +77,13 @@ export default function EstimateDetailScreen() {
         {/* Customer */}
         <View className="px-4 mb-3">
           <Card>
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
               Customer
             </Text>
-            <Text className="text-base font-medium text-slate-900 dark:text-white">
+            <Text className="text-base font-medium text-stone-900 dark:text-stone-50">
               {formatCustomerName(estimate.customer)}
             </Text>
-            <Text className="text-sm text-slate-500 mt-1">
+            <Text className="text-sm text-stone-500 mt-1">
               {formatAddress(estimate.property)}
             </Text>
           </Card>
@@ -103,10 +103,10 @@ export default function EstimateDetailScreen() {
         {estimate.notes && (
           <View className="px-4 mb-3">
             <Card>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
                 Notes
               </Text>
-              <Text className="text-sm text-slate-700 dark:text-slate-300">
+              <Text className="text-sm text-stone-700 dark:text-stone-300">
                 {estimate.notes}
               </Text>
             </Card>
@@ -116,7 +116,7 @@ export default function EstimateDetailScreen() {
 
       {/* Convert to Job button */}
       {canConvert && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-8">
+        <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 px-4 pt-3 pb-8">
           <Button
             title="Convert to Job"
             onPress={handleConvertToJob}
@@ -143,7 +143,7 @@ function OptionCard({
     >
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center gap-2">
-          <Text className="text-base font-semibold text-slate-900 dark:text-white">
+          <Text className="text-base font-semibold text-stone-900 dark:text-stone-50">
             {option.name}
           </Text>
           {option.isRecommended && (
@@ -158,30 +158,30 @@ function OptionCard({
         </View>
         <View className="flex-row items-center gap-1">
           <DollarSign size={16} color="#0f172a" />
-          <Text className="text-lg font-bold text-slate-900 dark:text-white">
+          <Text className="text-lg font-bold text-stone-900 dark:text-stone-50">
             {formatCurrency(option.total)}
           </Text>
         </View>
       </View>
 
       {option.description && (
-        <Text className="text-sm text-slate-500 mb-3">{option.description}</Text>
+        <Text className="text-sm text-stone-500 mb-3">{option.description}</Text>
       )}
 
       {option.items.map((item) => (
         <View
           key={item.id}
-          className="flex-row items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
+          className="flex-row items-center justify-between py-1.5 border-b border-stone-100 dark:border-stone-700 last:border-0"
         >
           <View className="flex-1 mr-3">
-            <Text className="text-sm text-slate-700 dark:text-slate-300" numberOfLines={1}>
+            <Text className="text-sm text-stone-700 dark:text-stone-300" numberOfLines={1}>
               {item.description}
             </Text>
-            <Text className="text-xs text-slate-400">
+            <Text className="text-xs text-stone-400">
               {item.quantity} x {formatCurrency(item.unitPrice)}
             </Text>
           </View>
-          <Text className="text-sm font-medium text-slate-900 dark:text-white">
+          <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
             {formatCurrency(item.total)}
           </Text>
         </View>

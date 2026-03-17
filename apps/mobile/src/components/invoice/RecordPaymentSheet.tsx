@@ -80,16 +80,16 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
       handleIndicatorStyle={{ backgroundColor: "#cbd5e1" }}
     >
       <BottomSheetScrollView className="px-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text className="text-lg font-bold text-slate-900 mb-1">
+        <Text className="text-lg font-bold text-stone-900 mb-1">
           Record Payment
         </Text>
-        <Text className="text-sm text-slate-500 mb-4">
+        <Text className="text-sm text-stone-500 mb-4">
           Balance due: {formatCurrency(balanceDue)}
         </Text>
 
         {/* Amount */}
         <View className="mb-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Amount
           </Text>
           <Controller
@@ -100,9 +100,9 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
                 value={value}
                 onChangeText={onChange}
                 placeholder="0.00"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#A8A29E"
                 keyboardType="decimal-pad"
-                className="border border-slate-200 rounded-xl px-4 py-3 text-base text-slate-900 bg-slate-50"
+                className="border border-stone-200 rounded-xl px-4 py-3 text-base text-stone-900 bg-stone-50"
               />
             )}
           />
@@ -113,7 +113,7 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
 
         {/* Payment Method */}
         <View className="mb-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Payment Method
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -127,12 +127,12 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
                 className={`px-3 py-2 rounded-lg border ${
                   selectedMethod === m.key
                     ? "border-blue-500 bg-blue-50"
-                    : "border-slate-200 bg-slate-50"
+                    : "border-stone-200 bg-stone-50"
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    selectedMethod === m.key ? "text-blue-700" : "text-slate-600"
+                    selectedMethod === m.key ? "text-blue-700" : "text-stone-600"
                   }`}
                 >
                   {m.label}
@@ -144,7 +144,7 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
 
         {/* Reference Number */}
         <View className="mb-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Reference Number
           </Text>
           <Controller
@@ -155,8 +155,8 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
                 value={value}
                 onChangeText={onChange}
                 placeholder="Optional"
-                placeholderTextColor="#94a3b8"
-                className="border border-slate-200 rounded-xl px-4 py-3 text-base text-slate-900 bg-slate-50"
+                placeholderTextColor="#A8A29E"
+                className="border border-stone-200 rounded-xl px-4 py-3 text-base text-stone-900 bg-stone-50"
               />
             )}
           />
@@ -164,7 +164,7 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
 
         {/* Notes */}
         <View className="mb-6">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Notes
           </Text>
           <Controller
@@ -175,9 +175,9 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
                 value={value}
                 onChangeText={onChange}
                 placeholder="Optional notes"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#A8A29E"
                 multiline
-                className="border border-slate-200 rounded-xl px-4 py-3 text-base text-slate-900 bg-slate-50 min-h-[60px]"
+                className="border border-stone-200 rounded-xl px-4 py-3 text-base text-stone-900 bg-stone-50 min-h-[60px]"
                 textAlignVertical="top"
               />
             )}

@@ -46,20 +46,20 @@ export function PropertyHistoryBanner({ propertyId, assignedTo }: PropertyHistor
           {property.gateCode && (
             <View className="flex-row items-center gap-2 mb-1">
               <Key size={14} color="#d97706" />
-              <Text className="text-sm font-medium text-slate-800 dark:text-slate-200">
+              <Text className="text-sm font-medium text-stone-800 dark:text-stone-200">
                 Gate Code: {property.gateCode}
               </Text>
             </View>
           )}
           {property.accessNotes && (
-            <Text className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+            <Text className="text-sm text-stone-600 dark:text-stone-400 mb-1">
               {property.accessNotes}
             </Text>
           )}
           {property.obstacles && property.obstacles.length > 0 && (
             <View className="flex-row items-center gap-2">
               <AlertTriangle size={14} color="#d97706" />
-              <Text className="text-sm text-slate-600 dark:text-slate-400">
+              <Text className="text-sm text-stone-600 dark:text-stone-400">
                 Obstacles: {property.obstacles.join(", ")}
               </Text>
             </View>
@@ -78,15 +78,15 @@ export function PropertyHistoryBanner({ propertyId, assignedTo }: PropertyHistor
             </Text>
           </View>
 
-          <Text className="text-sm font-medium text-slate-800 dark:text-slate-200 mb-1">
+          <Text className="text-sm font-medium text-stone-800 dark:text-stone-200 mb-1">
             {lastJob.summary}
             {lastJob.completedAt && (
-              <Text className="text-slate-500"> — {formatDistanceToNow(new Date(lastJob.completedAt), { addSuffix: true })}</Text>
+              <Text className="text-stone-500"> — {formatDistanceToNow(new Date(lastJob.completedAt), { addSuffix: true })}</Text>
             )}
           </Text>
 
           {lastJob.assignedFirstName && (
-            <Text className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+            <Text className="text-xs text-stone-500 dark:text-stone-400 mb-1">
               By {lastJob.assignedFirstName} {lastJob.assignedLastName}
             </Text>
           )}
@@ -96,8 +96,8 @@ export function PropertyHistoryBanner({ propertyId, assignedTo }: PropertyHistor
             <View className="mt-1">
               {lastJob.notes.slice(0, 2).map((note, i) => (
                 <View key={i} className="flex-row items-start gap-1.5 mb-0.5">
-                  <FileText size={12} color="#94a3b8" style={{ marginTop: 2 }} />
-                  <Text className="text-sm text-slate-600 dark:text-slate-400 flex-1" numberOfLines={2}>
+                  <FileText size={12} color="#A8A29E" style={{ marginTop: 2 }} />
+                  <Text className="text-sm text-stone-600 dark:text-stone-400 flex-1" numberOfLines={2}>
                     {note.content}
                   </Text>
                 </View>
@@ -109,12 +109,12 @@ export function PropertyHistoryBanner({ propertyId, assignedTo }: PropertyHistor
           <View className="flex-row items-center gap-4 mt-2">
             {lastJob.photoCount > 0 && (
               <View className="flex-row items-center gap-1">
-                <Image size={12} color="#94a3b8" />
-                <Text className="text-xs text-slate-500">{lastJob.photoCount} photos</Text>
+                <Image size={12} color="#A8A29E" />
+                <Text className="text-xs text-stone-500">{lastJob.photoCount} photos</Text>
               </View>
             )}
             {lastJob.checklistSummary.total > 0 && (
-              <Text className="text-xs text-slate-500">
+              <Text className="text-xs text-stone-500">
                 Checklist: {lastJob.checklistSummary.completed}/{lastJob.checklistSummary.total}
               </Text>
             )}

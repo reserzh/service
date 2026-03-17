@@ -29,7 +29,7 @@ export default function CustomerListScreen() {
   }, [refetch]);
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       <View className="px-4 pt-3 pb-2">
         <SearchBar
           value={search}
@@ -49,27 +49,27 @@ export default function CustomerListScreen() {
           <AnimatedListItem index={index}>
           <Pressable
             onPress={() => router.push(`/(tabs)/more/customers/${item.id}`)}
-            className="flex-row items-center gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
+            className="flex-row items-center gap-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 mb-2 active:scale-[0.98]"
           >
             <Avatar
               initials={getInitials(item.firstName, item.lastName)}
               size="md"
             />
             <View className="flex-1">
-              <Text className="text-base font-medium text-slate-900 dark:text-white">
+              <Text className="text-base font-medium text-stone-900 dark:text-stone-50">
                 {item.firstName} {item.lastName}
               </Text>
               {item.companyName && (
-                <Text className="text-xs text-slate-500">{item.companyName}</Text>
+                <Text className="text-xs text-stone-500">{item.companyName}</Text>
               )}
               <View className="flex-row items-center gap-1 mt-0.5">
-                <Phone size={11} color="#94a3b8" />
-                <Text className="text-xs text-slate-500">
+                <Phone size={11} color="#A8A29E" />
+                <Text className="text-xs text-stone-500">
                   {formatPhone(item.phone)}
                 </Text>
               </View>
             </View>
-            <ChevronRight size={18} color="#94a3b8" />
+            <ChevronRight size={18} color="#A8A29E" />
           </Pressable>
           </AnimatedListItem>
         )}
@@ -77,7 +77,7 @@ export default function CustomerListScreen() {
           isLoading ? (
             <View className="gap-2">
               {[1, 2, 3, 4, 5].map((i) => (
-                <View key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex-row gap-3">
+                <View key={i} className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 flex-row gap-3">
                   <Skeleton className="w-10 h-10 rounded-full" />
                   <View className="flex-1 gap-1.5">
                     <Skeleton className="h-4 w-36" />
@@ -90,7 +90,7 @@ export default function CustomerListScreen() {
             <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
-              icon={<Users size={28} color="#94a3b8" />}
+              icon={<Users size={28} color="#A8A29E" />}
               title="No customers found"
               description={search ? "Try a different search term" : "No customers yet"}
             />

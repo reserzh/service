@@ -42,7 +42,7 @@ export default function EstimateListScreen() {
   }, [refetch]);
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       <View className="px-4 pt-3 pb-2 gap-3">
         <SearchBar value={search} onChangeText={setSearch} placeholder="Search estimates..." />
         <FilterChips chips={FILTERS} activeKey={filter} onSelect={setFilter} />
@@ -61,10 +61,10 @@ export default function EstimateListScreen() {
             <AnimatedListItem index={index}>
             <Pressable
               onPress={() => router.push(`/(tabs)/more/estimates/${item.id}`)}
-              className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
+              className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 mb-2 active:scale-[0.98]"
             >
               <View className="flex-row items-center justify-between mb-1">
-                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                   {item.estimateNumber}
                 </Text>
                 <Badge
@@ -73,14 +73,14 @@ export default function EstimateListScreen() {
                   textClass={colors.text}
                 />
               </View>
-              <Text className="text-base font-medium text-slate-900 dark:text-white mb-1" numberOfLines={1}>
+              <Text className="text-base font-medium text-stone-900 dark:text-stone-50 mb-1" numberOfLines={1}>
                 {item.summary}
               </Text>
               <View className="flex-row items-center justify-between">
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-stone-500">
                   {formatDate(item.createdAt)}
                 </Text>
-                <Text className="text-sm font-semibold text-slate-900 dark:text-white">
+                <Text className="text-sm font-semibold text-stone-900 dark:text-stone-50">
                   {formatCurrency(item.totalAmount)}
                 </Text>
               </View>
@@ -92,7 +92,7 @@ export default function EstimateListScreen() {
           isLoading ? (
             <View className="gap-2">
               {[1, 2, 3].map((i) => (
-                <View key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 gap-2">
+                <View key={i} className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 gap-2">
                   <Skeleton className="h-3 w-24" />
                   <Skeleton className="h-5 w-48" />
                   <Skeleton className="h-3 w-16" />
@@ -103,7 +103,7 @@ export default function EstimateListScreen() {
             <QueryErrorState onRetry={() => refetch()} />
           ) : (
             <EmptyState
-              icon={<FileText size={28} color="#94a3b8" />}
+              icon={<FileText size={28} color="#A8A29E" />}
               title="No estimates"
               description="Create your first estimate on-site"
               actionLabel="New Estimate"
@@ -116,7 +116,7 @@ export default function EstimateListScreen() {
       {/* FAB */}
       <Pressable
         onPress={() => router.push("/(tabs)/more/estimates/create")}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full items-center justify-center shadow-lg active:bg-blue-700"
+        className="absolute bottom-6 right-6 w-14 h-14 bg-orange-600 rounded-full items-center justify-center shadow-lg active:bg-orange-700"
       >
         <Plus size={24} color="#fff" />
       </Pressable>

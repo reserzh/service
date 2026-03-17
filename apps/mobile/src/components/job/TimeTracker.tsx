@@ -51,18 +51,18 @@ export function TimeTracker({
   }, [isRunning, computeElapsed]);
 
   return (
-    <View className="flex-row items-center justify-between bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-3">
+    <View className="flex-row items-center justify-between bg-stone-50 dark:bg-stone-800 rounded-xl px-4 py-3">
       <View className="flex-row items-center gap-2">
-        <Clock size={18} color={isRunning ? "#f59e0b" : "#64748b"} />
+        <Clock size={18} color={isRunning ? "#f59e0b" : "#78716C"} />
         <View>
-          <Text className="text-xs text-slate-500 dark:text-slate-400">
+          <Text className="text-xs text-stone-500 dark:text-stone-400">
             {isRunning ? "Time Elapsed" : actualEnd ? "Total Time" : "Not Started"}
           </Text>
           <Text
             className={`text-lg font-mono font-bold ${
               isRunning
                 ? "text-amber-600 dark:text-amber-400"
-                : "text-slate-900 dark:text-white"
+                : "text-stone-900 dark:text-white"
             }`}
           >
             {actualStart ? formatElapsed(elapsed) : "--:--"}

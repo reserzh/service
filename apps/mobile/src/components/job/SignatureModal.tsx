@@ -76,10 +76,10 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <View className="flex-1 bg-white">
         {/* Header */}
-        <View className="flex-row items-center justify-between px-4 pt-14 pb-3 border-b border-slate-200">
-          <Text className="text-lg font-bold text-slate-900">Capture Signature</Text>
+        <View className="flex-row items-center justify-between px-4 pt-14 pb-3 border-b border-stone-200">
+          <Text className="text-lg font-bold text-stone-900">Capture Signature</Text>
           <Pressable onPress={handleClose} hitSlop={12}>
-            <X size={24} color="#64748b" />
+            <X size={24} color="#78716C" />
           </Pressable>
         </View>
 
@@ -89,8 +89,8 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
             value={signerName}
             onChangeText={setSignerName}
             placeholder="Signer name"
-            placeholderTextColor="#94a3b8"
-            className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900"
+            placeholderTextColor="#A8A29E"
+            className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-900"
           />
           <View className="flex-row gap-2">
             {ROLES.map((role) => (
@@ -100,12 +100,12 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
                 className={`flex-1 items-center py-2.5 rounded-xl border ${
                   signerRole === role.value
                     ? "bg-blue-50 border-blue-300"
-                    : "bg-white border-slate-200"
+                    : "bg-white border-stone-200"
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    signerRole === role.value ? "text-blue-700" : "text-slate-500"
+                    signerRole === role.value ? "text-blue-700" : "text-stone-500"
                   }`}
                 >
                   {role.label}
@@ -116,14 +116,14 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
         </View>
 
         {/* Signature canvas */}
-        <View className="flex-1 mx-4 mb-3 border border-slate-200 rounded-xl overflow-hidden">
+        <View className="flex-1 mx-4 mb-3 border border-stone-200 rounded-xl overflow-hidden">
           <SignatureCanvas
             ref={signatureRef}
             webStyle={signatureStyle}
             onOK={handleSignatureData}
             onBegin={() => setHasSignature(true)}
             backgroundColor="#ffffff"
-            penColor="#1e293b"
+            penColor="#292524"
             minWidth={2}
             maxWidth={4}
             trimWhitespace
@@ -138,7 +138,7 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
               title="Clear"
               variant="outline"
               onPress={handleClear}
-              icon={<RotateCcw size={16} color="#64748b" />}
+              icon={<RotateCcw size={16} color="#78716C" />}
             />
           </View>
           <View className="flex-1">

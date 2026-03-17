@@ -74,7 +74,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
       <Card className="mb-3">
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               Photos
             </Text>
             {job.photos.length > 0 && (
@@ -93,7 +93,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
                 variant="outline"
                 size="sm"
                 onPress={() => setShowComparison(!showComparison)}
-                icon={<ArrowLeftRight size={14} color="#3b82f6" />}
+                icon={<ArrowLeftRight size={14} color="#EA580C" />}
               />
             )}
             <PhotoCapture jobId={job.id} />
@@ -113,7 +113,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
       <Card>
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               Signatures
             </Text>
             {job.signatures.length > 0 && (
@@ -130,7 +130,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
             variant="outline"
             size="sm"
             onPress={() => setShowSignatureModal(true)}
-            icon={<PenTool size={14} color="#3b82f6" />}
+            icon={<PenTool size={14} color="#EA580C" />}
           />
         </View>
         <SignatureList signatures={job.signatures} />

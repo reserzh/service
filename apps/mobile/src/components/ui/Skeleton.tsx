@@ -27,7 +27,7 @@ export function Skeleton({ className = "h-4 w-full" }: SkeletonProps) {
 
   return (
     <Animated.View
-      className={`bg-slate-200 dark:bg-slate-700 rounded-lg ${className}`}
+      className={`bg-stone-200 dark:bg-stone-700 rounded-lg ${className}`}
       style={animatedStyle}
     />
   );

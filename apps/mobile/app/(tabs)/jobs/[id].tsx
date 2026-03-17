@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { View, Text, Pressable, Alert, Linking } from "react-native";
+import { View, Text, Pressable, Alert, Linking, useColorScheme } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
   Phone,
@@ -39,6 +39,8 @@ export default function JobDetailScreen() {
   const createInvoice = useCreateInvoiceFromJob();
   const [activeTab, setActiveTab] = useState<JobTab>("overview");
   const invoiceSheetRef = useRef<BottomSheet>(null);
+  const isDark = useColorScheme() === "dark";
+  const accent = isDark ? "#FB923C" : "#EA580C";
 
   const job = data?.data;
 
@@ -49,7 +51,7 @@ export default function JobDetailScreen() {
     return {
       status: nextStatus,
       label: STATUS_ACTION_LABELS[job.status] ?? `Move to ${nextStatus}`,
-      color: STATUS_ACTION_COLORS[job.status] ?? "bg-blue-600",
+      color: STATUS_ACTION_COLORS[job.status] ?? "bg-orange-600",
     };
   }, [job]);
 
@@ -57,12 +59,10 @@ export default function JobDetailScreen() {
     async (newStatus: JobStatus) => {
       if (!job) return;
 
-      // Forward transitions skip confirmation; backward/cancel require it
       const isForwardTransition = ["en_route", "in_progress", "completed"].includes(newStatus);
 
       const doTransition = async () => {
         try {
-          // Capture GPS for en_route, in_progress and completed transitions
           let coords: { latitude: number; longitude: number } | undefined;
           if (newStatus === "en_route" || newStatus === "in_progress" || newStatus === "completed") {
             try {
@@ -72,7 +72,7 @@ export default function JobDetailScreen() {
                 coords = { latitude: loc.coords.latitude, longitude: loc.coords.longitude };
               }
             } catch {
-              // GPS capture is best-effort, proceed without coords
+              // GPS capture is best-effort
             }
           }
 
@@ -80,7 +80,6 @@ export default function JobDetailScreen() {
           await updateStatus.mutateAsync({ id: job.id, status: newStatus, coords });
           Toast.show({ type: "success", text1: "Status updated" });
 
-          // Start/stop background location tracking
           if (newStatus === "en_route") {
             const started = await startLocationTracking(job.id);
             if (!started) {
@@ -100,10 +99,8 @@ export default function JobDetailScreen() {
       };
 
       if (isForwardTransition) {
-        // No confirmation for standard forward transitions
         await doTransition();
       } else {
-        // Backward/cancel transitions still need confirmation
         const labels: Record<string, string> = {
           canceled: "Cancel this job?",
           dispatched: "Move back to dispatched?",
@@ -168,21 +165,32 @@ export default function JobDetailScreen() {
   const showCreateInvoice = job.status === "completed";
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
-      {/* Fixed Header */}
-      <View className="px-4 pt-4 pb-2 border-b bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+    <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
+      {/* Fixed Header — Signal: warm stone, orange accent */}
+      <View
+        className="px-4 pt-4 pb-3 bg-white dark:bg-stone-800"
+        style={{
+          borderBottomWidth: 3,
+          borderBottomColor: accent,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+          elevation: 3,
+        }}
+      >
         <View className="flex-row items-center justify-between mb-1">
           <View className="flex-row items-center gap-2">
-            <Text className="text-sm font-medium uppercase tracking-wide text-slate-500">
+            <Text className="text-sm font-bold uppercase tracking-wide text-stone-500 dark:text-stone-400">
               {job.jobNumber}
             </Text>
-            <Text className="text-sm text-slate-300">·</Text>
-            <Text className="text-sm font-medium uppercase tracking-wide text-slate-500">
+            <Text className="text-sm text-stone-300 dark:text-stone-600">·</Text>
+            <Text className="text-sm font-bold uppercase tracking-wide text-stone-500 dark:text-stone-400">
               {job.jobType}
             </Text>
           </View>
         </View>
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-2" numberOfLines={1}>
+        <Text className="text-xl font-extrabold text-stone-900 dark:text-stone-50 mb-2" numberOfLines={1}>
           {job.summary}
         </Text>
         <View className="flex-row items-center gap-2">
@@ -209,13 +217,24 @@ export default function JobDetailScreen() {
         {activeTab === "history" && <JobHistoryTab job={job} />}
       </View>
 
-      {/* Fixed Bottom Action Bar */}
-      <View className="border-t px-4 pt-3 pb-8 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+      {/* Fixed Bottom Action Bar — Signal styling */}
+      <View
+        className="px-4 pt-3 pb-8 bg-white dark:bg-stone-800"
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: isDark ? "#44403C" : "#F5F0EB",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowRadius: 8,
+          elevation: 8,
+        }}
+      >
         {/* En route indicator */}
         {isEnRoute && (
-          <View className="flex-row items-center justify-center rounded-lg px-3 py-2 mb-3 bg-indigo-50 dark:bg-indigo-900/30">
-            <Send size={14} color="#6366f1" />
-            <Text className="ml-2 text-xs font-medium text-indigo-700 dark:text-indigo-300">
+          <View className="flex-row items-center justify-center rounded-lg px-3 py-2 mb-3 bg-orange-50 dark:bg-orange-900/30">
+            <Send size={14} color={accent} />
+            <Text className="ml-2 text-xs font-bold text-orange-700 dark:text-orange-300">
               Sharing live location with customer
             </Text>
           </View>
@@ -230,9 +249,9 @@ export default function JobDetailScreen() {
             accessibilityRole="button"
           >
             <View className="rounded-full items-center justify-center w-14 h-14 bg-emerald-100 dark:bg-emerald-900">
-              <Phone size={24} color="#10b981" />
+              <Phone size={24} color="#16a34a" />
             </View>
-            <Text className="text-xs text-slate-500">Call</Text>
+            <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Call</Text>
           </Pressable>
 
           <Pressable
@@ -241,10 +260,10 @@ export default function JobDetailScreen() {
             accessibilityLabel="Navigate to job"
             accessibilityRole="button"
           >
-            <View className="rounded-full items-center justify-center w-14 h-14 bg-blue-100 dark:bg-blue-900">
-              <Navigation size={24} color="#3b82f6" />
+            <View className="rounded-full items-center justify-center w-14 h-14 bg-orange-100 dark:bg-orange-900">
+              <Navigation size={24} color={accent} />
             </View>
-            <Text className="text-xs text-slate-500">Navigate</Text>
+            <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Navigate</Text>
           </Pressable>
 
           <Pressable
@@ -253,10 +272,10 @@ export default function JobDetailScreen() {
             accessibilityLabel="Add note"
             accessibilityRole="button"
           >
-            <View className="rounded-full items-center justify-center w-14 h-14 bg-violet-100 dark:bg-violet-900">
-              <MessageSquare size={24} color="#8b5cf6" />
+            <View className="rounded-full items-center justify-center w-14 h-14 bg-amber-100 dark:bg-amber-900">
+              <MessageSquare size={24} color="#d97706" />
             </View>
-            <Text className="text-xs text-slate-500">Note</Text>
+            <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Note</Text>
           </Pressable>
 
           <Pressable
@@ -265,10 +284,10 @@ export default function JobDetailScreen() {
             accessibilityLabel="Take photo"
             accessibilityRole="button"
           >
-            <View className="rounded-full items-center justify-center w-14 h-14 bg-amber-100 dark:bg-amber-900">
-              <Camera size={24} color="#f59e0b" />
+            <View className="rounded-full items-center justify-center w-14 h-14 bg-stone-100 dark:bg-stone-700">
+              <Camera size={24} color={isDark ? "#A8A29E" : "#57534E"} />
             </View>
-            <Text className="text-xs text-slate-500">Photo</Text>
+            <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Photo</Text>
           </Pressable>
 
           {showCreateInvoice && (
@@ -278,10 +297,10 @@ export default function JobDetailScreen() {
               accessibilityLabel="Create invoice"
               accessibilityRole="button"
             >
-              <View className="rounded-full items-center justify-center w-14 h-14 bg-green-100 dark:bg-green-900">
-                <Receipt size={24} color="#22c55e" />
+              <View className="rounded-full items-center justify-center w-14 h-14 bg-emerald-100 dark:bg-emerald-900">
+                <Receipt size={24} color="#16a34a" />
               </View>
-              <Text className="text-xs text-slate-500">Invoice</Text>
+              <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Invoice</Text>
             </Pressable>
           )}
         </View>
@@ -291,9 +310,9 @@ export default function JobDetailScreen() {
           <Pressable
             onPress={() => handleStatusChange(primaryAction.status)}
             disabled={updateStatus.isPending}
-            className={`flex-row items-center justify-center rounded-2xl active:opacity-90 ${primaryAction.color} py-5 min-h-[64px]`}
+            className={`flex-row items-center justify-center rounded-xl active:opacity-90 ${primaryAction.color} py-5 min-h-[64px]`}
           >
-            <Text className="text-xl font-bold text-white">
+            <Text className="text-xl font-extrabold tracking-wide text-white">
               {updateStatus.isPending ? "Updating..." : primaryAction.label}
             </Text>
           </Pressable>

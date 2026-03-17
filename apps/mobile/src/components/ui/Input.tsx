@@ -12,19 +12,19 @@ export const Input = forwardRef<TextInput, InputProps>(
     return (
       <View className={`gap-1.5 ${containerClassName}`}>
         {label && (
-          <Text className="text-base font-medium text-slate-700 dark:text-slate-300">
+          <Text className="text-base font-medium text-stone-700 dark:text-stone-300">
             {label}
           </Text>
         )}
         <TextInput
           ref={ref}
           style={{ minHeight: 56 }}
-          className={`bg-white dark:bg-slate-900 border rounded-xl px-4 py-4 text-lg text-slate-900 dark:text-white ${
+          className={`bg-white dark:bg-stone-800 border rounded-xl px-4 py-4 text-lg text-stone-900 dark:text-white ${
             error
               ? "border-red-500"
-              : "border-slate-300 dark:border-slate-600 focus:border-blue-500"
+              : "border-stone-300 dark:border-stone-600 focus:border-blue-500"
           }`}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor="#A8A29E"
           {...props}
         />
         {error && (

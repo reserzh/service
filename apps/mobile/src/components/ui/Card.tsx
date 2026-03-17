@@ -5,15 +5,38 @@ interface CardProps {
   onPress?: () => void;
   className?: string;
   style?: ViewStyle;
+  /** Show the Signal orange top accent border */
+  accent?: boolean;
 }
 
-export function Card({ children, onPress, className = "", style }: CardProps) {
+// Signal design — warm cards with optional orange top border
+const baseClasses = "bg-white dark:bg-stone-800 rounded-xl p-4";
+const shadowStyle: ViewStyle = {
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 3,
+};
+
+const accentStyle: ViewStyle = {
+  borderTopWidth: 3,
+  borderTopColor: "#EA580C",
+};
+
+export function Card({ children, onPress, className = "", style, accent = false }: CardProps) {
+  const combinedStyle: ViewStyle[] = [
+    shadowStyle,
+    accent ? accentStyle : {},
+    style ?? {},
+  ];
+
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
-        className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 active:scale-[0.98] ${className}`}
-        style={style}
+        className={`${baseClasses} active:scale-[0.98] ${className}`}
+        style={combinedStyle}
       >
         {children}
       </Pressable>
@@ -22,8 +45,8 @@ export function Card({ children, onPress, className = "", style }: CardProps) {
 
   return (
     <View
-      className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 ${className}`}
-      style={style}
+      className={`${baseClasses} ${className}`}
+      style={combinedStyle}
     >
       {children}
     </View>

@@ -21,6 +21,7 @@ interface JobDetailTabsProps {
   onTabChange: (tab: JobTab) => void;
 }
 
+// Signal design — orange underline, bold text, warm stone bg
 export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
   const activeIndex = TABS.findIndex((t) => t.key === activeTab);
   const translateX = useSharedValue(activeIndex * 25);
@@ -34,7 +35,7 @@ export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
   }));
 
   return (
-    <View className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+    <View className="bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
       <View className="flex-row relative">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
@@ -51,10 +52,10 @@ export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
               accessibilityState={{ selected: isActive }}
             >
               <Text
-                className={`text-base font-semibold ${
+                className={`text-base font-extrabold tracking-wide ${
                   isActive
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-500 dark:text-slate-400"
+                    ? "text-orange-600 dark:text-orange-400"
+                    : "text-stone-400 dark:text-stone-500"
                 }`}
               >
                 {tab.label}
@@ -63,7 +64,7 @@ export function JobDetailTabs({ activeTab, onTabChange }: JobDetailTabsProps) {
           );
         })}
         <Animated.View
-          className="absolute bottom-0 h-1 bg-blue-600 dark:bg-blue-400"
+          className="absolute bottom-0 h-1 bg-orange-600 dark:bg-orange-400 rounded-full"
           style={[{ width: "25%" }, underlineStyle]}
         />
       </View>

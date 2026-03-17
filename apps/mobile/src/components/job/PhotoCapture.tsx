@@ -121,14 +121,14 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
               className={`flex-1 items-center rounded-lg border py-3.5 ${
                 photoType === opt.value
                   ? "bg-blue-500 border-blue-500"
-                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  : "bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700"
               }`}
             >
               <Text
                 className={`text-sm font-medium ${
                   photoType === opt.value
                     ? "text-white"
-                    : "text-slate-600 dark:text-slate-300"
+                    : "text-stone-600 dark:text-stone-300"
                 }`}
               >
                 {opt.label}
@@ -140,8 +140,8 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
           value={caption}
           onChangeText={setCaption}
           placeholder="Add a caption (optional)"
-          placeholderTextColor="#94a3b8"
-          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 text-base text-slate-900 dark:text-white"
+          placeholderTextColor="#A8A29E"
+          className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-4 text-base text-stone-900 dark:text-white"
         />
         <View className="flex-row gap-2">
           <Button
@@ -173,7 +173,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
       variant="outline"
       size="sm"
       onPress={showActionSheet}
-      icon={<Camera size={14} color="#3b82f6" />}
+      icon={<Camera size={14} color="#EA580C" />}
     />
   );
 }

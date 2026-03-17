@@ -73,7 +73,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
       {/* Checklist */}
       {checklistItems.length > 0 && (
         <Card className="mb-3">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Checklist
           </Text>
           <JobChecklist
@@ -89,7 +89,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
       <Card className="mb-3">
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               Line Items
             </Text>
             {pendingLineItems > 0 && (
@@ -97,8 +97,8 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             )}
           </View>
           <View className="flex-row items-center gap-1">
-            <DollarSign size={14} color="#64748b" />
-            <Text className="text-sm font-semibold text-slate-900 dark:text-white">
+            <DollarSign size={14} color="#78716C" />
+            <Text className="text-sm font-semibold text-stone-900 dark:text-white">
               {formatCurrency(lineItemTotal)}
             </Text>
           </View>
@@ -107,18 +107,18 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
           job.lineItems.map((item) => (
             <View
               key={item.id}
-              className="flex-row items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800"
+              className="flex-row items-center justify-between py-2 border-b border-stone-100 dark:border-stone-700"
             >
               <View className="flex-1 mr-3">
-                <Text className="text-base text-slate-900 dark:text-white" numberOfLines={1}>
+                <Text className="text-base text-stone-900 dark:text-white" numberOfLines={1}>
                   {item.description}
                 </Text>
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-stone-500">
                   {item.quantity} x {formatCurrency(item.unitPrice)}
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
-                <Text className="text-base font-medium text-slate-900 dark:text-white">
+                <Text className="text-base font-medium text-stone-900 dark:text-white">
                   {formatCurrency(item.total)}
                 </Text>
                 {item.id.startsWith("temp_") && (
@@ -128,7 +128,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             </View>
           ))
         ) : (
-          <Text className="text-base text-slate-400 italic">No line items yet</Text>
+          <Text className="text-base text-stone-400 italic">No line items yet</Text>
         )}
       </Card>
 
@@ -136,7 +136,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
       <Card className="mb-3">
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               Notes ({job.notes.length})
             </Text>
             {pendingNotes > 0 && (
@@ -147,7 +147,7 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
             onPress={() => setShowNoteInput(!showNoteInput)}
             className="flex-row items-center gap-1"
           >
-            <Plus size={14} color="#3b82f6" />
+            <Plus size={14} color="#EA580C" />
             <Text className="text-sm font-medium text-blue-600">Add</Text>
           </Pressable>
         </View>
@@ -159,9 +159,9 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
                 value={noteText}
                 onChangeText={setNoteText}
                 placeholder="Write a note..."
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#A8A29E"
                 multiline
-                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 pr-14 text-base min-h-[100px] text-slate-900 dark:text-white"
+                className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-4 pr-14 text-base min-h-[100px] text-stone-900 dark:text-white"
                 textAlignVertical="top"
               />
               {/* Voice-to-text button */}
@@ -202,17 +202,17 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
           ? job.notes.slice(0, 3).map((note) => (
               <View
                 key={note.id}
-                className="py-2 border-b border-slate-100 dark:border-slate-800"
+                className="py-2 border-b border-stone-100 dark:border-stone-700"
               >
                 <View className="flex-row items-start gap-2">
-                  <Text className="text-base text-slate-700 dark:text-slate-300 flex-1" numberOfLines={2}>
+                  <Text className="text-base text-stone-700 dark:text-stone-300 flex-1" numberOfLines={2}>
                     {note.content}
                   </Text>
                   {note.id.startsWith("temp_") && (
                     <PendingSyncBadge count={1} compact />
                   )}
                 </View>
-                <Text className="text-xs text-slate-400 mt-0.5">
+                <Text className="text-xs text-stone-400 mt-0.5">
                   {note.user
                     ? `${note.user.firstName} ${note.user.lastName}`
                     : "Team"}
@@ -220,14 +220,14 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               </View>
             ))
           : !showNoteInput && (
-              <Text className="text-base text-slate-400 italic">No notes yet</Text>
+              <Text className="text-base text-stone-400 italic">No notes yet</Text>
             )}
       </Card>
 
       {/* Status Transitions */}
       {VALID_TRANSITIONS[job.status].length > 0 && (
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Change Status
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -235,12 +235,12 @@ export function JobWorkTab({ job, onStatusChange, onStartTimer, onStopTimer }: J
               <Pressable
                 key={status}
                 onPress={() => onStatusChange(status as JobStatus)}
-                className="flex-row items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-3.5 active:bg-slate-50 dark:active:bg-slate-800"
+                className="flex-row items-center gap-1 border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-3.5 active:bg-stone-50 dark:active:bg-stone-800"
               >
-                <Text className="text-base text-slate-600 dark:text-slate-400">
+                <Text className="text-base text-stone-600 dark:text-stone-400">
                   {status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </Text>
-                <ChevronRight size={14} color="#94a3b8" />
+                <ChevronRight size={14} color="#A8A29E" />
               </Pressable>
             ))}
           </View>

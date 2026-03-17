@@ -8,27 +8,38 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
+// Signal design — warm stone search bar with orange focus hints
 export function SearchBar({
   value,
   onChangeText,
   placeholder = "Search...",
 }: SearchBarProps) {
   return (
-    <View className="flex-row items-center bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-3.5 gap-2" style={{ minHeight: 56 }}>
-      <Search size={22} color="#94a3b8" />
+    <View
+      className="flex-row items-center bg-white dark:bg-stone-800 rounded-xl px-4 py-3.5 gap-2"
+      style={{
+        minHeight: 56,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 2,
+      }}
+    >
+      <Search size={22} color="#A8A29E" />
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#94a3b8"
-        className="flex-1 text-lg text-slate-900 dark:text-white"
+        placeholderTextColor="#A8A29E"
+        className="flex-1 text-lg font-semibold text-stone-900 dark:text-stone-50"
         autoCapitalize="none"
         autoCorrect={false}
         accessibilityLabel="Search"
       />
       {value.length > 0 && (
         <Pressable onPress={() => onChangeText("")} hitSlop={8}>
-          <X size={18} color="#94a3b8" />
+          <X size={18} color="#A8A29E" />
         </Pressable>
       )}
     </View>

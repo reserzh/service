@@ -30,14 +30,14 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
       {/* Customer Card */}
       <Animated.View className="mb-3" entering={FadeInDown.delay(0).duration(400).springify()}>
         <Card>
-          <Text className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-2">
             Customer
           </Text>
-          <Text className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+          <Text className="text-lg font-semibold text-stone-900 dark:text-white mb-1">
             {formatCustomerName(job.customer)}
           </Text>
           {job.customer.companyName && (
-            <Text className="text-sm text-slate-500 mb-1">
+            <Text className="text-sm text-stone-500 mb-1">
               {job.customer.companyName}
             </Text>
           )}
@@ -60,17 +60,17 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
       {/* Location Card */}
       <Animated.View className="mb-3" entering={FadeInDown.delay(80).duration(400).springify()}>
         <Card>
-          <Text className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-2">
             Location
           </Text>
           <View className="flex-row items-start gap-2 mb-3">
-            <MapPin size={16} color="#64748b" />
-            <Text className="text-base text-slate-700 dark:text-slate-300 flex-1">
+            <MapPin size={16} color="#78716C" />
+            <Text className="text-base text-stone-700 dark:text-stone-300 flex-1">
               {address}
             </Text>
           </View>
           {job.property.accessNotes && (
-            <Text className="text-xs text-slate-500 mb-3">
+            <Text className="text-xs text-stone-500 mb-3">
               Access: {job.property.accessNotes}
             </Text>
           )}
@@ -110,12 +110,12 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         <Animated.View className="mb-3" entering={FadeInDown.delay(200).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
-              <Clock size={16} color="#3b82f6" />
-              <Text className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+              <Clock size={16} color="#EA580C" />
+              <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Schedule
               </Text>
             </View>
-            <Text className="text-sm font-medium text-slate-900 dark:text-white">
+            <Text className="text-sm font-medium text-stone-900 dark:text-white">
               {formatTimeRange(job.scheduledStart, job.scheduledEnd)}
             </Text>
           </Card>
@@ -128,7 +128,7 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
               <Users size={16} color="#6366f1" />
-              <Text className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+              <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Crew
               </Text>
             </View>
@@ -136,17 +136,17 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
               <View key={a.id} className="flex-row items-center gap-2 mb-1.5">
                 <View
                   className="w-6 h-6 rounded-full items-center justify-center"
-                  style={{ backgroundColor: a.user?.color ?? "#94a3b8" }}
+                  style={{ backgroundColor: a.user?.color ?? "#A8A29E" }}
                 >
                   <Text className="text-[10px] font-bold text-white">
                     {a.user?.firstName?.[0]}{a.user?.lastName?.[0]}
                   </Text>
                 </View>
-                <Text className="text-base text-slate-700 dark:text-slate-300">
+                <Text className="text-base text-stone-700 dark:text-stone-300">
                   {a.user?.firstName} {a.user?.lastName}
                 </Text>
-                <View className={`px-1.5 py-0.5 rounded ${a.role === "lead" ? "bg-blue-100 dark:bg-blue-900" : "bg-slate-100 dark:bg-slate-800"}`}>
-                  <Text className={`text-[10px] font-medium ${a.role === "lead" ? "text-blue-700 dark:text-blue-300" : "text-slate-600 dark:text-slate-400"}`}>
+                <View className={`px-1.5 py-0.5 rounded ${a.role === "lead" ? "bg-blue-100 dark:bg-blue-900" : "bg-stone-100 dark:bg-stone-800"}`}>
+                  <Text className={`text-[10px] font-medium ${a.role === "lead" ? "text-blue-700 dark:text-blue-300" : "text-stone-600 dark:text-stone-400"}`}>
                     {a.role}
                   </Text>
                 </View>
@@ -161,12 +161,12 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         <Animated.View className="mb-3" entering={FadeInDown.delay(360).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
-              <Info size={16} color="#64748b" />
-              <Text className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+              <Info size={16} color="#78716C" />
+              <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Description
               </Text>
             </View>
-            <Text className="text-sm text-slate-700 dark:text-slate-300">
+            <Text className="text-sm text-stone-700 dark:text-stone-300">
               {job.description}
             </Text>
           </Card>

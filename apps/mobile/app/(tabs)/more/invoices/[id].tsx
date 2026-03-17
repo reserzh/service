@@ -62,7 +62,7 @@ export default function InvoiceDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       <ScrollView
         contentContainerClassName="pb-32"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
@@ -70,14 +70,14 @@ export default function InvoiceDetailScreen() {
         {/* Header */}
         <View className="px-4 pt-4 pb-3">
           <View className="flex-row items-center gap-2 mb-1">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               {invoice.invoiceNumber}
             </Text>
             <InvoiceStatusBadge status={invoice.status as InvoiceStatus} />
           </View>
           <View className="flex-row items-center gap-2 mt-1">
-            <Calendar size={14} color="#64748b" />
-            <Text className="text-sm text-slate-500">
+            <Calendar size={14} color="#78716C" />
+            <Text className="text-sm text-stone-500">
               Due {formatDate(invoice.dueDate)}
             </Text>
           </View>
@@ -86,7 +86,7 @@ export default function InvoiceDetailScreen() {
         {/* Totals */}
         <View className="px-4 mb-3">
           <Card>
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
               Summary
             </Text>
             <TotalRow label="Subtotal" value={formatCurrency(invoice.subtotal)} />
@@ -94,12 +94,12 @@ export default function InvoiceDetailScreen() {
               label={`Tax (${parseFloat(invoice.taxRate).toFixed(1)}%)`}
               value={formatCurrency(invoice.taxAmount)}
             />
-            <View className="border-t border-slate-200 dark:border-slate-700 mt-2 pt-2">
+            <View className="border-t border-stone-200 dark:border-stone-700 mt-2 pt-2">
               <TotalRow label="Total" value={formatCurrency(invoice.total)} bold />
             </View>
             <TotalRow label="Amount Paid" value={formatCurrency(invoice.amountPaid)} color="text-emerald-600" />
             {balanceDue > 0 && (
-              <View className="border-t border-slate-200 dark:border-slate-700 mt-2 pt-2">
+              <View className="border-t border-stone-200 dark:border-stone-700 mt-2 pt-2">
                 <TotalRow label="Balance Due" value={formatCurrency(invoice.balanceDue)} bold color="text-red-600" />
               </View>
             )}
@@ -109,10 +109,10 @@ export default function InvoiceDetailScreen() {
         {/* Customer */}
         <View className="px-4 mb-3">
           <Card onPress={() => router.push(`/(tabs)/more/customers/${invoice.customerId}`)}>
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
               Customer
             </Text>
-            <Text className="text-base font-medium text-slate-900 dark:text-white">
+            <Text className="text-base font-medium text-stone-900 dark:text-stone-50">
               {formatCustomerName(invoice.customer)}
             </Text>
           </Card>
@@ -122,23 +122,23 @@ export default function InvoiceDetailScreen() {
         {invoice.lineItems.length > 0 && (
           <View className="px-4 mb-3">
             <Card>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
                 Line Items
               </Text>
               {invoice.lineItems.map((item) => (
                 <View
                   key={item.id}
-                  className="flex-row items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                  className="flex-row items-center justify-between py-2 border-b border-stone-100 dark:border-stone-700 last:border-0"
                 >
                   <View className="flex-1 mr-3">
-                    <Text className="text-sm text-slate-700 dark:text-slate-300" numberOfLines={1}>
+                    <Text className="text-sm text-stone-700 dark:text-stone-300" numberOfLines={1}>
                       {item.description}
                     </Text>
-                    <Text className="text-xs text-slate-400">
+                    <Text className="text-xs text-stone-400">
                       {item.quantity} x {formatCurrency(item.unitPrice)}
                     </Text>
                   </View>
-                  <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                     {formatCurrency(item.total)}
                   </Text>
                 </View>
@@ -152,17 +152,17 @@ export default function InvoiceDetailScreen() {
           <View className="px-4 mb-3">
             <Card onPress={() => router.push(`/(tabs)/jobs/${invoice.linkedJob!.id}`)}>
               <View className="flex-row items-center gap-2 mb-2">
-                <Briefcase size={14} color="#64748b" />
-                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                <Briefcase size={14} color="#78716C" />
+                <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                   Linked Job
                 </Text>
               </View>
               <View className="flex-row items-center justify-between">
                 <View className="flex-1 mr-2">
-                  <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                     {invoice.linkedJob.jobNumber}
                   </Text>
-                  <Text className="text-xs text-slate-500" numberOfLines={1}>
+                  <Text className="text-xs text-stone-500" numberOfLines={1}>
                     {invoice.linkedJob.summary}
                   </Text>
                 </View>
@@ -177,15 +177,15 @@ export default function InvoiceDetailScreen() {
           <View className="px-4 mb-3">
             <Card onPress={() => router.push(`/(tabs)/more/estimates/${invoice.linkedEstimate!.id}`)}>
               <View className="flex-row items-center gap-2 mb-2">
-                <FileText size={14} color="#64748b" />
-                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                <FileText size={14} color="#78716C" />
+                <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                   Linked Estimate
                 </Text>
               </View>
-              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+              <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                 {invoice.linkedEstimate.estimateNumber}
               </Text>
-              <Text className="text-xs text-slate-500" numberOfLines={1}>
+              <Text className="text-xs text-stone-500" numberOfLines={1}>
                 {invoice.linkedEstimate.summary}
               </Text>
             </Card>
@@ -197,8 +197,8 @@ export default function InvoiceDetailScreen() {
           <View className="px-4 mb-3">
             <Card>
               <View className="flex-row items-center gap-2 mb-3">
-                <CreditCard size={14} color="#64748b" />
-                <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                <CreditCard size={14} color="#78716C" />
+                <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                   Payments
                 </Text>
               </View>
@@ -213,10 +213,10 @@ export default function InvoiceDetailScreen() {
         {invoice.notes && (
           <View className="px-4 mb-3">
             <Card>
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
                 Notes
               </Text>
-              <Text className="text-sm text-slate-700 dark:text-slate-300">
+              <Text className="text-sm text-stone-700 dark:text-stone-300">
                 {invoice.notes}
               </Text>
             </Card>
@@ -226,7 +226,7 @@ export default function InvoiceDetailScreen() {
 
       {/* Bottom Action Bar */}
       {(canSend || canRecordPayment || canVoid) && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-8">
+        <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 px-4 pt-3 pb-8">
           <View className="flex-row gap-3">
             {canSend && (
               <Button
@@ -289,13 +289,13 @@ function TotalRow({
   return (
     <View className="flex-row items-center justify-between py-1">
       <Text
-        className={`text-sm ${bold ? "font-semibold text-slate-900 dark:text-white" : "text-slate-500"}`}
+        className={`text-sm ${bold ? "font-semibold text-stone-900 dark:text-stone-50" : "text-stone-500"}`}
       >
         {label}
       </Text>
       <Text
         className={`text-sm ${bold ? "font-bold" : "font-medium"} ${
-          color ?? "text-slate-900 dark:text-white"
+          color ?? "text-stone-900 dark:text-stone-50"
         }`}
       >
         {value}
@@ -315,17 +315,17 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 
 function PaymentRow({ payment }: { payment: Payment }) {
   return (
-    <View className="flex-row items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
+    <View className="flex-row items-center justify-between py-2 border-b border-stone-100 dark:border-stone-700 last:border-0">
       <View>
-        <Text className="text-sm font-medium text-slate-900 dark:text-white">
+        <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
           {formatCurrency(payment.amount)}
         </Text>
-        <Text className="text-xs text-slate-500">
+        <Text className="text-xs text-stone-500">
           {PAYMENT_METHOD_LABELS[payment.method] ?? payment.method}
           {payment.referenceNumber ? ` · ${payment.referenceNumber}` : ""}
         </Text>
       </View>
-      <Text className="text-xs text-slate-400">
+      <Text className="text-xs text-stone-400">
         {formatDate(payment.processedAt)}
       </Text>
     </View>

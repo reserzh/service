@@ -50,29 +50,29 @@ export function CreateInvoiceSheet({ job, sheetRef, onSubmit }: CreateInvoiceShe
       handleIndicatorStyle={{ backgroundColor: "#cbd5e1" }}
     >
       <BottomSheetScrollView className="px-4 pb-6">
-        <Text className="text-lg font-bold text-slate-900 mb-4">
+        <Text className="text-lg font-bold text-stone-900 mb-4">
           Create Invoice
         </Text>
 
         {/* Line items preview */}
         <View className="mb-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Line Items from Job
           </Text>
           {job.lineItems.map((item) => (
             <View
               key={item.id}
-              className="flex-row items-center justify-between py-2 border-b border-slate-100"
+              className="flex-row items-center justify-between py-2 border-b border-stone-100"
             >
               <View className="flex-1 mr-3">
-                <Text className="text-sm text-slate-900" numberOfLines={1}>
+                <Text className="text-sm text-stone-900" numberOfLines={1}>
                   {item.description}
                 </Text>
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-stone-500">
                   {item.quantity} x {formatCurrency(item.unitPrice)}
                 </Text>
               </View>
-              <Text className="text-sm font-medium text-slate-900">
+              <Text className="text-sm font-medium text-stone-900">
                 {formatCurrency(item.total)}
               </Text>
             </View>
@@ -81,38 +81,38 @@ export function CreateInvoiceSheet({ job, sheetRef, onSubmit }: CreateInvoiceShe
 
         {/* Tax rate input */}
         <View className="mb-4">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Tax Rate (%)
           </Text>
           <TextInput
             value={taxRate}
             onChangeText={setTaxRate}
             placeholder="0.00"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor="#A8A29E"
             keyboardType="decimal-pad"
-            className="border border-slate-200 rounded-xl px-4 py-3 text-base text-slate-900 bg-slate-50"
+            className="border border-stone-200 rounded-xl px-4 py-3 text-base text-stone-900 bg-stone-50"
           />
         </View>
 
         {/* Totals */}
-        <View className="bg-slate-50 rounded-xl p-4 mb-6">
+        <View className="bg-stone-50 rounded-xl p-4 mb-6">
           <View className="flex-row justify-between py-1">
-            <Text className="text-sm text-slate-500">Subtotal</Text>
-            <Text className="text-sm font-medium text-slate-900">
+            <Text className="text-sm text-stone-500">Subtotal</Text>
+            <Text className="text-sm font-medium text-stone-900">
               {formatCurrency(subtotal)}
             </Text>
           </View>
           <View className="flex-row justify-between py-1">
-            <Text className="text-sm text-slate-500">
+            <Text className="text-sm text-stone-500">
               Tax ({parseFloat(taxRate) || 0}%)
             </Text>
-            <Text className="text-sm font-medium text-slate-900">
+            <Text className="text-sm font-medium text-stone-900">
               {formatCurrency(taxAmount)}
             </Text>
           </View>
-          <View className="flex-row justify-between py-1 mt-1 border-t border-slate-200 pt-2">
-            <Text className="text-base font-semibold text-slate-900">Total</Text>
-            <Text className="text-base font-bold text-slate-900">
+          <View className="flex-row justify-between py-1 mt-1 border-t border-stone-200 pt-2">
+            <Text className="text-base font-semibold text-stone-900">Total</Text>
+            <Text className="text-base font-bold text-stone-900">
               {formatCurrency(total)}
             </Text>
           </View>

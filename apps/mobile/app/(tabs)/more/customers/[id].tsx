@@ -51,23 +51,23 @@ export default function CustomerDetailScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50 dark:bg-slate-950"
+      className="flex-1 bg-orange-50/50 dark:bg-stone-900"
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
     >
       {/* Profile header */}
-      <View className="items-center py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <View className="items-center py-6 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
         <Avatar
           initials={getInitials(customer.firstName, customer.lastName)}
           size="lg"
-          color="#3b82f6"
+          color="#EA580C"
         />
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mt-3">
+        <Text className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-3">
           {formatCustomerName(customer)}
         </Text>
         {customer.companyName && (
-          <Text className="text-sm text-slate-500 mt-0.5">{customer.companyName}</Text>
+          <Text className="text-sm text-stone-500 mt-0.5">{customer.companyName}</Text>
         )}
         <View className="flex-row items-center gap-2 mt-2">
           <Badge
@@ -90,7 +90,7 @@ export default function CustomerDetailScreen() {
         {customer.email && (
           <Pressable
             onPress={() => Linking.openURL(`mailto:${customer.email}`)}
-            className="flex-1 flex-row items-center justify-center gap-2 bg-blue-600 py-3 rounded-xl active:bg-blue-700"
+            className="flex-1 flex-row items-center justify-center gap-2 bg-orange-600 py-3 rounded-xl active:bg-orange-700"
           >
             <Mail size={18} color="#fff" />
             <Text className="text-base font-semibold text-white">Email</Text>
@@ -101,18 +101,18 @@ export default function CustomerDetailScreen() {
       {/* Contact info */}
       <View className="px-4 mb-3">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">
             Contact Info
           </Text>
-          <InfoRow icon={<Phone size={16} color="#64748b" />} label="Phone" value={formatPhone(customer.phone)} />
+          <InfoRow icon={<Phone size={16} color="#78716C" />} label="Phone" value={formatPhone(customer.phone)} />
           {customer.altPhone && (
-            <InfoRow icon={<Phone size={16} color="#64748b" />} label="Alt Phone" value={formatPhone(customer.altPhone)} />
+            <InfoRow icon={<Phone size={16} color="#78716C" />} label="Alt Phone" value={formatPhone(customer.altPhone)} />
           )}
           {customer.email && (
-            <InfoRow icon={<Mail size={16} color="#64748b" />} label="Email" value={customer.email} />
+            <InfoRow icon={<Mail size={16} color="#78716C" />} label="Email" value={customer.email} />
           )}
           {customer.source && (
-            <InfoRow icon={<Tag size={16} color="#64748b" />} label="Source" value={customer.source} />
+            <InfoRow icon={<Tag size={16} color="#78716C" />} label="Source" value={customer.source} />
           )}
         </Card>
       </View>
@@ -121,10 +121,10 @@ export default function CustomerDetailScreen() {
       {customer.notes && (
         <View className="px-4 mb-3">
           <Card>
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
               Notes
             </Text>
-            <Text className="text-sm text-slate-700 dark:text-slate-300">
+            <Text className="text-sm text-stone-700 dark:text-stone-300">
               {customer.notes}
             </Text>
           </Card>
@@ -134,7 +134,7 @@ export default function CustomerDetailScreen() {
       {/* Properties */}
       {properties.length > 0 && (
         <View className="px-4 mb-3">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2 px-1">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2 px-1">
             Properties
           </Text>
           {properties.map((property) => (
@@ -148,8 +148,8 @@ export default function CustomerDetailScreen() {
         <View className="px-4 mb-3">
           <Card>
             <View className="flex-row items-center gap-2 mb-3">
-              <Wrench size={14} color="#64748b" />
-              <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              <Wrench size={14} color="#78716C" />
+              <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                 Equipment
               </Text>
             </View>
@@ -163,7 +163,7 @@ export default function CustomerDetailScreen() {
       {/* Job History */}
       {jobs.length > 0 && (
         <View className="px-4 mb-3">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2 px-1">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2 px-1">
             Job History
           </Text>
           {jobs.map((job) => (
@@ -179,11 +179,11 @@ export default function CustomerDetailScreen() {
 
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <View className="flex-row items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
+    <View className="flex-row items-center gap-3 py-2 border-b border-stone-100 dark:border-stone-700 last:border-0">
       {icon}
       <View>
-        <Text className="text-xs text-slate-500">{label}</Text>
-        <Text className="text-sm text-slate-900 dark:text-white">{value}</Text>
+        <Text className="text-xs text-stone-500">{label}</Text>
+        <Text className="text-sm text-stone-900 dark:text-stone-50">{value}</Text>
       </View>
     </View>
   );
@@ -197,8 +197,8 @@ function PropertyCard({ property }: { property: Property }) {
       <Card>
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center gap-2">
-            <Home size={14} color="#64748b" />
-            <Text className="text-sm font-medium text-slate-900 dark:text-white">
+            <Home size={14} color="#78716C" />
+            <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
               {property.name || "Service Address"}
             </Text>
           </View>
@@ -207,13 +207,13 @@ function PropertyCard({ property }: { property: Property }) {
           )}
         </View>
         <View className="flex-row items-start gap-2 mb-2">
-          <MapPin size={14} color="#94a3b8" className="mt-0.5" />
-          <Text className="text-sm text-slate-600 dark:text-slate-400 flex-1">
+          <MapPin size={14} color="#A8A29E" className="mt-0.5" />
+          <Text className="text-sm text-stone-600 dark:text-stone-400 flex-1">
             {address}
           </Text>
         </View>
         {property.accessNotes && (
-          <Text className="text-xs text-slate-500 mb-2">
+          <Text className="text-xs text-stone-500 mb-2">
             Access: {property.accessNotes}
           </Text>
         )}
@@ -230,26 +230,26 @@ function PropertyCard({ property }: { property: Property }) {
 
 function EquipmentRow({ item, isLast }: { item: Equipment; isLast: boolean }) {
   return (
-    <View className={`py-2 ${!isLast ? "border-b border-slate-100 dark:border-slate-800" : ""}`}>
-      <Text className="text-sm font-medium text-slate-900 dark:text-white">
+    <View className={`py-2 ${!isLast ? "border-b border-stone-100 dark:border-stone-700" : ""}`}>
+      <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
         {item.type}
         {item.brand ? ` · ${item.brand}` : ""}
         {item.model ? ` ${item.model}` : ""}
       </Text>
       {item.serialNumber && (
-        <Text className="text-xs text-slate-500 mt-0.5">S/N: {item.serialNumber}</Text>
+        <Text className="text-xs text-stone-500 mt-0.5">S/N: {item.serialNumber}</Text>
       )}
       <View className="flex-row items-center gap-4 mt-1">
         {item.installDate && (
           <View className="flex-row items-center gap-1">
-            <Clock size={11} color="#94a3b8" />
-            <Text className="text-xs text-slate-400">Installed {formatDate(item.installDate)}</Text>
+            <Clock size={11} color="#A8A29E" />
+            <Text className="text-xs text-stone-400">Installed {formatDate(item.installDate)}</Text>
           </View>
         )}
         {item.warrantyExpiry && (
           <View className="flex-row items-center gap-1">
-            <Shield size={11} color="#94a3b8" />
-            <Text className="text-xs text-slate-400">Warranty {formatDate(item.warrantyExpiry)}</Text>
+            <Shield size={11} color="#A8A29E" />
+            <Text className="text-xs text-stone-400">Warranty {formatDate(item.warrantyExpiry)}</Text>
           </View>
         )}
       </View>
@@ -262,15 +262,15 @@ function JobHistoryCard({ job }: { job: Job }) {
     <View className="mb-2">
       <Card onPress={() => router.push(`/(tabs)/jobs/${job.id}`)}>
         <View className="flex-row items-center justify-between mb-1">
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
             {job.jobNumber} · {job.jobType}
           </Text>
           <JobStatusBadge status={job.status as JobStatus} />
         </View>
-        <Text className="text-sm font-medium text-slate-900 dark:text-white" numberOfLines={1}>
+        <Text className="text-sm font-medium text-stone-900 dark:text-stone-50" numberOfLines={1}>
           {job.summary}
         </Text>
-        <Text className="text-xs text-slate-500 mt-1">
+        <Text className="text-xs text-stone-500 mt-1">
           {formatDate(job.scheduledStart ?? job.createdAt)}
         </Text>
       </Card>

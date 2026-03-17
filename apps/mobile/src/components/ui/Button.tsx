@@ -13,32 +13,33 @@ interface ButtonProps {
   style?: ViewStyle;
 }
 
+// Signal design — high-visibility buttons with orange accent
 const variantClasses = {
-  primary: "bg-blue-600 active:bg-blue-700",
-  secondary: "bg-slate-800 active:bg-slate-900",
-  outline: "border border-slate-300 bg-transparent active:bg-slate-50 dark:border-slate-600 dark:active:bg-slate-800",
-  ghost: "bg-transparent active:bg-slate-100 dark:active:bg-slate-800",
+  primary: "bg-orange-600 active:bg-orange-700",
+  secondary: "bg-stone-800 dark:bg-stone-700 active:bg-stone-900",
+  outline: "border-2 border-orange-600 dark:border-orange-400 bg-transparent active:bg-orange-50 dark:active:bg-stone-800",
+  ghost: "bg-transparent active:bg-stone-100 dark:active:bg-stone-800",
   danger: "bg-red-600 active:bg-red-700",
 };
 
 const textVariantClasses = {
   primary: "text-white",
   secondary: "text-white",
-  outline: "text-slate-900 dark:text-slate-100",
-  ghost: "text-slate-900 dark:text-slate-100",
+  outline: "text-orange-600 dark:text-orange-400",
+  ghost: "text-stone-900 dark:text-stone-100",
   danger: "text-white",
 };
 
 const sizeClasses = {
-  sm: "px-4 py-3 rounded-xl",
-  md: "px-5 py-4 rounded-xl",
-  lg: "px-8 py-5 rounded-2xl",
+  sm: "px-5 py-3 rounded-xl",
+  md: "px-6 py-4 rounded-xl",
+  lg: "px-8 py-5 rounded-xl",
 };
 
 const sizeMinHeights = {
   sm: 48,
-  md: 56,
-  lg: 64,
+  md: 52,
+  lg: 56,
 };
 
 const textSizeClasses = {
@@ -77,13 +78,13 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "outline" || variant === "ghost" ? "#374151" : "#ffffff"}
+          color={variant === "outline" || variant === "ghost" ? "#EA580C" : "#ffffff"}
         />
       ) : (
         <>
           {icon}
           <Text
-            className={`font-semibold ${textVariantClasses[variant]} ${textSizeClasses[size]}`}
+            className={`font-extrabold tracking-wide ${textVariantClasses[variant]} ${textSizeClasses[size]}`}
           >
             {title}
           </Text>

@@ -24,7 +24,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                     ? "bg-blue-600"
                     : isCurrent
                     ? "bg-blue-600"
-                    : "bg-slate-200 dark:bg-slate-700"
+                    : "bg-stone-200 dark:bg-stone-700"
                 }`}
               >
                 {isCompleted ? (
@@ -32,7 +32,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 ) : (
                   <Text
                     className={`text-sm font-bold ${
-                      isCurrent ? "text-white" : "text-slate-500 dark:text-slate-400"
+                      isCurrent ? "text-white" : "text-stone-500 dark:text-stone-400"
                     }`}
                   >
                     {stepNum}
@@ -43,7 +43,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 className={`text-[10px] mt-1 ${
                   isCurrent
                     ? "text-blue-600 dark:text-blue-400 font-semibold"
-                    : "text-slate-400 dark:text-slate-500"
+                    : "text-stone-400 dark:text-stone-500"
                 }`}
                 numberOfLines={1}
               >
@@ -55,7 +55,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
             {index < steps.length - 1 && (
               <View
                 className={`h-0.5 w-6 mx-1 mb-4 ${
-                  isCompleted ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700"
+                  isCompleted ? "bg-blue-600" : "bg-stone-200 dark:bg-stone-700"
                 }`}
               />
             )}

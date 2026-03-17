@@ -23,7 +23,7 @@ export function ScheduleJobSheet({ job, sheetRef }: ScheduleJobSheetProps) {
 
   const actions = [
     {
-      icon: <Eye size={18} color="#3b82f6" />,
+      icon: <Eye size={18} color="#EA580C" />,
       label: "View Job",
       onPress: () => {
         handleClose();
@@ -55,16 +55,16 @@ export function ScheduleJobSheet({ job, sheetRef }: ScheduleJobSheetProps) {
         {/* Job info */}
         <View className="mb-4">
           <View className="flex-row items-center gap-2 mb-1">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               {job.jobNumber}
             </Text>
             <JobStatusBadge status={job.status} />
           </View>
-          <Text className="text-lg font-bold text-slate-900 mb-1" numberOfLines={1}>
+          <Text className="text-lg font-bold text-stone-900 mb-1" numberOfLines={1}>
             {job.summary}
           </Text>
           {job.scheduledStart && (
-            <Text className="text-sm text-slate-500">
+            <Text className="text-sm text-stone-500">
               {formatTimeRange(job.scheduledStart, job.scheduledEnd)}
             </Text>
           )}
@@ -79,12 +79,12 @@ export function ScheduleJobSheet({ job, sheetRef }: ScheduleJobSheetProps) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 action.onPress();
               }}
-              className="flex-row items-center gap-3 bg-slate-50 rounded-xl px-4 py-3 active:bg-slate-100"
+              className="flex-row items-center gap-3 bg-stone-50 rounded-xl px-4 py-3 active:bg-stone-100"
               accessibilityLabel={action.label}
               accessibilityRole="button"
             >
               {action.icon}
-              <Text className="text-base font-medium text-slate-900">
+              <Text className="text-base font-medium text-stone-900">
                 {action.label}
               </Text>
             </Pressable>

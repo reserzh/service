@@ -195,7 +195,7 @@ export default function CreateEstimateScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-slate-50 dark:bg-slate-950"
+      className="flex-1 bg-orange-50/50 dark:bg-stone-900"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={100}
     >
@@ -252,7 +252,7 @@ export default function CreateEstimateScreen() {
       </View>
 
       {/* Bottom bar */}
-      <View className="flex-row gap-3 px-4 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+      <View className="flex-row gap-3 px-4 py-4 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700">
         <Button
           title={step === 1 ? "Cancel" : "Back"}
           onPress={handleBack}
@@ -306,18 +306,18 @@ function SelectCustomerStep({
         renderItem={({ item }) => (
           <Pressable
             onPress={() => onSelect(item)}
-            className="flex-row items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
+            className="flex-row items-center justify-between bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 mb-2 active:scale-[0.98]"
           >
             <View>
-              <Text className="text-base font-medium text-slate-900 dark:text-white">
+              <Text className="text-base font-medium text-stone-900 dark:text-stone-50">
                 {formatCustomerName(item)}
               </Text>
               {item.companyName && (
-                <Text className="text-xs text-slate-500">{item.companyName}</Text>
+                <Text className="text-xs text-stone-500">{item.companyName}</Text>
               )}
-              <Text className="text-xs text-slate-400 mt-0.5">{item.phone}</Text>
+              <Text className="text-xs text-stone-400 mt-0.5">{item.phone}</Text>
             </View>
-            <ChevronRight size={18} color="#94a3b8" />
+            <ChevronRight size={18} color="#A8A29E" />
           </Pressable>
         )}
         ListEmptyComponent={
@@ -364,12 +364,12 @@ function SelectPropertyStep({
         <Pressable
           key={property.id}
           onPress={() => onSelect(property)}
-          className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-2 active:scale-[0.98]"
+          className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 mb-2 active:scale-[0.98]"
         >
           <View className="flex-row items-center justify-between mb-1">
             <View className="flex-row items-center gap-2">
-              <MapPin size={14} color="#64748b" />
-              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+              <MapPin size={14} color="#78716C" />
+              <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                 {property.name || "Service Address"}
               </Text>
             </View>
@@ -377,11 +377,11 @@ function SelectPropertyStep({
               <Badge label="Primary" bgClass="bg-blue-100" textClass="text-blue-700" />
             )}
           </View>
-          <Text className="text-sm text-slate-600 dark:text-slate-400 ml-5">
+          <Text className="text-sm text-stone-600 dark:text-stone-400 ml-5">
             {formatAddress(property)}
           </Text>
           {property.accessNotes && (
-            <Text className="text-xs text-slate-500 ml-5 mt-1">
+            <Text className="text-xs text-stone-500 ml-5 mt-1">
               Access: {property.accessNotes}
             </Text>
           )}
@@ -461,11 +461,11 @@ function OptionsStep({
       {options.map((option, optIndex) => (
         <View
           key={optIndex}
-          className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mb-3"
+          className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4 mb-3"
         >
           {/* Option header */}
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide">
               Option {optIndex + 1}
             </Text>
             {options.length > 1 && (
@@ -480,8 +480,8 @@ function OptionsStep({
             value={option.name}
             onChangeText={(t) => updateOption(optIndex, { name: t })}
             placeholder="Option name (e.g. Basic, Premium)"
-            placeholderTextColor="#94a3b8"
-            className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-base text-slate-900 dark:text-white mb-2 bg-slate-50 dark:bg-slate-800"
+            placeholderTextColor="#A8A29E"
+            className="border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-base text-stone-900 dark:text-stone-50 mb-2 bg-stone-50 dark:bg-stone-800"
           />
 
           {/* Description */}
@@ -489,8 +489,8 @@ function OptionsStep({
             value={option.description}
             onChangeText={(t) => updateOption(optIndex, { description: t })}
             placeholder="Description (optional)"
-            placeholderTextColor="#94a3b8"
-            className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-white mb-2 bg-slate-50 dark:bg-slate-800"
+            placeholderTextColor="#A8A29E"
+            className="border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-sm text-stone-900 dark:text-stone-50 mb-2 bg-stone-50 dark:bg-stone-800"
             multiline
           />
 
@@ -505,24 +505,24 @@ function OptionsStep({
             <View
               className={`w-5 h-5 rounded border items-center justify-center ${
                 option.isRecommended
-                  ? "bg-blue-600 border-blue-600"
-                  : "border-slate-300 dark:border-slate-600"
+                  ? "bg-orange-600 border-orange-600"
+                  : "border-stone-300 dark:border-stone-600"
               }`}
             >
               {option.isRecommended && <Check size={14} color="#fff" />}
             </View>
-            <Text className="text-sm text-slate-700 dark:text-slate-300">Recommended</Text>
+            <Text className="text-sm text-stone-700 dark:text-stone-300">Recommended</Text>
           </Pressable>
 
           {/* Line items */}
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Line Items
           </Text>
 
           {option.items.map((item, itemIndex) => (
             <View
               key={itemIndex}
-              className="border border-slate-100 dark:border-slate-700 rounded-xl p-3 mb-2 bg-slate-50 dark:bg-slate-800"
+              className="border border-stone-100 dark:border-stone-700 rounded-xl p-3 mb-2 bg-stone-50 dark:bg-stone-800"
             >
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 mr-2">
@@ -530,30 +530,30 @@ function OptionsStep({
                     value={item.description}
                     onChangeText={(t) => updateItem(optIndex, itemIndex, { description: t })}
                     placeholder="Description"
-                    placeholderTextColor="#94a3b8"
-                    className="text-sm text-slate-900 dark:text-white mb-2"
+                    placeholderTextColor="#A8A29E"
+                    className="text-sm text-stone-900 dark:text-stone-50 mb-2"
                   />
                   <View className="flex-row gap-2">
                     <View className="flex-1">
-                      <Text className="text-[10px] text-slate-400 mb-0.5">Qty</Text>
+                      <Text className="text-[10px] text-stone-400 mb-0.5">Qty</Text>
                       <TextInput
                         value={item.quantity}
                         onChangeText={(t) => updateItem(optIndex, itemIndex, { quantity: t })}
                         placeholder="1"
-                        placeholderTextColor="#94a3b8"
+                        placeholderTextColor="#A8A29E"
                         keyboardType="decimal-pad"
-                        className="border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-900"
+                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-white dark:bg-stone-800"
                       />
                     </View>
                     <View className="flex-1">
-                      <Text className="text-[10px] text-slate-400 mb-0.5">Unit Price</Text>
+                      <Text className="text-[10px] text-stone-400 mb-0.5">Unit Price</Text>
                       <TextInput
                         value={item.unitPrice}
                         onChangeText={(t) => updateItem(optIndex, itemIndex, { unitPrice: t })}
                         placeholder="0.00"
-                        placeholderTextColor="#94a3b8"
+                        placeholderTextColor="#A8A29E"
                         keyboardType="decimal-pad"
-                        className="border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-900"
+                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-white dark:bg-stone-800"
                       />
                     </View>
                   </View>
@@ -576,15 +576,15 @@ function OptionsStep({
                     }}
                     className={`px-2.5 py-1 rounded-full ${
                       item.type === t.key
-                        ? "bg-blue-600"
-                        : "bg-slate-200 dark:bg-slate-700"
+                        ? "bg-orange-600"
+                        : "bg-stone-200 dark:bg-stone-700"
                     }`}
                   >
                     <Text
                       className={`text-[11px] font-medium ${
                         item.type === t.key
                           ? "text-white"
-                          : "text-slate-600 dark:text-slate-400"
+                          : "text-stone-600 dark:text-stone-400"
                       }`}
                     >
                       {t.label}
@@ -598,16 +598,16 @@ function OptionsStep({
           {/* Add item button */}
           <Pressable
             onPress={() => addItem(optIndex)}
-            className="flex-row items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 active:bg-slate-50 dark:active:bg-slate-800"
+            className="flex-row items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-stone-300 dark:border-stone-600 active:bg-stone-50 dark:active:bg-stone-800"
           >
-            <Plus size={14} color="#64748b" />
-            <Text className="text-sm text-slate-500">Add Item</Text>
+            <Plus size={14} color="#78716C" />
+            <Text className="text-sm text-stone-500">Add Item</Text>
           </Pressable>
 
           {/* Option total */}
-          <View className="flex-row items-center justify-end mt-3 pt-2 border-t border-slate-100 dark:border-slate-700">
-            <Text className="text-sm text-slate-500 mr-2">Total:</Text>
-            <Text className="text-base font-bold text-slate-900 dark:text-white">
+          <View className="flex-row items-center justify-end mt-3 pt-2 border-t border-stone-100 dark:border-stone-700">
+            <Text className="text-sm text-stone-500 mr-2">Total:</Text>
+            <Text className="text-base font-bold text-stone-900 dark:text-stone-50">
               ${getOptionTotal(option).toFixed(2)}
             </Text>
           </View>
@@ -645,41 +645,41 @@ function DetailsStep({
   return (
     <ScrollView className="flex-1" contentContainerClassName="px-4 pt-2 pb-4" keyboardShouldPersistTaps="handled">
       <Card>
-        <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
           Summary *
         </Text>
         <TextInput
           value={summary}
           onChangeText={onSummaryChange}
           placeholder="Brief description of the estimate"
-          placeholderTextColor="#94a3b8"
-          className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-base text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 mb-4"
+          placeholderTextColor="#A8A29E"
+          className="border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-base text-stone-900 dark:text-stone-50 bg-stone-50 dark:bg-stone-800 mb-4"
         />
 
-        <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
           Notes
         </Text>
         <TextInput
           value={notes}
           onChangeText={onNotesChange}
           placeholder="Additional notes for the customer"
-          placeholderTextColor="#94a3b8"
-          className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 mb-4"
+          placeholderTextColor="#A8A29E"
+          className="border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-sm text-stone-900 dark:text-stone-50 bg-stone-50 dark:bg-stone-800 mb-4"
           multiline
           numberOfLines={3}
           textAlignVertical="top"
           style={{ minHeight: 80 }}
         />
 
-        <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
           Valid Until
         </Text>
         <TextInput
           value={validUntil}
           onChangeText={onValidUntilChange}
           placeholder="YYYY-MM-DD (optional)"
-          placeholderTextColor="#94a3b8"
-          className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-base text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800"
+          placeholderTextColor="#A8A29E"
+          className="border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-base text-stone-900 dark:text-stone-50 bg-stone-50 dark:bg-stone-800"
           autoCapitalize="none"
         />
       </Card>
@@ -716,24 +716,24 @@ function ReviewStep({
     <ScrollView className="flex-1" contentContainerClassName="px-4 pt-2 pb-4">
       {/* Customer & Property */}
       <Card>
-        <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
           Customer
         </Text>
-        <Text className="text-base font-medium text-slate-900 dark:text-white">
+        <Text className="text-base font-medium text-stone-900 dark:text-stone-50">
           {customerName}
         </Text>
-        <Text className="text-sm text-slate-500 mt-1">{propertyAddress}</Text>
+        <Text className="text-sm text-stone-500 mt-1">{propertyAddress}</Text>
       </Card>
 
       {/* Summary */}
       <View className="mt-3">
         <Card>
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
             Summary
           </Text>
-          <Text className="text-base text-slate-900 dark:text-white">{summary}</Text>
+          <Text className="text-base text-stone-900 dark:text-stone-50">{summary}</Text>
           {validUntil ? (
-            <Text className="text-xs text-slate-500 mt-1">Valid until: {validUntil}</Text>
+            <Text className="text-xs text-stone-500 mt-1">Valid until: {validUntil}</Text>
           ) : null}
         </Card>
       </View>
@@ -744,34 +744,34 @@ function ReviewStep({
           <Card>
             <View className="flex-row items-center justify-between mb-2">
               <View className="flex-row items-center gap-2">
-                <Text className="text-sm font-semibold text-slate-900 dark:text-white">
+                <Text className="text-sm font-semibold text-stone-900 dark:text-stone-50">
                   {option.name || `Option ${index + 1}`}
                 </Text>
                 {option.isRecommended && (
                   <Badge label="Recommended" bgClass="bg-blue-100" textClass="text-blue-700" />
                 )}
               </View>
-              <Text className="text-base font-bold text-slate-900 dark:text-white">
+              <Text className="text-base font-bold text-stone-900 dark:text-stone-50">
                 ${getOptionTotal(option).toFixed(2)}
               </Text>
             </View>
 
             {option.description ? (
-              <Text className="text-xs text-slate-500 mb-2">{option.description}</Text>
+              <Text className="text-xs text-stone-500 mb-2">{option.description}</Text>
             ) : null}
 
             {option.items.map((item, itemIndex) => (
               <View
                 key={itemIndex}
-                className="flex-row items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                className="flex-row items-center justify-between py-1.5 border-b border-stone-100 dark:border-stone-700 last:border-0"
               >
                 <View className="flex-1 mr-3">
-                  <Text className="text-sm text-slate-700 dark:text-slate-300">{item.description}</Text>
-                  <Text className="text-xs text-slate-400">
+                  <Text className="text-sm text-stone-700 dark:text-stone-300">{item.description}</Text>
+                  <Text className="text-xs text-stone-400">
                     {item.quantity} x ${parseFloat(item.unitPrice || "0").toFixed(2)}
                   </Text>
                 </View>
-                <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
                   ${((parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0)).toFixed(2)}
                 </Text>
               </View>
@@ -784,10 +784,10 @@ function ReviewStep({
       {notes ? (
         <View className="mt-3">
           <Card>
-            <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+            <Text className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">
               Notes
             </Text>
-            <Text className="text-sm text-slate-700 dark:text-slate-300">{notes}</Text>
+            <Text className="text-sm text-stone-700 dark:text-stone-300">{notes}</Text>
           </Card>
         </View>
       ) : null}

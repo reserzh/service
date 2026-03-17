@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, useColorScheme } from "react-native";
 import { useState, useEffect } from "react";
 import { Clock, Coffee, LogOut } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
@@ -14,11 +14,13 @@ function formatDuration(ms: number): string {
   return `${minutes}m`;
 }
 
+// Signal design — orange clock-in, warm stone card, bold typography
 export function ClockWidget() {
   const { status, clockInTime, clockIn, clockOut, startBreak, endBreak } =
     useTimeTrackingStore();
   const [elapsed, setElapsed] = useState(0);
   const [showPrompt, setShowPrompt] = useState(false);
+  const isDark = useColorScheme() === "dark";
 
   useEffect(() => {
     if (status === "clocked_out" || !clockInTime) {
@@ -37,7 +39,6 @@ export function ClockWidget() {
   }, [status, clockInTime]);
 
   const handleClockOut = () => {
-    // Show end-of-day prompt before clocking out
     setShowPrompt(true);
   };
 
@@ -53,20 +54,20 @@ export function ClockWidget() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           clockIn();
         }}
-        className="bg-blue-600 rounded-2xl active:bg-blue-700 p-5"
+        className="bg-orange-600 dark:bg-orange-500 rounded-xl active:bg-orange-700 p-5"
         style={{ minHeight: 64 }}
         accessibilityLabel="Clock in"
         accessibilityRole="button"
       >
         <View className="flex-row items-center gap-3">
-          <View className="rounded-full bg-blue-500 items-center justify-center w-14 h-14">
+          <View className="rounded-full bg-orange-500 dark:bg-orange-400 items-center justify-center w-14 h-14">
             <Clock size={28} color="#ffffff" />
           </View>
           <View className="flex-1">
-            <Text className="text-white font-semibold text-xl">
+            <Text className="text-white font-extrabold text-xl tracking-wide">
               Clock In
             </Text>
-            <Text className="text-blue-200 text-sm">
+            <Text className="text-orange-200 dark:text-orange-100 text-sm font-semibold">
               Start your shift
             </Text>
           </View>
@@ -77,7 +78,7 @@ export function ClockWidget() {
 
   return (
     <>
-      <Card>
+      <Card accent>
         <View className="flex-row items-center gap-3 mb-3">
           <View
             className={`rounded-full items-center justify-center w-14 h-14 ${
@@ -89,14 +90,14 @@ export function ClockWidget() {
             {status === "on_break" ? (
               <Coffee size={28} color="#f59e0b" />
             ) : (
-              <Clock size={28} color="#10b981" />
+              <Clock size={28} color="#16a34a" />
             )}
           </View>
           <View className="flex-1">
-            <Text className="text-slate-500 dark:text-slate-400 text-sm">
+            <Text className="text-stone-500 dark:text-stone-400 text-sm font-bold">
               {status === "on_break" ? "On Break" : "Clocked In"}
             </Text>
-            <Text className="font-bold text-slate-900 dark:text-white text-2xl">
+            <Text className="font-extrabold text-stone-900 dark:text-stone-50 text-3xl">
               {formatDuration(elapsed)}
             </Text>
           </View>
@@ -115,7 +116,7 @@ export function ClockWidget() {
               accessibilityRole="button"
             >
               <Coffee size={22} color="#f59e0b" />
-              <Text className="font-medium text-amber-700 dark:text-amber-400 text-base">
+              <Text className="font-bold text-amber-700 dark:text-amber-400 text-base">
                 Break
               </Text>
             </Pressable>
@@ -131,8 +132,8 @@ export function ClockWidget() {
               accessibilityLabel="End break"
               accessibilityRole="button"
             >
-              <Clock size={22} color="#10b981" />
-              <Text className="font-medium text-emerald-700 dark:text-emerald-400 text-base">
+              <Clock size={22} color="#16a34a" />
+              <Text className="font-bold text-emerald-700 dark:text-emerald-400 text-base">
                 Resume
               </Text>
             </Pressable>
@@ -145,7 +146,7 @@ export function ClockWidget() {
             accessibilityRole="button"
           >
             <LogOut size={22} color="#ef4444" />
-            <Text className="font-medium text-red-700 dark:text-red-400 text-base">
+            <Text className="font-bold text-red-700 dark:text-red-400 text-base">
               Clock Out
             </Text>
           </Pressable>
