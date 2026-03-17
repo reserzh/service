@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
 import { db } from "@/lib/db";
 import { customerPortalTokens, customers } from "@fieldservice/shared/db/schema";
+import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/rate-limit";
 
 const acceptInviteSchema = z.object({
   token: z.string().min(1),
@@ -12,6 +13,16 @@ const acceptInviteSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 invite attempts per minute per IP (brute-force protection)
+    const ip = getClientIp(req);
+    const rl = checkRateLimit(`portal-invite:${ip}`, RATE_LIMITS.portalInvite);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: { message: "Too many attempts. Please try again shortly." } },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.resetMs / 1000)) } }
+      );
+    }
+
     const body = await req.json();
     const parsed = acceptInviteSchema.safeParse(body);
 

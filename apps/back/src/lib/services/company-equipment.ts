@@ -197,7 +197,7 @@ export async function addMaintenanceLog(
     performed.setDate(performed.getDate() + item.serviceIntervalDays);
     updateFields.nextServiceDue = performed.toISOString().split("T")[0];
   }
-  await db.update(companyEquipment).set(updateFields).where(eq(companyEquipment.id, equipmentId));
+  await db.update(companyEquipment).set(updateFields).where(and(eq(companyEquipment.id, equipmentId), eq(companyEquipment.tenantId, ctx.tenantId)));
 
   return log;
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createBookingRequest, getTenantSettings } from "@/lib/queries";
+import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/rate-limit";
 
 const bookingSchema = z.object({
   tenantId: z.string().uuid(),
@@ -23,6 +24,16 @@ const DAY_KEYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "frida
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 booking submissions per minute per IP
+    const ip = getClientIp(req);
+    const rl = checkRateLimit(`booking:${ip}`, RATE_LIMITS.booking);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: { message: "Too many booking requests. Please try again shortly." } },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.resetMs / 1000)) } }
+      );
+    }
+
     const body = await req.json();
     const parsed = bookingSchema.safeParse(body);
 

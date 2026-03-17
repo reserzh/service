@@ -457,13 +457,13 @@ export async function generateVisitJob(ctx: UserContext, agreementId: string, vi
   await db
     .update(agreementVisits)
     .set({ jobId: job.id, updatedAt: new Date() })
-    .where(eq(agreementVisits.id, visitId));
+    .where(and(eq(agreementVisits.id, visitId), eq(agreementVisits.tenantId, ctx.tenantId)));
 
   // Update job with agreement references
   await db
     .update(jobs)
     .set({ agreementId: agreement.id, agreementVisitId: visit.id })
-    .where(eq(jobs.id, job.id));
+    .where(and(eq(jobs.id, job.id), eq(jobs.tenantId, ctx.tenantId)));
 
   return job;
 }
@@ -485,7 +485,7 @@ export async function completeVisit(ctx: UserContext, agreementId: string, visit
       completedDate: new Date().toISOString().split("T")[0],
       updatedAt: new Date(),
     })
-    .where(eq(agreementVisits.id, visitId));
+    .where(and(eq(agreementVisits.id, visitId), eq(agreementVisits.tenantId, ctx.tenantId)));
 
   // Auto-generate invoice from agreement services
   try {
@@ -514,13 +514,13 @@ export async function completeVisit(ctx: UserContext, agreementId: string, visit
       await db
         .update(invoices)
         .set({ agreementId: agreement.id })
-        .where(eq(invoices.id, invoice.id));
+        .where(and(eq(invoices.id, invoice.id), eq(invoices.tenantId, ctx.tenantId)));
 
       // Link invoice to visit
       await db
         .update(agreementVisits)
         .set({ invoiceId: invoice.id })
-        .where(eq(agreementVisits.id, visitId));
+        .where(and(eq(agreementVisits.id, visitId), eq(agreementVisits.tenantId, ctx.tenantId)));
     }
   } catch (error) {
     console.error("[Agreement] Failed to auto-generate invoice:", error);
