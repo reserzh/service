@@ -13,10 +13,9 @@ import {
 } from "@/lib/services/quickbooks";
 import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getActionErrorMessage } from "@/lib/api/errors";
-import type { TenantSettings } from "@fieldservice/shared/db/schema";
 
 export type QBActionState = {
   error?: string;
@@ -48,26 +47,16 @@ export async function updateQBSettingsAction(settings: {
     const ctx = await requireAuth();
     assertPermission(ctx, "integrations", "manage");
 
-    // Get current tenant settings
-    const [tenant] = await db
-      .select({ settings: tenants.settings })
-      .from(tenants)
-      .where(eq(tenants.id, ctx.tenantId))
-      .limit(1);
-
-    const currentSettings = (tenant?.settings as TenantSettings | null) ?? {};
-
-    // Merge QB settings
+    // Atomic JSON merge to avoid read-modify-write race conditions
+    const qbPatch = JSON.stringify(settings);
     await db
       .update(tenants)
       .set({
-        settings: {
-          ...currentSettings,
-          quickbooks: {
-            ...currentSettings.quickbooks,
-            ...settings,
-          },
-        },
+        settings: sql`jsonb_set(
+          coalesce(${tenants.settings}, '{}'::jsonb),
+          '{quickbooks}',
+          coalesce(${tenants.settings}->'quickbooks', '{}'::jsonb) || ${qbPatch}::jsonb
+        )`,
         updatedAt: new Date(),
       })
       .where(eq(tenants.id, ctx.tenantId));

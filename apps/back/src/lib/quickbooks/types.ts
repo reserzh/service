@@ -82,7 +82,24 @@ export interface QBInvoiceLine {
     ItemRef: QBRef;
     UnitPrice?: number;
     Qty?: number;
+    TaxCodeRef?: QBRef;
   };
+}
+
+/** QBO transaction tax detail */
+export interface QBTxnTaxDetail {
+  TotalTax?: number;
+  TxnTaxCodeRef?: QBRef;
+  TaxLine?: Array<{
+    Amount: number;
+    DetailType: "TaxLineDetail";
+    TaxLineDetail: {
+      TaxRateRef?: QBRef;
+      PercentBased?: boolean;
+      TaxPercent?: number;
+      NetAmountTaxable?: number;
+    };
+  }>;
 }
 
 export interface QBInvoice {
@@ -95,6 +112,7 @@ export interface QBInvoice {
   TxnDate?: string;
   BillEmail?: QBEmailAddr;
   EmailStatus?: "NotSet" | "NeedToSend" | "EmailSent";
+  TxnTaxDetail?: QBTxnTaxDetail;
 }
 
 // ---------------------------------------------------------------------------
@@ -130,6 +148,7 @@ export interface QBEstimate {
   TxnDate?: string;
   ExpirationDate?: string;
   TxnStatus?: "Pending" | "Accepted" | "Closed" | "Rejected";
+  TxnTaxDetail?: QBTxnTaxDetail;
 }
 
 // ---------------------------------------------------------------------------

@@ -79,12 +79,15 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
 function SessionGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
+  const biometricLockEnabled = useSettingsStore((s) => s.biometricLockEnabled);
   const { isLocked, unlock } = useSessionTimeout();
 
   return (
     <>
       {children}
-      {isAuthenticated && <BiometricLock visible={isLocked} onUnlock={unlock} />}
+      {isAuthenticated && biometricLockEnabled && (
+        <BiometricLock visible={isLocked} onUnlock={unlock} />
+      )}
     </>
   );
 }

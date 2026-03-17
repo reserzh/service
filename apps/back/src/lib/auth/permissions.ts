@@ -63,7 +63,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     communications: ["create", "read", "update", "delete"],
     agreements: ["create", "read", "update", "delete"],
     portal: ["create", "read", "update", "delete", "manage"],
-    integrations: ["read", "manage"],
+    integrations: ["read"],
     ai_assistant: ["read"],
     calls: ["create", "read", "update", "delete"],
   },

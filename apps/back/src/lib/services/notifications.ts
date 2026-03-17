@@ -106,4 +106,23 @@ export async function createNotification(params: {
     entityType: params.entityType ?? null,
     entityId: params.entityId ?? null,
   });
+
+  // Fire-and-forget push notification delivery
+  import("@/lib/push/expo")
+    .then(({ sendPushNotifications }) =>
+      sendPushNotifications({
+        tenantId: params.tenantId,
+        userIds: [params.userId],
+        title: params.title,
+        body: params.message,
+        data: {
+          type: params.type,
+          ...(params.entityType ? { entityType: params.entityType } : {}),
+          ...(params.entityId ? { entityId: params.entityId } : {}),
+        },
+      })
+    )
+    .catch((err) => {
+      console.error("[Notification] Push delivery failed:", err);
+    });
 }

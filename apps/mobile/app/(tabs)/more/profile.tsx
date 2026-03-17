@@ -10,6 +10,7 @@ import {
   Moon,
   Bell,
   BellOff,
+  Fingerprint,
   Info,
   Star,
 } from "lucide-react-native";
@@ -214,7 +215,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Dark mode override */}
-          <View>
+          <View className="mb-4">
             <View className="flex-row items-center gap-2 mb-2">
               <Moon size={16} color="#78716C" />
               <Text className="text-sm font-medium text-stone-900 dark:text-stone-50">
@@ -248,6 +249,17 @@ export default function ProfileScreen() {
               ))}
             </View>
           </View>
+
+          {/* Biometric lock */}
+          <ToggleRow
+            icon={<Fingerprint size={16} color="#78716C" />}
+            label="Biometric Lock"
+            value={settings.biometricLockEnabled}
+            onToggle={(v) => {
+              Haptics.selectionAsync();
+              settings.setBiometricLockEnabled(v);
+            }}
+          />
         </Card>
       </View>
 

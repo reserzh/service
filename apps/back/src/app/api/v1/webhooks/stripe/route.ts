@@ -43,6 +43,24 @@ export async function POST(req: NextRequest) {
 
           if (existing) return;
 
+          // Cross-validate: confirm invoice belongs to tenant and matches customer
+          const [validInvoice] = await tx
+            .select({ id: invoices.id })
+            .from(invoices)
+            .where(
+              and(
+                eq(invoices.id, invoiceId),
+                eq(invoices.tenantId, tenantId),
+                eq(invoices.customerId, customerId)
+              )
+            )
+            .limit(1);
+
+          if (!validInvoice) {
+            console.error("[Stripe Webhook] Metadata mismatch: invoice/tenant/customer do not match", { invoiceId, tenantId, customerId });
+            return;
+          }
+
           // Record the payment
           await tx.insert(payments).values({
             tenantId,

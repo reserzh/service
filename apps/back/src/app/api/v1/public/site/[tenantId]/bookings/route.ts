@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { bookingRequests, tenants } from "@fieldservice/shared/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, gte } from "drizzle-orm";
 import { handleApiError, validateUUID } from "@/lib/api/errors";
 
 const bookingSchema = z.object({
@@ -41,6 +41,27 @@ export async function POST(
 
     const body = await req.json();
     const parsed = bookingSchema.parse(body);
+
+    // Prevent duplicate submissions: same email + tenant within 5 minutes
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const [recentDuplicate] = await db
+      .select({ id: bookingRequests.id })
+      .from(bookingRequests)
+      .where(
+        and(
+          eq(bookingRequests.tenantId, tenantId),
+          eq(bookingRequests.email, parsed.email),
+          gte(bookingRequests.createdAt, fiveMinutesAgo)
+        )
+      )
+      .limit(1);
+
+    if (recentDuplicate) {
+      return NextResponse.json(
+        { data: { id: recentDuplicate.id, message: "Booking request already submitted" } },
+        { status: 200 }
+      );
+    }
 
     const [booking] = await db
       .insert(bookingRequests)

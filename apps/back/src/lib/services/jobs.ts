@@ -545,6 +545,33 @@ export async function changeJobStatus(
     to: newStatus,
   });
 
+  // Send push notification to assigned technician for status changes
+  if (job.assignedTo && job.assignedTo !== ctx.userId) {
+    const statusLabels: Record<string, string> = {
+      scheduled: "Scheduled",
+      dispatched: "Dispatched",
+      in_progress: "In Progress",
+      completed: "Completed",
+      canceled: "Canceled",
+    };
+    const label = statusLabels[newStatus] || newStatus;
+    import("./notifications")
+      .then(({ createNotification }) =>
+        createNotification({
+          tenantId: ctx.tenantId,
+          userId: job.assignedTo!,
+          type: "job_status_changed",
+          title: `Job ${label}`,
+          message: `Job ${job.jobNumber} has been updated to ${label}`,
+          entityType: "job",
+          entityId: jobId,
+        })
+      )
+      .catch((err) => {
+        console.error("[Job] Failed to send status change notification:", err);
+      });
+  }
+
   // Handle tracking session lifecycle
   try {
     const { createTrackingSession, endTrackingSession } = await import("./tracking");
@@ -678,6 +705,25 @@ export async function assignJob(
   await logActivity(ctx, "job", jobId, "assigned", {
     technicianId,
   });
+
+  // Send push notification to the assigned technician
+  if (technicianId) {
+    import("./notifications")
+      .then(({ createNotification }) =>
+        createNotification({
+          tenantId: ctx.tenantId,
+          userId: technicianId,
+          type: "job_assigned",
+          title: "New Job Assignment",
+          message: `You have been assigned to job ${job.jobNumber}: ${job.summary}`,
+          entityType: "job",
+          entityId: jobId,
+        })
+      )
+      .catch((err) => {
+        console.error("[Job] Failed to send assignment notification:", err);
+      });
+  }
 
   return updated;
 }

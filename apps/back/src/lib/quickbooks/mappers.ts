@@ -8,6 +8,15 @@ import type {
 } from "./types";
 
 // ---------------------------------------------------------------------------
+// Tax strategy options passed to invoice/estimate mappers
+// ---------------------------------------------------------------------------
+export interface TaxMappingOptions {
+  taxStrategy: "none" | "global" | "per_line";
+  /** Global tax rate as a percentage (e.g. 8.25 for 8.25%). Used when taxStrategy === "global". */
+  globalTaxRate?: number;
+}
+
+// ---------------------------------------------------------------------------
 // Customer → QBCustomer
 // ---------------------------------------------------------------------------
 export function mapCustomerToQB(customer: {
@@ -109,16 +118,25 @@ export function mapInvoiceToQB(
     unitPrice: string;
     total: string;
     pricebookItemId?: string | null;
+    taxable?: boolean;
   }>,
   itemMappings: Map<string, string>, // localId → qbItemId
-  syncToken?: string
+  syncToken?: string,
+  taxOptions?: TaxMappingOptions
 ): QBInvoice {
+  const strategy = taxOptions?.taxStrategy ?? "none";
+
   const lines: QBInvoiceLine[] = lineItems.map((li) => {
     const qty = typeof li.quantity === "string" ? parseFloat(li.quantity) : li.quantity;
     const unitPrice = parseFloat(li.unitPrice);
 
     // If a pricebook item is mapped to QB, use its reference
     const qbItemId = li.pricebookItemId ? itemMappings.get(li.pricebookItemId) : undefined;
+
+    const taxCodeRef =
+      strategy === "per_line"
+        ? { value: li.taxable !== false ? "TAX" : "NON" }
+        : undefined;
 
     if (qbItemId) {
       return {
@@ -129,6 +147,7 @@ export function mapInvoiceToQB(
           ItemRef: { value: qbItemId },
           UnitPrice: unitPrice,
           Qty: qty,
+          ...(taxCodeRef ? { TaxCodeRef: taxCodeRef } : {}),
         },
       };
     }
@@ -142,6 +161,7 @@ export function mapInvoiceToQB(
         ItemRef: { value: "1" }, // default "Services" item in QB
         UnitPrice: unitPrice,
         Qty: qty,
+        ...(taxCodeRef ? { TaxCodeRef: taxCodeRef } : {}),
       },
     };
   });
@@ -153,6 +173,15 @@ export function mapInvoiceToQB(
     TxnDate: formatDate(invoice.createdAt),
     ...(invoice.dueDate ? { DueDate: formatDate(invoice.dueDate) } : {}),
   };
+
+  // Apply global tax if configured
+  if (strategy === "global" && taxOptions?.globalTaxRate) {
+    const subtotal = lines.reduce((sum, l) => sum + l.Amount, 0);
+    const totalTax = Math.round(subtotal * (taxOptions.globalTaxRate / 100) * 100) / 100;
+    qbInvoice.TxnTaxDetail = {
+      TotalTax: totalTax,
+    };
+  }
 
   if (syncToken) {
     qbInvoice.SyncToken = syncToken;
@@ -208,14 +237,23 @@ export function mapEstimateToQB(
     unitPrice: string;
     total: string;
     pricebookItemId?: string | null;
+    taxable?: boolean;
   }>,
   itemMappings: Map<string, string>,
-  syncToken?: string
+  syncToken?: string,
+  taxOptions?: TaxMappingOptions
 ): QBEstimate {
+  const strategy = taxOptions?.taxStrategy ?? "none";
+
   const lines: QBInvoiceLine[] = lineItems.map((li) => {
     const qty = typeof li.quantity === "string" ? parseFloat(li.quantity) : li.quantity;
     const unitPrice = parseFloat(li.unitPrice);
     const qbItemId = li.pricebookItemId ? itemMappings.get(li.pricebookItemId) : undefined;
+
+    const taxCodeRef =
+      strategy === "per_line"
+        ? { value: li.taxable !== false ? "TAX" : "NON" }
+        : undefined;
 
     return {
       Amount: parseFloat(li.total),
@@ -225,6 +263,7 @@ export function mapEstimateToQB(
         ItemRef: { value: qbItemId ?? "1" },
         UnitPrice: unitPrice,
         Qty: qty,
+        ...(taxCodeRef ? { TaxCodeRef: taxCodeRef } : {}),
       },
     };
   });
@@ -236,6 +275,15 @@ export function mapEstimateToQB(
     TxnDate: formatDate(estimate.createdAt),
     ...(estimate.validUntil ? { ExpirationDate: formatDate(estimate.validUntil) } : {}),
   };
+
+  // Apply global tax if configured
+  if (strategy === "global" && taxOptions?.globalTaxRate) {
+    const subtotal = lines.reduce((sum, l) => sum + l.Amount, 0);
+    const totalTax = Math.round(subtotal * (taxOptions.globalTaxRate / 100) * 100) / 100;
+    qbEstimate.TxnTaxDetail = {
+      TotalTax: totalTax,
+    };
+  }
 
   if (syncToken) {
     qbEstimate.SyncToken = syncToken;

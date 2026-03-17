@@ -13,8 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { FileText, AlertTriangle, RefreshCw } from "lucide-react";
-import { updateQBSettingsAction, fetchQBAccountsAction } from "@/actions/quickbooks";
+import { FileText, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { updateQBSettingsAction, fetchQBAccountsAction, bulkSyncAction } from "@/actions/quickbooks";
 import { showToast } from "@/lib/toast";
 
 interface QBSettings {
@@ -43,6 +43,7 @@ interface Props {
 
 export function QuickBooksConfigForm({ settings, stats }: Props) {
   const [saving, setSaving] = useState(false);
+  const [bulkSyncing, setBulkSyncing] = useState(false);
   const [accounts, setAccounts] = useState<QBAccount[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
 
@@ -87,6 +88,35 @@ export function QuickBooksConfigForm({ settings, stats }: Props) {
       }
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleBulkSync() {
+    setBulkSyncing(true);
+    try {
+      const res = await bulkSyncAction();
+      if ("error" in res) {
+        showToast.error("Bulk sync failed", res.error);
+      } else {
+        const r = res.result;
+        const parts: string[] = [];
+        if (r.customers.synced > 0) parts.push(`${r.customers.synced} customers`);
+        if (r.invoices.synced > 0) parts.push(`${r.invoices.synced} invoices`);
+        if (r.payments.synced > 0) parts.push(`${r.payments.synced} payments`);
+        if (r.pricebookItems.synced > 0) parts.push(`${r.pricebookItems.synced} pricebook items`);
+
+        const totalFailed =
+          r.customers.failed + r.invoices.failed + r.payments.failed + r.pricebookItems.failed;
+
+        const message = parts.length > 0 ? `Synced ${parts.join(", ")}` : "No entities to sync";
+        if (totalFailed > 0) {
+          showToast.error("Bulk sync completed with errors", `${message}. ${totalFailed} failed.`);
+        } else {
+          showToast.saved(message);
+        }
+      }
+    } finally {
+      setBulkSyncing(false);
     }
   }
 
@@ -232,12 +262,27 @@ export function QuickBooksConfigForm({ settings, stats }: Props) {
                 <p className="text-sm text-muted-foreground">Total</p>
               </div>
             </div>
-            <Button variant="outline" className="mt-4 w-full" asChild>
-              <Link href="/settings/integrations/quickbooks/sync-log">
-                <FileText className="mr-2 h-4 w-4" />
-                View Sync Log
-              </Link>
-            </Button>
+            <div className="mt-4 flex gap-2">
+              <Button variant="outline" className="flex-1" asChild>
+                <Link href="/settings/integrations/quickbooks/sync-log">
+                  <FileText className="mr-2 h-4 w-4" />
+                  View Sync Log
+                </Link>
+              </Button>
+              <Button
+                variant="default"
+                className="flex-1"
+                onClick={handleBulkSync}
+                disabled={bulkSyncing}
+              >
+                {bulkSyncing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                {bulkSyncing ? "Syncing..." : "Sync All Existing Data"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

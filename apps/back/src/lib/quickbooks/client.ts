@@ -21,6 +21,9 @@ const RATE_LIMIT_PER_MINUTE = 500;
 // Simple in-memory rate limiter per realm
 const rateLimiter = new Map<string, { count: number; resetAt: number }>();
 
+// Per-tenant mutex to prevent concurrent token refresh races
+const refreshLocks = new Map<string, Promise<string>>();
+
 function getBaseUrl(): string {
   const env = process.env.QB_ENVIRONMENT ?? "sandbox";
   return QB_BASE_URL[env] ?? QB_BASE_URL.sandbox;
@@ -57,7 +60,14 @@ async function getConnection(tenantId: string) {
   return conn;
 }
 
-async function refreshTokenIfNeeded(conn: Awaited<ReturnType<typeof getConnection>>): Promise<string> {
+/**
+ * Get a valid access token, refreshing if needed.
+ * Uses a per-tenant lock to prevent concurrent refresh races
+ * (QB refresh tokens are single-use — two concurrent refreshes would invalidate one).
+ */
+async function getAccessToken(tenantId: string): Promise<string> {
+  // Re-read connection from DB each time to get the latest token state
+  const conn = await getConnection(tenantId);
 
   const now = Date.now();
   const expiresAt = new Date(conn.accessTokenExpiresAt).getTime();
@@ -66,7 +76,22 @@ async function refreshTokenIfNeeded(conn: Awaited<ReturnType<typeof getConnectio
     return decryptToken(conn.accessToken);
   }
 
-  // Refresh the token
+  // Check if another request is already refreshing for this tenant
+  const existing = refreshLocks.get(tenantId);
+  if (existing) {
+    return existing;
+  }
+
+  // Perform the refresh with a lock
+  const refreshPromise = performTokenRefresh(conn).finally(() => {
+    refreshLocks.delete(tenantId);
+  });
+  refreshLocks.set(tenantId, refreshPromise);
+
+  return refreshPromise;
+}
+
+async function performTokenRefresh(conn: Awaited<ReturnType<typeof getConnection>>): Promise<string> {
   const clientId = process.env.QB_CLIENT_ID!;
   const clientSecret = process.env.QB_CLIENT_SECRET!;
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
@@ -166,7 +191,8 @@ export async function qbRequest<T>(
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const accessToken = await refreshTokenIfNeeded(conn);
+    // Re-fetch token from DB on each attempt so we pick up refreshes from other requests
+    const accessToken = await getAccessToken(tenantId);
 
     const res = await fetch(url, {
       method,
@@ -182,9 +208,9 @@ export async function qbRequest<T>(
       return (await res.json()) as T;
     }
 
-    // Handle 401 — token may have been refreshed by another request
+    // Handle 401 — token may have been refreshed by another request;
+    // getAccessToken will re-read from DB on next iteration
     if (res.status === 401 && attempt < MAX_RETRIES - 1) {
-      // Force a fresh token on next attempt
       continue;
     }
 

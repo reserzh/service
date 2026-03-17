@@ -11,12 +11,14 @@ interface SettingsState {
   notifyJobAssigned: boolean;
   notifyJobUpdated: boolean;
   notifyNewEstimate: boolean;
+  biometricLockEnabled: boolean;
   tradeType: TradeType | null;
   setPreferredMapApp: (app: MapApp) => void;
   setDarkModeOverride: (mode: DarkModeOverride) => void;
   setNotifyJobAssigned: (enabled: boolean) => void;
   setNotifyJobUpdated: (enabled: boolean) => void;
   setNotifyNewEstimate: (enabled: boolean) => void;
+  setBiometricLockEnabled: (enabled: boolean) => void;
   setTradeType: (tradeType: TradeType | null) => void;
   restore: () => Promise<void>;
 }
@@ -30,6 +32,7 @@ async function persist(state: Partial<SettingsState>) {
     notifyJobAssigned: state.notifyJobAssigned,
     notifyJobUpdated: state.notifyJobUpdated,
     notifyNewEstimate: state.notifyNewEstimate,
+    biometricLockEnabled: state.biometricLockEnabled,
     tradeType: state.tradeType,
   };
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -42,6 +45,7 @@ function createSettingsStore() {
     notifyJobAssigned: true,
     notifyJobUpdated: true,
     notifyNewEstimate: true,
+    biometricLockEnabled: true,
     tradeType: null,
 
     setPreferredMapApp: (preferredMapApp: MapApp) => {
@@ -64,6 +68,10 @@ function createSettingsStore() {
       set({ notifyNewEstimate });
       persist(get());
     },
+    setBiometricLockEnabled: (biometricLockEnabled: boolean) => {
+      set({ biometricLockEnabled });
+      persist(get());
+    },
     setTradeType: (tradeType: TradeType | null) => {
       set({ tradeType });
       persist(get());
@@ -80,6 +88,7 @@ function createSettingsStore() {
             notifyJobAssigned: data.notifyJobAssigned ?? true,
             notifyJobUpdated: data.notifyJobUpdated ?? true,
             notifyNewEstimate: data.notifyNewEstimate ?? true,
+            biometricLockEnabled: data.biometricLockEnabled ?? true,
             tradeType: data.tradeType ?? null,
           });
         }

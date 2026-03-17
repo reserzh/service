@@ -41,8 +41,9 @@ export async function requireCustomerAuth(): Promise<CustomerPortalContext> {
   db.update(customers)
     .set({ lastPortalLoginAt: new Date() })
     .where(eq(customers.id, customer.id))
-    .then(() => {})
-    .catch(() => {});
+    .catch((err) => {
+      console.error("[Portal] Failed to update lastPortalLoginAt:", err);
+    });
 
   return {
     customerId: customer.id,
