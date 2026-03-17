@@ -2,23 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Users,
-  CalendarDays,
-  Radio,
-  PhoneCall,
-  Briefcase,
-  FileText,
-  Receipt,
-  BarChart3,
-  ClipboardList,
-  Globe,
-  Settings,
-  Zap,
-  Bot,
-  ClipboardCheck,
-} from "lucide-react";
+import { ChevronRight, Zap } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,31 +13,89 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  getFilteredNavGroups,
+  canAccessSettings,
+  settingsNavItem,
+  type NavUser,
+  type NavItem,
+} from "@/lib/nav-config";
 
-const mainNav = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Schedule", href: "/schedule", icon: CalendarDays },
-  { title: "Dispatch", href: "/dispatch", icon: Radio },
-  { title: "Customers", href: "/customers", icon: Users },
-  { title: "Jobs", href: "/jobs", icon: Briefcase },
-  { title: "Estimates", href: "/estimates", icon: FileText },
-  { title: "Invoices", href: "/invoices", icon: Receipt },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
-  { title: "Daily Reports", href: "/daily-reports", icon: ClipboardCheck },
-  { title: "Calls", href: "/calls", icon: PhoneCall },
-  { title: "Agreements", href: "/agreements", icon: ClipboardList },
-  { title: "Website", href: "/website", icon: Globe },
-  { title: "AI Assistant", href: "/ai-assistant", icon: Bot },
-];
+interface AppSidebarProps {
+  user: NavUser;
+}
 
-const settingsNav = [
-  { title: "Settings", href: "/settings", icon: Settings },
-];
-
-export function AppSidebar() {
+export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
+  const groups = getFilteredNavGroups(user.role);
+  const showSettings = canAccessSettings(user.role);
+
+  function isActive(href: string) {
+    return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function renderItem(item: NavItem) {
+    // Item with children — collapsible sub-menu
+    if (item.children && item.children.length > 0) {
+      const parentActive = isActive(item.href) || item.children.some((c) => isActive(c.href));
+      return (
+        <Collapsible key={item.href} asChild defaultOpen={parentActive} className="group/collapsible">
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton tooltip={item.title} isActive={parentActive}>
+                <item.icon className="h-4 w-4" />
+                <span>{item.title}</span>
+                <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {/* Parent page link */}
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === item.href}>
+                    <Link href={item.href}>
+                      <span>Overview</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                {item.children.map((child) => (
+                  <SidebarMenuSubItem key={child.href}>
+                    <SidebarMenuSubButton asChild isActive={isActive(child.href)}>
+                      <Link href={child.href}>
+                        <span>{child.title}</span>
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
+      );
+    }
+
+    // Simple item
+    return (
+      <SidebarMenuItem key={item.href}>
+        <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={item.title}>
+          <Link href={item.href}>
+            <item.icon className="h-4 w-4" />
+            <span>{item.title}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -70,47 +112,40 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/40 text-[10px] uppercase tracking-wider">Main</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainNav.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.href || pathname.startsWith(item.href + "/")}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {groups.map((group, i) => (
+          <SidebarGroup key={group.label ?? `group-${i}`}>
+            {group.label && (
+              <SidebarGroupLabel className="text-sidebar-foreground/40 text-[10px] uppercase tracking-wider">
+                {group.label}
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => renderItem(item))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
-          {settingsNav.map((item) => (
-            <SidebarMenuItem key={item.href}>
+      {showSettings && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                isActive={pathname.startsWith(item.href)}
-                tooltip={item.title}
+                isActive={pathname.startsWith(settingsNavItem.href)}
+                tooltip={settingsNavItem.title}
               >
-                <Link href={item.href}>
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
+                <Link href={settingsNavItem.href}>
+                  <settingsNavItem.icon className="h-4 w-4" />
+                  <span>{settingsNavItem.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarFooter>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }

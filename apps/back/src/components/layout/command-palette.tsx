@@ -16,33 +16,14 @@ import {
   Briefcase,
   FileText,
   Receipt,
-  LayoutDashboard,
-  Calendar,
-  Truck,
-  BarChart3,
-  Globe,
-  Settings,
   Loader2,
   Plus,
-  ClipboardList,
-  Bot,
 } from "lucide-react";
 import { globalSearchAction, type SearchResult } from "@/actions/search";
-
-const pages = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Customers", href: "/customers", icon: Users },
-  { title: "Jobs", href: "/jobs", icon: Briefcase },
-  { title: "Estimates", href: "/estimates", icon: FileText },
-  { title: "Invoices", href: "/invoices", icon: Receipt },
-  { title: "Schedule", href: "/schedule", icon: Calendar },
-  { title: "Dispatch", href: "/dispatch", icon: Truck },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
-  { title: "Agreements", href: "/agreements", icon: ClipboardList },
-  { title: "Website", href: "/website", icon: Globe },
-  { title: "AI Assistant", href: "/ai-assistant", icon: Bot },
-  { title: "Settings", href: "/settings", icon: Settings },
-];
+import {
+  getFilteredNavItems,
+  getFilteredQuickActions,
+} from "@/lib/nav-config";
 
 const resultIcons: Record<string, typeof Users> = {
   customer: Users,
@@ -54,14 +35,18 @@ const resultIcons: Record<string, typeof Users> = {
 interface CommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userRole?: string;
 }
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, userRole }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const pages = getFilteredNavItems(userRole ?? "technician");
+  const actions = getFilteredQuickActions(userRole ?? "technician");
 
   // Keyboard shortcut
   useEffect(() => {
@@ -188,24 +173,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         )}
 
         {/* Quick actions */}
-        {!isPending && (query.length < 2 || results.length > 0) && (
+        {!isPending && (query.length < 2 || results.length > 0) && actions.length > 0 && (
           <CommandGroup heading="Quick Actions">
-            <CommandItem value="New Customer" onSelect={() => navigate("/customers")}>
-              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
-              New Customer
-            </CommandItem>
-            <CommandItem value="New Job" onSelect={() => navigate("/jobs/new")}>
-              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
-              New Job
-            </CommandItem>
-            <CommandItem value="New Estimate" onSelect={() => navigate("/estimates/new")}>
-              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
-              New Estimate
-            </CommandItem>
-            <CommandItem value="New Invoice" onSelect={() => navigate("/invoices/new")}>
-              <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
-              New Invoice
-            </CommandItem>
+            {actions.map((action) => (
+              <CommandItem key={action.href} value={action.title} onSelect={() => navigate(action.href)}>
+                <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+                {action.title}
+              </CommandItem>
+            ))}
           </CommandGroup>
         )}
 

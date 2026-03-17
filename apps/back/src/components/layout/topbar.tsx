@@ -54,7 +54,7 @@ export function Topbar({ user }: TopbarProps) {
         </Button>
       </div>
 
-      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} userRole={user.role} />
 
       {/* Right side actions */}
       <div className="flex items-center gap-1">

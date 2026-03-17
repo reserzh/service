@@ -55,7 +55,8 @@ export type DashboardPresetId =
   | "glass"
   | "executive"
   | "arctic"
-  | "ocean";
+  | "forge"
+  | "copper";
 
 export type DashboardPreset = {
   id: DashboardPresetId;
@@ -109,10 +110,17 @@ export const DASHBOARD_PRESETS: DashboardPreset[] = [
     supportedWidgets: ["stats", "quick-actions", "schedule", "activity"],
   },
   {
-    id: "ocean",
-    name: "Ocean Breeze",
-    description: "Blue-tinted calming layout",
-    colors: ["#eff6ff", "#dbeafe", "#0369a1"],
+    id: "forge",
+    name: "Forge Industrial",
+    description: "Rugged workshop, embossed metal",
+    colors: ["#44403c", "#fafaf9", "#b45309"],
+    supportedWidgets: ["stats", "quick-actions", "schedule", "activity"],
+  },
+  {
+    id: "copper",
+    name: "Copper Ledger",
+    description: "Serif typography, paper texture",
+    colors: ["#f5f0e8", "#faf8f5", "#c2410c"],
     supportedWidgets: ["stats", "quick-actions", "schedule", "activity"],
   },
 ];

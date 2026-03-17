@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { BlueprintTopNav } from "@/components/layout/blueprint-top-nav";
-import { GlassTopNav } from "@/components/layout/glass-top-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -12,8 +10,6 @@ import type { TenantSettings } from "@fieldservice/shared/db/schema/tenants";
 import { CallWidget } from "@/components/calls/call-widget";
 import { TradeTypeProvider } from "@/components/providers/trade-type-provider";
 import type { TradeType } from "@fieldservice/api-types/constants";
-
-const TOP_NAV_THEMES = new Set(["blueprint", "glass"]);
 
 export default async function DashboardLayout({
   children,
@@ -38,7 +34,6 @@ export default async function DashboardLayout({
 
   const settings = (tenantRow?.settings ?? {}) as TenantSettings;
   const preset = (settings.dashboardPreset ?? "classic") as string;
-  const hasTopNav = TOP_NAV_THEMES.has(preset);
 
   const userProps = {
     firstName: user.firstName,
@@ -51,26 +46,15 @@ export default async function DashboardLayout({
     <TradeTypeProvider tradeType={settings.tradeType as TradeType | undefined}>
       <div
         data-theme={preset === "classic" ? undefined : preset}
-        className="min-h-screen bg-background text-foreground font-sans"
+        className="min-h-screen bg-background text-foreground"
       >
-        {hasTopNav ? (
-          <>
-            {preset === "blueprint" ? (
-              <BlueprintTopNav user={userProps} />
-            ) : (
-              <GlassTopNav user={userProps} />
-            )}
+        <SidebarProvider>
+          <AppSidebar user={userProps} />
+          <SidebarInset>
+            <Topbar user={userProps} />
             <main className="flex-1 overflow-auto p-6">{children}</main>
-          </>
-        ) : (
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Topbar user={userProps} />
-              <main className="flex-1 overflow-auto p-6">{children}</main>
-            </SidebarInset>
-          </SidebarProvider>
-        )}
+          </SidebarInset>
+        </SidebarProvider>
         <CallWidget />
       </div>
     </TradeTypeProvider>

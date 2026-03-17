@@ -51,7 +51,7 @@ export default async function DashboardPage() {
     firstName: ctx.firstName,
   };
 
-  const showPageHeader = preset === "classic" || preset === "executive" || preset === "arctic" || preset === "ocean";
+  const showPageHeader = preset === "classic" || preset === "executive" || preset === "arctic" || preset === "forge" || preset === "copper";
 
   // Get supported widgets for this preset
   const presetConfig = DASHBOARD_PRESETS.find((p) => p.id === preset) ?? DASHBOARD_PRESETS[0];
@@ -135,8 +135,10 @@ function DashboardLayout({
       return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} variant="executive" />;
     case "arctic":
       return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} variant="arctic" />;
-    case "ocean":
-      return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} variant="ocean" />;
+    case "forge":
+      return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} variant="forge" />;
+    case "copper":
+      return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} variant="copper" />;
     case "classic":
     default:
       return <ClassicLayout data={data} hiddenWidgets={hiddenWidgets} />;

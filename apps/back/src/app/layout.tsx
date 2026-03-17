@@ -43,6 +43,19 @@ const barlow = localFont({
   variable: "--font-barlow",
 });
 
+const interTight = localFont({
+  src: "../fonts/InterTightVF.woff2",
+  variable: "--font-inter-tight",
+});
+
+const libreBaskerville = localFont({
+  src: [
+    { path: "../fonts/LibreBaskerville-400.woff2", weight: "400" },
+    { path: "../fonts/LibreBaskerville-700.woff2", weight: "700" },
+  ],
+  variable: "--font-libre-baskerville",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "FieldService Pro",
@@ -59,7 +72,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${dmSans.variable} ${plusJakartaSans.variable} ${barlow.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${dmSans.variable} ${plusJakartaSans.variable} ${barlow.variable} ${interTight.variable} ${libreBaskerville.variable} font-sans antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

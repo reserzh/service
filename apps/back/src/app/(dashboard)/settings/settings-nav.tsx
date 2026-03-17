@@ -3,36 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Building2,
-  Users,
-  Wrench,
-  Bell,
-  Link2,
-  CreditCard,
-  CheckSquare,
-  FileStack,
-  Factory,
-} from "lucide-react";
-
-const navItems = [
-  { label: "Industry", href: "/settings/industry", icon: Factory },
-  { label: "Company Profile", href: "/settings/company", icon: Building2 },
-  { label: "Team Members", href: "/settings/team", icon: Users },
-  { label: "Services & Pricing", href: "/settings/services", icon: Wrench },
-  { label: "Checklist Templates", href: "/settings/checklists", icon: CheckSquare },
-  { label: "Estimate Templates", href: "/settings/estimate-templates", icon: FileStack },
-  { label: "Notifications", href: "/settings/notifications", icon: Bell },
-  { label: "Integrations", href: "/settings/integrations", icon: Link2 },
-  { label: "Billing", href: "/settings/billing", icon: CreditCard },
-];
+import { settingsNavItems } from "@/lib/nav-config";
 
 export function SettingsNav() {
   const pathname = usePathname();
 
   return (
     <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-      {navItems.map((item) => {
+      {settingsNavItems.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
         return (
           <Link

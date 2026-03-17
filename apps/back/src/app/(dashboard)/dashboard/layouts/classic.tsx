@@ -18,7 +18,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { DashboardLayoutProps } from "./types";
 
-export type ClassicVariant = "default" | "executive" | "arctic" | "ocean";
+export type ClassicVariant = "default" | "executive" | "arctic" | "forge" | "copper";
 
 const variants: Record<
   ClassicVariant,
@@ -115,20 +115,46 @@ const variants: Record<
     scheduleItem: "hover:bg-muted/50",
     emptyIcon: "text-muted-foreground/30",
   },
-  ocean: {
+  forge: {
     wrapper: "",
     card: "border-border bg-card",
-    cardHover: "hover:shadow-md hover:shadow-primary/10 hover:border-border/80",
+    cardHover: "hover:shadow-md hover:shadow-amber-900/10 hover:border-border/80",
     statIcon: {
-      primary: "bg-primary/10 text-primary",
-      green: "bg-teal-100 text-teal-600",
-      blue: "bg-sky-100 text-sky-600",
-      red: "bg-rose-100 text-rose-600",
+      primary: "bg-amber-100 text-amber-700",
+      green: "bg-emerald-100 text-emerald-700",
+      blue: "bg-sky-100 text-sky-700",
+      red: "bg-rose-100 text-rose-700",
       default: "bg-muted text-muted-foreground",
     },
     statValue: {
       primary: "text-foreground",
-      green: "text-teal-700",
+      green: "text-emerald-700",
+      blue: "text-foreground",
+      red: "text-rose-700",
+      default: "text-foreground",
+    },
+    quickAction: "hover:border-primary/30",
+    quickActionIcon: "bg-primary/10 text-primary",
+    sectionIcon: "text-primary",
+    dot: "bg-primary/50",
+    muted: "text-muted-foreground",
+    scheduleItem: "hover:bg-muted/50",
+    emptyIcon: "text-muted-foreground/30",
+  },
+  copper: {
+    wrapper: "",
+    card: "border-border bg-card",
+    cardHover: "hover:shadow-md hover:shadow-orange-900/10 hover:border-border/80",
+    statIcon: {
+      primary: "bg-orange-100 text-orange-800",
+      green: "bg-emerald-100 text-emerald-700",
+      blue: "bg-sky-100 text-sky-700",
+      red: "bg-rose-100 text-rose-700",
+      default: "bg-muted text-muted-foreground",
+    },
+    statValue: {
+      primary: "text-foreground",
+      green: "text-emerald-700",
       blue: "text-foreground",
       red: "text-rose-700",
       default: "text-foreground",

@@ -437,7 +437,7 @@
 /* Blueprint Operations (Design 8) — Industrial, Space Grotesk, navy sidebar, orange accent */
 /* Sidebar: #1a2744, Bg: #f0f3f8, Card: white, Accent: #f97316, Text: #1a2744 */
 [data-theme="blueprint"] {
-  --font-sans: var(--font-space-grotesk);
+  font-family: var(--font-space-grotesk);
   --font-mono: var(--font-jetbrains-mono);
   --background: #f0f3f8;
   --foreground: #1a2744;
@@ -509,41 +509,78 @@
   --sidebar-ring: #7c3aed;
 }
 
-/* Ocean Breeze (Design 3) — Maritime, dark navy sidebar, teal accent, glass cards */
-/* Sidebar: #0f172a, Bg: #f0f4f8, Accent: #0891b2, Card: glass white */
-[data-theme="ocean"] {
-  --font-sans: var(--font-plus-jakarta-sans);
-  --background: #f0f4f8;
-  --foreground: #0f172a;
-  --card: rgba(255, 255, 255, 0.85);
-  --card-foreground: #0f172a;
+/* Forge Industrial — Rugged workshop, Inter Tight, amber/gold, stone sidebar, hatch pattern */
+/* Sidebar: #44403c, Bg: #fafaf9, Accent: #b45309, Card: white */
+[data-theme="forge"] {
+  font-family: var(--font-inter-tight);
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0891b2;
+  --popover-foreground: #1c1917;
+  --primary: #b45309;
   --primary-foreground: #ffffff;
-  --secondary: #e2e8f0;
-  --secondary-foreground: #334155;
-  --muted: #e2e8f0;
-  --muted-foreground: #64748b;
-  --accent: #ecfeff;
-  --accent-foreground: #155e75;
+  --secondary: #e7e5e4;
+  --secondary-foreground: #1c1917;
+  --muted: #e7e5e4;
+  --muted-foreground: #78716c;
+  --accent: #fef3c7;
+  --accent-foreground: #92400e;
   --destructive: #ef4444;
-  --border: rgba(148, 163, 184, 0.25);
-  --input: rgba(148, 163, 184, 0.3);
-  --ring: #0891b2;
-  --chart-1: #0891b2;
-  --chart-2: #6366f1;
-  --chart-3: #f59e0b;
-  --chart-4: #ec4899;
-  --chart-5: #10b981;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #94a3b8;
-  --sidebar-primary: #38bdf8;
+  --border: #d6d3d1;
+  --input: #d6d3d1;
+  --ring: #b45309;
+  --chart-1: #b45309;
+  --chart-2: #059669;
+  --chart-3: #2563eb;
+  --chart-4: #7c3aed;
+  --chart-5: #dc2626;
+  --sidebar: #44403c;
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #f59e0b;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(56, 189, 248, 0.15);
-  --sidebar-accent-foreground: #38bdf8;
-  --sidebar-border: rgba(148, 163, 184, 0.1);
-  --sidebar-ring: #0891b2;
+  --sidebar-accent: rgba(245, 158, 11, 0.15);
+  --sidebar-accent-foreground: #f59e0b;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #b45309;
+}
+
+/* Copper Ledger — Serif typography, Libre Baskerville, copper accent, paper texture */
+/* Sidebar: #f5f0e8, Bg: #faf8f5, Accent: #c2410c, Card: white */
+[data-theme="copper"] {
+  font-family: var(--font-libre-baskerville);
+  --background: #faf8f5;
+  --foreground: #292524;
+  --card: #ffffff;
+  --card-foreground: #292524;
+  --popover: #ffffff;
+  --popover-foreground: #292524;
+  --primary: #c2410c;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f0e8;
+  --secondary-foreground: #44403c;
+  --muted: #f5f0e8;
+  --muted-foreground: #78716c;
+  --accent: #fff7ed;
+  --accent-foreground: #7c2d12;
+  --destructive: #ef4444;
+  --border: #d6d3d1;
+  --input: #d6d3d1;
+  --ring: #c2410c;
+  --chart-1: #c2410c;
+  --chart-2: #16a34a;
+  --chart-3: #2563eb;
+  --chart-4: #7c3aed;
+  --chart-5: #dc2626;
+  --sidebar: #f5f0e8;
+  --sidebar-foreground: #57534e;
+  --sidebar-primary: #c2410c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(194, 65, 12, 0.08);
+  --sidebar-accent-foreground: #7c2d12;
+  --sidebar-border: #d6d3d1;
+  --sidebar-ring: #c2410c;
 }
 
 /* ===== Dark Variants for Light Themes ===== */
@@ -618,50 +655,85 @@
   --sidebar-ring: #7c3aed;
 }
 
-/* Ocean Dark */
-.dark [data-theme="ocean"] {
-  --background: #0c1222;
-  --foreground: #e2e8f0;
-  --card: rgba(15, 23, 42, 0.85);
-  --card-foreground: #e2e8f0;
-  --popover: #0f172a;
-  --popover-foreground: #e2e8f0;
-  --primary: #22d3ee;
-  --primary-foreground: #0c1222;
-  --secondary: #1e293b;
-  --secondary-foreground: #e2e8f0;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: rgba(34, 211, 238, 0.15);
-  --accent-foreground: #67e8f9;
+/* Forge Dark */
+.dark [data-theme="forge"] {
+  --background: #0c0a09;
+  --foreground: #fafaf9;
+  --card: #1c1917;
+  --card-foreground: #fafaf9;
+  --popover: #1c1917;
+  --popover-foreground: #fafaf9;
+  --primary: #f59e0b;
+  --primary-foreground: #1c1917;
+  --secondary: #292524;
+  --secondary-foreground: #fafaf9;
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
+  --accent: rgba(245, 158, 11, 0.15);
+  --accent-foreground: #fcd34d;
   --destructive: #ef4444;
-  --border: rgba(148, 163, 184, 0.15);
-  --input: rgba(148, 163, 184, 0.2);
-  --ring: #22d3ee;
-  --chart-1: #22d3ee;
-  --chart-2: #818cf8;
-  --chart-3: #fbbf24;
-  --chart-4: #f472b6;
-  --chart-5: #34d399;
-  --sidebar: #0a0f1c;
-  --sidebar-foreground: #94a3b8;
-  --sidebar-primary: #38bdf8;
+  --border: #292524;
+  --input: #44403c;
+  --ring: #f59e0b;
+  --chart-1: #f59e0b;
+  --chart-2: #34d399;
+  --chart-3: #60a5fa;
+  --chart-4: #a78bfa;
+  --chart-5: #f87171;
+  --sidebar: #1c1917;
+  --sidebar-foreground: rgba(255, 255, 255, 0.6);
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #1c1917;
+  --sidebar-accent: rgba(245, 158, 11, 0.15);
+  --sidebar-accent-foreground: #fbbf24;
+  --sidebar-border: #292524;
+  --sidebar-ring: #f59e0b;
+}
+
+/* Copper Dark */
+.dark [data-theme="copper"] {
+  --background: #1c1412;
+  --foreground: #fafaf9;
+  --card: #292018;
+  --card-foreground: #fafaf9;
+  --popover: #292018;
+  --popover-foreground: #fafaf9;
+  --primary: #ea580c;
+  --primary-foreground: #ffffff;
+  --secondary: #3b2314;
+  --secondary-foreground: #fafaf9;
+  --muted: #3b2314;
+  --muted-foreground: #a8a29e;
+  --accent: rgba(234, 88, 12, 0.15);
+  --accent-foreground: #fb923c;
+  --destructive: #ef4444;
+  --border: #3b2314;
+  --input: #44372a;
+  --ring: #ea580c;
+  --chart-1: #fb923c;
+  --chart-2: #34d399;
+  --chart-3: #60a5fa;
+  --chart-4: #a78bfa;
+  --chart-5: #f87171;
+  --sidebar: #3b2314;
+  --sidebar-foreground: rgba(214, 211, 209, 0.5);
+  --sidebar-primary: #ea580c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(56, 189, 248, 0.15);
-  --sidebar-accent-foreground: #38bdf8;
-  --sidebar-border: rgba(148, 163, 184, 0.1);
-  --sidebar-ring: #22d3ee;
+  --sidebar-accent: rgba(234, 88, 12, 0.1);
+  --sidebar-accent-foreground: #fb923c;
+  --sidebar-border: #5c3a20;
+  --sidebar-ring: #ea580c;
 }
 
 /* ===== Light Variants for Dark Themes ===== */
 
 /* Mission Control Light */
 .dark [data-theme="mission-control"] {
-  --font-sans: var(--font-jetbrains-mono);
+  font-family: var(--font-jetbrains-mono);
   --font-mono: var(--font-jetbrains-mono);
 }
 [data-theme="mission-control"] {
-  --font-sans: var(--font-jetbrains-mono);
+  font-family: var(--font-jetbrains-mono);
   --font-mono: var(--font-jetbrains-mono);
   --background: #f0f2f5;
   --foreground: #1a1d2e;
@@ -733,7 +805,7 @@
 
 /* Glass Light */
 [data-theme="glass"] {
-  --font-sans: var(--font-space-grotesk);
+  font-family: var(--font-space-grotesk);
   --background: #f5f3ff;
   --foreground: #1e1b4b;
   --card: rgba(255, 255, 255, 0.75);
@@ -804,7 +876,7 @@
 
 /* Executive Light */
 [data-theme="executive"] {
-  --font-sans: var(--font-dm-sans);
+  font-family: var(--font-dm-sans);
   --background: #fafafa;
   --foreground: #111827;
   --card: #ffffff;
@@ -1247,28 +1319,52 @@
   background: linear-gradient(90deg, #6366f1 0%, #6366f1 40%, transparent 100%);
 }
 
-/* Ocean: glass-card effect on cards and topbar */
-[data-theme="ocean"] [data-slot="card"] {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: var(--border);
-}
-[data-theme="ocean"] header {
-  background: rgba(255, 255, 255, 0.7) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(148, 163, 184, 0.2);
-}
-.dark [data-theme="ocean"] header {
-  background: rgba(12, 18, 34, 0.8) !important;
-  border-color: rgba(148, 163, 184, 0.1);
-}
-/* Ocean: teal top-accent on stat cards */
-[data-theme="ocean"] [data-stat-color] {
+/* Forge: embossed metal effect on stat cards */
+[data-theme="forge"] [data-stat-color] {
   position: relative;
   overflow: hidden;
 }
-[data-theme="ocean"] [data-stat-color]::before {
+[data-theme="forge"] [data-stat-color]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.06) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+[data-theme="forge"] [data-slot="card"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.06);
+}
+.dark [data-theme="forge"] [data-slot="card"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Forge: hatch pattern on sidebar */
+[data-theme="forge"] [data-sidebar="sidebar"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(0,0,0,0.06) 4px,
+    rgba(0,0,0,0.06) 5px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Forge: uppercase card titles */
+[data-theme="forge"] [data-slot="card-title"] {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Forge: amber top-accent on stat cards */
+[data-theme="forge"] [data-stat-color]::after {
   content: '';
   position: absolute;
   top: 0;
@@ -1277,17 +1373,131 @@
   height: 3px;
   z-index: 10;
 }
-[data-theme="ocean"] [data-stat-color="primary"]::before {
-  background: linear-gradient(90deg, #0891b2, #06b6d4);
+[data-theme="forge"] [data-stat-color="primary"]::after {
+  background: linear-gradient(90deg, #b45309, #f59e0b);
 }
-[data-theme="ocean"] [data-stat-color="green"]::before {
-  background: linear-gradient(90deg, #14b8a6, #2dd4bf);
+[data-theme="forge"] [data-stat-color="green"]::after {
+  background: linear-gradient(90deg, #059669, #10b981);
 }
-[data-theme="ocean"] [data-stat-color="blue"]::before {
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+[data-theme="forge"] [data-stat-color="blue"]::after {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
 }
-[data-theme="ocean"] [data-stat-color="red"]::before {
-  background: linear-gradient(90deg, #f43f5e, #fb7185);
+[data-theme="forge"] [data-stat-color="red"]::after {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+[data-theme="forge"] [data-stat-color="default"]::after {
+  background: linear-gradient(90deg, #b45309, #f59e0b);
+}
+
+/* Forge: badges — squared, uppercase */
+[data-theme="forge"] [data-slot="badge"] {
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Copper: double-line card borders */
+[data-theme="copper"] [data-slot="card"] {
+  border: 2px double var(--border);
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+/* Copper: small-caps card titles */
+[data-theme="copper"] [data-slot="card-title"] {
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  font-size: 13px;
+}
+
+/* Copper: small-caps page headings */
+[data-theme="copper"] h1 {
+  font-variant: small-caps;
+  letter-spacing: 2px;
+}
+
+/* Copper: double-line table borders */
+[data-theme="copper"] [data-slot="table-container"] {
+  border: 2px double var(--border);
+  border-radius: 2px;
+}
+
+/* Copper: sharp corners on inputs */
+[data-theme="copper"] [data-slot="input"],
+[data-theme="copper"] [data-slot="textarea"] {
+  border-radius: 2px;
+}
+
+/* Copper: sharp corners on buttons */
+[data-theme="copper"] [data-slot="button"] {
+  border-radius: 2px;
+}
+
+/* Copper: sharp corners on badges, small-caps */
+[data-theme="copper"] [data-slot="badge"] {
+  border-radius: 2px;
+  font-variant: small-caps;
+  letter-spacing: 1px;
+}
+
+/* Copper: sharp corners on tabs */
+[data-theme="copper"] [data-slot="tabs-list"] {
+  border-radius: 2px;
+}
+[data-theme="copper"] [data-slot="tabs-trigger"] {
+  border-radius: 2px;
+}
+
+/* Copper: copper top-accent on stat cards */
+[data-theme="copper"] [data-stat-color] {
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="copper"] [data-stat-color]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 10;
+}
+[data-theme="copper"] [data-stat-color="primary"]::before {
+  background: #c2410c;
+}
+[data-theme="copper"] [data-stat-color="green"]::before {
+  background: #16a34a;
+}
+[data-theme="copper"] [data-stat-color="blue"]::before {
+  background: #2563eb;
+}
+[data-theme="copper"] [data-stat-color="red"]::before {
+  background: #dc2626;
+}
+[data-theme="copper"] [data-stat-color="default"]::before {
+  background: #c2410c;
+}
+
+/* Copper: dialog — sharp corners, double border */
+[data-theme="copper"] [data-slot="dialog-content"] {
+  border: 2px double var(--border);
+  border-radius: 2px;
+}
+
+/* Copper: breadcrumb — italic */
+[data-theme="copper"] [data-slot="breadcrumb-list"] {
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Copper: form labels — small-caps */
+[data-theme="copper"] [data-slot="form-label"],
+[data-theme="copper"] [data-slot="label"] {
+  font-variant: small-caps;
+  letter-spacing: 1px;
+  font-size: 12px;
 }
 
 /* Arctic: ultra-minimal — no shadows, hairline borders */

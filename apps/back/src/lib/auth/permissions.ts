@@ -2,7 +2,7 @@ import type { UserRole, UserContext } from "./index";
 
 type Action = "create" | "read" | "update" | "delete" | "manage";
 
-type Resource =
+export type Resource =
   | "settings"
   | "users"
   | "customers"

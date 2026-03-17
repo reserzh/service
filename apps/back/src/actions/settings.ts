@@ -108,7 +108,7 @@ export async function updateServicesSettingsAction(
 
 // ---------- Update dashboard settings ----------
 
-const VALID_PRESETS = ["classic", "blueprint", "mission-control", "glass", "executive", "arctic", "ocean"];
+const VALID_PRESETS = ["classic", "blueprint", "mission-control", "glass", "executive", "arctic", "forge", "copper"];
 const VALID_WIDGETS = ["stats", "quick-actions", "schedule", "activity", "chart", "team"];
 
 const dashboardSettingsSchema = z.object({
