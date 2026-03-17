@@ -9,7 +9,7 @@ export const SANITIZE_CONFIG_CUSTOM_HTML: sanitizeHtml.IOptions = {
   ]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class", "id", "style"],
+    "*": ["class", "id"],
     img: ["src", "alt", "width", "height", "loading"],
     iframe: ["src", "width", "height", "frameborder", "allowfullscreen", "title"],
     video: ["src", "controls", "width", "height", "poster"],

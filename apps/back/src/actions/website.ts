@@ -38,8 +38,8 @@ const siteSettingsSchema = z.object({
       primaryColor: z.string(),
       secondaryColor: z.string(),
       accentColor: z.string(),
-      fontHeading: z.string(),
-      fontBody: z.string(),
+      fontHeading: z.string().regex(/^[a-zA-Z0-9\s,'\-]+$/, "Invalid font name"),
+      fontBody: z.string().regex(/^[a-zA-Z0-9\s,'\-]+$/, "Invalid font name"),
       borderRadius: z.string(),
       style: z.string(),
     })

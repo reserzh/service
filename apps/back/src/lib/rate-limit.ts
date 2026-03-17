@@ -106,6 +106,8 @@ export const RATE_LIMITS = {
   auth: { maxRequests: 5, windowMs: 60_000 },
   /** Public form submissions: 10 requests per minute per IP */
   publicForm: { maxRequests: 10, windowMs: 60_000 },
+  /** Registration: 2 per hour per IP */
+  register: { maxRequests: 2, windowMs: 3_600_000 },
   /** General API: 100 requests per minute per user/IP */
   api: { maxRequests: 100, windowMs: 60_000 },
   /** Public read endpoints: 30 requests per minute per IP */

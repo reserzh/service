@@ -8,6 +8,8 @@ import {
   fetchQBAccounts,
   getQBConnectionStatus,
   listSyncLog,
+  bulkSyncAllEntities,
+  type BulkSyncResult,
 } from "@/lib/services/quickbooks";
 import { db } from "@/lib/db";
 import { tenants } from "@fieldservice/shared/db/schema";
@@ -83,6 +85,7 @@ export async function retryQBSyncAction(
 ): Promise<QBActionState> {
   try {
     const ctx = await requireAuth();
+    assertPermission(ctx, "integrations", "manage");
     await resyncEntity(ctx, entityType, localEntityId);
     revalidatePath("/settings/integrations/quickbooks/sync-log");
     return { success: true };
@@ -91,9 +94,24 @@ export async function retryQBSyncAction(
   }
 }
 
+export async function bulkSyncAction(): Promise<
+  { result: BulkSyncResult } | { error: string }
+> {
+  try {
+    const ctx = await requireAuth();
+    assertPermission(ctx, "integrations", "manage");
+    const result = await bulkSyncAllEntities(ctx);
+    revalidatePath("/settings/integrations");
+    return { result };
+  } catch (error) {
+    return { error: getActionErrorMessage(error, "Bulk sync failed") };
+  }
+}
+
 export async function fetchQBAccountsAction() {
   try {
     const ctx = await requireAuth();
+    assertPermission(ctx, "integrations", "read");
     return { accounts: await fetchQBAccounts(ctx) };
   } catch (error) {
     return { error: getActionErrorMessage(error, "Failed to fetch QuickBooks accounts") };
@@ -103,6 +121,7 @@ export async function fetchQBAccountsAction() {
 export async function getQBStatusAction() {
   try {
     const ctx = await requireAuth();
+    assertPermission(ctx, "integrations", "read");
     return await getQBConnectionStatus(ctx);
   } catch (error) {
     return { connected: false as const, error: getActionErrorMessage(error, "Failed to get status") };
@@ -117,6 +136,7 @@ export async function getSyncLogAction(params: {
 }) {
   try {
     const ctx = await requireAuth();
+    assertPermission(ctx, "integrations", "read");
     return await listSyncLog(ctx, params);
   } catch {
     return { data: [], meta: { page: 1, pageSize: 25, total: 0 } };

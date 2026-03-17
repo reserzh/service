@@ -23,7 +23,14 @@ function rateLimitResponse(resetMs: number) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Rate limit auth endpoints (strictest)
+  // Rate limit registration (strictest — 2 per hour)
+  if (pathname === "/api/v1/auth/register" && request.method === "POST") {
+    const ip = getClientIp(request);
+    const result = await checkRateLimit(`register:${ip}`, RATE_LIMITS.register);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
+  // Rate limit auth endpoints
   if (pathname.startsWith("/api/v1/auth/")) {
     const ip = getClientIp(request);
     const result = await checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth);

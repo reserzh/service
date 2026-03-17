@@ -24,6 +24,7 @@ import {
   mapInvoiceToQB,
   mapPaymentToQB,
   mapEstimateToQB,
+  type TaxMappingOptions,
 } from "@/lib/quickbooks/mappers";
 import type {
   QBCustomer,
@@ -381,6 +382,9 @@ async function syncInvoiceToQB(tenantId: string, invoiceId: string): Promise<str
     .limit(1);
 
   try {
+    // Read tax strategy from tenant settings
+    const taxOptions = await getTaxOptions(tenantId);
+
     const qbData = mapInvoiceToQB(
       {
         invoiceNumber: invoice.invoiceNumber,
@@ -390,7 +394,8 @@ async function syncInvoiceToQB(tenantId: string, invoiceId: string): Promise<str
       customerQBId,
       lineItemRows,
       itemMappings,
-      mapping?.qbSyncToken ?? undefined
+      mapping?.qbSyncToken ?? undefined,
+      taxOptions
     );
 
     let qbEntityId: string;
@@ -579,6 +584,9 @@ async function syncEstimateToQB(tenantId: string, estimateId: string): Promise<s
     .limit(1);
 
   try {
+    // Read tax strategy from tenant settings
+    const taxOptions = await getTaxOptions(tenantId);
+
     const qbData = mapEstimateToQB(
       {
         estimateNumber: estimate.estimateNumber,
@@ -588,7 +596,8 @@ async function syncEstimateToQB(tenantId: string, estimateId: string): Promise<s
       customerQBId,
       lineItemRows,
       itemMappings,
-      mapping?.qbSyncToken ?? undefined
+      mapping?.qbSyncToken ?? undefined,
+      taxOptions
     );
 
     let qbEntityId: string;
@@ -783,6 +792,97 @@ async function ensurePricebookItemsSynced(
 }
 
 // ---------------------------------------------------------------------------
+// Tax options helper
+// ---------------------------------------------------------------------------
+async function getTaxOptions(tenantId: string): Promise<TaxMappingOptions> {
+  const [tenant] = await db
+    .select({ settings: tenants.settings })
+    .from(tenants)
+    .where(eq(tenants.id, tenantId))
+    .limit(1);
+
+  const settings = tenant?.settings as TenantSettings | null;
+  const taxStrategy = settings?.quickbooks?.taxStrategy ?? "none";
+  const globalTaxRate = settings?.defaultTaxRate;
+
+  return { taxStrategy, globalTaxRate };
+}
+
+// ---------------------------------------------------------------------------
+// Bulk sync all entities
+// ---------------------------------------------------------------------------
+export interface BulkSyncResult {
+  customers: { synced: number; failed: number };
+  invoices: { synced: number; failed: number };
+  payments: { synced: number; failed: number };
+  pricebookItems: { synced: number; failed: number };
+}
+
+export async function bulkSyncAllEntities(ctx: UserContext): Promise<BulkSyncResult> {
+  assertPermission(ctx, "integrations", "manage");
+
+  const result: BulkSyncResult = {
+    customers: { synced: 0, failed: 0 },
+    invoices: { synced: 0, failed: 0 },
+    payments: { synced: 0, failed: 0 },
+    pricebookItems: { synced: 0, failed: 0 },
+  };
+
+  const BATCH_SIZE = 5;
+
+  async function syncBatch<T extends { id: string }>(
+    items: T[],
+    syncFn: (tenantId: string, id: string) => Promise<string>,
+    counter: { synced: number; failed: number }
+  ) {
+    for (let i = 0; i < items.length; i += BATCH_SIZE) {
+      const batch = items.slice(i, i + BATCH_SIZE);
+      const results = await Promise.allSettled(
+        batch.map((item) => syncFn(ctx.tenantId, item.id))
+      );
+      for (const r of results) {
+        if (r.status === "fulfilled") counter.synced++;
+        else counter.failed++;
+      }
+    }
+  }
+
+  // 1. Sync all customers
+  const allCustomers = await db
+    .select({ id: customers.id })
+    .from(customers)
+    .where(eq(customers.tenantId, ctx.tenantId));
+
+  await syncBatch(allCustomers, syncCustomerToQB, result.customers);
+
+  // 2. Sync all pricebook items (before invoices, since invoices depend on them)
+  const allPricebookItems = await db
+    .select({ id: pricebookItems.id })
+    .from(pricebookItems)
+    .where(eq(pricebookItems.tenantId, ctx.tenantId));
+
+  await syncBatch(allPricebookItems, syncPricebookItemToQB, result.pricebookItems);
+
+  // 3. Sync all invoices
+  const allInvoices = await db
+    .select({ id: invoices.id })
+    .from(invoices)
+    .where(eq(invoices.tenantId, ctx.tenantId));
+
+  await syncBatch(allInvoices, syncInvoiceToQB, result.invoices);
+
+  // 4. Sync all payments
+  const allPayments = await db
+    .select({ id: payments.id })
+    .from(payments)
+    .where(eq(payments.tenantId, ctx.tenantId));
+
+  await syncBatch(allPayments, syncPaymentToQB, result.payments);
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Mapping upsert
 // ---------------------------------------------------------------------------
 async function upsertMapping(
@@ -792,32 +892,9 @@ async function upsertMapping(
   qbEntityId: string,
   syncToken?: string
 ): Promise<void> {
-  const [existing] = await db
-    .select()
-    .from(qbEntityMappings)
-    .where(
-      and(
-        eq(qbEntityMappings.tenantId, tenantId),
-        eq(qbEntityMappings.entityType, entityType),
-        eq(qbEntityMappings.localEntityId, localEntityId)
-      )
-    )
-    .limit(1);
-
-  if (existing) {
-    await db
-      .update(qbEntityMappings)
-      .set({
-        qbEntityId,
-        qbSyncToken: syncToken ?? null,
-        lastSyncStatus: "success",
-        lastSyncError: null,
-        lastSyncedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(qbEntityMappings.id, existing.id));
-  } else {
-    await db.insert(qbEntityMappings).values({
+  await db
+    .insert(qbEntityMappings)
+    .values({
       tenantId,
       entityType,
       localEntityId,
@@ -825,6 +902,16 @@ async function upsertMapping(
       qbSyncToken: syncToken ?? null,
       lastSyncStatus: "success",
       lastSyncedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: [qbEntityMappings.tenantId, qbEntityMappings.entityType, qbEntityMappings.localEntityId],
+      set: {
+        qbEntityId,
+        qbSyncToken: syncToken ?? null,
+        lastSyncStatus: "success",
+        lastSyncError: null,
+        lastSyncedAt: new Date(),
+        updatedAt: new Date(),
+      },
     });
-  }
 }

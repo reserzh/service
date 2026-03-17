@@ -7,7 +7,7 @@ import { eq, and } from "drizzle-orm";
 import { handleApiError } from "@/lib/api/errors";
 
 const pushTokenSchema = z.object({
-  token: z.string().min(1),
+  token: z.string().min(1).regex(/^ExponentPushToken\[.+\]$/, "Invalid Expo push token format"),
   platform: z.enum(["ios", "android"]),
 });
 
