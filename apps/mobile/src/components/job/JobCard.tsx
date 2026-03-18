@@ -56,7 +56,7 @@ export function JobCard({ job, onPress }: JobCardProps) {
       </View>
 
       {/* Summary */}
-      <Text className="text-lg font-extrabold text-stone-900 dark:text-stone-50 mb-1" numberOfLines={2}>
+      <Text className="text-lg font-heading font-bold text-stone-900 dark:text-stone-50 mb-1" numberOfLines={2}>
         {job.summary}
       </Text>
 

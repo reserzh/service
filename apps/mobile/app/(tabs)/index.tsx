@@ -90,7 +90,7 @@ export default function HomeScreen() {
         ListHeaderComponent={
           <View className="pt-2 pb-4">
             {/* Greeting — Signal: extra bold */}
-            <Text className="text-3xl font-extrabold text-stone-900 dark:text-stone-50 mb-1">
+            <Text className="text-3xl font-heading font-bold text-stone-900 dark:text-stone-50 mb-1">
               {getGreeting()}, {user?.firstName || "Tech"}
             </Text>
             <Text className="text-base font-semibold text-stone-500 dark:text-stone-400 mb-5">
@@ -148,7 +148,7 @@ export default function HomeScreen() {
                   <View className="mb-2">
                     <DollarSign size={24} color="#16A34A" />
                   </View>
-                  <Text className="text-3xl font-extrabold text-green-600 dark:text-green-400" numberOfLines={1} adjustsFontSizeToFit>
+                  <Text className="text-3xl font-heading font-bold text-green-600 dark:text-green-400" numberOfLines={1} adjustsFontSizeToFit>
                     ${stats.earnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </Text>
                   <Text className="text-sm font-bold text-stone-500 dark:text-stone-400">Today's Earnings</Text>
@@ -166,7 +166,7 @@ export default function HomeScreen() {
             {/* Section header — Route Sheet */}
             <View className="flex-row items-center gap-2">
               <MapPin size={18} color={accent} />
-              <Text className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+              <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50">
                 Today's Route
               </Text>
             </View>
@@ -237,7 +237,7 @@ function StatCard({
       accessibilityRole="text"
     >
       <View className="mb-2">{icon}</View>
-      <Text className="text-3xl font-extrabold text-orange-600 dark:text-orange-400" numberOfLines={1} adjustsFontSizeToFit>
+      <Text className="text-3xl font-heading font-bold text-orange-600 dark:text-orange-400" numberOfLines={1} adjustsFontSizeToFit>
         {value}
       </Text>
       <Text className="text-sm font-bold text-stone-500 dark:text-stone-400">{label}</Text>

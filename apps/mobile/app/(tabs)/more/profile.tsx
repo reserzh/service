@@ -60,7 +60,7 @@ export default function ProfileScreen() {
           size="lg"
           color="#EA580C"
         />
-        <Text className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-3">
+        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mt-3">
           {user.firstName} {user.lastName}
         </Text>
         <Badge

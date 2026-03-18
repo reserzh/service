@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
 import { db } from "@/lib/db";
 import { customerPortalTokens, customers } from "@fieldservice/shared/db/schema";
@@ -36,10 +36,11 @@ export async function POST(req: NextRequest) {
     const { token, password } = parsed.data;
 
     // Look up the token
-    const tokenRecord = await db.query.customerPortalTokens.findFirst({
-      where: eq(customerPortalTokens.token, token),
-      with: { customer: true },
-    });
+    const [tokenRecord] = await db
+      .select()
+      .from(customerPortalTokens)
+      .where(eq(customerPortalTokens.token, token))
+      .limit(1);
 
     if (!tokenRecord) {
       return NextResponse.json(
@@ -64,8 +65,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const customer = tokenRecord.customer;
-    if (!customer.email) {
+    // Look up the customer
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.id, tokenRecord.customerId), eq(customers.tenantId, tokenRecord.tenantId)))
+      .limit(1);
+
+    if (!customer?.email) {
       return NextResponse.json(
         { error: { message: "Customer does not have an email address on file." } },
         { status: 400 }
@@ -113,7 +120,7 @@ export async function POST(req: NextRequest) {
         portalAccessEnabled: true,
         updatedAt: new Date(),
       })
-      .where(eq(customers.id, customer.id));
+      .where(and(eq(customers.id, customer.id), eq(customers.tenantId, tokenRecord.tenantId)));
 
     // Mark token as used
     await db

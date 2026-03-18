@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { tenants, type TenantSettings } from "@fieldservice/shared/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 import { logActivity } from "./activity";
@@ -86,20 +86,52 @@ export async function getTenantSettings(ctx: UserContext): Promise<TenantSetting
 
 // ---------- Update tenant settings ----------
 
+// Allowed top-level keys for tenant settings updates
+const ALLOWED_SETTINGS_KEYS: ReadonlySet<keyof TenantSettings> = new Set([
+  "defaultTaxRate",
+  "businessHours",
+  "invoiceTerms",
+  "estimateTerms",
+  "invoicePrefix",
+  "estimatePrefix",
+  "jobPrefix",
+  "dashboardPreset",
+  "dashboardHiddenWidgets",
+  "operatorType",
+  "tradeType",
+  "landscaping",
+  "quickbooks",
+  "voice",
+  "quoteAvailability",
+]);
+
 export async function updateTenantSettings(ctx: UserContext, updates: Partial<TenantSettings>) {
   assertPermission(ctx, "settings", "update");
 
-  // Get current settings and merge
-  const current = await getTenantSettings(ctx);
-  const merged = { ...current, ...updates };
+  // Whitelist keys to prevent overwriting protected settings
+  const filtered: Record<string, unknown> = {};
+  for (const key of Object.keys(updates)) {
+    if (ALLOWED_SETTINGS_KEYS.has(key as keyof TenantSettings)) {
+      filtered[key] = updates[key as keyof TenantSettings];
+    }
+  }
 
+  if (Object.keys(filtered).length === 0) {
+    // Nothing to update — return current settings
+    return getTenantSettings(ctx);
+  }
+
+  // Atomic merge using SQL jsonb concatenation to prevent lost updates
   const [updated] = await db
     .update(tenants)
-    .set({ settings: merged, updatedAt: new Date() })
+    .set({
+      settings: sql`COALESCE(${tenants.settings}, '{}'::jsonb) || ${JSON.stringify(filtered)}::jsonb`,
+      updatedAt: new Date(),
+    })
     .where(eq(tenants.id, ctx.tenantId))
     .returning({ settings: tenants.settings });
 
-  await logActivity(ctx, "settings", ctx.tenantId, "settings_updated", updates);
+  await logActivity(ctx, "settings", ctx.tenantId, "settings_updated", filtered);
 
   return updated.settings as TenantSettings;
 }

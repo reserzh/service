@@ -66,7 +66,7 @@ export default function EstimateDetailScreen() {
               textClass={colors.text}
             />
           </View>
-          <Text className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-1">
+          <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mb-1">
             {estimate.summary}
           </Text>
           <Text className="text-sm text-stone-500">

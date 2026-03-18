@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { createPortalServerClient } from "@/lib/portal-supabase";
 import { customers, estimates, estimateOptions } from "@fieldservice/shared/db/schema";
@@ -44,7 +44,7 @@ export async function POST(
 
     // Look up the customer by supabaseUserId
     const [customer] = await db
-      .select({ id: customers.id, tenantId: customers.tenantId })
+      .select({ id: customers.id, tenantId: customers.tenantId, portalAccessEnabled: customers.portalAccessEnabled })
       .from(customers)
       .where(eq(customers.supabaseUserId, user.id))
       .limit(1);
@@ -53,6 +53,13 @@ export async function POST(
       return NextResponse.json(
         { error: { message: "Customer not found" } },
         { status: 404 }
+      );
+    }
+
+    if (!customer.portalAccessEnabled) {
+      return NextResponse.json(
+        { error: { message: "Portal access has been revoked" } },
+        { status: 403 }
       );
     }
 
@@ -90,6 +97,7 @@ export async function POST(
     }
 
     // If approving, validate optionId is provided and belongs to the estimate
+    let selectedOptionTotal: string | null = null;
     if (action === "approve") {
       if (!optionId) {
         return NextResponse.json(
@@ -99,7 +107,7 @@ export async function POST(
       }
 
       const [option] = await db
-        .select({ id: estimateOptions.id })
+        .select({ id: estimateOptions.id, total: estimateOptions.total })
         .from(estimateOptions)
         .where(
           and(
@@ -116,6 +124,7 @@ export async function POST(
           { status: 400 }
         );
       }
+      selectedOptionTotal = option.total;
     }
 
     // Update the estimate
@@ -127,10 +136,11 @@ export async function POST(
         ...(action === "approve" && {
           approvedAt: now,
           approvedOptionId: optionId,
+          totalAmount: selectedOptionTotal,
         }),
         updatedAt: now,
       })
-      .where(eq(estimates.id, estimate.id));
+      .where(and(eq(estimates.id, estimate.id), eq(estimates.tenantId, customer.tenantId)));
 
     return NextResponse.json({
       data: {

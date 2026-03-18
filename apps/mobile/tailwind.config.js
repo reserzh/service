@@ -7,6 +7,12 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      fontFamily: {
+        // Body — Inter Tight (weights resolved via @font-face in global.css)
+        sans: ["InterTight"],
+        // Headings — Libre Baskerville (weights resolved via @font-face in global.css)
+        heading: ["LibreBaskerville"],
+      },
       colors: {
         // Signal design — warm stone + high-visibility orange
         signal: {

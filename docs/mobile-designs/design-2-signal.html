@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal — FieldService Pro Mobile Design Concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: #F3F0EB;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  h1.page-title {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1C1917;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  p.page-subtitle {
+    font-size: 16px;
+    color: #57534E;
+    margin-bottom: 36px;
+  }
+  .phones-container {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .phone-label {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #78716C;
+    margin-bottom: 12px;
+  }
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== SCREEN TABS (top) ===== */
+  .screen-tabs {
+    display: flex;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  .screen-tab {
+    flex: 1;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, color 0.15s;
+  }
+  /* light screen tabs */
+  .light .screen-tab { background: #F5F0EB; color: #A8A29E; }
+  .light .screen-tab.active { background: #FFFBF5; color: #EA580C; }
+  /* dark screen tabs */
+  .dark .screen-tab { background: #131110; color: #78716C; }
+  .dark .screen-tab.active { background: #1C1917; color: #FB923C; }
+
+  /* ===== SCREEN AREA ===== */
+  .screen-area {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+  .screen-area::-webkit-scrollbar { display: none; }
+  .screen { display: none; flex-direction: column; min-height: 100%; }
+  .screen.active { display: flex; }
+
+  /* ===== BOTTOM TAB BAR ===== */
+  .tab-bar {
+    display: flex;
+    height: 72px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 8px;
+  }
+  .light .tab-bar { background: #FFFFFF; box-shadow: 0 -1px 8px rgba(0,0,0,0.06); }
+  .dark .tab-bar { background: #292524; box-shadow: 0 -1px 8px rgba(0,0,0,0.3); }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .tab-item.active .tab-icon-wrap {
+    background: #EA580C;
+  }
+  .dark .tab-item.active .tab-icon-wrap {
+    background: #FB923C;
+  }
+  .tab-item svg {
+    width: 22px;
+    height: 22px;
+  }
+  .light .tab-item svg { stroke: #A8A29E; }
+  .light .tab-item.active svg { stroke: #FFFFFF; }
+  .dark .tab-item svg { stroke: #78716C; }
+  .dark .tab-item.active svg { stroke: #FFFFFF; }
+
+  .tab-label {
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .light .tab-label { color: #A8A29E; }
+  .light .tab-item.active .tab-label { color: #EA580C; }
+  .dark .tab-label { color: #78716C; }
+  .dark .tab-item.active .tab-label { color: #FB923C; }
+
+  /* ===== LIGHT MODE COLORS ===== */
+  .light .screen { background: #FFFBF5; }
+  .light .header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .light .header-title { font-family: 'Libre Baskerville', Georgia, serif; font-size: 22px; font-weight: 700; color: #1C1917; }
+  .light .header-icon { position: relative; }
+  .light .header-icon svg { width: 26px; height: 26px; stroke: #1C1917; }
+
+  .light .card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border-top: 3px solid #EA580C;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 0 16px 14px;
+    padding: 16px;
+  }
+  .light .card-flat {
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 0 16px 14px;
+    padding: 16px;
+  }
+  .light .text-primary { color: #1C1917; }
+  .light .text-secondary { color: #57534E; }
+  .light .text-muted { color: #A8A29E; }
+  .light .accent { color: #EA580C; }
+  .light .bg-accent { background: #EA580C; }
+  .light .badge {
+    background: #FFF7ED;
+    color: #EA580C;
+    border: 1px solid #FDBA74;
+  }
+  .light .badge-completed {
+    background: #F0FDF4;
+    color: #16A34A;
+    border: 1px solid #86EFAC;
+  }
+  .light .badge-progress {
+    background: #EFF6FF;
+    color: #2563EB;
+    border: 1px solid #93C5FD;
+  }
+  .light .badge-new {
+    background: #F5F5F4;
+    color: #57534E;
+    border: 1px solid #D6D3D1;
+  }
+  .light .divider { border-top: 1px solid #F5F0EB; margin: 12px 0; }
+
+  /* ===== DARK MODE COLORS ===== */
+  .dark .screen { background: #1C1917; }
+  .dark .header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dark .header-title { font-family: 'Libre Baskerville', Georgia, serif; font-size: 22px; font-weight: 700; color: #FAFAF9; }
+  .dark .header-icon svg { width: 26px; height: 26px; stroke: #FAFAF9; }
+
+  .dark .card {
+    background: #292524;
+    border-radius: 12px;
+    border-top: 3px solid #FB923C;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin: 0 16px 14px;
+    padding: 16px;
+  }
+  .dark .card-flat {
+    background: #292524;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin: 0 16px 14px;
+    padding: 16px;
+  }
+  .dark .text-primary { color: #FAFAF9; }
+  .dark .text-secondary { color: #A8A29E; }
+  .dark .text-muted { color: #78716C; }
+  .dark .accent { color: #FB923C; }
+  .dark .bg-accent { background: #FB923C; }
+  .dark .badge {
+    background: #431407;
+    color: #FB923C;
+    border: 1px solid #9A3412;
+  }
+  .dark .badge-completed {
+    background: #052E16;
+    color: #4ADE80;
+    border: 1px solid #166534;
+  }
+  .dark .badge-progress {
+    background: #172554;
+    color: #60A5FA;
+    border: 1px solid #1E40AF;
+  }
+  .dark .badge-new {
+    background: #292524;
+    color: #A8A29E;
+    border: 1px solid #57534E;
+  }
+  .dark .divider { border-top: 1px solid #44403C; margin: 12px 0; }
+
+  /* ===== SHARED COMPONENT STYLES ===== */
+  .notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: #EA580C;
+    color: #FFF;
+    font-size: 10px;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dark .notification-badge { background: #FB923C; }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    margin: 0 16px 14px;
+  }
+  .stat-card {
+    flex: 1;
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .light .stat-card { background: #FFFFFF; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-top: 3px solid #EA580C; }
+  .dark .stat-card { background: #292524; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border-top: 3px solid #FB923C; }
+  .stat-number { font-family: 'Libre Baskerville', Georgia, serif; font-size: 28px; font-weight: 700; line-height: 1; }
+  .light .stat-number { color: #EA580C; }
+  .dark .stat-number { color: #FB923C; }
+  .stat-label { font-size: 12px; font-weight: 700; margin-top: 4px; }
+  .light .stat-label { color: #57534E; }
+  .dark .stat-label { color: #A8A29E; }
+
+  .section-title {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 4px 20px 10px;
+  }
+  .light .section-title { color: #1C1917; }
+  .dark .section-title { color: #FAFAF9; }
+
+  .badge-base {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #FFFFFF;
+    cursor: pointer;
+  }
+  .light .btn-primary { background: #EA580C; }
+  .dark .btn-primary { background: #FB923C; color: #1C1917; }
+
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .light .btn-secondary { background: transparent; border: 2px solid #EA580C; color: #EA580C; }
+  .dark .btn-secondary { background: transparent; border: 2px solid #FB923C; color: #FB923C; }
+
+  .pills {
+    display: flex;
+    gap: 8px;
+    margin: 0 16px 14px;
+  }
+  .pill {
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+  }
+  .light .pill { background: #F5F0EB; color: #57534E; }
+  .light .pill.active { background: #EA580C; color: #FFFFFF; }
+  .dark .pill { background: #44403C; color: #A8A29E; }
+  .dark .pill.active { background: #FB923C; color: #1C1917; }
+
+  .recent-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+  .recent-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .recent-text { font-size: 14px; font-weight: 600; flex: 1; }
+  .recent-time { font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+  .job-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .detail-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .detail-row svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .light .detail-row svg { stroke: #EA580C; }
+  .dark .detail-row svg { stroke: #FB923C; }
+  .detail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-value { font-family: 'Libre Baskerville', Georgia, serif; font-size: 15px; font-weight: 700; }
+
+  .line-items { width: 100%; border-collapse: collapse; }
+  .line-items td { padding: 6px 0; font-size: 14px; font-weight: 600; }
+  .line-items .total-row td { font-family: 'Libre Baskerville', Georgia, serif; padding-top: 10px; font-size: 16px; font-weight: 700; }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .back-btn svg { width: 22px; height: 22px; }
+  .light .back-btn svg { stroke: #1C1917; }
+  .dark .back-btn svg { stroke: #FAFAF9; }
+
+  .screen-content { padding-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Signal</h1>
+<p class="page-subtitle">High-Visibility Safety Design Concept</p>
+
+<div class="phones-container">
+
+  <!-- ===================== LIGHT MODE ===================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">Light Mode</div>
+    <div class="phone-frame light" id="phone-light">
+      <!-- Screen Tabs -->
+      <div class="screen-tabs">
+        <button class="screen-tab active" onclick="switchScreen('light','home')">Home</button>
+        <button class="screen-tab" onclick="switchScreen('light','jobs')">Job List</button>
+        <button class="screen-tab" onclick="switchScreen('light','detail')">Job Detail</button>
+      </div>
+
+      <!-- Screen Area -->
+      <div class="screen-area">
+
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="light-home">
+          <div class="screen-content">
+            <div class="header">
+              <span class="header-title">FieldService Pro</span>
+              <span class="header-icon" style="position:relative;">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notification-badge">3</span>
+              </span>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">Today</div></div>
+              <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Active</div></div>
+              <div class="stat-card"><div class="stat-number">8</div><div class="stat-label">Done</div></div>
+            </div>
+            <div class="section-title">Next Up</div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span class="text-primary" style="font-size:16px;font-weight:800;">Job #1047</span>
+                <span class="badge badge-base">SCHEDULED</span>
+              </div>
+              <div class="text-primary" style="font-size:15px;font-weight:700;margin-bottom:4px;">HVAC Maintenance</div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">123 Oak Street, Apt 4B</div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;margin-bottom:4px;">Sarah Mitchell</div>
+              <div class="accent" style="font-size:14px;font-weight:800;margin-bottom:12px;">10:30 AM</div>
+              <button class="btn-primary">START</button>
+            </div>
+            <div class="section-title">Recent</div>
+            <div class="card-flat">
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#16A34A;"></div>
+                <div class="recent-text text-primary">Job #1045 completed</div>
+                <div class="recent-time text-muted">9:15 AM</div>
+              </div>
+              <div class="divider"></div>
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#EA580C;"></div>
+                <div class="recent-text text-primary">Invoice #2089 paid</div>
+                <div class="recent-time text-muted">8:45 AM</div>
+              </div>
+              <div class="divider"></div>
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#2563EB;"></div>
+                <div class="recent-text text-primary">New job #1048 assigned</div>
+                <div class="recent-time text-muted">8:30 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB LIST SCREEN -->
+        <div class="screen" id="light-jobs">
+          <div class="screen-content">
+            <div class="header">
+              <span class="header-title">Jobs</span>
+              <span class="header-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </span>
+            </div>
+            <div class="pills">
+              <span class="pill active">All (12)</span>
+              <span class="pill">Today (5)</span>
+              <span class="pill">Week (8)</span>
+            </div>
+            <!-- Job 1 -->
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1047 &middot; HVAC Maintenance</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Sarah Mitchell &middot; 123 Oak St</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge badge-base">SCHEDULED</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">10:30 AM</span>
+              </div>
+            </div>
+            <!-- Job 2 -->
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1046 &middot; Plumbing Repair</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">James Wilson &middot; 456 Elm Ave</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-progress badge-base">IN PROGRESS</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">9:00 AM</span>
+              </div>
+            </div>
+            <!-- Job 3 -->
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1045 &middot; Electrical Inspection</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Maria Garcia &middot; 789 Pine Rd</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-completed badge-base">COMPLETED</span>
+                <span class="text-muted" style="font-size:14px;font-weight:700;">8:00 AM</span>
+              </div>
+            </div>
+            <!-- Job 4 -->
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1048 &middot; AC Installation</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Robert Chen &middot; 321 Maple Dr</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-new badge-base">NEW</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">1:00 PM</span>
+              </div>
+            </div>
+            <!-- Job 5 -->
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1044 &middot; Furnace Repair</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Lisa Thompson &middot; 654 Cedar Ln</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-completed badge-base">COMPLETED</span>
+                <span class="text-muted" style="font-size:14px;font-weight:700;">Yesterday</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB DETAIL SCREEN -->
+        <div class="screen" id="light-detail">
+          <div class="screen-content">
+            <div class="header">
+              <button class="back-btn" onclick="switchScreen('light','jobs')">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <span class="text-primary" style="font-size:20px;font-weight:800;">Job #1047</span>
+              </button>
+            </div>
+            <div style="margin:0 20px 14px;">
+              <span class="badge badge-base" style="font-size:13px;padding:6px 14px;">SCHEDULED</span>
+            </div>
+
+            <div class="card">
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Customer</div>
+                  <div class="detail-value text-primary">Sarah Mitchell</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">(555) 234-5678</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">sarah.mitchell@email.com</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Location</div>
+                  <div class="detail-value text-primary">123 Oak Street, Apt 4B</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">Springfield, IL 62701</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Service</div>
+                  <div class="detail-value text-primary">HVAC Maintenance</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Schedule</div>
+                  <div class="detail-value text-primary">Today, 10:30 AM - 12:00 PM</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-flat">
+              <div class="detail-label text-muted" style="margin-bottom:6px;">Notes</div>
+              <div class="text-primary" style="font-size:14px;font-weight:600;line-height:1.5;">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+            </div>
+
+            <div class="card">
+              <div class="detail-label text-muted" style="margin-bottom:10px;">Line Items</div>
+              <table class="line-items">
+                <tr>
+                  <td class="text-primary" style="font-weight:600;">Filter replacement</td>
+                  <td class="text-primary" style="text-align:right;font-weight:700;">$45.00</td>
+                </tr>
+                <tr>
+                  <td class="text-primary" style="font-weight:600;">Labor (1.5 hrs)</td>
+                  <td class="text-primary" style="text-align:right;font-weight:700;">$127.50</td>
+                </tr>
+                <tr class="total-row">
+                  <td style="border-top:2px solid #EA580C;" class="accent">Total</td>
+                  <td style="border-top:2px solid #EA580C;text-align:right;" class="accent">$172.50</td>
+                </tr>
+              </table>
+            </div>
+
+            <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;">
+              <button class="btn-primary" style="font-size:17px;min-height:56px;">START JOB</button>
+              <button class="btn-secondary">CALL CUSTOMER</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          </div>
+          <span class="tab-label">Jobs</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="tab-label">Schedule</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+          <span class="tab-label">More</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== DARK MODE ===================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">Dark Mode</div>
+    <div class="phone-frame dark" id="phone-dark">
+      <!-- Screen Tabs -->
+      <div class="screen-tabs">
+        <button class="screen-tab active" onclick="switchScreen('dark','home')">Home</button>
+        <button class="screen-tab" onclick="switchScreen('dark','jobs')">Job List</button>
+        <button class="screen-tab" onclick="switchScreen('dark','detail')">Job Detail</button>
+      </div>
+
+      <!-- Screen Area -->
+      <div class="screen-area">
+
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="dark-home">
+          <div class="screen-content">
+            <div class="header">
+              <span class="header-title">FieldService Pro</span>
+              <span class="header-icon" style="position:relative;">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notification-badge">3</span>
+              </span>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">Today</div></div>
+              <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Active</div></div>
+              <div class="stat-card"><div class="stat-number">8</div><div class="stat-label">Done</div></div>
+            </div>
+            <div class="section-title">Next Up</div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span class="text-primary" style="font-size:16px;font-weight:800;">Job #1047</span>
+                <span class="badge badge-base">SCHEDULED</span>
+              </div>
+              <div class="text-primary" style="font-size:15px;font-weight:700;margin-bottom:4px;">HVAC Maintenance</div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">123 Oak Street, Apt 4B</div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;margin-bottom:4px;">Sarah Mitchell</div>
+              <div class="accent" style="font-size:14px;font-weight:800;margin-bottom:12px;">10:30 AM</div>
+              <button class="btn-primary">START</button>
+            </div>
+            <div class="section-title">Recent</div>
+            <div class="card-flat">
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#4ADE80;"></div>
+                <div class="recent-text text-primary">Job #1045 completed</div>
+                <div class="recent-time text-muted">9:15 AM</div>
+              </div>
+              <div class="divider"></div>
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#FB923C;"></div>
+                <div class="recent-text text-primary">Invoice #2089 paid</div>
+                <div class="recent-time text-muted">8:45 AM</div>
+              </div>
+              <div class="divider"></div>
+              <div class="recent-item">
+                <div class="recent-dot" style="background:#60A5FA;"></div>
+                <div class="recent-text text-primary">New job #1048 assigned</div>
+                <div class="recent-time text-muted">8:30 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB LIST SCREEN -->
+        <div class="screen" id="dark-jobs">
+          <div class="screen-content">
+            <div class="header">
+              <span class="header-title">Jobs</span>
+              <span class="header-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </span>
+            </div>
+            <div class="pills">
+              <span class="pill active">All (12)</span>
+              <span class="pill">Today (5)</span>
+              <span class="pill">Week (8)</span>
+            </div>
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1047 &middot; HVAC Maintenance</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Sarah Mitchell &middot; 123 Oak St</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge badge-base">SCHEDULED</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">10:30 AM</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1046 &middot; Plumbing Repair</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">James Wilson &middot; 456 Elm Ave</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-progress badge-base">IN PROGRESS</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">9:00 AM</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1045 &middot; Electrical Inspection</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Maria Garcia &middot; 789 Pine Rd</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-completed badge-base">COMPLETED</span>
+                <span class="text-muted" style="font-size:14px;font-weight:700;">8:00 AM</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1048 &middot; AC Installation</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Robert Chen &middot; 321 Maple Dr</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-new badge-base">NEW</span>
+                <span class="accent" style="font-size:14px;font-weight:800;">1:00 PM</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="job-card-row" style="margin-bottom:6px;">
+                <span class="text-primary" style="font-size:15px;font-weight:800;">#1044 &middot; Furnace Repair</span>
+              </div>
+              <div class="text-secondary" style="font-size:14px;font-weight:600;">Lisa Thompson &middot; 654 Cedar Ln</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span class="badge-completed badge-base">COMPLETED</span>
+                <span class="text-muted" style="font-size:14px;font-weight:700;">Yesterday</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB DETAIL SCREEN -->
+        <div class="screen" id="dark-detail">
+          <div class="screen-content">
+            <div class="header">
+              <button class="back-btn" onclick="switchScreen('dark','jobs')">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <span class="text-primary" style="font-size:20px;font-weight:800;">Job #1047</span>
+              </button>
+            </div>
+            <div style="margin:0 20px 14px;">
+              <span class="badge badge-base" style="font-size:13px;padding:6px 14px;">SCHEDULED</span>
+            </div>
+
+            <div class="card">
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Customer</div>
+                  <div class="detail-value text-primary">Sarah Mitchell</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">(555) 234-5678</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">sarah.mitchell@email.com</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Location</div>
+                  <div class="detail-value text-primary">123 Oak Street, Apt 4B</div>
+                  <div class="text-secondary" style="font-size:13px;font-weight:600;">Springfield, IL 62701</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Service</div>
+                  <div class="detail-value text-primary">HVAC Maintenance</div>
+                </div>
+              </div>
+              <div class="detail-row">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div>
+                  <div class="detail-label text-muted">Schedule</div>
+                  <div class="detail-value text-primary">Today, 10:30 AM - 12:00 PM</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-flat">
+              <div class="detail-label text-muted" style="margin-bottom:6px;">Notes</div>
+              <div class="text-primary" style="font-size:14px;font-weight:600;line-height:1.5;">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+            </div>
+
+            <div class="card">
+              <div class="detail-label text-muted" style="margin-bottom:10px;">Line Items</div>
+              <table class="line-items">
+                <tr>
+                  <td class="text-primary" style="font-weight:600;">Filter replacement</td>
+                  <td class="text-primary" style="text-align:right;font-weight:700;">$45.00</td>
+                </tr>
+                <tr>
+                  <td class="text-primary" style="font-weight:600;">Labor (1.5 hrs)</td>
+                  <td class="text-primary" style="text-align:right;font-weight:700;">$127.50</td>
+                </tr>
+                <tr class="total-row">
+                  <td style="border-top:2px solid #FB923C;" class="accent">Total</td>
+                  <td style="border-top:2px solid #FB923C;text-align:right;" class="accent">$172.50</td>
+                </tr>
+              </table>
+            </div>
+
+            <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;">
+              <button class="btn-primary" style="font-size:17px;min-height:56px;">START JOB</button>
+              <button class="btn-secondary">CALL CUSTOMER</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          </div>
+          <span class="tab-label">Jobs</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="tab-label">Schedule</span>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+          <span class="tab-label">More</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchScreen(mode, screen) {
+  var phone = document.getElementById('phone-' + mode);
+  // Update screen tabs
+  var tabs = phone.querySelectorAll('.screen-tab');
+  var screens = phone.querySelectorAll('.screen');
+  var names = ['home', 'jobs', 'detail'];
+
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+    screens[i].classList.remove('active');
+    if (names[i] === screen) {
+      tabs[i].classList.add('active');
+      screens[i].classList.add('active');
+    }
+  }
+
+  // Scroll screen area to top
+  phone.querySelector('.screen-area').scrollTop = 0;
+}
+</script>
+
+</body>
+</html>

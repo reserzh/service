@@ -117,7 +117,7 @@ export default function LoginScreen() {
             </View>
             <Animated.Text
               entering={FadeInDown.delay(200).duration(400)}
-              className="text-3xl font-bold text-stone-900 dark:text-stone-50"
+              className="text-3xl font-heading font-bold text-stone-900 dark:text-stone-50"
             >
               FieldService Pro
             </Animated.Text>

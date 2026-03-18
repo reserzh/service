@@ -204,7 +204,7 @@ export default function JobDetailScreen() {
             </Text>
           </View>
         </View>
-        <Text className="text-xl font-extrabold text-stone-900 dark:text-stone-50 mb-2" numberOfLines={1}>
+        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mb-2" numberOfLines={1}>
           {job.summary}
         </Text>
         <View className="flex-row items-center gap-2">

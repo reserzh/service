@@ -1,5 +1,5 @@
 import "../global.css";
-import { useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { Appearance } from "react-native";
 import { useColorScheme } from "nativewind";
 import { Stack } from "expo-router";
@@ -9,6 +9,19 @@ import { QueryClient, onlineManager } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import {
+  InterTight_400Regular,
+  InterTight_500Medium,
+  InterTight_600SemiBold,
+  InterTight_700Bold,
+  InterTight_800ExtraBold,
+} from "@expo-google-fonts/inter-tight";
+import {
+  LibreBaskerville_400Regular,
+  LibreBaskerville_700Bold,
+} from "@expo-google-fonts/libre-baskerville";
 import { useAuthInit } from "@/hooks/useAuth";
 import { useAuthStore } from "@/stores/auth";
 import { useSettingsStore } from "@/stores/settings";
@@ -21,6 +34,8 @@ import { OfflineBanner } from "@/components/common/OfflineBanner";
 import { useSyncQueueStore } from "@/stores/syncQueue";
 import { startSyncListeners } from "@/lib/syncProcessor";
 import { useTradeTypeSync } from "@/hooks/useTradeType";
+
+SplashScreen.preventAutoHideAsync();
 
 // Sync TanStack Query online state with NetInfo
 onlineManager.setEventListener((setOnline) => {
@@ -93,8 +108,33 @@ function SessionGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    InterTight_400Regular,
+    InterTight_500Medium,
+    InterTight_600SemiBold,
+    InterTight_700Bold,
+    InterTight_800ExtraBold,
+    LibreBaskerville_400Regular,
+    LibreBaskerville_700Bold,
+  });
+  const [fontTimeout, setFontTimeout] = useState(false);
+
+  // Fallback: if fonts haven't loaded after 5s, proceed with system fonts
+  useEffect(() => {
+    const timer = setTimeout(() => setFontTimeout(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontTimeout) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontTimeout]);
+
+  if (!fontsLoaded && !fontTimeout) return null;
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <ErrorBoundary>
         <PersistQueryClientProvider
           client={queryClient}

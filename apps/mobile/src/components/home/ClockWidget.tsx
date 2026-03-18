@@ -97,7 +97,7 @@ export function ClockWidget() {
             <Text className="text-stone-500 dark:text-stone-400 text-sm font-bold">
               {status === "on_break" ? "On Break" : "Clocked In"}
             </Text>
-            <Text className="font-extrabold text-stone-900 dark:text-stone-50 text-3xl">
+            <Text className="font-heading font-bold text-stone-900 dark:text-stone-50 text-3xl">
               {formatDuration(elapsed)}
             </Text>
           </View>

@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Inter Tight — body font (all weights) */
+@font-face {
+  font-family: "InterTight";
+  font-weight: 400;
+  src: url("@expo-google-fonts/inter-tight/400Regular/InterTight_400Regular.ttf");
+}
+@font-face {
+  font-family: "InterTight";
+  font-weight: 500;
+  src: url("@expo-google-fonts/inter-tight/500Medium/InterTight_500Medium.ttf");
+}
+@font-face {
+  font-family: "InterTight";
+  font-weight: 600;
+  src: url("@expo-google-fonts/inter-tight/600SemiBold/InterTight_600SemiBold.ttf");
+}
+@font-face {
+  font-family: "InterTight";
+  font-weight: 700;
+  src: url("@expo-google-fonts/inter-tight/700Bold/InterTight_700Bold.ttf");
+}
+@font-face {
+  font-family: "InterTight";
+  font-weight: 800;
+  src: url("@expo-google-fonts/inter-tight/800ExtraBold/InterTight_800ExtraBold.ttf");
+}
+
+/* Libre Baskerville — heading font */
+@font-face {
+  font-family: "LibreBaskerville";
+  font-weight: 400;
+  src: url("@expo-google-fonts/libre-baskerville/400Regular/LibreBaskerville_400Regular.ttf");
+}
+@font-face {
+  font-family: "LibreBaskerville";
+  font-weight: 700;
+  src: url("@expo-google-fonts/libre-baskerville/700Bold/LibreBaskerville_700Bold.ttf");
+}
