@@ -102,6 +102,7 @@ const permissions: Record<UserRole, Partial<Record<Resource, Action[]>>> = {
     schedule: ["read"],
     estimates: ["read", "create"],
     payments: ["create"],
+    reports: ["read", "create", "update"],
     pricebook: ["read"],
     agreements: ["read"],
     calls: ["read"],

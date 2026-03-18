@@ -35,9 +35,9 @@ export async function GET(req: Request) {
         companyName: tenants.name,
       })
       .from(jobs)
-      .innerJoin(customers, eq(jobs.customerId, customers.id))
+      .innerJoin(customers, and(eq(jobs.customerId, customers.id), eq(jobs.tenantId, customers.tenantId)))
       .innerJoin(tenants, eq(jobs.tenantId, tenants.id))
-      .leftJoin(users, eq(jobs.assignedTo, users.id))
+      .leftJoin(users, and(eq(jobs.assignedTo, users.id), eq(jobs.tenantId, users.tenantId)))
       .where(
         and(
           between(jobs.scheduledStart, windowStart, windowEnd),

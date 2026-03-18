@@ -12,6 +12,7 @@ export default function MoreLayout() {
 
   return (
     <Stack
+      initialRouteName="index"
       screenOptions={{
         animation: "slide_from_right",
         headerTintColor,

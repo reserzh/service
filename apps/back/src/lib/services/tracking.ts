@@ -205,10 +205,10 @@ export async function getTrackingSessionByToken(token: string) {
       propertyZip: properties.zip,
     })
     .from(trackingSessions)
-    .innerJoin(users, eq(trackingSessions.technicianId, users.id))
+    .innerJoin(users, and(eq(trackingSessions.technicianId, users.id), eq(trackingSessions.tenantId, users.tenantId)))
     .innerJoin(tenants, eq(trackingSessions.tenantId, tenants.id))
-    .innerJoin(jobs, eq(trackingSessions.jobId, jobs.id))
-    .innerJoin(properties, eq(jobs.propertyId, properties.id))
+    .innerJoin(jobs, and(eq(trackingSessions.jobId, jobs.id), eq(trackingSessions.tenantId, jobs.tenantId)))
+    .innerJoin(properties, and(eq(jobs.propertyId, properties.id), eq(jobs.tenantId, properties.tenantId)))
     .where(eq(trackingSessions.token, token))
     .limit(1);
 

@@ -68,8 +68,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: isDark ? "#FAFAF9" : "#1C1917",
-        tabBarInactiveTintColor: isDark ? "#78716C" : "#A8A29E",
+        tabBarActiveTintColor: isDark ? "#FFFFFF" : "#1C1917",
+        tabBarInactiveTintColor: isDark ? "#A8A29E" : "#78716C",
         tabBarStyle: {
           backgroundColor: isDark ? "#292524" : "#FFFFFF",
           borderTopColor: isDark ? "#44403C" : "#F5F0EB",
@@ -83,9 +83,8 @@ export default function TabsLayout() {
           elevation: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 13,
-          fontWeight: "800",
-          letterSpacing: 0.3,
+          fontSize: 16,
+          fontWeight: "700",
         },
       }}
     >

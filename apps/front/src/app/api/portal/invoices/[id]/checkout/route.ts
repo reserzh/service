@@ -25,13 +25,17 @@ async function createCheckoutSession(
 
   // Look up the customer by supabaseUserId
   const [customer] = await db
-    .select({ id: customers.id, tenantId: customers.tenantId })
+    .select({ id: customers.id, tenantId: customers.tenantId, portalAccessEnabled: customers.portalAccessEnabled })
     .from(customers)
     .where(eq(customers.supabaseUserId, user.id))
     .limit(1);
 
   if (!customer) {
     return { error: "Customer not found", status: 404 };
+  }
+
+  if (!customer.portalAccessEnabled) {
+    return { error: "Portal access has been revoked", status: 403 };
   }
 
   // Validate the invoice belongs to the customer and has a balance due
@@ -109,7 +113,7 @@ export async function GET(
         process.env.NEXT_PUBLIC_APP_URL ||
         `${req.nextUrl.protocol}//${req.nextUrl.host}`;
       return NextResponse.redirect(
-        `${appUrl}/portal/invoices/${id}?error=${encodeURIComponent(result.error)}`
+        `${appUrl}/portal/invoices/${id}?error=${encodeURIComponent(result.error as string)}`
       );
     }
 
