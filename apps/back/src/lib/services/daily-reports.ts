@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { dailyReports, users } from "@fieldservice/shared/db/schema";
-import { eq, and, desc, asc } from "drizzle-orm";
+import { eq, and, desc, asc, isNotNull, or, sql } from "drizzle-orm";
 import type { UserContext } from "@/lib/auth";
 import { assertPermission } from "@/lib/auth/permissions";
 
@@ -91,4 +91,70 @@ export async function listDailyReports(
     userLastName: d.userLastName!,
     createdAt: d.createdAt.toISOString(),
   }));
+}
+
+/**
+ * Get pending material requests and equipment issues for today (or yesterday
+ * if today has no reports yet). Used by the admin dashboard morning briefing widget.
+ */
+export async function getPendingCrewRequests(
+  ctx: UserContext
+): Promise<{
+  date: string;
+  requests: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    materialRequests: string | null;
+    equipmentIssues: string | null;
+    officeNotes: string | null;
+  }[];
+}> {
+  assertPermission(ctx, "reports", "read");
+
+  const today = new Date().toISOString().split("T")[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+
+  // Try today first, fall back to yesterday
+  for (const date of [today, yesterday]) {
+    const data = await db
+      .select({
+        userId: dailyReports.userId,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        materialRequests: dailyReports.materialRequests,
+        equipmentIssues: dailyReports.equipmentIssues,
+        officeNotes: dailyReports.officeNotes,
+      })
+      .from(dailyReports)
+      .leftJoin(users, and(eq(dailyReports.userId, users.id), eq(users.tenantId, ctx.tenantId)))
+      .where(
+        and(
+          eq(dailyReports.tenantId, ctx.tenantId),
+          eq(dailyReports.reportDate, date),
+          or(
+            isNotNull(dailyReports.materialRequests),
+            isNotNull(dailyReports.equipmentIssues),
+            isNotNull(dailyReports.officeNotes)
+          )
+        )
+      )
+      .orderBy(asc(users.firstName));
+
+    if (data.length > 0) {
+      return {
+        date,
+        requests: data.map((d) => ({
+          userId: d.userId,
+          firstName: d.firstName!,
+          lastName: d.lastName!,
+          materialRequests: d.materialRequests,
+          equipmentIssues: d.equipmentIssues,
+          officeNotes: d.officeNotes,
+        })),
+      };
+    }
+  }
+
+  return { date: today, requests: [] };
 }

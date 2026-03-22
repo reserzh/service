@@ -8,6 +8,7 @@ import { customers, estimates, estimateOptions } from "@fieldservice/shared/db/s
 const respondSchema = z.object({
   action: z.enum(["approve", "decline"]),
   optionId: z.string().uuid().optional(),
+  note: z.string().max(2000).optional(),
 });
 
 export async function POST(
@@ -27,7 +28,7 @@ export async function POST(
       );
     }
 
-    const { action, optionId } = parsed.data;
+    const { action, optionId, note } = parsed.data;
 
     // Get authenticated portal user
     const supabase = await createPortalServerClient();
@@ -127,8 +128,22 @@ export async function POST(
       selectedOptionTotal = option.total;
     }
 
-    // Update the estimate
+    // Build customer note (append to existing notes to avoid data loss)
     const now = new Date();
+    let updatedNotes: string | undefined;
+    if (note) {
+      const existing = await db
+        .select({ notes: estimates.notes })
+        .from(estimates)
+        .where(and(eq(estimates.id, estimate.id), eq(estimates.tenantId, customer.tenantId)))
+        .limit(1)
+        .then((r) => r[0]?.notes);
+      const timestamp = now.toISOString().split("T")[0];
+      const customerNote = `--- Customer modification request (${timestamp}) ---\n${note}`;
+      updatedNotes = existing ? `${existing}\n\n${customerNote}` : customerNote;
+    }
+
+    // Update the estimate
     await db
       .update(estimates)
       .set({
@@ -138,6 +153,7 @@ export async function POST(
           approvedOptionId: optionId,
           totalAmount: selectedOptionTotal,
         }),
+        ...(updatedNotes && { notes: updatedNotes }),
         updatedAt: now,
       })
       .where(and(eq(estimates.id, estimate.id), eq(estimates.tenantId, customer.tenantId)));

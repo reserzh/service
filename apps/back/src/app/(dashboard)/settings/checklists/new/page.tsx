@@ -13,6 +13,7 @@ export default async function NewChecklistTemplatePage() {
   async function saveAction(data: {
     name: string;
     description?: string;
+    templateType?: "checklist" | "equipment";
     jobType?: string;
     autoApplyOnDispatch?: boolean;
     items: { label: string; groupName?: string }[];

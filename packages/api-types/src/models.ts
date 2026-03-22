@@ -12,6 +12,7 @@ import type {
   PhotoType,
   TimeEntryType,
   JobAssignmentRole,
+  ChecklistTemplateType,
   CommunicationType,
   CommunicationStatus,
   CommunicationTrigger,
@@ -151,6 +152,7 @@ export interface JobChecklistItem {
   groupName: string | null;
   groupSortOrder: number;
   sortOrder: number;
+  itemType: ChecklistTemplateType;
   createdAt: string;
   updatedAt: string;
 }

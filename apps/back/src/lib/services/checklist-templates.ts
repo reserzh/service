@@ -12,17 +12,21 @@ import { escapeLike } from "@/lib/utils";
 
 // ---------- Types ----------
 
+import type { ChecklistTemplateType } from "@fieldservice/api-types/enums";
+
 export interface ListChecklistTemplatesParams {
   page?: number;
   pageSize?: number;
   search?: string;
   jobType?: string;
   isActive?: boolean;
+  templateType?: ChecklistTemplateType;
 }
 
 export interface CreateChecklistTemplateInput {
   name: string;
   description?: string;
+  templateType?: ChecklistTemplateType;
   jobType?: string;
   autoApplyOnDispatch?: boolean;
   items: { label: string; groupName?: string }[];
@@ -31,6 +35,7 @@ export interface CreateChecklistTemplateInput {
 export interface UpdateChecklistTemplateInput {
   name?: string;
   description?: string | null;
+  templateType?: ChecklistTemplateType;
   jobType?: string | null;
   isActive?: boolean;
   autoApplyOnDispatch?: boolean;
@@ -45,7 +50,7 @@ export async function listChecklistTemplates(
 ) {
   assertPermission(ctx, "settings", "read");
 
-  const { page = 1, pageSize: rawPageSize = 50, search, jobType, isActive } = params;
+  const { page = 1, pageSize: rawPageSize = 50, search, jobType, isActive, templateType } = params;
   const pageSize = Math.min(Math.max(rawPageSize, 1), 100);
   const offset = (page - 1) * pageSize;
 
@@ -53,6 +58,10 @@ export async function listChecklistTemplates(
 
   if (isActive !== undefined) {
     conditions.push(eq(checklistTemplates.isActive, isActive));
+  }
+
+  if (templateType) {
+    conditions.push(eq(checklistTemplates.templateType, templateType));
   }
 
   if (jobType) {
@@ -118,6 +127,7 @@ export async function createChecklistTemplate(ctx: UserContext, input: CreateChe
         tenantId: ctx.tenantId,
         name: input.name,
         description: input.description || null,
+        templateType: input.templateType ?? "checklist",
         jobType: input.jobType || null,
         autoApplyOnDispatch: input.autoApplyOnDispatch ?? false,
       })
@@ -155,6 +165,7 @@ export async function updateChecklistTemplate(
   const updateData: Record<string, unknown> = { updatedAt: new Date() };
   if (input.name !== undefined) updateData.name = input.name;
   if (input.description !== undefined) updateData.description = input.description;
+  if (input.templateType !== undefined) updateData.templateType = input.templateType;
   if (input.jobType !== undefined) updateData.jobType = input.jobType;
   if (input.isActive !== undefined) updateData.isActive = input.isActive;
   if (input.autoApplyOnDispatch !== undefined) updateData.autoApplyOnDispatch = input.autoApplyOnDispatch;
@@ -230,6 +241,7 @@ export async function applyChecklistTemplate(ctx: UserContext, jobId: string, te
         groupName: item.groupName,
         groupSortOrder: item.groupSortOrder,
         sortOrder: startOrder + idx,
+        itemType: template.templateType,
       }))
     )
     .returning();

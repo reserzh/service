@@ -29,6 +29,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
 const updateSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   description: z.string().nullable().optional(),
+  templateType: z.enum(["checklist", "equipment"]).optional(),
   jobType: z.string().max(100).nullable().optional(),
   isActive: z.boolean().optional(),
   autoApplyOnDispatch: z.boolean().optional(),

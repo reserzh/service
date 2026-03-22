@@ -9,7 +9,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { lineItemTypeEnum } from "./enums";
+import { lineItemTypeEnum, checklistTemplateTypeEnum } from "./enums";
 import { tenants } from "./tenants";
 import { pricebookItems } from "./pricebook";
 import { fieldserviceSchema } from "./pg-schema";
@@ -25,6 +25,7 @@ export const checklistTemplates = fieldserviceSchema.table(
       .references(() => tenants.id, { onDelete: "cascade" }),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
+    templateType: checklistTemplateTypeEnum("template_type").default("checklist").notNull(),
     jobType: varchar("job_type", { length: 100 }),
     isActive: boolean("is_active").default(true).notNull(),
     autoApplyOnDispatch: boolean("auto_apply_on_dispatch").default(false).notNull(),

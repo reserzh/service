@@ -545,8 +545,8 @@ export async function changeJobStatus(
     to: newStatus,
   });
 
-  // Send push notification to assigned technician for status changes
-  if (job.assignedTo && job.assignedTo !== ctx.userId) {
+  // Send push notification to all assigned crew members for status changes
+  {
     const statusLabels: Record<string, string> = {
       scheduled: "Scheduled",
       dispatched: "Dispatched",
@@ -555,21 +555,45 @@ export async function changeJobStatus(
       canceled: "Canceled",
     };
     const label = statusLabels[newStatus] || newStatus;
-    import("./notifications")
-      .then(({ createNotification }) =>
-        createNotification({
-          tenantId: ctx.tenantId,
-          userId: job.assignedTo!,
-          type: "job_status_changed",
-          title: `Job ${label}`,
-          message: `Job ${job.jobNumber} has been updated to ${label}`,
-          entityType: "job",
-          entityId: jobId,
-        })
-      )
-      .catch((err) => {
-        console.error("[Job] Failed to send status change notification:", err);
-      });
+
+    // Collect all crew member IDs (lead tech + crew assignments)
+    const crewUserIds = new Set<string>();
+    if (job.assignedTo) crewUserIds.add(job.assignedTo);
+
+    try {
+      const crewAssignments = await db
+        .select({ userId: jobAssignments.userId })
+        .from(jobAssignments)
+        .where(and(eq(jobAssignments.jobId, jobId), eq(jobAssignments.tenantId, ctx.tenantId)));
+      for (const a of crewAssignments) crewUserIds.add(a.userId);
+    } catch {
+      // Best-effort crew lookup
+    }
+
+    // Remove the user who triggered the change
+    crewUserIds.delete(ctx.userId);
+
+    if (crewUserIds.size > 0) {
+      import("./notifications")
+        .then(({ createNotification }) =>
+          Promise.all(
+            [...crewUserIds].map((uid) =>
+              createNotification({
+                tenantId: ctx.tenantId,
+                userId: uid,
+                type: "job_status_changed",
+                title: `Job ${label}`,
+                message: `Job ${job.jobNumber} has been updated to ${label}`,
+                entityType: "job",
+                entityId: jobId,
+              })
+            )
+          )
+        )
+        .catch((err) => {
+          console.error("[Job] Failed to send status change notification:", err);
+        });
+    }
   }
 
   // Handle tracking session lifecycle
@@ -626,7 +650,7 @@ export async function changeJobStatus(
       if (customer?.email) {
         const { sendTriggeredCommunication } = await import("./communications");
         const techUser = job.assignedTo
-          ? await db.select({ firstName: users.firstName, lastName: users.lastName })
+          ? await db.select({ firstName: users.firstName, lastName: users.lastName, avatarUrl: users.avatarUrl, bio: users.bio })
               .from(users).where(and(eq(users.id, job.assignedTo), eq(users.tenantId, ctx.tenantId))).limit(1).then((r) => r[0])
           : null;
 
@@ -658,6 +682,8 @@ export async function changeJobStatus(
             scheduledDate: job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : "",
             scheduledTime: job.scheduledStart ? new Date(job.scheduledStart).toLocaleTimeString() : "",
             technicianName: techUser ? `${techUser.firstName} ${techUser.lastName}` : "",
+            technicianAvatarUrl: techUser?.avatarUrl || "",
+            technicianBio: techUser?.bio || "",
             trackingUrl,
           },
         });
@@ -773,6 +799,32 @@ export async function addJobAssignment(
     .returning();
 
   await logActivity(ctx, "job", jobId, "crew_member_added", { userId, role });
+
+  // Send push notification to the newly assigned crew member
+  const job = await db
+    .select({ jobNumber: jobs.jobNumber, summary: jobs.summary })
+    .from(jobs)
+    .where(and(eq(jobs.id, jobId), eq(jobs.tenantId, ctx.tenantId)))
+    .limit(1)
+    .then((r) => r[0]);
+
+  if (job) {
+    import("./notifications")
+      .then(({ createNotification }) =>
+        createNotification({
+          tenantId: ctx.tenantId,
+          userId,
+          type: "job_assigned",
+          title: "Added to Job Crew",
+          message: `You have been added to job ${job.jobNumber}: ${job.summary}`,
+          entityType: "job",
+          entityId: jobId,
+        })
+      )
+      .catch((err) => {
+        console.error("[Job] Failed to send crew assignment notification:", err);
+      });
+  }
 
   return assignment;
 }

@@ -9,6 +9,8 @@ export async function GET(req: NextRequest) {
     const ctx = await requireApiAuth(req);
     const url = new URL(req.url);
 
+    const templateType = url.searchParams.get("templateType") as "checklist" | "equipment" | null;
+
     const result = await listChecklistTemplates(ctx, {
       page: Number(url.searchParams.get("page") || 1),
       pageSize: Number(url.searchParams.get("pageSize") || 50),
@@ -17,6 +19,7 @@ export async function GET(req: NextRequest) {
       isActive: url.searchParams.has("isActive")
         ? url.searchParams.get("isActive") === "true"
         : undefined,
+      templateType: templateType || undefined,
     });
 
     return NextResponse.json(result);
@@ -28,6 +31,7 @@ export async function GET(req: NextRequest) {
 const createSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
+  templateType: z.enum(["checklist", "equipment"]).optional(),
   jobType: z.string().max(100).optional(),
   autoApplyOnDispatch: z.boolean().optional(),
   items: z.array(

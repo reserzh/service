@@ -59,6 +59,15 @@ export default async function ChecklistTemplatesPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
+                    {t.templateType === "equipment" ? (
+                      <Badge variant="outline" className="text-[10px] border-orange-300 text-orange-600">
+                        Equipment
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-[10px]">
+                        Checklist
+                      </Badge>
+                    )}
                     {t.autoApplyOnDispatch && (
                       <Badge variant="default" className="text-[10px]">
                         Auto-apply

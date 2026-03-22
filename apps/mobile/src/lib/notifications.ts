@@ -74,7 +74,7 @@ export async function removePushToken(): Promise<void> {
 
 export function setupNotificationHandler(): () => void {
   // Handle notification taps - navigate to relevant screen
-  const subscription = Notifications.addNotificationResponseReceivedListener(
+  const tapSubscription = Notifications.addNotificationResponseReceivedListener(
     (response) => {
       const data = response.notification.request.content.data;
 
@@ -84,5 +84,18 @@ export function setupNotificationHandler(): () => void {
     }
   );
 
-  return () => subscription.remove();
+  // Auto-navigate on geofence arrival (foreground) — no tap needed
+  const receiveSubscription = Notifications.addNotificationReceivedListener(
+    (notification) => {
+      const data = notification.request.content.data;
+      if (data?.action === "job_arrival" && data?.jobId) {
+        router.push(`/(tabs)/jobs/${data.jobId as string}`);
+      }
+    }
+  );
+
+  return () => {
+    tapSubscription.remove();
+    receiveSubscription.remove();
+  };
 }

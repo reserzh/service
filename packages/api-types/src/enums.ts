@@ -29,6 +29,9 @@ export const COMMUNICATION_TRIGGERS = [
 // Time tracking enums
 export const TIME_ENTRY_TYPES = ["clock_in", "clock_out", "break_start", "break_end"] as const;
 
+// Checklist template types
+export const CHECKLIST_TEMPLATE_TYPES = ["checklist", "equipment"] as const;
+
 // Job assignment enums
 export const JOB_ASSIGNMENT_ROLES = ["lead", "member"] as const;
 
@@ -60,6 +63,7 @@ export type CommunicationType = (typeof COMMUNICATION_TYPES)[number];
 export type CommunicationStatus = (typeof COMMUNICATION_STATUSES)[number];
 export type CommunicationTrigger = (typeof COMMUNICATION_TRIGGERS)[number];
 export type TimeEntryType = (typeof TIME_ENTRY_TYPES)[number];
+export type ChecklistTemplateType = (typeof CHECKLIST_TEMPLATE_TYPES)[number];
 export type JobAssignmentRole = (typeof JOB_ASSIGNMENT_ROLES)[number];
 export type AgreementStatus = (typeof AGREEMENT_STATUSES)[number];
 export type BillingFrequency = (typeof BILLING_FREQUENCIES)[number];

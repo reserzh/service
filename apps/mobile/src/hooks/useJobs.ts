@@ -164,6 +164,15 @@ export function useToggleChecklistItem() {
   });
 }
 
+export function useJobCosting(jobId: string) {
+  return useQuery({
+    queryKey: ["jobs", jobId, "costing"],
+    queryFn: () => jobsApi.getCosting(jobId),
+    enabled: !!jobId,
+    staleTime: 5 * 60 * 1000, // 5 min cache
+  });
+}
+
 export function useUpdateJob() {
   const queryClient = useQueryClient();
 

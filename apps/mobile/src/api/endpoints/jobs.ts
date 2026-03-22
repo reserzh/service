@@ -66,4 +66,20 @@ export const jobsApi = {
   updateTrackingLocation(id: string, latitude: number, longitude: number) {
     return api.post<ApiResponse<unknown>>(`/jobs/${id}/tracking`, { latitude, longitude });
   },
+
+  getCosting(id: string) {
+    return api.get<ApiResponse<{
+      jobId: string;
+      estimateBudget: number;
+      actualLaborHours: number;
+      actualLaborCost: number;
+      actualMaterialCost: number;
+      totalActualCost: number;
+      profitLoss: number;
+      profitMargin: number;
+      daysScheduled: number;
+      daysElapsed: number;
+      budgetUsedPercent: number;
+    }>>(`/jobs/${id}/costing`);
+  },
 };

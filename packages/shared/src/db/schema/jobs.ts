@@ -17,6 +17,7 @@ import {
   signerRoleEnum,
   photoTypeEnum,
   jobAssignmentRoleEnum,
+  checklistTemplateTypeEnum,
 } from "./enums";
 import { tenants } from "./tenants";
 import { users } from "./users";
@@ -217,6 +218,7 @@ export const jobChecklistItems = fieldserviceSchema.table(
     groupName: varchar("group_name", { length: 255 }),
     groupSortOrder: integer("group_sort_order").default(0).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
+    itemType: checklistTemplateTypeEnum("item_type").default("checklist").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

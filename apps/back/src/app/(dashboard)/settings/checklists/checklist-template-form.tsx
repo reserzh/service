@@ -9,6 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash2, GripVertical, Loader2 } from "lucide-react";
 
 interface GroupedItem {
@@ -20,6 +27,7 @@ interface TemplateData {
   id?: string;
   name: string;
   description: string | null;
+  templateType: "checklist" | "equipment";
   jobType: string | null;
   isActive: boolean;
   autoApplyOnDispatch: boolean;
@@ -31,6 +39,7 @@ interface Props {
   saveAction: (data: {
     name: string;
     description?: string;
+    templateType?: "checklist" | "equipment";
     jobType?: string;
     isActive?: boolean;
     autoApplyOnDispatch?: boolean;
@@ -70,6 +79,9 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState(template?.name ?? "");
+  const [templateType, setTemplateType] = useState<"checklist" | "equipment">(
+    template?.templateType ?? "checklist"
+  );
   const [description, setDescription] = useState(template?.description ?? "");
   const [jobType, setJobType] = useState(template?.jobType ?? "");
   const [isActive, setIsActive] = useState(template?.isActive ?? true);
@@ -152,6 +164,7 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
       const result = await saveAction({
         name: name.trim(),
         description: description.trim() || undefined,
+        templateType,
         jobType: jobType.trim() || undefined,
         isActive,
         autoApplyOnDispatch,
@@ -175,6 +188,18 @@ export function ChecklistTemplateForm({ template, saveAction }: Props) {
           <CardTitle className="text-sm">Template Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="templateType">Template Type</Label>
+            <Select value={templateType} onValueChange={(v) => setTemplateType(v as "checklist" | "equipment")}>
+              <SelectTrigger id="templateType">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="checklist">Checklist (tasks to complete)</SelectItem>
+                <SelectItem value="equipment">Equipment List (tools/items to bring)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input

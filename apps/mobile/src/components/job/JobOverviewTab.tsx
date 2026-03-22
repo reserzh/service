@@ -1,11 +1,13 @@
 import { View, Text, Pressable, Linking, ScrollView } from "react-native";
-import { Phone, MapPin, Clock, Info, Users } from "lucide-react-native";
+import { Phone, MapPin, Clock, Info, Users, DollarSign } from "lucide-react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Card } from "@/components/ui/Card";
 import { NavigateButton } from "@/components/common/NavigateButton";
 import { DistanceBadge } from "@/components/job/DistanceBadge";
 import { PropertyDetailsCard } from "@/components/PropertyDetailsCard";
 import { PropertyHistoryBanner } from "@/components/job/PropertyHistoryBanner";
+import { useJobCosting } from "@/hooks/useJobs";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import {
   formatTimeRange,
   formatPhone,
@@ -16,6 +18,74 @@ import type { JobWithRelations } from "@/types/models";
 
 interface JobOverviewTabProps {
   job: JobWithRelations;
+}
+
+function formatCurrency(amount: number): string {
+  return "$" + amount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function BudgetProgressCard({ jobId }: { jobId: string }) {
+  const colors = useSignalColors();
+  const { data } = useJobCosting(jobId);
+  const costing = data?.data;
+
+  // Don't render if no data or no budget (no line items priced)
+  if (!costing || costing.estimateBudget <= 0) return null;
+
+  const percent = Math.min(costing.budgetUsedPercent, 100);
+  const isOver = costing.budgetUsedPercent > 100;
+
+  return (
+    <Card>
+      <View className="flex-row items-center gap-2 mb-3">
+        <DollarSign size={16} color={colors.accent} />
+        <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
+          Budget Progress
+        </Text>
+      </View>
+
+      {/* Progress bar */}
+      <View className="h-3 rounded-full bg-stone-100 dark:bg-stone-700 overflow-hidden mb-2">
+        <View
+          className={`h-full rounded-full ${isOver ? "bg-red-500" : ""}`}
+          style={[
+            { width: `${percent}%` },
+            !isOver && { backgroundColor: colors.accent },
+          ]}
+        />
+      </View>
+
+      {/* Stats row */}
+      <View className="flex-row items-baseline justify-between">
+        <Text className="text-sm text-stone-600 dark:text-stone-400">
+          {formatCurrency(costing.totalActualCost)}{" "}
+          <Text className="text-stone-400 dark:text-stone-500">of</Text>{" "}
+          {formatCurrency(costing.estimateBudget)} spent
+        </Text>
+        <Text
+          className={`text-sm font-semibold ${isOver ? "text-red-600 dark:text-red-400" : "text-stone-900 dark:text-white"}`}
+        >
+          {Math.round(costing.budgetUsedPercent)}%
+        </Text>
+      </View>
+
+      {/* Labor / Material breakdown */}
+      {(costing.actualLaborCost > 0 || costing.actualMaterialCost > 0) && (
+        <View className="flex-row gap-4 mt-2">
+          {costing.actualLaborCost > 0 && (
+            <Text className="text-xs text-stone-400 dark:text-stone-500">
+              Labor: {formatCurrency(costing.actualLaborCost)}
+            </Text>
+          )}
+          {costing.actualMaterialCost > 0 && (
+            <Text className="text-xs text-stone-400 dark:text-stone-500">
+              Materials: {formatCurrency(costing.actualMaterialCost)}
+            </Text>
+          )}
+        </View>
+      )}
+    </Card>
+  );
 }
 
 export function JobOverviewTab({ job }: JobOverviewTabProps) {
@@ -156,9 +226,16 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         </Animated.View>
       )}
 
+      {/* Budget Progress — only for in-progress or completed jobs */}
+      {(job.status === "in_progress" || job.status === "completed") && (
+        <Animated.View className="mb-3" entering={FadeInDown.delay(320).duration(400).springify()}>
+          <BudgetProgressCard jobId={job.id} />
+        </Animated.View>
+      )}
+
       {/* Description */}
       {job.description && (
-        <Animated.View className="mb-3" entering={FadeInDown.delay(360).duration(400).springify()}>
+        <Animated.View className="mb-3" entering={FadeInDown.delay(400).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
               <Info size={16} color="#78716C" />

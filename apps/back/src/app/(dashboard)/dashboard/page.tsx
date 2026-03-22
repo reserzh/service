@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import { getDashboardStats, getRecentActivity, getUpcomingJobs } from "@/lib/services/reports";
 import { getUserDashboardLayout, getUserAIWidgets } from "@/lib/services/dashboard";
+import { getPendingCrewRequests } from "@/lib/services/daily-reports";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Plus } from "lucide-react";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const ctx = await requireAuth();
 
-  const [stats, activity, upcoming, tenantRow, userLayout, rawAIWidgets] = await Promise.all([
+  const [stats, activity, upcoming, tenantRow, userLayout, rawAIWidgets, crewRequests] = await Promise.all([
     getDashboardStats(ctx),
     getRecentActivity(ctx, 8),
     getUpcomingJobs(ctx, 8),
@@ -38,6 +39,7 @@ export default async function DashboardPage() {
       .then((rows) => rows[0]),
     getUserDashboardLayout(ctx),
     getUserAIWidgets(ctx),
+    getPendingCrewRequests(ctx).catch(() => ({ date: new Date().toISOString().split("T")[0], requests: [] })),
   ]);
 
   const settings = (tenantRow?.settings ?? {}) as TenantSettings;
@@ -49,6 +51,7 @@ export default async function DashboardPage() {
     activity,
     upcoming,
     firstName: ctx.firstName,
+    crewRequests,
   };
 
   const showPageHeader = preset === "classic" || preset === "executive" || preset === "arctic" || preset === "forge" || preset === "copper";

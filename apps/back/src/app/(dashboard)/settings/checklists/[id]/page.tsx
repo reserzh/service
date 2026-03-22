@@ -26,6 +26,7 @@ export default async function EditChecklistTemplatePage({ params }: PageProps) {
   async function saveAction(data: {
     name: string;
     description?: string;
+    templateType?: "checklist" | "equipment";
     jobType?: string;
     isActive?: boolean;
     autoApplyOnDispatch?: boolean;

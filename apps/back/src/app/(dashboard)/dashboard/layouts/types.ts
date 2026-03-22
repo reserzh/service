@@ -33,14 +33,24 @@ export type ActivityItem = {
   userLastName: string | null;
 };
 
+export type CrewRequest = {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  materialRequests: string | null;
+  equipmentIssues: string | null;
+  officeNotes: string | null;
+};
+
 export type DashboardData = {
   stats: DashboardStats;
   activity: ActivityItem[];
   upcoming: UpcomingJob[];
   firstName: string;
+  crewRequests?: { date: string; requests: CrewRequest[] };
 };
 
-export type BuiltInWidgetId = "stats" | "quick-actions" | "schedule" | "activity" | "chart" | "team";
+export type BuiltInWidgetId = "stats" | "quick-actions" | "schedule" | "activity" | "chart" | "team" | "crew-requests";
 export type WidgetId = BuiltInWidgetId | `ai-widget-${string}`;
 
 export type DashboardLayoutProps = {
@@ -72,7 +82,7 @@ export const DASHBOARD_PRESETS: DashboardPreset[] = [
     name: "Classic",
     description: "Clean and familiar layout",
     colors: ["#ffffff", "#f8fafc", "#3b82f6"],
-    supportedWidgets: ["stats", "quick-actions", "schedule", "activity"],
+    supportedWidgets: ["stats", "quick-actions", "crew-requests", "schedule", "activity"],
   },
   {
     id: "blueprint",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import { CheckSquare, Square, ChevronDown, ChevronRight } from "lucide-react-native";
+import { CheckSquare, Square, PackageCheck, Package, ChevronDown, ChevronRight } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, Layout } from "react-native-reanimated";
 import type { JobChecklistItem } from "@/types/models";
@@ -8,6 +8,7 @@ import type { JobChecklistItem } from "@/types/models";
 interface JobChecklistProps {
   items: JobChecklistItem[];
   onToggle: (itemId: string, completed: boolean) => void;
+  type?: "checklist" | "equipment";
 }
 
 interface ChecklistGroup {
@@ -41,10 +42,14 @@ function groupItems(items: JobChecklistItem[]): ChecklistGroup[] {
   return groups;
 }
 
-export function JobChecklist({ items, onToggle }: JobChecklistProps) {
+export function JobChecklist({ items, onToggle, type = "checklist" }: JobChecklistProps) {
+  const isEquipment = type === "equipment";
+
   if (items.length === 0) {
     return (
-      <Text className="text-sm text-stone-400 italic">No checklist items</Text>
+      <Text className="text-sm text-stone-400 italic">
+        {isEquipment ? "No equipment items" : "No checklist items"}
+      </Text>
     );
   }
 
@@ -54,6 +59,9 @@ export function JobChecklist({ items, onToggle }: JobChecklistProps) {
   const hasGroups = groups.some((g) => g.name !== null);
 
   const iconSize = 32;
+  const progressLabel = isEquipment
+    ? `${completedCount}/${items.length} packed`
+    : `${completedCount}/${items.length}`;
 
   return (
     <View>
@@ -61,13 +69,13 @@ export function JobChecklist({ items, onToggle }: JobChecklistProps) {
       <View className="flex-row items-center gap-2 mb-3">
         <View className="flex-1 bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden h-3">
           <Animated.View
-            className="h-full bg-emerald-500 rounded-full"
+            className={`h-full rounded-full ${isEquipment ? "bg-orange-500" : "bg-emerald-500"}`}
             style={{ width: `${progress * 100}%` }}
             layout={Layout.springify()}
           />
         </View>
         <Text className="text-sm font-medium text-stone-500">
-          {completedCount}/{items.length}
+          {progressLabel}
         </Text>
       </View>
 
@@ -79,6 +87,7 @@ export function JobChecklist({ items, onToggle }: JobChecklistProps) {
             group={group}
             onToggle={onToggle}
             iconSize={iconSize}
+            isEquipment={isEquipment}
           />
         ))
       ) : (
@@ -89,6 +98,7 @@ export function JobChecklist({ items, onToggle }: JobChecklistProps) {
             item={item}
             onToggle={onToggle}
             iconSize={iconSize}
+            isEquipment={isEquipment}
           />
         ))
       )}
@@ -100,14 +110,20 @@ function GroupSection({
   group,
   onToggle,
   iconSize,
+  isEquipment,
 }: {
   group: ChecklistGroup;
   onToggle: (itemId: string, completed: boolean) => void;
   iconSize: number;
+  isEquipment: boolean;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const groupCompleted = group.items.filter((i) => i.completed).length;
   const ChevronIcon = collapsed ? ChevronRight : ChevronDown;
+  const countLabel = isEquipment
+    ? `${groupCompleted}/${group.items.length} packed`
+    : `${groupCompleted}/${group.items.length}`;
+  const a11yVerb = isEquipment ? "packed" : "completed";
 
   return (
     <View className="mb-2">
@@ -119,7 +135,7 @@ function GroupSection({
         }}
         className="flex-row items-center justify-between border-b border-stone-200 dark:border-stone-700 py-3"
         style={{ minHeight: 56 }}
-        accessibilityLabel={`${group.name || "General"} group, ${groupCompleted} of ${group.items.length} completed`}
+        accessibilityLabel={`${group.name || "General"} group, ${groupCompleted} of ${group.items.length} ${a11yVerb}`}
         accessibilityRole="button"
       >
         <View className="flex-row items-center gap-2">
@@ -136,7 +152,7 @@ function GroupSection({
         <Text
           className="text-sm font-medium text-stone-500"
         >
-          {groupCompleted}/{group.items.length}
+          {countLabel}
         </Text>
       </Pressable>
 
@@ -148,6 +164,7 @@ function GroupSection({
             item={item}
             onToggle={onToggle}
             iconSize={iconSize}
+            isEquipment={isEquipment}
           />
         ))}
     </View>
@@ -158,11 +175,19 @@ function ChecklistItemRow({
   item,
   onToggle,
   iconSize,
+  isEquipment,
 }: {
   item: JobChecklistItem;
   onToggle: (itemId: string, completed: boolean) => void;
   iconSize: number;
+  isEquipment: boolean;
 }) {
+  const CheckedIcon = isEquipment ? PackageCheck : CheckSquare;
+  const UncheckedIcon = isEquipment ? Package : Square;
+  const checkedColor = isEquipment ? "#EA580C" : "#10b981";
+  const a11yChecked = isEquipment ? "packed" : "completed";
+  const a11yUnchecked = isEquipment ? "not packed" : "not completed";
+
   return (
     <Animated.View entering={FadeIn.duration(200)} layout={Layout.springify()}>
       <Pressable
@@ -172,14 +197,14 @@ function ChecklistItemRow({
         }}
         className="flex-row items-center border-b border-stone-100 dark:border-stone-700 gap-4 py-4"
         style={{ minHeight: 56 }}
-        accessibilityLabel={`${item.label}: ${item.completed ? "completed" : "not completed"}`}
+        accessibilityLabel={`${item.label}: ${item.completed ? a11yChecked : a11yUnchecked}`}
         accessibilityRole="checkbox"
         accessibilityState={{ checked: item.completed }}
       >
         {item.completed ? (
-          <CheckSquare size={iconSize} color="#10b981" />
+          <CheckedIcon size={iconSize} color={checkedColor} />
         ) : (
-          <Square size={iconSize} color="#A8A29E" />
+          <UncheckedIcon size={iconSize} color="#A8A29E" />
         )}
         <Text
           className={`flex-1 text-lg ${

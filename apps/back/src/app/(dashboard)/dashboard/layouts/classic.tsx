@@ -13,6 +13,9 @@ import {
   Users,
   TrendingUp,
   ArrowRight,
+  PackageOpen,
+  Wrench,
+  MessageSquare,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -175,7 +178,7 @@ export function ClassicLayout({
   variant = "default",
 }: DashboardLayoutProps & { variant?: ClassicVariant }) {
   const v = variants[variant];
-  const { stats, activity, upcoming, firstName } = data;
+  const { stats, activity, upcoming, firstName, crewRequests } = data;
 
   return (
     <div className={cn("space-y-6", v.wrapper)}>
@@ -230,6 +233,61 @@ export function ClassicLayout({
           <QuickAction href="/customers/new" icon={Users} label="New Customer" v={v} />
           <QuickAction href="/dispatch" icon={TrendingUp} label="Dispatch Board" v={v} />
         </div>
+      )}
+
+      {/* Crew Requests — Morning Briefing */}
+      {!hiddenWidgets.has("crew-requests") && crewRequests && crewRequests.requests.length > 0 && (
+        <Card className={cn(v.card)}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <PackageOpen className={cn("h-4 w-4", v.sectionIcon)} />
+                Crew Requests
+                <span className={cn("text-xs font-normal", v.muted)}>
+                  {crewRequests.requests.length} {crewRequests.requests.length === 1 ? "crew member" : "crew members"} reported
+                </span>
+              </CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/daily-reports" className="text-xs">
+                  View All
+                  <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {crewRequests.requests.map((req) => (
+                <div
+                  key={req.userId}
+                  className={cn("rounded-lg border p-3 space-y-2", v.card)}
+                >
+                  <p className="text-sm font-semibold">
+                    {req.firstName} {req.lastName}
+                  </p>
+                  {req.materialRequests && (
+                    <div className="flex items-start gap-2">
+                      <PackageOpen className="h-3.5 w-3.5 mt-0.5 text-orange-500 shrink-0" />
+                      <p className="text-xs text-foreground">{req.materialRequests}</p>
+                    </div>
+                  )}
+                  {req.equipmentIssues && (
+                    <div className="flex items-start gap-2">
+                      <Wrench className="h-3.5 w-3.5 mt-0.5 text-red-500 shrink-0" />
+                      <p className="text-xs text-foreground">{req.equipmentIssues}</p>
+                    </div>
+                  )}
+                  {req.officeNotes && (
+                    <div className="flex items-start gap-2">
+                      <MessageSquare className="h-3.5 w-3.5 mt-0.5 text-blue-500 shrink-0" />
+                      <p className="text-xs text-foreground">{req.officeNotes}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -18,6 +18,7 @@ import {
   AGREEMENT_STATUSES,
   BILLING_FREQUENCIES,
   AGREEMENT_VISIT_STATUSES,
+  CHECKLIST_TEMPLATE_TYPES,
   CALL_DIRECTIONS,
   CALL_STATUSES,
   RECORDING_STATUSES,
@@ -85,6 +86,9 @@ export const timeEntryTypeEnum = fieldserviceSchema.enum("time_entry_type", [...
 
 // Job assignment enums
 export const jobAssignmentRoleEnum = fieldserviceSchema.enum("job_assignment_role", [...JOB_ASSIGNMENT_ROLES]);
+
+// Checklist template type enums
+export const checklistTemplateTypeEnum = fieldserviceSchema.enum("checklist_template_type", [...CHECKLIST_TEMPLATE_TYPES]);
 
 // Communication enums
 export const communicationTypeEnum = fieldserviceSchema.enum("communication_type", [...COMMUNICATION_TYPES]);

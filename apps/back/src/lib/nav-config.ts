@@ -19,6 +19,7 @@ import {
   Wrench,
   BookOpen,
   CheckSquare,
+  Package,
   FileStack,
   CalendarClock,
   Bell,
@@ -135,6 +136,20 @@ function filterItems(role: UserRole, items: NavItem[]): NavItem[] {
 
 export function getFilteredNavGroups(role: string): NavGroup[] {
   const r = role as UserRole;
+
+  // Technicians get a simplified flat sidebar: just Dashboard, Jobs, and Daily Reports
+  if (r === "technician") {
+    return [
+      {
+        items: [
+          { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+          { title: "Jobs", href: "/jobs", icon: Briefcase, resource: "jobs" },
+          { title: "Daily Reports", href: "/daily-reports", icon: ClipboardCheck, resource: "reports" },
+        ],
+      },
+    ];
+  }
+
   return navGroups
     .map((group) => ({ ...group, items: filterItems(r, group.items) }))
     .filter((group) => group.items.length > 0);
@@ -213,6 +228,7 @@ export const settingsNavItems: SettingsNavItem[] = [
   { label: "Services & Pricing", href: "/settings/services", icon: Wrench, section: "Services" },
   { label: "Pricebook", href: "/settings/pricebook", icon: BookOpen, section: "Services" },
   { label: "Checklist Templates", href: "/settings/checklists", icon: CheckSquare, section: "Services" },
+  { label: "Equipment Lists", href: "/settings/checklists?type=equipment", icon: Package, section: "Services" },
   { label: "Estimate Templates", href: "/settings/estimate-templates", icon: FileStack, section: "Services" },
   { label: "Booking Availability", href: "/settings/booking-availability", icon: CalendarClock, section: "Services" },
   { label: "Equipment", href: "/settings/equipment", icon: Truck, section: "Services" },

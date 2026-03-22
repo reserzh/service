@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { View, Text, Pressable, Alert, Linking, useColorScheme } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Pressable, Alert, Linking } from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
 import {
   Phone,
   Navigation,
@@ -8,12 +8,14 @@ import {
   Camera,
   Send,
   Receipt,
+  ChevronRight,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useJob, useUpdateJobStatus, useUpdateJob } from "@/hooks/useJobs";
+import { useJobStats } from "@/hooks/useJobStats";
 import { startLocationTracking, stopLocationTracking } from "@/lib/locationTracking";
 import { useCreateInvoiceFromJob } from "@/hooks/useInvoices";
 import { CreateInvoiceSheet } from "@/components/job/CreateInvoiceSheet";
@@ -26,9 +28,10 @@ import { JobStatusBadge } from "@/components/job/JobStatusBadge";
 import { JobPriorityBadge } from "@/components/job/JobPriorityBadge";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { ErrorFallback } from "@/components/common/ErrorFallback";
-import { formatAddress } from "@/lib/format";
+import { formatAddress, formatTimeRange } from "@/lib/format";
 import { PRIMARY_NEXT_STATUS, STATUS_ACTION_LABELS } from "@/lib/constants";
 import { STATUS_ACTION_COLORS } from "@/lib/colors";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { JobStatus } from "@/types/models";
 
 export default function JobDetailScreen() {
@@ -39,8 +42,8 @@ export default function JobDetailScreen() {
   const createInvoice = useCreateInvoiceFromJob();
   const [activeTab, setActiveTab] = useState<JobTab>("overview");
   const invoiceSheetRef = useRef<BottomSheet>(null);
-  const isDark = useColorScheme() === "dark";
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const colors = useSignalColors();
+  const accent = colors.accent;
 
   const job = data?.data;
 
@@ -60,20 +63,6 @@ export default function JobDetailScreen() {
       if (!job) return;
 
       const isForwardTransition = ["en_route", "in_progress", "completed"].includes(newStatus);
-
-      // Photo gate: require minimum 3 after photos before completion
-      if (newStatus === "completed") {
-        const afterPhotoCount = job.photos.filter((p) => p.photoType === "after").length;
-        if (afterPhotoCount < 3) {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-          Alert.alert(
-            "After Photos Required",
-            `You need at least 3 after photos before completing this job. You currently have ${afterPhotoCount}.`,
-            [{ text: "OK", onPress: () => setActiveTab("media") }]
-          );
-          return;
-        }
-      }
 
       const doTransition = async () => {
         try {
@@ -178,6 +167,20 @@ export default function JobDetailScreen() {
   const isEnRoute = job.status === "en_route";
   const showCreateInvoice = job.status === "completed";
 
+  // Find the next upcoming job for "dispatch to next" flow
+  const { jobs: todayJobs } = useJobStats();
+  const nextUpJob = useMemo(() => {
+    if (job.status !== "completed") return null;
+    const now = new Date();
+    return todayJobs.find(
+      (j) =>
+        j.id !== job.id &&
+        (j.status === "scheduled" || j.status === "dispatched") &&
+        j.scheduledStart &&
+        new Date(j.scheduledStart) >= now
+    ) ?? null;
+  }, [job.status, job.id, todayJobs]);
+
   return (
     <View className="flex-1 bg-orange-50/50 dark:bg-stone-900">
       {/* Fixed Header — Signal: warm stone, orange accent */}
@@ -204,7 +207,7 @@ export default function JobDetailScreen() {
             </Text>
           </View>
         </View>
-        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mb-2" numberOfLines={1}>
+        <Text className="text-xl font-heading-bold text-stone-900 dark:text-stone-50 mb-2" numberOfLines={1}>
           {job.summary}
         </Text>
         <View className="flex-row items-center gap-2">
@@ -236,10 +239,10 @@ export default function JobDetailScreen() {
         className="px-4 pt-3 pb-8 bg-white dark:bg-stone-800"
         style={{
           borderTopWidth: 1,
-          borderTopColor: isDark ? "#44403C" : "#F5F0EB",
+          borderTopColor: colors.border,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowOpacity: 0.08,
           shadowRadius: 8,
           elevation: 8,
         }}
@@ -299,7 +302,7 @@ export default function JobDetailScreen() {
             accessibilityRole="button"
           >
             <View className="rounded-full items-center justify-center w-14 h-14 bg-stone-100 dark:bg-stone-700">
-              <Camera size={24} color={isDark ? "#A8A29E" : "#57534E"} />
+              <Camera size={24} color={colors.textSecondary} />
             </View>
             <Text className="text-xs font-bold text-stone-500 dark:text-stone-400">Photo</Text>
           </Pressable>
@@ -319,18 +322,77 @@ export default function JobDetailScreen() {
           )}
         </View>
 
-        {/* Primary action button */}
-        {primaryAction && (
+        {/* Photo gate inline indicator */}
+        {primaryAction?.status === "completed" && (() => {
+          const afterCount = job.photos.filter((p) => p.photoType === "after").length;
+          const needed = 3;
+          if (afterCount < needed) {
+            return (
+              <Pressable
+                onPress={() => setActiveTab("media")}
+                className="flex-row items-center justify-between rounded-xl px-4 py-3 mb-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Camera size={16} color="#d97706" />
+                  <Text className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                    {afterCount}/{needed} after photos required
+                  </Text>
+                </View>
+                <Text className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                  Tap to add
+                </Text>
+              </Pressable>
+            );
+          }
+          return null;
+        })()}
+
+        {/* Next Job prompt — shown after completing this job */}
+        {nextUpJob && (
           <Pressable
-            onPress={() => handleStatusChange(primaryAction.status)}
-            disabled={updateStatus.isPending}
-            className={`flex-row items-center justify-center rounded-xl active:opacity-90 ${primaryAction.color} py-5 min-h-[64px]`}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push(`/(tabs)/jobs/${nextUpJob.id}`);
+            }}
+            className="flex-row items-center justify-between rounded-xl px-4 py-3.5 mb-2 bg-orange-100 dark:bg-orange-900/40 border border-orange-300 dark:border-orange-800"
+            accessibilityLabel={`Go to next job: ${nextUpJob.summary}`}
+            accessibilityRole="button"
           >
-            <Text className="text-xl font-extrabold tracking-wide text-white">
-              {updateStatus.isPending ? "Updating..." : primaryAction.label}
-            </Text>
+            <View className="flex-1 mr-3">
+              <Text className="text-xs font-extrabold uppercase tracking-widest text-orange-600 dark:text-orange-400 mb-0.5">
+                Next Job
+              </Text>
+              <Text className="text-sm font-bold text-stone-900 dark:text-stone-50" numberOfLines={1}>
+                {nextUpJob.summary}
+              </Text>
+              {nextUpJob.scheduledStart && (
+                <Text className="text-xs font-semibold text-orange-600 dark:text-orange-400">
+                  {formatTimeRange(nextUpJob.scheduledStart, nextUpJob.scheduledEnd)}
+                </Text>
+              )}
+            </View>
+            <View className="bg-orange-600 dark:bg-orange-500 rounded-full p-2">
+              <ChevronRight size={18} color="#ffffff" />
+            </View>
           </Pressable>
         )}
+
+        {/* Primary action button */}
+        {primaryAction && (() => {
+          const isPhotoGated = primaryAction.status === "completed" &&
+            job.photos.filter((p) => p.photoType === "after").length < 3;
+          return (
+            <Pressable
+              onPress={() => handleStatusChange(primaryAction.status)}
+              disabled={updateStatus.isPending || isPhotoGated}
+              className={`flex-row items-center justify-center rounded-xl active:opacity-90 ${primaryAction.color} py-5 min-h-[64px] ${isPhotoGated ? "opacity-50" : ""}`}
+            >
+              <Text className="text-xl font-extrabold tracking-wide text-white">
+                {updateStatus.isPending ? "Updating..." : primaryAction.label}
+              </Text>
+            </Pressable>
+          );
+        })()}
       </View>
 
       {/* Create Invoice Sheet */}

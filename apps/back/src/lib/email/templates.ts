@@ -47,6 +47,8 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     "scheduledDate",
     "scheduledTime",
     "technicianName",
+    "technicianAvatarUrl",
+    "technicianBio",
     "companyName",
   ],
   job_dispatched: [
@@ -55,6 +57,8 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     "jobNumber",
     "jobSummary",
     "technicianName",
+    "technicianAvatarUrl",
+    "technicianBio",
     "companyName",
   ],
   tech_en_route: [
@@ -63,6 +67,8 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     "jobNumber",
     "jobSummary",
     "technicianName",
+    "technicianAvatarUrl",
+    "technicianBio",
     "trackingUrl",
     "companyName",
   ],
@@ -81,6 +87,8 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     "scheduledDate",
     "scheduledTime",
     "technicianName",
+    "technicianAvatarUrl",
+    "technicianBio",
     "companyName",
   ],
   custom: [
@@ -124,6 +132,17 @@ export const DEFAULT_TEMPLATES: Record<string, { subject: string; body: string }
     body: `<p>Hi {{customerFirstName}},</p>
 <p>A technician has been dispatched for job <strong>{{jobNumber}}</strong>.</p>
 <p><strong>Service:</strong> {{jobSummary}}</p>
+<table cellpadding="0" cellspacing="0" style="margin: 16px 0; background: #f8fafc; border-radius: 8px; padding: 16px; width: 100%;">
+  <tr>
+    <td style="width: 56px; vertical-align: top;">
+      <img src="{{technicianAvatarUrl}}" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" />
+    </td>
+    <td style="padding-left: 12px; vertical-align: middle;">
+      <p style="margin: 0; font-weight: 600; font-size: 15px;">{{technicianName}}</p>
+      <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">{{technicianBio}}</p>
+    </td>
+  </tr>
+</table>
 <p>We'll notify you when they're on their way.</p>
 <p>— {{companyName}}</p>`,
   },
@@ -132,6 +151,17 @@ export const DEFAULT_TEMPLATES: Record<string, { subject: string; body: string }
     body: `<p>Hi {{customerFirstName}},</p>
 <p>Great news! <strong>{{technicianName}}</strong> is on the way for job <strong>{{jobNumber}}</strong>.</p>
 <p><strong>Service:</strong> {{jobSummary}}</p>
+<table cellpadding="0" cellspacing="0" style="margin: 16px 0; background: #f8fafc; border-radius: 8px; padding: 16px; width: 100%;">
+  <tr>
+    <td style="width: 56px; vertical-align: top;">
+      <img src="{{technicianAvatarUrl}}" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" />
+    </td>
+    <td style="padding-left: 12px; vertical-align: middle;">
+      <p style="margin: 0; font-weight: 600; font-size: 15px;">{{technicianName}}</p>
+      <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">{{technicianBio}}</p>
+    </td>
+  </tr>
+</table>
 <p style="margin: 24px 0;"><a href="{{trackingUrl}}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Track Your Technician Live</a></p>
 <p>You can follow their progress in real time using the link above.</p>
 <p>— {{companyName}}</p>`,
