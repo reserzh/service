@@ -42,3 +42,6 @@ docker-compose.yml
 
 # pnpm store
 .pnpm-store
+
+# generated docs with potential secrets
+docs/internal-dev-guide.html
