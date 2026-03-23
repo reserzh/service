@@ -126,13 +126,13 @@ export function RecordPaymentSheet({ balanceDue, sheetRef, onSubmit }: RecordPay
                 }}
                 className={`px-3 py-2 rounded-lg border ${
                   selectedMethod === m.key
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-orange-500 bg-orange-50"
                     : "border-stone-200 bg-stone-50"
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    selectedMethod === m.key ? "text-blue-700" : "text-stone-600"
+                    selectedMethod === m.key ? "text-orange-700" : "text-stone-600"
                   }`}
                 >
                   {m.label}

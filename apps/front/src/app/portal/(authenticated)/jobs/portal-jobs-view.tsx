@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Briefcase } from "lucide-react";
 import { JOB_STATUS_LABELS } from "@fieldservice/api-types/constants";
 import type { JobStatus } from "@fieldservice/api-types/enums";
+import { EmptyState } from "@/components/portal/empty-state";
 
 const statusColors: Record<JobStatus, { bg: string; text: string }> = {
   new: { bg: "bg-gray-100", text: "text-gray-700" },
@@ -296,50 +298,83 @@ function ByPropertyView({ jobs }: { jobs: PortalJob[] }) {
   );
 }
 
+const STATUS_FILTER_OPTIONS = [
+  { value: "", label: "All Statuses" },
+  { value: "active", label: "Active" },
+  { value: "completed", label: "Completed" },
+  { value: "canceled", label: "Canceled" },
+];
+
 export function PortalJobsView({ jobs }: PortalJobsViewProps) {
   const [view, setView] = useState<"all" | "by-property">("all");
+  const [statusFilter, setStatusFilter] = useState("");
 
   // Determine if there are multiple properties to make the tab useful
   const propertyIds = new Set(jobs.map((j) => j.propertyId ?? "__none__"));
   const hasMultipleProperties = propertyIds.size > 1;
 
+  const filteredJobs = jobs.filter((job) => {
+    if (!statusFilter) return true;
+    if (statusFilter === "active") return ACTIVE_STATUSES.has(job.status) || job.status === "new";
+    return job.status === statusFilter;
+  });
+
   if (jobs.length === 0) {
-    return <p className="mt-6 text-gray-500">No jobs found.</p>;
+    return (
+      <EmptyState
+        icon={Briefcase}
+        title="No jobs yet"
+        description="Your jobs will appear here once they are scheduled."
+      />
+    );
   }
 
   return (
-    <div className="mt-6">
-      {hasMultipleProperties && (
-        <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1 w-fit">
-          <button
-            type="button"
-            onClick={() => setView("all")}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === "all"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            All Jobs
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("by-property")}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === "by-property"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            By Property
-          </button>
-        </div>
-      )}
+    <div>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        {hasMultipleProperties && (
+          <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+            <button
+              type="button"
+              onClick={() => setView("all")}
+              className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+                view === "all"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              All Jobs
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("by-property")}
+              className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+                view === "by-property"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              By Property
+            </button>
+          </div>
+        )}
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          {STATUS_FILTER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
 
-      {view === "all" ? (
-        <JobTable jobs={jobs} />
+      {filteredJobs.length === 0 ? (
+        <p className="py-8 text-center text-sm text-gray-500">No jobs match the selected filter.</p>
+      ) : view === "all" ? (
+        <JobTable jobs={filteredJobs} />
       ) : (
-        <ByPropertyView jobs={jobs} />
+        <ByPropertyView jobs={filteredJobs} />
       )}
     </div>
   );

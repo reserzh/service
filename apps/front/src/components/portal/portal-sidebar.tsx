@@ -10,6 +10,7 @@ import {
   ClipboardList,
   User,
   LogOut,
+  X,
 } from "lucide-react";
 import { createPortalBrowserClient } from "@/lib/portal-supabase-browser";
 
@@ -21,7 +22,12 @@ const navItems = [
   { label: "Agreements", href: "/portal/agreements", icon: ClipboardList },
 ];
 
-export function PortalSidebar() {
+interface PortalSidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function PortalSidebar({ open, onClose }: PortalSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -31,12 +37,21 @@ export function PortalSidebar() {
     router.push("/portal/login");
   }
 
-  return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-white">
-      <div className="border-b px-6 py-4">
+  const sidebarContent = (
+    <>
+      <div className="border-b px-6 py-4 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-900">
           Customer Portal
         </h1>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            aria-label="Close sidebar"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
@@ -46,6 +61,7 @@ export function PortalSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                 isActive
                   ? "bg-gray-100 font-medium text-gray-900"
@@ -62,6 +78,7 @@ export function PortalSidebar() {
       <div className="border-t px-3 py-4 space-y-1">
         <Link
           href="/portal/profile"
+          onClick={onClose}
           className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
             pathname === "/portal/profile"
               ? "bg-gray-100 font-medium text-gray-900"
@@ -79,6 +96,31 @@ export function PortalSidebar() {
           Logout
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex h-screen w-64 flex-col border-r bg-white">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile sidebar overlay */}
+      {open && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          {/* Sidebar panel */}
+          <aside className="relative flex h-full w-64 flex-col bg-white shadow-xl">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

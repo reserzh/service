@@ -1,28 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { showToast } from "@/lib/toast";
 import {
   changeJobStatusAction,
-  assignJobAction,
-  addJobNoteAction,
   deleteLineItemAction,
-  addChecklistItemAction,
-  toggleChecklistItemAction,
-  deleteChecklistItemAction,
 } from "@/actions/jobs";
 import { PageHeader } from "@/components/layout/page-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,82 +20,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  User,
-  Calendar,
-  Clock,
   ChevronDown,
   FileText,
   MessageSquare,
   Image as ImageIcon,
-  ArrowLeftRight,
   PenLine,
-  Trash2,
   Loader2,
   CheckSquare,
-  Square,
-  Plus,
-  X,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Hammer,
-  Timer,
 } from "lucide-react";
 import type { JobCostingResult } from "@/lib/services/job-costing";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AddLineItemForm } from "./add-line-item-form";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
-
-// ---- Haversine distance in feet ----
-
-function haversineDistanceFt(
-  lat1: number, lon1: number,
-  lat2: number, lon2: number
-): number {
-  const R = 20902231; // Earth radius in feet
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
+import { JobStatusBar } from "./job-status-bar";
+import { JobInfoCards } from "./job-info-cards";
+import { JobLineItemsTab } from "./job-line-items-tab";
+import { JobNotesTab } from "./job-notes-tab";
+import { JobChecklistTab } from "./job-checklist-tab";
+import { JobPhotosTab } from "./job-photos-tab";
+import { JobCostingCard } from "./job-costing-card";
 
 // ---- Status config ----
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  new: { label: "New", color: "bg-status-new" },
-  scheduled: { label: "Scheduled", color: "bg-status-scheduled" },
-  dispatched: { label: "Dispatched", color: "bg-status-dispatched" },
-  en_route: { label: "En Route", color: "bg-status-en-route" },
-  in_progress: { label: "In Progress", color: "bg-status-in-progress" },
-  completed: { label: "Completed", color: "bg-status-completed" },
-  canceled: { label: "Canceled", color: "bg-status-canceled" },
+const statusConfig: Record<string, { label: string }> = {
+  new: { label: "New" },
+  scheduled: { label: "Scheduled" },
+  dispatched: { label: "Dispatched" },
+  en_route: { label: "En Route" },
+  in_progress: { label: "In Progress" },
+  completed: { label: "Completed" },
+  canceled: { label: "Canceled" },
 };
-
-const statusSteps = ["new", "scheduled", "dispatched", "en_route", "in_progress", "completed"];
 
 const nextStatusMap: Record<string, { status: string; label: string } | null> = {
   new: { status: "scheduled", label: "Schedule" },
@@ -119,7 +62,7 @@ const nextStatusMap: Record<string, { status: string; label: string } | null> = 
 
 // ---- Types ----
 
-interface JobData {
+export interface JobData {
   id: string;
   jobNumber: string;
   status: string;
@@ -218,19 +161,11 @@ interface Props {
 export function JobDetailContent({ job, userRole, costing }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [noteText, setNoteText] = useState("");
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [newChecklistLabel, setNewChecklistLabel] = useState("");
-  const [showChecklistInput, setShowChecklistInput] = useState(false);
-  const [newItemGroupName, setNewItemGroupName] = useState("");
-  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
-  const [comparisonSlider, setComparisonSlider] = useState(50);
 
   const nextAction = nextStatusMap[job.status];
-  const currentStepIdx = statusSteps.indexOf(job.status);
+  const completedCount = job.checklist.filter((i) => i.completed).length;
 
   function handleStatusChange(newStatus: string) {
     startTransition(async () => {
@@ -242,23 +177,6 @@ export function JobDetailContent({ job, userRole, costing }: Props) {
         showToast.error("Status change failed", result.error);
       } else {
         showToast.success(`Job ${statusConfig[newStatus]?.label ?? newStatus}`, "Status updated successfully");
-        router.refresh();
-      }
-    });
-  }
-
-  function handleAddNote() {
-    if (!noteText.trim()) return;
-    startTransition(async () => {
-      const fd = new FormData();
-      fd.set("content", noteText);
-      fd.set("isInternal", "true");
-      const result = await addJobNoteAction(job.id, fd);
-      if (result.error) {
-        showToast.error("Action failed", result.error);
-      } else {
-        showToast.created("Note");
-        setNoteText("");
         router.refresh();
       }
     });
@@ -281,63 +199,6 @@ export function JobDetailContent({ job, userRole, costing }: Props) {
       setDeleteItemId(null);
     });
   }
-
-  function handleAddChecklistItem() {
-    if (!newChecklistLabel.trim()) return;
-    startTransition(async () => {
-      const fd = new FormData();
-      fd.set("label", newChecklistLabel.trim());
-      if (newItemGroupName.trim()) {
-        fd.set("groupName", newItemGroupName.trim());
-      }
-      const result = await addChecklistItemAction(job.id, fd);
-      if (result.error) {
-        showToast.error("Action failed", result.error);
-      } else {
-        showToast.created("Checklist item");
-        setNewChecklistLabel("");
-        setNewItemGroupName("");
-        setShowNewGroupInput(false);
-        setShowChecklistInput(false);
-        router.refresh();
-      }
-    });
-  }
-
-  function handleToggleChecklistItem(itemId: string, completed: boolean) {
-    startTransition(async () => {
-      const result = await toggleChecklistItemAction(job.id, itemId, completed);
-      if (result.error) {
-        showToast.error("Action failed", result.error);
-      } else {
-        router.refresh();
-      }
-    });
-  }
-
-  function handleDeleteChecklistItem(itemId: string) {
-    startTransition(async () => {
-      const result = await deleteChecklistItemAction(job.id, itemId);
-      if (result.error) {
-        showToast.error("Action failed", result.error);
-      } else {
-        showToast.deleted("Checklist item");
-        router.refresh();
-      }
-    });
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  function getPhotoUrl(storagePath: string) {
-    return `${supabaseUrl}/storage/v1/object/public/job-photos/${storagePath}`;
-  }
-
-  // Group photos by type
-  const beforePhotos = job.photos.filter((p) => p.photoType === "before");
-  const afterPhotos = job.photos.filter((p) => p.photoType === "after");
-  const generalPhotos = job.photos.filter((p) => p.photoType === "general" || !p.photoType);
-
-  const completedCount = job.checklist.filter((i) => i.completed).length;
 
   return (
     <div className="space-y-6">
@@ -390,154 +251,10 @@ export function JobDetailContent({ job, userRole, costing }: Props) {
       </div>
 
       {/* Status progress bar */}
-      {job.status !== "canceled" && <div className="flex items-center gap-1">
-        {statusSteps.map((step, idx) => {
-          const isComplete = idx < currentStepIdx;
-          const isCurrent = idx === currentStepIdx;
-          const stepSc = statusConfig[step];
-          return (
-            <div key={step} className="flex flex-1 flex-col items-center gap-1">
-              <div
-                className={`h-1.5 w-full rounded-full ${
-                  isComplete || isCurrent
-                    ? stepSc.color
-                    : "bg-muted"
-                }`}
-              />
-              <span
-                className={`text-[10px] ${
-                  isCurrent ? "font-semibold text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {stepSc.label}
-              </span>
-            </div>
-          );
-        })}
-      </div>}
+      <JobStatusBar status={job.status} />
 
       {/* Info cards row */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {/* Customer */}
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground mb-2">Customer</p>
-            <Link href={`/customers/${job.customer.id}`} className="font-medium hover:underline text-sm">
-              {job.customer.firstName} {job.customer.lastName}
-            </Link>
-            <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <Phone className="h-3 w-3" />
-                {job.customer.phone}
-              </div>
-              {job.customer.email && (
-                <div className="flex items-center gap-1.5">
-                  <Mail className="h-3 w-3" />
-                  {job.customer.email}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Property */}
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground mb-2">Service Location</p>
-            <div className="flex items-start gap-1.5 text-sm">
-              <MapPin className="mt-0.5 h-3 w-3 text-muted-foreground shrink-0" />
-              <div>
-                <p>{job.property.addressLine1}</p>
-                {job.property.addressLine2 && <p>{job.property.addressLine2}</p>}
-                <p className="text-muted-foreground">
-                  {job.property.city}, {job.property.state} {job.property.zip}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Geofence distance warning */}
-        {job.startLatitude && job.startLongitude && job.property.latitude && job.property.longitude && (() => {
-          const dist = haversineDistanceFt(
-            parseFloat(job.startLatitude), parseFloat(job.startLongitude),
-            parseFloat(job.property.latitude), parseFloat(job.property.longitude)
-          );
-          if (dist > 500) {
-            const miles = (dist / 5280).toFixed(1);
-            return (
-              <Card className="border-amber-300 bg-amber-50 dark:bg-amber-950/20">
-                <CardContent className="pt-4 pb-4">
-                  <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                    Job started {miles} mi from property
-                  </p>
-                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                    Technician was more than 500ft from the service location when they started this job.
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          }
-          return null;
-        })()}
-
-        {/* Schedule & Tech */}
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground mb-2">Schedule & Technician</p>
-            {job.scheduledStart ? (
-              <div className="flex items-center gap-1.5 text-sm mb-2">
-                <Calendar className="h-3 w-3 text-muted-foreground" />
-                {format(new Date(job.scheduledStart), "MMM d, yyyy 'at' h:mm a")}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground mb-2">Not scheduled</p>
-            )}
-            {job.assignedUser ? (
-              <div className="flex items-center gap-2 text-sm">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback
-                    className="text-[9px] text-white"
-                    style={{ backgroundColor: job.assignedUser.color }}
-                  >
-                    {job.assignedUser.firstName[0]}{job.assignedUser.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                {job.assignedUser.firstName} {job.assignedUser.lastName}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Unassigned</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Crew */}
-        {job.assignments.length > 0 && (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-xs text-muted-foreground mb-2">Crew</p>
-              <div className="space-y-2">
-                {job.assignments.map((a) => (
-                  <div key={a.id} className="flex items-center gap-2 text-sm">
-                    <Avatar className="h-5 w-5">
-                      <AvatarFallback
-                        className="text-[9px] text-white"
-                        style={{ backgroundColor: a.user.color }}
-                      >
-                        {a.user.firstName[0]}{a.user.lastName[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{a.user.firstName} {a.user.lastName}</span>
-                    <Badge variant={a.role === "lead" ? "default" : "secondary"} className="text-[10px] h-4">
-                      {a.role}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      <JobInfoCards job={job} />
 
       {/* Description */}
       {job.description && (
@@ -574,466 +291,20 @@ export function JobDetailContent({ job, userRole, costing }: Props) {
           </TabsTrigger>
         </TabsList>
 
-        {/* Line Items Tab */}
-        <TabsContent value="line-items" className="space-y-4">
-          {job.lineItems.length > 0 && (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="w-20 text-right">Qty</TableHead>
-                    <TableHead className="w-28 text-right">Unit Price</TableHead>
-                    <TableHead className="w-28 text-right">Total</TableHead>
-                    <TableHead className="w-10" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {job.lineItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <p className="text-sm">{item.description}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{item.type}</p>
-                      </TableCell>
-                      <TableCell className="text-right">{Number(item.quantity)}</TableCell>
-                      <TableCell className="text-right">${Number(item.unitPrice).toFixed(2)}</TableCell>
-                      <TableCell className="text-right font-medium">${Number(item.total).toFixed(2)}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => handleDeleteLineItem(item.id)}
-                          disabled={isPending}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-right font-medium">
-                      Total
-                    </TableCell>
-                    <TableCell className="text-right font-bold">
-                      ${job.totalAmount ? Number(job.totalAmount).toFixed(2) : "0.00"}
-                    </TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
-          )}
-
-          <AddLineItemForm jobId={job.id} />
+        <TabsContent value="line-items">
+          <JobLineItemsTab job={job} onDeleteItem={handleDeleteLineItem} isPending={isPending} />
         </TabsContent>
 
-        {/* Notes Tab */}
-        <TabsContent value="notes" className="space-y-4">
-          {/* Add note form */}
-          <Card>
-            <CardContent className="pt-4 space-y-3">
-              <Textarea
-                placeholder="Add a note..."
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                rows={2}
-              />
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  onClick={handleAddNote}
-                  disabled={isPending || !noteText.trim()}
-                >
-                  {isPending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                  Add Note
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {job.notes.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              No notes yet.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {job.notes.map((note) => (
-                <Card key={note.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-medium">
-                        {note.userFirstName} {note.userLastName}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(note.createdAt), "MMM d, yyyy 'at' h:mm a")}
-                      </span>
-                      {note.isInternal && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                          Internal
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+        <TabsContent value="checklist">
+          <JobChecklistTab job={job} />
         </TabsContent>
 
-        {/* Checklist Tab */}
-        <TabsContent value="checklist" className="space-y-4">
-          {job.checklist.length > 0 && (
-            <Card>
-              <CardContent className="pt-4">
-                {/* Overall progress bar */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all"
-                      style={{ width: `${job.checklist.length > 0 ? (completedCount / job.checklist.length) * 100 : 0}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {completedCount}/{job.checklist.length}
-                  </span>
-                </div>
-
-                {/* Grouped items */}
-                {(() => {
-                  // Group items by groupName, preserving groupSortOrder
-                  const groups: { name: string | null; order: number; items: typeof job.checklist }[] = [];
-                  const groupMap = new Map<string | null, typeof job.checklist>();
-                  const groupOrderMap = new Map<string | null, number>();
-
-                  for (const item of job.checklist) {
-                    const key = item.groupName;
-                    if (!groupMap.has(key)) {
-                      groupMap.set(key, []);
-                      groupOrderMap.set(key, item.groupSortOrder);
-                    }
-                    groupMap.get(key)!.push(item);
-                  }
-
-                  for (const [name, items] of groupMap.entries()) {
-                    groups.push({ name, order: groupOrderMap.get(name) ?? 0, items });
-                  }
-                  groups.sort((a, b) => a.order - b.order);
-
-                  const hasGroups = groups.some((g) => g.name !== null);
-
-                  return (
-                    <div className="space-y-4">
-                      {groups.map((group) => {
-                        const groupCompleted = group.items.filter((i) => i.completed).length;
-                        return (
-                          <div key={group.name ?? "__ungrouped"}>
-                            {(hasGroups) && (
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                  {group.name || "General"}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {groupCompleted}/{group.items.length}
-                                </span>
-                              </div>
-                            )}
-                            <div className="space-y-1">
-                              {group.items.map((item) => (
-                                <div key={item.id} className="flex items-center gap-3 group py-1.5">
-                                  <Checkbox
-                                    checked={item.completed}
-                                    onCheckedChange={(checked) =>
-                                      handleToggleChecklistItem(item.id, checked === true)
-                                    }
-                                    disabled={isPending}
-                                  />
-                                  <span
-                                    className={`flex-1 text-sm ${
-                                      item.completed ? "line-through text-muted-foreground" : ""
-                                    }`}
-                                  >
-                                    {item.label}
-                                  </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleDeleteChecklistItem(item.id)}
-                                    disabled={isPending}
-                                  >
-                                    <Trash2 className="h-3 w-3 text-muted-foreground" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Add item */}
-          {showChecklistInput ? (
-            <Card>
-              <CardContent className="pt-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={newChecklistLabel}
-                    onChange={(e) => setNewChecklistLabel(e.target.value)}
-                    placeholder="Enter checklist item..."
-                    className="flex-1"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleAddChecklistItem();
-                      if (e.key === "Escape") {
-                        setShowChecklistInput(false);
-                        setNewChecklistLabel("");
-                        setNewItemGroupName("");
-                        setShowNewGroupInput(false);
-                      }
-                    }}
-                    autoFocus
-                  />
-                  <Button
-                    size="sm"
-                    onClick={handleAddChecklistItem}
-                    disabled={isPending || !newChecklistLabel.trim()}
-                  >
-                    {isPending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                    Add
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setShowChecklistInput(false);
-                      setNewChecklistLabel("");
-                      setNewItemGroupName("");
-                      setShowNewGroupInput(false);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                {/* Group selector */}
-                {(() => {
-                  const existingGroups = [...new Set(job.checklist.map((i) => i.groupName).filter(Boolean))] as string[];
-                  if (existingGroups.length === 0 && !showNewGroupInput) {
-                    return (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-muted-foreground"
-                        onClick={() => setShowNewGroupInput(true)}
-                      >
-                        + Add to group
-                      </Button>
-                    );
-                  }
-                  return (
-                    <div className="flex items-center gap-2">
-                      {!showNewGroupInput && existingGroups.length > 0 ? (
-                        <Select
-                          value={newItemGroupName}
-                          onValueChange={(val) => {
-                            if (val === "__new__") {
-                              setShowNewGroupInput(true);
-                              setNewItemGroupName("");
-                            } else {
-                              setNewItemGroupName(val === "__none__" ? "" : val);
-                            }
-                          }}
-                        >
-                          <SelectTrigger className="w-48 h-8 text-xs">
-                            <SelectValue placeholder="No group" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__none__">No group</SelectItem>
-                            {existingGroups.map((g) => (
-                              <SelectItem key={g} value={g}>{g}</SelectItem>
-                            ))}
-                            <SelectItem value="__new__">New group...</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            value={newItemGroupName}
-                            onChange={(e) => setNewItemGroupName(e.target.value)}
-                            placeholder="Group name..."
-                            className="w-48 h-8 text-xs"
-                          />
-                          {existingGroups.length > 0 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs"
-                              onClick={() => {
-                                setShowNewGroupInput(false);
-                                setNewItemGroupName("");
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowChecklistInput(true)}
-            >
-              <Plus className="mr-1.5 h-3.5 w-3.5" />
-              Add Item
-            </Button>
-          )}
-
-          {job.checklist.length === 0 && !showChecklistInput && (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              No checklist items yet.
-            </p>
-          )}
+        <TabsContent value="notes">
+          <JobNotesTab job={job} />
         </TabsContent>
 
-        {/* Photos Tab */}
         <TabsContent value="photos">
-          {job.photos.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No photos yet. Photos can be added from the mobile app.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              {/* Comparison view */}
-              {beforePhotos.length > 0 && afterPhotos.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Button
-                      variant={showComparison ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowComparison(!showComparison)}
-                    >
-                      <ArrowLeftRight className="mr-1.5 h-3.5 w-3.5" />
-                      Compare
-                    </Button>
-                  </div>
-                  {showComparison && (
-                    <Card className="overflow-hidden mb-4">
-                      <CardContent className="p-0">
-                        <div
-                          className="relative w-full select-none"
-                          style={{ aspectRatio: "16/9" }}
-                        >
-                          {/* After (full) */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={getPhotoUrl(afterPhotos[0].storagePath)}
-                            alt="After"
-                            className="absolute inset-0 w-full h-full object-cover"
-                          />
-                          {/* Before (clipped) */}
-                          <div
-                            className="absolute inset-0 overflow-hidden"
-                            style={{ width: `${comparisonSlider}%` }}
-                          >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={getPhotoUrl(beforePhotos[0].storagePath)}
-                              alt="Before"
-                              className="absolute inset-0 w-full h-full object-cover"
-                              style={{ minWidth: "100%", width: `${10000 / comparisonSlider}%`, maxWidth: "none" }}
-                            />
-                          </div>
-                          {/* Divider line */}
-                          <div
-                            className="absolute top-0 bottom-0 w-0.5 bg-white shadow"
-                            style={{ left: `${comparisonSlider}%` }}
-                          />
-                          {/* Labels */}
-                          <div className="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-xs text-white font-medium">
-                            Before
-                          </div>
-                          <div className="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded text-xs text-white font-medium">
-                            After
-                          </div>
-                        </div>
-                        <div className="px-4 py-3">
-                          <input
-                            type="range"
-                            min={0}
-                            max={100}
-                            value={comparisonSlider}
-                            onChange={(e) => setComparisonSlider(Number(e.target.value))}
-                            className="w-full"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
-
-              {beforePhotos.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium mb-3">Before</h4>
-                  <PhotoSection photos={beforePhotos} getPhotoUrl={getPhotoUrl} onSelect={setSelectedPhoto} />
-                </div>
-              )}
-              {afterPhotos.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium mb-3">After</h4>
-                  <PhotoSection photos={afterPhotos} getPhotoUrl={getPhotoUrl} onSelect={setSelectedPhoto} />
-                </div>
-              )}
-              {generalPhotos.length > 0 && (
-                <div>
-                  {(beforePhotos.length > 0 || afterPhotos.length > 0) && (
-                    <h4 className="text-sm font-medium mb-3">General</h4>
-                  )}
-                  <PhotoSection photos={generalPhotos} getPhotoUrl={getPhotoUrl} onSelect={setSelectedPhoto} />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Lightbox modal */}
-          {selectedPhoto && (
-            <div
-              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-              onClick={() => setSelectedPhoto(null)}
-            >
-              <button
-                className="absolute top-4 right-4 text-white hover:text-white/80"
-                onClick={() => setSelectedPhoto(null)}
-              >
-                <X className="h-6 w-6" />
-              </button>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={selectedPhoto}
-                alt="Photo detail"
-                className="max-h-[90vh] max-w-[90vw] object-contain rounded"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-          )}
+          <JobPhotosTab job={job} />
         </TabsContent>
 
         {/* Signatures Tab */}
@@ -1131,214 +402,6 @@ export function JobDetailContent({ job, userRole, costing }: Props) {
         confirmLabel="Delete"
         onConfirm={confirmDeleteLineItem}
       />
-    </div>
-  );
-}
-
-// ---- Job Costing Card ----
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
-function JobCostingCard({ costing }: { costing: JobCostingResult }) {
-  const isProfit = costing.profitLoss >= 0;
-  const hasRevenue = costing.estimateBudget > 0;
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <DollarSign className="h-4 w-4" />
-          Job Costing
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Summary metrics */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Labor Cost */}
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Timer className="h-3.5 w-3.5" />
-              Labor Cost
-            </div>
-            <p className="mt-1 text-lg font-semibold">
-              {formatCurrency(costing.actualLaborCost)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {costing.actualLaborHours.toFixed(1)} hrs
-            </p>
-          </div>
-
-          {/* Material Cost */}
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Hammer className="h-3.5 w-3.5" />
-              Material Cost
-            </div>
-            <p className="mt-1 text-lg font-semibold">
-              {formatCurrency(costing.actualMaterialCost)}
-            </p>
-          </div>
-
-          {/* Revenue (Estimate Budget) */}
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <DollarSign className="h-3.5 w-3.5" />
-              Revenue
-            </div>
-            <p className="mt-1 text-lg font-semibold">
-              {formatCurrency(costing.estimateBudget)}
-            </p>
-          </div>
-
-          {/* Profit / Loss */}
-          <div className={`rounded-lg border p-3 ${isProfit ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950"}`}>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              {isProfit ? (
-                <TrendingUp className="h-3.5 w-3.5 text-green-600" />
-              ) : (
-                <TrendingDown className="h-3.5 w-3.5 text-red-600" />
-              )}
-              {isProfit ? "Profit" : "Loss"}
-            </div>
-            <p className={`mt-1 text-lg font-semibold ${isProfit ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
-              {formatCurrency(Math.abs(costing.profitLoss))}
-            </p>
-          </div>
-
-          {/* Margin % */}
-          <div className={`rounded-lg border p-3 ${isProfit ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950"}`}>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              {costing.profitMargin === 0 ? (
-                <Minus className="h-3.5 w-3.5" />
-              ) : isProfit ? (
-                <TrendingUp className="h-3.5 w-3.5 text-green-600" />
-              ) : (
-                <TrendingDown className="h-3.5 w-3.5 text-red-600" />
-              )}
-              Margin
-            </div>
-            <p className={`mt-1 text-lg font-semibold ${!hasRevenue ? "text-muted-foreground" : isProfit ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
-              {hasRevenue ? `${costing.profitMargin.toFixed(1)}%` : "N/A"}
-            </p>
-          </div>
-        </div>
-
-        {/* Budget usage bar */}
-        {hasRevenue && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Budget Used</span>
-              <span>{costing.budgetUsedPercent.toFixed(1)}%</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  costing.budgetUsedPercent > 100
-                    ? "bg-red-500"
-                    : costing.budgetUsedPercent > 80
-                    ? "bg-yellow-500"
-                    : "bg-green-500"
-                }`}
-                style={{ width: `${Math.min(costing.budgetUsedPercent, 100)}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Schedule info */}
-        {(costing.daysElapsed > 0 || costing.daysScheduled > 1) && (
-          <div className="flex gap-6 text-xs text-muted-foreground">
-            <span>Scheduled: {costing.daysScheduled} day{costing.daysScheduled !== 1 ? "s" : ""}</span>
-            {costing.daysElapsed > 0 && (
-              <span>Elapsed: {costing.daysElapsed} day{costing.daysElapsed !== 1 ? "s" : ""}</span>
-            )}
-          </div>
-        )}
-
-        {/* Daily Snapshots */}
-        {costing.snapshots.length > 0 && (
-          <div className="space-y-2">
-            <Separator />
-            <h4 className="text-sm font-medium">Daily Snapshots</h4>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Completion</TableHead>
-                  <TableHead className="text-right">Labor</TableHead>
-                  <TableHead className="text-right">Materials</TableHead>
-                  <TableHead>Notes</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {costing.snapshots.map((snap) => (
-                  <TableRow key={snap.date}>
-                    <TableCell className="text-sm">{snap.date}</TableCell>
-                    <TableCell>
-                      {snap.completionPercent != null ? (
-                        <Badge variant="outline">{snap.completionPercent}%</Badge>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right text-sm">
-                      {formatCurrency(snap.laborCost)}
-                    </TableCell>
-                    <TableCell className="text-right text-sm">
-                      {formatCurrency(snap.materialCost)}
-                    </TableCell>
-                    <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
-                      {snap.notes || "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// Photo grid section used within the Photos tab
-function PhotoSection({
-  photos,
-  getPhotoUrl,
-  onSelect,
-}: {
-  photos: { id: string; storagePath: string; caption: string | null; photoType: string; createdAt: Date }[];
-  getPhotoUrl: (path: string) => string;
-  onSelect: (url: string) => void;
-}) {
-  return (
-    <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {photos.map((photo) => (
-        <button
-          key={photo.id}
-          className="group relative rounded-lg overflow-hidden bg-muted aspect-square cursor-pointer border hover:ring-2 hover:ring-primary transition-all"
-          onClick={() => onSelect(getPhotoUrl(photo.storagePath))}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={getPhotoUrl(photo.storagePath)}
-            alt={photo.caption || "Job photo"}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-          {photo.caption && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-6">
-              <p className="text-[11px] text-white truncate">{photo.caption}</p>
-            </div>
-          )}
-        </button>
-      ))}
     </div>
   );
 }

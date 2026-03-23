@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldService Pro — Mobile Design Concepts</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #0F172A;
+    color: #E2E8F0;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .header h1 span {
+    color: #64748B;
+    font-weight: 400;
+  }
+
+  .header p {
+    font-size: 1.15rem;
+    color: #94A3B8;
+    margin-bottom: 8px;
+  }
+
+  .header .divider {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+    margin: 24px auto 0;
+    border-radius: 2px;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+    margin-bottom: 80px;
+  }
+
+  /* Card */
+  .card {
+    background: #1E293B;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid #334155;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+  }
+
+  .card-strip {
+    height: 6px;
+    width: 100%;
+  }
+
+  .card-body {
+    padding: 28px 24px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .card-number {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748B;
+  }
+
+  .swatches {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #334155;
+  }
+
+  .swatch.gradient {
+    background: linear-gradient(135deg, var(--sw-from), var(--sw-to));
+  }
+
+  .swatch.small {
+    width: 10px;
+    height: 10px;
+    border-width: 1px;
+    position: relative;
+    top: 0;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    width: fit-content;
+  }
+
+  .card-desc {
+    font-size: 0.92rem;
+    color: #94A3B8;
+    line-height: 1.55;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+
+  .card-traits {
+    font-size: 0.78rem;
+    color: #64748B;
+    padding-top: 14px;
+    border-top: 1px solid #334155;
+    letter-spacing: 0.01em;
+  }
+
+  /* Per-card accent colors */
+  .card-forge:hover { box-shadow: 0 12px 40px -8px rgba(220, 38, 38, 0.25); }
+  .card-forge .card-strip { background: linear-gradient(90deg, #0F172A, #DC2626); }
+  .card-forge .card-tag { background: rgba(220, 38, 38, 0.15); color: #FCA5A5; }
+
+  .card-signal:hover { box-shadow: 0 12px 40px -8px rgba(234, 88, 12, 0.25); }
+  .card-signal .card-strip { background: linear-gradient(90deg, #FFFBEB, #EA580C); }
+  .card-signal .card-tag { background: rgba(234, 88, 12, 0.15); color: #FDBA74; }
+
+  .card-terra:hover { box-shadow: 0 12px 40px -8px rgba(22, 101, 52, 0.3); }
+  .card-terra .card-strip { background: linear-gradient(90deg, #166534, #CA8A04); }
+  .card-terra .card-tag { background: rgba(22, 101, 52, 0.2); color: #86EFAC; }
+
+  .card-pulse:hover { box-shadow: 0 12px 40px -8px rgba(79, 70, 229, 0.3); }
+  .card-pulse .card-strip { background: linear-gradient(90deg, #4F46E5, #06B6D4); }
+  .card-pulse .card-tag { background: rgba(79, 70, 229, 0.15); color: #A5B4FC; }
+
+  .card-mono:hover { box-shadow: 0 12px 40px -8px rgba(37, 99, 235, 0.2); }
+  .card-mono .card-strip { background: linear-gradient(90deg, #000000, #1E293B); }
+  .card-mono .card-tag { background: rgba(37, 99, 235, 0.12); color: #93C5FD; }
+
+  /* Comparison Table */
+  .table-section {
+    margin-bottom: 80px;
+  }
+
+  .table-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .table-section .subtitle {
+    font-size: 0.95rem;
+    color: #64748B;
+    margin-bottom: 28px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid #334155;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 700px;
+  }
+
+  thead {
+    background: #1E293B;
+  }
+
+  thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #F8FAFC;
+    border-bottom: 2px solid #334155;
+    white-space: nowrap;
+  }
+
+  thead th:first-child {
+    color: #94A3B8;
+    font-weight: 500;
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    color: #CBD5E1;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: rgba(30, 41, 59, 0.5);
+  }
+
+  tbody td:first-child {
+    font-weight: 600;
+    color: #94A3B8;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Column accent strips on header */
+  .th-forge { border-top: 3px solid #DC2626; }
+  .th-signal { border-top: 3px solid #EA580C; }
+  .th-terra { border-top: 3px solid #166534; }
+  .th-pulse { border-top: 3px solid #4F46E5; }
+  .th-mono { border-top: 3px solid #2563EB; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid #1E293B;
+  }
+
+  .footer p {
+    color: #475569;
+    font-size: 0.88rem;
+    margin-bottom: 6px;
+  }
+
+  .footer .note {
+    font-size: 0.78rem;
+    color: #334155;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      padding: 40px 16px 60px;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+    }
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <h1>FieldService Pro <span>— Mobile Design Concepts</span></h1>
+    <p>5 visual directions for the mobile technician app</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- Card Grid -->
+  <div class="grid">
+
+    <!-- 1. Forge -->
+    <a href="design-1-forge.html" class="card card-forge">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-number">Concept 1</span>
+          <div class="swatches">
+            <span class="swatch" style="background: #0F172A;"></span>
+            <span class="swatch" style="background: #DC2626;"></span>
+          </div>
+        </div>
+        <div class="card-title">Forge</div>
+        <span class="card-tag">Industrial / Brutalist</span>
+        <p class="card-desc">Sharp corners, monospace headings, dense layout. Deep navy with red accents. Flat cards with left accent borders.</p>
+        <div class="card-traits">Sharp 4px corners &middot; Monospace type &middot; Dense &middot; Icon-only tab bar</div>
+      </div>
+    </a>
+
+    <!-- 2. Signal -->
+    <a href="design-2-signal.html" class="card card-signal">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-number">Concept 2</span>
+          <div class="swatches">
+            <span class="swatch" style="background: #FFFBEB; border-color: #94A3B8;"></span>
+            <span class="swatch" style="background: #EA580C;"></span>
+          </div>
+        </div>
+        <div class="card-title">Signal</div>
+        <span class="card-tag">High-Visibility Safety</span>
+        <p class="card-desc">Extra-bold typography, safety orange, oversized tap targets. Optimized for bright sunlight readability.</p>
+        <div class="card-traits">12px corners &middot; Extra-bold 800 &middot; Large targets &middot; Orange circle tabs</div>
+      </div>
+    </a>
+
+    <!-- 3. Terra -->
+    <a href="design-3-terra.html" class="card card-terra">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-number">Concept 3</span>
+          <div class="swatches">
+            <span class="swatch" style="background: #166534;"></span>
+            <span class="swatch" style="background: #CA8A04;"></span>
+          </div>
+        </div>
+        <div class="card-title">Terra</div>
+        <span class="card-tag">Natural / Grounded</span>
+        <p class="card-desc">Forest green with warm gold accents. Capsule buttons, floating tab bar, organic shapes. Premium earthy feel.</p>
+        <div class="card-traits">20px corners &middot; Capsule buttons &middot; Floating tab bar &middot; Warm shadows</div>
+      </div>
+    </a>
+
+    <!-- 4. Pulse -->
+    <a href="design-4-pulse.html" class="card card-pulse">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-number">Concept 4</span>
+          <div class="swatches">
+            <span class="swatch gradient" style="--sw-from: #4F46E5; --sw-to: #06B6D4;"></span>
+          </div>
+        </div>
+        <div class="card-title">Pulse</div>
+        <span class="card-tag">Dynamic / Energetic</span>
+        <p class="card-desc">Indigo-cyan gradients, glass-morphism in dark mode, progress rings and bars. Kinetic energy throughout.</p>
+        <div class="card-traits">16px corners &middot; Gradients &middot; Glass-morphism &middot; Frosted tab bar</div>
+      </div>
+    </a>
+
+    <!-- 5. Mono -->
+    <a href="design-5-mono.html" class="card card-mono">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-number">Concept 5</span>
+          <div class="swatches">
+            <span class="swatch" style="background: #000000;"></span>
+            <span class="swatch small" style="background: #2563EB;"></span>
+          </div>
+        </div>
+        <div class="card-title">Mono</div>
+        <span class="card-tag">Minimal Typographic</span>
+        <p class="card-desc">Near-monochrome Swiss design. No card chrome, text-only tab bar, strict typographic scale. Maximum restraint.</p>
+        <div class="card-traits">0px corners &middot; Light 300 headings &middot; No cards &middot; Text-only tabs</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Comparison Table -->
+  <section class="table-section">
+    <h2>Comparison</h2>
+    <p class="subtitle">How the five directions differ across key design dimensions</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Trait</th>
+            <th class="th-forge">Forge</th>
+            <th class="th-signal">Signal</th>
+            <th class="th-terra">Terra</th>
+            <th class="th-pulse">Pulse</th>
+            <th class="th-mono">Mono</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Corners</td>
+            <td>Sharp (4px)</td>
+            <td>Medium (12px)</td>
+            <td>Round (20px)</td>
+            <td>Round (16px)</td>
+            <td>None (0px)</td>
+          </tr>
+          <tr>
+            <td>Primary</td>
+            <td>Navy + red</td>
+            <td>Safety orange</td>
+            <td>Forest green</td>
+            <td>Indigo&#8594;cyan</td>
+            <td>Black + blue</td>
+          </tr>
+          <tr>
+            <td>Type Weight</td>
+            <td>Monospace</td>
+            <td>Extra-bold (800)</td>
+            <td>Warm rounded</td>
+            <td>Tight tracking</td>
+            <td>Light (300)</td>
+          </tr>
+          <tr>
+            <td>Cards</td>
+            <td>Flat, bordered</td>
+            <td>Top border, elevated</td>
+            <td>Borderless, shadow</td>
+            <td>Glass-morphism</td>
+            <td>No chrome</td>
+          </tr>
+          <tr>
+            <td>Tab Bar</td>
+            <td>Icon-only, dark</td>
+            <td>Orange circle active</td>
+            <td>Floating, dot</td>
+            <td>Frosted glass</td>
+            <td>Text-only</td>
+          </tr>
+          <tr>
+            <td>Density</td>
+            <td>Compact</td>
+            <td>Generous / large</td>
+            <td>Balanced</td>
+            <td>Progress-heavy</td>
+            <td>Spacious</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>FieldService Pro — Mobile Design Exploration</p>
+    <p class="note">Each design shows light + dark mode with 3 screens (Home, Job List, Job Detail)</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { requireCustomerAuth } from "@/lib/portal-auth";
 import { getPortalEstimates } from "@/lib/portal-queries";
 import { ESTIMATE_STATUS_LABELS } from "@fieldservice/api-types/constants";
+import { EmptyState } from "@/components/portal/empty-state";
 
 function statusColor(status: string): string {
   switch (status) {
@@ -40,61 +42,95 @@ export default async function PortalEstimatesPage() {
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Estimates</h1>
 
       {estimateList.length === 0 ? (
-        <p className="text-gray-500">No estimates found.</p>
+        <EmptyState
+          icon={FileText}
+          title="No estimates yet"
+          description="Your estimates will appear here once they are created."
+        />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Estimate Number
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Summary
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Total
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Valid Until
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {estimateList.map((est) => (
-                <tr key={est.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-sm">
-                    <Link
-                      href={`/portal/estimates/${est.id}`}
-                      className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      {est.estimateNumber}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
-                    {est.summary}
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(est.status)}`}
-                    >
-                      {ESTIMATE_STATUS_LABELS[est.status] ?? est.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 text-right font-medium">
-                    {formatCurrency(est.totalAmount)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {formatDate(est.validUntil)}
-                  </td>
+        <>
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-3">
+            {estimateList.map((est) => (
+              <Link
+                key={est.id}
+                href={`/portal/estimates/${est.id}`}
+                className="block rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-blue-600">{est.estimateNumber}</span>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(est.status)}`}
+                  >
+                    {ESTIMATE_STATUS_LABELS[est.status] ?? est.status}
+                  </span>
+                </div>
+                {est.summary && (
+                  <div className="text-sm text-gray-600 truncate mb-1">{est.summary}</div>
+                )}
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Valid until {formatDate(est.validUntil)}</span>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(est.totalAmount)}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Estimate Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Summary
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Valid Until
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {estimateList.map((est) => (
+                  <tr key={est.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-sm">
+                      <Link
+                        href={`/portal/estimates/${est.id}`}
+                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {est.estimateNumber}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
+                      {est.summary}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(est.status)}`}
+                      >
+                        {ESTIMATE_STATUS_LABELS[est.status] ?? est.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 text-right font-medium">
+                      {formatCurrency(est.totalAmount)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDate(est.validUntil)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireCustomerAuth } from "@/lib/portal-auth";
 import { getPortalDashboard } from "@/lib/portal-queries";
 
@@ -19,14 +20,14 @@ export default async function PortalDashboardPage() {
       </h1>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <Link href="/portal/jobs" className="rounded-lg border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
           <p className="text-3xl font-bold text-gray-900">
             {dashboard.jobCount}
           </p>
           <p className="mt-1 text-sm text-gray-500">Total Jobs</p>
-        </div>
+        </Link>
 
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <Link href="/portal/invoices" className="rounded-lg border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
           <p className="text-3xl font-bold text-gray-900">
             {dashboard.openInvoices.count}
           </p>
@@ -38,21 +39,21 @@ export default async function PortalDashboardPage() {
               </span>
             )}
           </p>
-        </div>
+        </Link>
 
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <Link href="/portal/estimates" className="rounded-lg border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
           <p className="text-3xl font-bold text-gray-900">
             {dashboard.pendingEstimates}
           </p>
           <p className="mt-1 text-sm text-gray-500">Pending Estimates</p>
-        </div>
+        </Link>
 
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <Link href="/portal/agreements" className="rounded-lg border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
           <p className="text-3xl font-bold text-gray-900">
             {dashboard.activeAgreements}
           </p>
           <p className="mt-1 text-sm text-gray-500">Active Agreements</p>
-        </div>
+        </Link>
       </div>
     </div>
   );

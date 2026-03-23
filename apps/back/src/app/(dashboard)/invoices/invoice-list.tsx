@@ -10,32 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { Search, Filter, Receipt, AlertTriangle, CalendarDays, Download } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Receipt, AlertTriangle } from "lucide-react";
 import { useCallback } from "react";
-import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { ListPagination } from "@/components/shared/list-pagination";
+import { ListToolbar, type FilterConfig } from "@/components/shared/list-toolbar";
 import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
-
-const statusLabels: Record<string, string> = {
-  draft: "Draft",
-  sent: "Sent",
-  viewed: "Viewed",
-  paid: "Paid",
-  partial: "Partial",
-  overdue: "Overdue",
-  void: "Void",
-};
 
 interface Invoice {
   id: string;
@@ -65,30 +46,26 @@ interface InvoiceListProps {
   dateTo?: string;
 }
 
-const allStatuses = ["draft", "sent", "viewed", "paid", "partial", "overdue", "void"];
+const invoiceFilters: FilterConfig[] = [
+  {
+    key: "status",
+    label: "Status",
+    multi: true,
+    options: [
+      { value: "draft", label: "Draft" },
+      { value: "sent", label: "Sent" },
+      { value: "viewed", label: "Viewed" },
+      { value: "paid", label: "Paid" },
+      { value: "partial", label: "Partial" },
+      { value: "overdue", label: "Overdue" },
+      { value: "void", label: "Void" },
+    ],
+  },
+];
 
 export function InvoiceList({ invoices, meta, searchQuery, statusFilter, dateFrom, dateTo }: InvoiceListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/invoices", searchQuery);
-
-  const activeStatuses = statusFilter ? statusFilter.split(",") : [];
-
-  const updateParams = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      for (const [key, value] of Object.entries(updates)) {
-        if (value) {
-          params.set(key, value);
-        } else {
-          params.delete(key);
-        }
-      }
-      params.delete("page");
-      router.push(`/invoices?${params.toString()}`);
-    },
-    [router, searchParams]
-  );
 
   const goToPage = useCallback(
     (page: number) => {
@@ -99,101 +76,20 @@ export function InvoiceList({ invoices, meta, searchQuery, statusFilter, dateFro
     [router, searchParams]
   );
 
-  function toggleStatus(status: string) {
-    const current = new Set(activeStatuses);
-    if (current.has(status)) {
-      current.delete(status);
-    } else {
-      current.add(status);
-    }
-    const value = current.size > 0 ? Array.from(current).join(",") : undefined;
-    updateParams({ status: value });
-  }
-
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search invoices..."
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="mr-2 h-3.5 w-3.5" />
-              Status
-              {activeStatuses.length > 0 && (
-                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-xs">
-                  {activeStatuses.length}
-                </Badge>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            {allStatuses.map((s) => (
-              <DropdownMenuCheckboxItem
-                key={s}
-                checked={activeStatuses.includes(s)}
-                onCheckedChange={() => toggleStatus(s)}
-              >
-                {statusLabels[s] ?? s}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <div className="hidden lg:flex items-center gap-2">
-          <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
-          <Input
-            type="date"
-            className="h-8 w-[140px]"
-            value={dateFrom ?? ""}
-            onChange={(e) => updateParams({ from: e.target.value || undefined })}
-            aria-label="From date"
-          />
-          <span className="text-xs text-muted-foreground">to</span>
-          <Input
-            type="date"
-            className="h-8 w-[140px]"
-            value={dateTo ?? ""}
-            onChange={(e) => updateParams({ to: e.target.value || undefined })}
-            aria-label="To date"
-          />
-        </div>
-
-        {(search || activeStatuses.length > 0 || dateFrom || dateTo) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              clearSearch();
-              router.push("/invoices");
-            }}
-          >
-            Clear
-          </Button>
-        )}
-
-        <div className="ml-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
-            <a href={`/api/v1/invoices/export?${searchParams.toString()}`} download>
-              <Download className="mr-2 h-3.5 w-3.5" />
-              Export
-            </a>
-          </Button>
-        </div>
-      </div>
+      <ListToolbar
+        basePath="/invoices"
+        searchPlaceholder="Search invoices..."
+        searchQuery={searchQuery}
+        filters={invoiceFilters}
+        activeFilters={{ status: statusFilter ?? "" }}
+        showDateRange
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        exportUrl="/api/v1/invoices/export"
+      />
 
       {/* Table */}
       <div className="rounded-md border">

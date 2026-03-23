@@ -63,7 +63,7 @@ export default function CustomerDetailScreen() {
           size="lg"
           color="#EA580C"
         />
-        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mt-3">
+        <Text className="text-xl font-heading-bold text-stone-900 dark:text-stone-50 mt-3">
           {formatCustomerName(customer)}
         </Text>
         {customer.companyName && (

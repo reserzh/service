@@ -63,7 +63,7 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
         <View className="flex-1 bg-black/50" />
         <View className="bg-white dark:bg-stone-800 rounded-t-3xl px-5 pt-6 pb-10">
           <View className="flex-row items-center justify-between mb-5">
-            <Text className="text-xl font-heading font-bold text-stone-900 dark:text-white">
+            <Text className="text-xl font-heading-bold text-stone-900 dark:text-white">
               End of Day Report
             </Text>
             <Pressable onPress={handleSkip} className="p-2" accessibilityLabel="Close">
@@ -137,7 +137,7 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
             <Pressable
               onPress={handleSubmit}
               disabled={submit.isPending}
-              className="bg-blue-600 rounded-2xl py-4 items-center active:bg-blue-700"
+              className="bg-orange-600 rounded-2xl py-4 items-center active:bg-orange-700"
               style={{ minHeight: 56 }}
             >
               <Text className="text-lg font-bold text-white">

@@ -19,10 +19,10 @@ export const Input = forwardRef<TextInput, InputProps>(
         <TextInput
           ref={ref}
           style={{ minHeight: 56 }}
-          className={`bg-white dark:bg-stone-800 border rounded-xl px-4 py-4 text-lg text-stone-900 dark:text-white ${
+          className={`bg-stone-50 dark:bg-stone-800 border rounded-xl px-4 py-4 text-lg text-stone-900 dark:text-white ${
             error
               ? "border-red-500"
-              : "border-stone-300 dark:border-stone-600 focus:border-blue-500"
+              : "border-stone-300 dark:border-stone-600 focus:border-orange-500"
           }`}
           placeholderTextColor="#A8A29E"
           {...props}

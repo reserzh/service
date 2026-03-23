@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design 5 — Mono | FieldService Pro Mobile</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #F0F0F0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    min-height: 100vh;
+    color: #000;
+  }
+
+  .page-title {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B7280;
+    margin-bottom: 6px;
+  }
+
+  .page-subtitle {
+    font-size: 28px;
+    font-weight: 300;
+    color: #000;
+    margin-bottom: 40px;
+    letter-spacing: -0.01em;
+  }
+
+  .phones-wrapper {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .phone-label {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    margin-bottom: 16px;
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 375px;
+    height: 812px;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone.light {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+  }
+
+  .phone.dark {
+    background: #000000;
+    border: 1px solid #374151;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 14px; font-weight: 600; }
+  .status-bar .icons { font-size: 12px; letter-spacing: 4px; }
+
+  .light .status-bar { color: #000; }
+  .dark .status-bar { color: #FFF; }
+
+  /* Screen tabs at top */
+  .screen-tabs {
+    display: flex;
+    gap: 0;
+    flex-shrink: 0;
+    padding: 0 24px;
+  }
+
+  .screen-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 0.15s;
+  }
+
+  .light .screen-tab {
+    color: #9CA3AF;
+    border-bottom: 1px solid #E5E7EB;
+  }
+  .light .screen-tab.active {
+    color: #000;
+    border-bottom: 1px solid #000;
+  }
+
+  .dark .screen-tab {
+    color: #6B7280;
+    border-bottom: 1px solid #1F2937;
+  }
+  .dark .screen-tab.active {
+    color: #FFF;
+    border-bottom: 1px solid #FFF;
+  }
+
+  /* Screen content area */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .screen-panel {
+    display: none;
+    padding: 24px;
+    height: 100%;
+  }
+
+  .screen-panel.active {
+    display: block;
+  }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-shrink: 0;
+    padding-bottom: 0;
+  }
+
+  .light .tab-bar {
+    border-top: 1px solid #E5E7EB;
+    background: #FFFFFF;
+  }
+
+  .dark .tab-bar {
+    border-top: 1px solid #1F2937;
+    background: #000000;
+  }
+
+  .tab-bar-item {
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    letter-spacing: 0.01em;
+  }
+
+  .light .tab-bar-item { color: #9CA3AF; }
+  .light .tab-bar-item.active {
+    color: #2563EB;
+    border-bottom: 1.5px solid #2563EB;
+  }
+
+  .dark .tab-bar-item { color: #6B7280; }
+  .dark .tab-bar-item.active {
+    color: #3B82F6;
+    border-bottom: 1.5px solid #3B82F6;
+  }
+
+  /* Home indicator */
+  .home-indicator {
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-indicator span {
+    width: 134px;
+    height: 4px;
+    display: block;
+  }
+  .light .home-indicator span { background: #000; }
+  .dark .home-indicator span { background: #FFF; }
+
+  /* Typography */
+  .t-h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.01em; }
+  .t-h2 { font-size: 20px; font-weight: 300; }
+  .t-body { font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .t-small { font-size: 12px; font-weight: 400; }
+  .t-label {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Rules */
+  .light .rule { border: none; border-top: 1px solid #E5E7EB; margin: 16px 0; }
+  .dark .rule { border: none; border-top: 1px solid #1F2937; margin: 16px 0; }
+
+  /* Colors */
+  .light .c-primary { color: #000000; }
+  .light .c-secondary { color: #6B7280; }
+  .light .c-accent { color: #2563EB; }
+
+  .dark .c-primary { color: #FFFFFF; }
+  .dark .c-secondary { color: #9CA3AF; }
+  .dark .c-accent { color: #3B82F6; }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .stat-item {
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .light .stat-divider { background: #E5E7EB; }
+  .dark .stat-divider { background: #1F2937; }
+
+  /* Job list item */
+  .job-item { padding: 12px 0; }
+  .job-item .job-id { font-size: 14px; font-weight: 400; }
+  .job-item .job-title { font-size: 16px; font-weight: 400; margin-top: 2px; }
+  .job-item .job-meta { font-size: 14px; margin-top: 2px; }
+  .job-item .job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  /* Status colors */
+  .light .s-scheduled { color: #2563EB; }
+  .light .s-in-progress { color: #000; font-weight: 600; }
+  .light .s-completed { color: #6B7280; }
+  .light .s-new { color: #2563EB; }
+
+  .dark .s-scheduled { color: #3B82F6; }
+  .dark .s-in-progress { color: #FFF; font-weight: 600; }
+  .dark .s-completed { color: #6B7280; }
+  .dark .s-new { color: #3B82F6; }
+
+  /* Detail sections */
+  .detail-section {
+    padding: 14px 0;
+  }
+
+  .detail-section .t-label {
+    margin-bottom: 6px;
+  }
+
+  .detail-section .t-body + .t-body {
+    margin-top: 1px;
+  }
+
+  /* Items table */
+  .items-table {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .items-table .item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+
+  .items-table .item-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0 0;
+    font-weight: 600;
+  }
+
+  .light .items-table .item-total { border-top: 1px solid #E5E7EB; }
+  .dark .items-table .item-total { border-top: 1px solid #1F2937; }
+
+  /* Action links */
+  .action-links {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+
+  .action-link {
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .light .action-links { border-top: 1px solid #E5E7EB; }
+  .dark .action-links { border-top: 1px solid #1F2937; }
+
+  /* Filter row */
+  .filter-row {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0 8px;
+    font-size: 14px;
+  }
+
+  .filter-item {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 0 2px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: inherit;
+  }
+
+  .light .filter-item { color: #6B7280; }
+  .light .filter-item.active {
+    color: #2563EB;
+    border-bottom: 1px solid #2563EB;
+  }
+
+  .dark .filter-item { color: #6B7280; }
+  .dark .filter-item.active {
+    color: #3B82F6;
+    border-bottom: 1px solid #3B82F6;
+  }
+
+  /* Activity line */
+  .activity-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  /* Back link */
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .back-arrow {
+    font-size: 20px;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  /* Scrollbar hide */
+  .screen-content::-webkit-scrollbar { display: none; }
+  .screen-content { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Design 5</div>
+<div class="page-subtitle">Mono</div>
+
+<div class="phones-wrapper">
+
+  <!-- ==================== LIGHT MODE ==================== -->
+  <div class="phone-column">
+    <div class="phone-label">Light</div>
+    <div class="phone light" id="phone-light">
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">&#9679; &#9679; &#9679;</span>
+      </div>
+
+      <!-- Screen tabs -->
+      <div class="screen-tabs">
+        <button class="screen-tab active" onclick="switchScreen('light','home',this)">Home</button>
+        <button class="screen-tab" onclick="switchScreen('light','jobs',this)">Job List</button>
+        <button class="screen-tab" onclick="switchScreen('light','detail',this)">Job Detail</button>
+      </div>
+
+      <!-- Screen content -->
+      <div class="screen-content">
+
+        <!-- HOME -->
+        <div class="screen-panel active" id="light-home">
+          <h1 class="t-h1 c-primary" style="margin-bottom:4px;">FieldService Pro</h1>
+          <hr class="rule">
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-number c-primary">5</div>
+              <div class="stat-label c-secondary">today</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-number c-primary">2</div>
+              <div class="stat-label c-secondary">active</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-number c-primary">8</div>
+              <div class="stat-label c-secondary">done</div>
+            </div>
+          </div>
+
+          <hr class="rule">
+
+          <div class="t-label c-secondary" style="margin-bottom:10px;">Next</div>
+          <div>
+            <div class="t-body c-secondary">#1047</div>
+            <div class="t-body c-primary" style="font-size:16px;">HVAC Maintenance</div>
+            <div class="t-body c-primary">Sarah Mitchell</div>
+            <div class="t-body c-secondary">123 Oak Street, Apt 4B</div>
+            <div class="t-body c-secondary">10:30 AM</div>
+            <div style="margin-top:6px;"><span class="t-body c-accent" style="cursor:pointer;">View</span></div>
+          </div>
+
+          <hr class="rule">
+
+          <div class="t-label c-secondary" style="margin-bottom:10px;">Recent</div>
+
+          <div class="activity-item">
+            <span class="t-body c-primary">#1045 completed</span>
+            <span class="t-body c-secondary">9:15 AM</span>
+          </div>
+          <div class="activity-item">
+            <span class="t-body c-primary">Invoice #2089 paid</span>
+            <span class="t-body c-secondary">8:45 AM</span>
+          </div>
+          <div class="activity-item">
+            <span class="t-body c-primary">#1048 assigned</span>
+            <span class="t-body c-secondary">8:30 AM</span>
+          </div>
+        </div>
+
+        <!-- JOBS -->
+        <div class="screen-panel" id="light-jobs">
+          <h1 class="t-h1 c-primary" style="margin-bottom:4px;">Jobs</h1>
+
+          <div class="filter-row">
+            <button class="filter-item active">All 12</button>
+            <button class="filter-item">Today 5</button>
+            <button class="filter-item">Week 8</button>
+          </div>
+
+          <hr class="rule" style="margin-top:8px;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1047</div>
+            <div class="job-title c-primary">HVAC Maintenance</div>
+            <div class="job-meta c-secondary">Sarah Mitchell &middot; 123 Oak St</div>
+            <div class="job-footer">
+              <span class="s-scheduled">Scheduled</span>
+              <span class="c-secondary t-body">10:30 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1046</div>
+            <div class="job-title c-primary">Plumbing Repair</div>
+            <div class="job-meta c-secondary">James Wilson &middot; 456 Elm Ave</div>
+            <div class="job-footer">
+              <span class="s-in-progress">In Progress</span>
+              <span class="c-secondary t-body">9:00 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1045</div>
+            <div class="job-title c-primary">Electrical Inspection</div>
+            <div class="job-meta c-secondary">Maria Garcia &middot; 789 Pine Rd</div>
+            <div class="job-footer">
+              <span class="s-completed">Completed</span>
+              <span class="c-secondary t-body">8:00 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1048</div>
+            <div class="job-title c-primary">AC Installation</div>
+            <div class="job-meta c-secondary">Robert Chen &middot; 321 Maple Dr</div>
+            <div class="job-footer">
+              <span class="s-new">New</span>
+              <span class="c-secondary t-body">1:00 PM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1044</div>
+            <div class="job-title c-primary">Furnace Repair</div>
+            <div class="job-meta c-secondary">Lisa Thompson &middot; 654 Cedar Ln</div>
+            <div class="job-footer">
+              <span class="s-completed">Completed</span>
+              <span class="c-secondary t-body">Yesterday</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB DETAIL -->
+        <div class="screen-panel" id="light-detail">
+          <div class="back-row">
+            <span class="back-arrow c-primary">&larr;</span>
+            <span class="t-body c-primary" style="font-size:16px;">#1047</span>
+          </div>
+
+          <div class="c-accent t-body" style="margin-bottom:4px;">Scheduled</div>
+
+          <hr class="rule">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Customer</div>
+            <div class="t-body c-primary">Sarah Mitchell</div>
+            <div class="t-body c-secondary">(555) 234-5678</div>
+            <div class="t-body c-secondary">sarah.mitchell@email.com</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Location</div>
+            <div class="t-body c-primary">123 Oak Street, Apt 4B</div>
+            <div class="t-body c-secondary">Springfield, IL 62701</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Service</div>
+            <div class="t-body c-primary">HVAC Maintenance</div>
+            <div class="t-body c-secondary">Today, 10:30 AM &ndash; 12:00 PM</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Notes</div>
+            <div class="t-body c-primary">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Items</div>
+            <div class="items-table" style="margin-top:6px;">
+              <div class="item-row">
+                <span class="c-primary">Filter replacement</span>
+                <span class="c-primary">$45.00</span>
+              </div>
+              <div class="item-row">
+                <span class="c-primary">Labor (1.5 hrs)</span>
+                <span class="c-primary">$127.50</span>
+              </div>
+              <div class="item-total">
+                <span class="c-primary">Total</span>
+                <span class="c-primary">$172.50</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-links">
+            <button class="action-link c-accent">Start Job</button>
+            <button class="action-link c-secondary">Call Customer</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom tab bar -->
+      <div class="tab-bar">
+        <button class="tab-bar-item active">Home</button>
+        <button class="tab-bar-item">Jobs</button>
+        <button class="tab-bar-item">Schedule</button>
+        <button class="tab-bar-item">More</button>
+      </div>
+
+      <div class="home-indicator"><span></span></div>
+    </div>
+  </div>
+
+  <!-- ==================== DARK MODE ==================== -->
+  <div class="phone-column">
+    <div class="phone-label">Dark</div>
+    <div class="phone dark" id="phone-dark">
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">&#9679; &#9679; &#9679;</span>
+      </div>
+
+      <!-- Screen tabs -->
+      <div class="screen-tabs">
+        <button class="screen-tab active" onclick="switchScreen('dark','home',this)">Home</button>
+        <button class="screen-tab" onclick="switchScreen('dark','jobs',this)">Job List</button>
+        <button class="screen-tab" onclick="switchScreen('dark','detail',this)">Job Detail</button>
+      </div>
+
+      <!-- Screen content -->
+      <div class="screen-content">
+
+        <!-- HOME -->
+        <div class="screen-panel active" id="dark-home">
+          <h1 class="t-h1 c-primary" style="margin-bottom:4px;">FieldService Pro</h1>
+          <hr class="rule">
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-number c-primary">5</div>
+              <div class="stat-label c-secondary">today</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-number c-primary">2</div>
+              <div class="stat-label c-secondary">active</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-number c-primary">8</div>
+              <div class="stat-label c-secondary">done</div>
+            </div>
+          </div>
+
+          <hr class="rule">
+
+          <div class="t-label c-secondary" style="margin-bottom:10px;">Next</div>
+          <div>
+            <div class="t-body c-secondary">#1047</div>
+            <div class="t-body c-primary" style="font-size:16px;">HVAC Maintenance</div>
+            <div class="t-body c-primary">Sarah Mitchell</div>
+            <div class="t-body c-secondary">123 Oak Street, Apt 4B</div>
+            <div class="t-body c-secondary">10:30 AM</div>
+            <div style="margin-top:6px;"><span class="t-body c-accent" style="cursor:pointer;">View</span></div>
+          </div>
+
+          <hr class="rule">
+
+          <div class="t-label c-secondary" style="margin-bottom:10px;">Recent</div>
+
+          <div class="activity-item">
+            <span class="t-body c-primary">#1045 completed</span>
+            <span class="t-body c-secondary">9:15 AM</span>
+          </div>
+          <div class="activity-item">
+            <span class="t-body c-primary">Invoice #2089 paid</span>
+            <span class="t-body c-secondary">8:45 AM</span>
+          </div>
+          <div class="activity-item">
+            <span class="t-body c-primary">#1048 assigned</span>
+            <span class="t-body c-secondary">8:30 AM</span>
+          </div>
+        </div>
+
+        <!-- JOBS -->
+        <div class="screen-panel" id="dark-jobs">
+          <h1 class="t-h1 c-primary" style="margin-bottom:4px;">Jobs</h1>
+
+          <div class="filter-row">
+            <button class="filter-item active">All 12</button>
+            <button class="filter-item">Today 5</button>
+            <button class="filter-item">Week 8</button>
+          </div>
+
+          <hr class="rule" style="margin-top:8px;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1047</div>
+            <div class="job-title c-primary">HVAC Maintenance</div>
+            <div class="job-meta c-secondary">Sarah Mitchell &middot; 123 Oak St</div>
+            <div class="job-footer">
+              <span class="s-scheduled">Scheduled</span>
+              <span class="c-secondary t-body">10:30 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1046</div>
+            <div class="job-title c-primary">Plumbing Repair</div>
+            <div class="job-meta c-secondary">James Wilson &middot; 456 Elm Ave</div>
+            <div class="job-footer">
+              <span class="s-in-progress">In Progress</span>
+              <span class="c-secondary t-body">9:00 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1045</div>
+            <div class="job-title c-primary">Electrical Inspection</div>
+            <div class="job-meta c-secondary">Maria Garcia &middot; 789 Pine Rd</div>
+            <div class="job-footer">
+              <span class="s-completed">Completed</span>
+              <span class="c-secondary t-body">8:00 AM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1048</div>
+            <div class="job-title c-primary">AC Installation</div>
+            <div class="job-meta c-secondary">Robert Chen &middot; 321 Maple Dr</div>
+            <div class="job-footer">
+              <span class="s-new">New</span>
+              <span class="c-secondary t-body">1:00 PM</span>
+            </div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="job-item">
+            <div class="job-id c-secondary">#1044</div>
+            <div class="job-title c-primary">Furnace Repair</div>
+            <div class="job-meta c-secondary">Lisa Thompson &middot; 654 Cedar Ln</div>
+            <div class="job-footer">
+              <span class="s-completed">Completed</span>
+              <span class="c-secondary t-body">Yesterday</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOB DETAIL -->
+        <div class="screen-panel" id="dark-detail">
+          <div class="back-row">
+            <span class="back-arrow c-primary">&larr;</span>
+            <span class="t-body c-primary" style="font-size:16px;">#1047</span>
+          </div>
+
+          <div class="c-accent t-body" style="margin-bottom:4px;">Scheduled</div>
+
+          <hr class="rule">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Customer</div>
+            <div class="t-body c-primary">Sarah Mitchell</div>
+            <div class="t-body c-secondary">(555) 234-5678</div>
+            <div class="t-body c-secondary">sarah.mitchell@email.com</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Location</div>
+            <div class="t-body c-primary">123 Oak Street, Apt 4B</div>
+            <div class="t-body c-secondary">Springfield, IL 62701</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Service</div>
+            <div class="t-body c-primary">HVAC Maintenance</div>
+            <div class="t-body c-secondary">Today, 10:30 AM &ndash; 12:00 PM</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Notes</div>
+            <div class="t-body c-primary">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+          </div>
+
+          <hr class="rule" style="margin:0;">
+
+          <div class="detail-section">
+            <div class="t-label c-secondary">Items</div>
+            <div class="items-table" style="margin-top:6px;">
+              <div class="item-row">
+                <span class="c-primary">Filter replacement</span>
+                <span class="c-primary">$45.00</span>
+              </div>
+              <div class="item-row">
+                <span class="c-primary">Labor (1.5 hrs)</span>
+                <span class="c-primary">$127.50</span>
+              </div>
+              <div class="item-total">
+                <span class="c-primary">Total</span>
+                <span class="c-primary">$172.50</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-links">
+            <button class="action-link c-accent">Start Job</button>
+            <button class="action-link c-secondary">Call Customer</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom tab bar -->
+      <div class="tab-bar">
+        <button class="tab-bar-item active">Home</button>
+        <button class="tab-bar-item">Jobs</button>
+        <button class="tab-bar-item">Schedule</button>
+        <button class="tab-bar-item">More</button>
+      </div>
+
+      <div class="home-indicator"><span></span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchScreen(mode, screen, tabEl) {
+  var phone = document.getElementById('phone-' + mode);
+
+  // Update screen tabs
+  var tabs = phone.querySelectorAll('.screen-tab');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  tabEl.classList.add('active');
+
+  // Update panels
+  var panels = phone.querySelectorAll('.screen-panel');
+  panels.forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById(mode + '-' + screen).classList.add('active');
+}
+</script>
+
+</body>
+</html>

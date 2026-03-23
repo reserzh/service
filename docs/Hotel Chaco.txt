@@ -1,0 +1,717 @@
+than I do but I know initially like what it is is scheduling. It ports calls in
+and it records them so we have we have that record of everything and then it's
+it's linking the scheduling on the back end to the technicians in the field so
+it's like call comes in we schedule it it sends them a notification you
+schedule an appointment for this date call this number if you want to change
+it then when the day before it alerts them hey you've got a reminder you got
+an appointment tomorrow and then when our technicians in the field on their
+phones or their tablets dispatch to it it sends a text to the to the
+homeowner and says your technicians on the way and then they click the link and
+it tracks where they're at based on GPS and it also sends them a photo and a
+description of the technician okay those are the main things on that side
+and then it's just you know just job tracking taking photos uploading it to
+that particular job and just that that in a nutshell is what we mostly use I
+mean there's some financing features that you barely get the kids on so
+that's really not used that much
+let's see what else
+like you like we haven't even dove into marketing there's a whole thing with
+marketing on that
+what else is there just integrations you know job types job you know how much it
+costs job costing type stuff but I mean like you said we only use about 30% of
+the whole system I just don't dive deeply into the other stuff if you were
+bigger maybe it would make sense there's more like inventory we don't even do
+inventory you know but that's a whole nother segment of it that tracks for
+you stuff that you buy stuff that gets sold stuff that you know but we only do
+a little bit of that we know we know what stuff is sold water heaters systems
+but you can break it down to like we have inventory at my shop and then people
+say hey I need five of these pieces of you know these fittings for plumbing and
+it tracks inventory in and out
+no just tracking it with purchase orders but what we buy for each job that gets
+uploaded to the job so we know we paid this this and that that went to that job
+and then if they go and they buy stock then it gets it gets input as that you
+know you know but as far as like us buying a bunch of stuff in bolt and then
+inventorying it out to each tech and oh you got three today and then putting that
+you know so there's stuff like that we don't even use so it's way bigger of a
+system that we even yeah and then and then also I know like you you sent out
+what you sent out as far as the AI goes with the landscape stuff and just kind
+of like if you had a landscape thing looking at both those systems I see a
+lot of crossover with them and then if we were to build like focus on that
+landscape specific would that be a good crossover and bridge over to replace
+service time as well or you know I'm saying like I think it could because
+service Titan can do plumbing HVAC electrical landscaping like you can you
+can use it for all those other things so like the one I sent you the mo flow one
+was like you know you know when AI was asking me you know how robust you know
+you want it to be simple you want to be able to click with one hand while you've
+got your your mower in the other hand and you're like taking a photo of the
+job that you just did or something it was like asking all that so that's a
+simpler thing but I think honestly for a lot of these like that would be like
+targeting smaller like not big scale landscape companies that would be the
+the guy that's mowing with two or three other guys and it's just simple you know
+real simple and that's that's 90% of the people that are out there doing that
+stuff is they've got mowers trimmers blowers it's them it's the owner that's
+out doing work too and so seems like that would would be I don't know I think
+that's an underserved market like the smaller smaller the smaller apps that
+it's it's less you know you get lost in and I don't want that I'm not gonna pay
+for that it's too much you know a service site and we tried to do it we
+tried to do it with our with our maintenance guys the learning curve is
+sharp yeah yes it's or I guess the other yeah it's it's not a short learning curve
+so not sharp it's takes a long one guy was able to figure out how to do the
+photos and upload them and put notes in and do this and it was like dude that's
+just like way too complicated for that you know so I think something more like you know what I
+what I sent you
+is better I think I think there's more it'd be more attractive especially if
+you went out and you had some pilot you'd like a pilot run on an app like
+that mm-hmm I can find ten people that okay downloads on your phone use it for
+a month for free give me your feedback on it how easy is it for you to utilize
+yeah where a service site you can do that but it's just way bigger way bigger
+of a thing than I think most companies I feel like service tightness for some
+where you have anywhere from 20 to 50 and above technicians in the field
+because it will it will track them all for you pull up on a screen and you can
+see where everybody's at otherwise it's like it's it's not gonna serve the
+smaller
+my opinion yeah now that's that that's what I that's what I saw too when I got
+into service tight and just kind of seen the how the level of the complexity of
+it and that's all I'm like there's no way like grants guys are using everything
+on this on this actual app right here speaking of apps how how well is are you
+utilizing a mobile app on the iPads are you just using yeah you are okay and
+is that how it tracks them is by the by the GPS of the phone okay so that phone
+is a link to service type the app the app is okay just whoever downloads that
+app and you have that app and you have a location tracking
+okay
+and there do you guy you don't get really kicked back from the guys on on
+that and then he said it it it it pings a customer whenever they get to the
+close to the actual residents house no actually when they when they leave from
+wherever they're at and they dispatch to head to the customer it'll say hey your
+technicians on the way click here to track them click on it they go oh there
+there are five blocks away which I don't know how many people use that I
+would but yeah I'm technology yeah right right yeah so yeah I don't know if this
+guy's texting me or not oh yeah you said you're texting you I was like I
+hadn't seen nothing yet right yeah there was just like you know and then you get
+like super base and linux systems and all that I'm like I don't have enough
+training in that
+but yeah there was did you look through that that I sent you guided yeah run in
+back end whatever all that but yeah it was it was interesting
+yeah so let me ask you this hey where you're at your kind you know what
+service time I like it we are we already came to the agreement that it's
+you're using probably about third anywhere between 20 30 percent of it of
+its ability now for you I know correct me if I'm wrong I know that time is
+obviously important to you being able to get quotes out different things like
+possibly AI type of stuff to be able to search you know in the system like hey
+you know how many jobs do we do this you know this last month you know what was
+our profit margin overall after it was all said and done different things like
+that where you have like an AI assistant within the system would that be would
+that be you know beneficial for you as far as AI assistant and then also quote
+to where we have like like a way to where you know someone just basically
+could shoot pictures and then it could it could kind of you know with rough
+dimensions they could just say all right it's a 10 by 15 you know and then they
+could actually put a request on and it'll actually shoot them like some sort
+like a proposal you know that way it opens up more more time for you like is
+that something that's beneficial or is that like I don't know I'm just trying
+to figure out like how could we how could we make it to where this system's
+like man this actually freed up more time for me like where some of your I'm
+assuming that your hangups are quotes but I'm not sure well I think on the
+landscaping and lawn maintenance side I think that's that would be awesome I
+think somebody could go out I mean and you could basically take photos and know
+hey we need all this trimmed we've got 1,200 square feet of grass that needs
+mowed aerated and fertilized that stuff you don't even have to go out and look at on the plumbing and
+HVAC side you would run into problems because they say oh my furnace isn't
+working it's 30 years old here's the model and you go about 10 things that
+go wrong on that so you don't know what it's gonna be but if somebody's like oh
+my grass is this much and they they can get on there and go how much is that so
+12 meter square feet will be 300 bucks to aerate fertilize and power it that
+you for sure on that but plumbing and HVAC it's it's just so difficult without
+looking at it in person it's hard to know what what you're what you're even
+getting into but landscaping and lawn care is very straightforward exclusions
+doesn't include sprinkler work doesn't include this it's just that you know so
+that's why I was like oh man I was I was leaning more towards that landscaping
+and lawn maintenance side because it does seem like it can be so much more
+integrated like that whereas like you can get numbers oh yeah you know it'll
+cost this much and you need to go out there you know how much does a yard this size and whatever average
+cost per month for maintenance oh it'd be 375 a month you know or 375 475 oh
+that's within reason and then if they go yeah we'd like to get you out here and
+formalize the vote for us then you go out and meet with them but it gets it gets the leads
+you know
+yeah plumbing's hard there's so many variables to it
+and HVAC too specifically
+half the time we get they go oh we've got a leak from a thing and you get out there something leaking from that
+it's from the other thing yeah yeah my furnace isn't working it's like it's not
+your furnace it's your thermostat you won't know that unless you're out there
+try to turn it on yeah yeah and that's like half the time so it's like you can't even yeah
+i'm gonna check on the food real quick yeah they're supposed to text you man
+dude he ain't texting dude he's probably trying to text 505 dude yeah
+the reality of it is though i think it again assuming you read it too there's a big difference
+between something that knows how to code and then actually putting a robust usable piece
+of software out and that's where my experience comes into play so thank goodness you know at
+least for the time being because at some point it's going to get so advanced i think that
+it will just do all the three right and it's such a button and so the the point is now to do this
+as much of this as we can while we can right
+yeah yeah i think scares me to be honest with you i'm trying to
+leverage it and ride the wave without getting pulverized by it yeah yeah it's crazy
+yeah that's wild
+yeah
+you're in a good industry yourself obviously this i mean till they have robot
+robot yeah like in our lifetime yeah right
+all right see i mean personally i i wouldn't know what to do if a robot showed up to my house
+to work on my you know my eight pack my plumbing and stuff like i'd be like but like now my like
+my son for sure or you know or like or like you know your your your son like they they don't want
+it they don't want public interaction they don't want like they're like the the less human
+interactions are better than for them like they're like you know stranger danger i'm like no dude like
+i think yeah it's good that you communicate yeah so i know i was i was tripping out when i went to
+san francisco there's all these these uh waymo cars driving around
+they're stopping and turning and picking people up and parking in the little areas that and there's
+no driver in there that people are sitting in the back seat being taken around by this autonomous
+vehicle that's freaky yeah and see alice was like i want to jump in there i want to ride in that
+like you know but for us it's like that's freaky because you have to trust in the way we program
+that thing it knows what it's doing yeah there wasn't a glitch or something that you run off the road
+which is also scary if somebody hacks that system or something
+you know that's what's also kind of creepy about it yeah it's a good thing we live in a
+world where nobody hacks each other i mean of course they do right yeah yeah that never happens
+someone's not going to do that yeah right cause chaos yeah there's no such thing it's
+of any system it's unhackable especially with ai helping you right yeah exactly
+okay
+that chicken is like super tender good i never have it's like crazy tender
+so yeah for now i'm just i'm enjoying it i'm gonna enjoy it as much as i can
+getting to the biggest thing i've i've loved about this job why i got into the first place
+was just that look on people's faces when they're like wow thank you you helped me
+save so much time right the thing that makes users so positive is if i save so much so much time
+that they don't have to pay someone else to do that so that i'm replacing jobs at some point
+that i don't like as much right right because that could be a thing suddenly this person's
+entire job was entering all these things in and now i've been in so you can snap a photo and
+just does it and maybe someone has to look over but maybe you don't have to pay that guy to do it
+you can pay some kid to do it right that's that's that's that's that's the crazy thought
+you know that certain jobs will absolutely although they're already being replaced yeah you know
+so
+or like what jobs are going to be available when my daughter hits the
+the marketplace right you know what is she going to be able to do right like work-wise
+i mean you think of like like lawyers for instance i mean
+and like dude that this thing could write a legal a legal document for you in no time
+like i wrote like a a rental like i was like i need a renter's agreement
+boom done i need this boom done like you know and just like i know what jobs what jobs are
+going to be available for my daughter when she's
+i think the trades are safe for a while but yeah yeah robots coming out scanning the furnace and
+going you've got three possible problems here but then you know it's got to go get a part
+it's got to go to supply house it's got to get them you know they're getting to the point where
+they've got they can probably put a computer inside a furnace i mean there's little like
+circuit boards and stuff already but yeah that could communicate but still you're still gonna
+have to have somebody come out with the part put it in yeah you know test it yeah
+but yeah all that all that office type work and like paralegals you're not going to need those
+very much at a certain point right yeah somebody to research and look up the the law and apply it
+to this like oh that's all going to be instantaneously figured out you know no
+it sucks these people spend years learning this thing and it kind of just it falls it just goes
+away overnight almost right feels like seemingly yeah what do they do and instead people talk about
+this the guys and i say this i'm using a i've been talking about at the top well we'll figure
+it out when people will be trained with something else but to what else will they be trained at
+some point if it does enough things yeah what else will there be you got to figure that out
+before it becomes a yeah yeah yeah but it's happening so fast there's no time to figure it
+out no time to pivot yeah and of course companies are going to be well i can save money so they're
+going to jump all over that yeah they're not going to take the time to think what kind of
+implications it's going to have on society as a whole or of course yeah they don't care yeah
+i understand even worse things like that you would have thought would have been untouchable
+creativity itself there it turns out they're really good at that right they can make images
+movies music kind of original but not really i mean it's all derivative in a sense but
+and it sounds almost imperceptible for something that's real what looks and it looks amazing
+yeah so where does that entire industry go you know we need this computer can just churn
+this stuff out for almost for nothing right no effort yeah
+they're gonna tell my kids i think right now i'm telling trades that's what i'm telling you
+although i'm pretty sure they're not right doesn't make any sense yeah i want to be a
+youtuber i mean sure you can give that a shot but it's not gonna last long term
+can you make that work exactly
+well they say for every five tradespeople exiting or retiring there's only two better places
+there you go
+so you own how many businesses three three three technically four but one's just a real estate
+holding company so i don't really make sure that but just file taxes so this this thing that we're
+talking about obviously this is helping you manage these things right is there anything that it
+doesn't do that you wish it would any points that you'd be like hey i wish it did this and
+that would really help
+think off the top of my head
+or things that you don't know you wish you had insight into because it we should attract that
+whatever that is yeah i mean i really wish there was something more for the landscape industry
+i think there is i think there's a void in that as far as the plumbing and a track like service
+type i think i think it checks most boxes it's just the price point and the robustness of it
+totally irrelevant for 60 of that program that i don't even need i don't even use so that's
+really draw back to that but yeah i don't know of an app that does a whole lot for landscape
+you know type work honestly there's some out there but you know just figuring out routes and stuff but
+like being able to go out do like a landscape remodel with some some kind of
+app or something that you can utilize that for i don't i don't know if any of that do that
+the way that i would want it so you say landscape remodel what are you what are you speaking on
+specifically like where you take a picture and you just kind of remodel your well if there could be
+like like when i researched some of those little app things i was messing around with yeah it was
+like when you go out and take a photo of the area and you go okay you measure it you go
+the paver area is 20 by 30 and you go okay ma'am it's 20 by 30 you can figure out price per square
+foot immediately and you can show them a photo immediately you know like it's linked to what's
+available on either home depot loads or you know whatever it can be linked to certain things
+you know online product you know well here's your options in this price category here's some options
+in that one here's like instantaneous and be able to do that you know you can kind of do that with
+plumbing you sell them a job right right there you go oh the parts 350 bucks then i know it's
+going to take me an hour to do this but when you're talking about like a full-blown install
+that might cost 20 grand i don't know that there's you know and then it stores all that
+and it kind of like you know you go out it automatically like starts the estimate for you
+and you just finalize it later that's right right now i'm just i'm taking photos there's apps you
+can take photos to store stuff your phone does that yeah but instead of using an app like notes
+and going oh it's a 20 by 20 favor you know and then you got to go well what paper do they want
+i gotta do that you know and have a bunch of that like the ones that you use most three or four
+options in that app that pops up and it goes here's good better best here's your options
+oh okay i don't have anything like that maybe there is something but yeah i've heard of it
+how much would they charge for it too there's something like that is the other thing
+yeah so would it be good to have have something like that to where it's uh let's just say
+business facing to where it's just strictly you or you and possibly the customer so where there's
+a customer facing one that they that the customers could utilize and then it syncs to you and then
+the customer is like you go back and forth with that customer i think both options okay both okay
+not either or but a bolt yeah okay i guess it's a
+it's a little bit trickier to convince someone to download an app just for you to come out and give
+them a quote yeah yeah that i that i think there might be a little bit of that'll be might be hard
+to do but also more like uh let's just say from uh from an app standpoint or the customer like
+not your particular your customer but let's just say it's a landscape app where they could just
+take pictures at their leisure they could you know do a couple different things i like this tree i
+like this this this they kind of put it together and then it has on there get a quote and then
+it would then go to you know let's just say the closest landscape company that that has a marketing
+a marketing plan with that particular app so like you let's just say you would be one of the
+landscape companies and then you would you would get that person to shoot you shoot you a quote
+or you get that quote request and then you would just respond to that quote well that's what i was
+thinking too and this kind of gets more broader and not just like me i would be a part of it but
+like yeah personal and a business side of it where people go oh i'm looking to do a i mean it could
+even be just like a home project oh i'm gonna i'm gonna i want to kind of redo the backyard i'm gonna
+get some new plants i'm gonna get this and that and they can have the app like you said that they
+said that they take a photo of it and there there's plant identification apps but if you
+can like consolidate some of those in the one where they take a photo and go oh yeah really
+or they see a photo online oh i love that or they're walking around the neighborhood
+oh i love that i want that in my yard instantly that's an autumn sage they go oh cool and it
+stores all this and then at some point they might get to where they go oh man i want to do a lot of
+things i don't think i can do all this find a pro oh and then it goes anybody with a google profile
+that's got so many stars that's got a certain minimum review rating populates here's the
+closest to you a geo tags it where you're at and where these are located at yeah stuff like that
+and then you have a personal and a business on the back end you use it for working on jobs they
+might use it as a homeowner thing where they go oh i want to do i want to do this job myself
+or it's like a it's just like trades in general they come in and they go oh yeah i want to i want
+to frame in or build a pergola and and they click what they want and you know eight by eights and
+it'll it'll show up and go oh your nearest home depot has all that so it integrates somehow to
+what home depot has you know and they go oh and then it lists all the measurements and all the
+things they need and they go out and shop for it and get it and stuff like that i don't know you
+know that could be you know that gets more broad like you would be developing it and then selling
+it and trying to get people to download it and pay ten dollars a month and whatever i don't know
+but or free download and then yeah and if they like it or like maybe the maybe the
+maybe the the personal side of it's free but then the business side you pay or something i don't
+even yeah well i think what i'm what i'm like because i i thought i thought of that like
+a while like a while back as far as that goes in in having it to where there's a cut like a
+you know just general public and then a business side and then basically like a marketing this one
+this one would have ads if you don't want the ads then you pay you you pay extra to not have the
+ads on it and then the ads are actually come from obviously advertisements and in marketing
+advertisement from from customers and then you also have the business aspect of it to where you
+could actually be a business that's tied to the app and then you could sign up and you could pay
+monthly to have ads run in there and then you could also be a a tier platform where you have
+like you know if you pay this much you get full exclusive rights to all this stuff you get all
+this and you get you know top tier as far as the ad goes so like if they're like find me a pro close
+to me they click on that you're you're at the top tier boom it pops up you as one of one of the
+highly highest recommended companies out there yeah so and it could be as easy as they go
+yeah find a pro and they go within five miles within 10 miles within 20 miles yeah oh okay
+you know because they might be in an area that's not a big city sure they have they can expand
+the search area and they do the top three or whatever that are rated and are part of the
+app or whatever it is and they can see like their google ratings or something and then they click
+one easy click it'll send a notification quote requested and all their info goes out yeah you
+know something as simple as like oh it's like four clicks to get a thing or two clicks you know and
+and just easy and just integrated like that so those are the things that i thought could solve
+problems for people and it would cover businesses but also link businesses and homeowners but hey if
+you're a homeowner that's diy that'll help you too yeah it'll interest you as well yeah and if
+you get into a project oh gosh i need help finishing this or something find a local pro
+that can come out and see if they can put you a quote on this and you could put in all the
+project information for them too already they go oh yeah so that doesn't just have to be landscaping
+either yeah that could be all kinds of different home services but i don't think you would want it
+to be bottom of the barrel like anybody can just sign up for the app but you have to have like a
+license if you have to have you know what i mean for sure yeah as far as as far as like if you're
+looking for a handyman thing probably not your app yeah if you want like legit companies to come and
+help you and in that way there's you know because i think what you would have is me personally who
+pays a hundred thousand dollars a year just in insurance i go i don't want to be competing with
+the bottom feeders that this doesn't do me good oh billy's handyman thing who's got no reviews
+he's going out to look at i'll never never win that bid so it has to be like you have to be rated
+you have to be licensed you have to however that integrates in there so it's not just anybody and
+everybody can go on there i can give you a bid you know yeah it's like i know what i'm doing no you
+need to be vetted for that industry however that would work because i know google does like
+google guaranteed or google whatever where they actually verify that you're
+licensed to do the work so even if they could integrate somehow with that oh i see yeah no
+that's good yeah it's like only the google guaranteed people show up or whatever maybe just
+google google profiles or it has or or one of the requirements is you have to have a google
+guaranteed review and you have to have over you know 100 100 reviews and at every tier you have
+it to where you have to have at least this many reviews in order to get into this tier and you
+have to show all these you know requirements so yeah so some some way to bet that yeah the ideal
+because then that's that's a reflection i use this app to to get my life of my landscape and
+it was a nightmare so i'm going to sue everyone yeah yeah and that that could that could easily
+you know be a downfall because it's not vetted but if we did our due diligence and vetted
+yeah yeah oh because i know like uber ran into some stuff like that they were letting drivers
+that were you know like taking advantage of drunk girls in their car in the uber taxi and crap like
+that they had to start getting stricter yeah you don't want that kind of stuff happening right
+yeah yeah show up at old lady's house and it's some ex-con that you know not to say that they're
+they're not they didn't do their time and be redeemed but yeah yeah it's like you know you
+need to you need to have legit people showing up not with a beat up you know ugly band that
+doesn't have a logo on it yes you can control it to a degree but you have to at least have that
+liability in there like oh you know we've vetted these companies to a certain point yeah yeah who
+they send out how do we know but sure sure but we vetted that company yeah after that it's on them
+if they send some weirdo out to look at it something happens that's on them yeah for sure
+i don't know i was thinking more like outside of just
+just me too i was thinking well that would help me but then like i don't know i think there's
+you could have an app that kind of encompasses both diy and linking with contractors and
+having legit ways because you know there's like the angie's list of the world and stuff like that
+you know i i don't think it would work but i was like man it'd be cool if there's a way like
+reverse angie's list or reverse google reviews where you could review a bad customer
+this address is a one star they ripped me off or they were a terrible customer right yeah yeah
+i think there's a reverse yeah yeah right yeah yeah let me let me tell you the truth about this
+review yeah yeah right right yeah i was like you should be able to review bad customers too
+right do you have service or something yeah then they like super hard to deal with it's a whole
+another liability thing but i always thought i wish i could do that say don't service or don't
+don't answer you know don't go to this house with this customer yeah or if you could just do the
+address just go do not service this address well i didn't say it was mr and mrs you know williams
+well we're the one that lives there and it's like no no this is just in general you might have sold
+it the previous customer might have been the one we don't want to work for yeah right yeah we've
+addressed yeah somebody got ripped off a contractor got ripped off this address
+this customer here at this address is a pain in the butt right right but i don't know if there's a
+way to do that and they were like because i i know that sometimes personalities could clash so you
+know what i mean because then you're like you're like that how could that person have this that a
+completely different experience from this person and sometimes it's the personalities clashing
+you know what i mean and you're like oh wow like you know and you could be the nicest
+ever and the person just had a bad day like and they're just like they just been a
+a jerk you know what i mean but i'm like what how would i be reviewed you know what i mean like
+under my house i'm like what do they how would they review me i'm like oh man i think they would
+probably say this this and this they'll probably be pretty right on that like you know
+yeah this is a black black black listed yeah yeah yeah anything i need someone to do
+that's when the lawsuits are coming yeah you put me on a list and nobody wants to come here and
+i'm gonna sue you for defamation and yeah but what's crazy is the businesses the consumer
+protection act the businesses can be falsely reviewed by anybody at any time oh yeah you can
+try to dispute it but there's no protection for us yeah yeah they can leave you a bad one star
+review which drops your reviews just because you didn't answer your phone when they wanted to
+answer your phone i called they didn't call me back the same day one star review like doesn't even
+have anything to do with our quality yeah i have a handful of those i'm like that's why i'm 4.7
+instead of you know 4.8 4.9 because people just i didn't answer the phone calling back when they
+wanted to it's kind of weird to leave a review for somebody you know like oh i but i couldn't
+get it removed nothing i could do about it anyway but yeah i don't know just those are my thoughts on
+kind of you know we could solve an issue but shoot we might be able to get
+10 000 subscribers at 10 bucks a month you know yeah take some money off of it too you know
+but solve an issue that you know you want it to be because there's a lot of apps out there you
+want it to be something that really really solves issues and under one simple quote unquote simple
+app yeah for both the homeowner and the customer and the business you know that people are like
+oh yeah you know there's there's three apps that do these things already but not all three of them
+do it in all one of that sort of thing so that would i think would be valuable for a lot of
+all over the place yeah any any city you go to that somebody's doing a lawn care business
+would be somebody that would be an option anybody that's ever done a diy at their house which is
+like 99 percent of people will be open to like oh yeah yeah that helps me a lot you know look up
+look up the name of this this plant and you know what kind of wood i need and you know what am i
+building and this is what you want to build it out of i mean you could get really layered into it
+what are you building i'm building a burglar okay you want treated you want at least a six by six
+posts these are our recommendations based on contractors that do this work you can give that
+information home as part of that app home depot has here you go file 10 day 62
+go your local home depot didn't get it and it's all right there for these people to have
+so i don't know i don't know what that would look like on an app type thing so for from a from a
+business perspective moving into that direction
+obviously would be beneficial for you to have some sort of an inventory
+not an inventory tracker but like all right we're going to build a for instance a pergola right here
+we need this this this and then it's like boom it's actually here we're going to go ahead and
+link that and place that order through home depot for you know eight six by sixes
+24 two by fours you know whatever you know and it just basically lays out the the inventory list
+and then you could submit it and then it goes off to home depot places the order and then they all
+they had to do is just go and and pick it up yeah i don't know i don't know how you would do that
+but um i know you could write fairly easy just link to the universal website that they have
+available for you to go on to right whereas if you ordered it you would have to integrate with
+and then that would oh how much are you going to pay us for that yeah yeah are you taking a cut
+from these orders are you this but if you just did oh whatever the whatever the link was however
+you've integrated it you know with just find you know if you do like a search
+you know like a google search oh six by six posts well it comes up home depot
+lowes your local supplier this how does it get you to that you know get you to that and not
+ordering through each of those but just pointing you to oh nico has it for 60 lows has those
+six by six posts for 58 and you know is local supplier racks has them for this
+you know maybe not specific to one but just kind of integrates a google search into the app or
+something where it's like you can you can pull it up like oh okay that's nearby geotag it there's
+your location or closest on people that has it in stock i don't know if you have to iterate more
+than that or not yeah because i know when i when i was helping you out i know
+some of the hurdles when i was out in the field was getting to a job site oh we don't have this
+home depot oh come back oh shoot we need to get this we don't have this tool go back to the
+shop get that and so you had a lot of a lot of like running to and fro and then you're like
+do the job like shouldn't have taken as long but because we had to do let's just say three three
+trips to home depot and then two trips back to the to the shop because someone forgot a you know
+this particular tool that takes care of this particular you know job
+i'm thinking what might be good is to possibly have like an equipment
+inventory to where it's like all these all these pieces of equipment are inventory
+this is the job it requires this piece of equipment this piece of equipment and it links those
+pieces of equipment to that actual job site and so they know before we even go out there these
+are the tools that are needed for this particular job site so no i think that's great like if you
+had a like if i if i open up that app in the morning and then i go okay there's jobs or like
+quotes or whatever it's like jobs that's what that's what we're doing today well what job are
+you doing pavers well if you have pavers you need base course you need compactor you need
+string line stakes mallet this that here's your list of tools anything you don't need you go no
+we need all that anything to add yeah we need this and it links to your workers and you go send it
+and it's got jimmy and jerry and joey on there they go these are all your stuff for the day
+if you don't need that because you already have it or you know we're not doing that on this
+particular favorite job but this is your basic set of tools you need on every single favorite
+job you need and then you can work back or add to it from there do an artificial turf
+well you need the turf but you need nails right yeah but sometimes they forget right no just kidding
+yeah yeah nails turf pressure finds compaction steaks five or six things that can guarantee the
+need yeah still relying on them to read it and actually be able to understand what they need but
+that would help so i mean yeah you could really you could really veer into a whole lot of different
+areas you could be estimating you know putting a quote together for somebody and having all that
+information saved and then when that job sells then you go okay mrs mccluskey's today and you go
+yeah this was it already says this is a based on the quote you have in here this is a turf
+gravel and then plants go yep and then go here's what you need for the gravel right fabric
+gravel staples okay yep cool cool and then you have it all in there for the job and then yeah
+that would that would be good that would help a lot
+yeah and those those are the type of things that like i want to like leave this meeting
+on for on your end with is what are some inefficiencies that like and what are the
+pain points that i that i have like oh this thing frustrates me if i could just you know
+this you know like it just this bottleneck's right here like it just like this guy you know
+i mean not that we're going to try to place this guy but like if we could
+replace this guy with ai so it just makes it a smoother process from here to here and then
+it goes to the bank yeah we might have to replace this guy yeah well you could i could get really
+get really deep into it you know oh you're getting gravel are you picking it up yourself
+yeah they need to check the battery on the dump trailer either check the tires on the dump trailer
+have like a list of things that the owner gets in there the manager gets there and then the morning
+you're doing a gravel job today from the moment you open this and say we're doing a gravel job
+are you taking gravel with you in a dump trailer yes okay is the dump trailer charged is the
+battery working these are all the checklists that and you said send that checklist to the guys
+and so that way there's like you guys got the got the list you need to add anything you send it it
+sends a message out to all the guys you need to check that the other thing to that would be at the
+end of the day you know as you're you say what is your typical day over with like 4 30 4 30
+automatically shows up when you open the app to clock out you clock in clock out thing too
+any any materials list that you need for tomorrow anything that you thought of
+oh yeah we need more of this and it notes it on that job with everybody
+like that yeah right we're gonna be yeah you know what are you what are you guys missing today
+or what's what's needed for tomorrow oh yeah we got a list of things to need
+because from the time they figured out in the middle of the day to the morning they forgot
+half of what they need already they don't write it down it should be easy to write it down yeah
+but it could just be like it's a it's a trigger trigger right when you clock out what did you
+need for tomorrow you know oh that's right yeah what do we need Billy oh we needed some more
+steaks and oh we're a little short on gravel so we needed a little bit more gravel how much we
+don't know but we need more gravel when boss man comes in and goes okay it looks like we need about
+two more tons boom and it just blows boom boom boom boom for efficiency that would be a big thing
+and that yeah that's that's that's what i like that's what i want this to be is like
+to where we could actually help you be help you and your guys be more efficient removing pain
+points removing things to where it's like i'm trying to have to tell you you know i mean those
+types of things because uh you know it's like i mean just get it you know and it's just like a
+lot of times the reason why they don't get it they don't just write it down you know i mean
+when they go home they do you know a couple a couple Budweiser's later and you know they're
+like well i don't remember yeah yeah what job are we doing tomorrow no i'm kidding are we back at that
+same job from yesterday yeah yeah yeah when they pull it up they go oh it doesn't matter how drunk
+they got oh yeah i forgot about that oh yeah boss we gotta get some the other thing too is
+you know when you first set up the app you know you could you could it could be a question do
+you want to put in all your your company company info your employees the rate of pay the cost of
+labor your cost of doing goods or cost of goods sold and then you can also say here's here's how
+long this job is going to take four days by day two you go are you are you you know if this could
+be like a manager thing are you are you where you need to be at you know here's what it's cost
+you so far based on clock and clock out of all your guys here's where you're at oh yeah we're
+pretty close oh god we're behind we got it like we got to stay late today because you don't think
+about that until the last day and you go oh or they turn in their time cards you run payroll and
+then you figure that out at the end and go oh man we lost you know 500 bucks because we didn't we
+didn't stay late that one day i thought we were on track we weren't on track so four days turned
+into five because we should have just stayed a little bit longer those last two days and
+tried to get it done whatever and then personally you know you know how much this job is costing
+at least on the labor side later you can go in and put how many tons of gravel or whatever or
+you can have that argument here's how much this particular gravel costs me right now
+and it goes we need eight tons here's your material cost
+you know and that could even link back to footloose or something you know stuff like that
+that would be that would be something to look at because i probably have pain points that
+probably gets a little bit to the leads but i'm like yeah no this needs to be more efficient
+yeah and if it yeah and if we not if when it gets more efficient
+you know and if there's anything else that pops up it's if we could eliminate pain points and
+make your your businesses run smoother and take more of your pain points and your bottlenecks
+off off the table to where it almost makes it from this point to this point
+it streamlines it it makes it easier that's and if it if it works for you
+i'm 100 to 10 positive it's going to work for the other guy for the masses for the general
+yeah other types of business yeah yeah yeah yeah and if it's easy enough for your guys
+i'm pretty sure it'd be easy enough for their guys right so yeah yeah you could even have
+little layered stuff in there that every three months it sends a notification have you done
+maintenance on your vehicles have you done maintenance on your trailers have you done this
+have you done that and just little little pop-ups that show up have you have you checked on this
+it's been you know three months since uh the beginning of the year have you have you checked
+trailers on this whatever probably a whole other app yeah there's i love it too man
+you just spend enough time with grant duty just like 10 10 apps later we're like
+this is how pq the brain work together like babe what do you want to do today
+we're gonna conquer the world yeah yeah this is gold i mean
+things that can be used for other people
+oh yeah you obviously can articulate it very well it's awesome yeah
+you know and then that not all links like you said with the consumer side customer side and
+they have they don't have to download the app but you know hey you know if you want to it's a free
+app you know if you want to have it that'll link everything that we're doing all the photos we're
+taking the progress we're making on your job and you can just look at it every day and you know
+we'll take photos at the end of every day and show you what we're doing not that you can't see it
+yeah but you know well i mean for for like let's just say there's a property management company
+that you're working with you know i mean he owns 15 properties and you're his landscape guy
+and you're doing you're doing a project for this you know property owner owns 15
+you know rental properties and you just trust you because you're you're showing them every day like
+hey dude this your five properties got service today oh man like this one's ready to go on the
+market like i'm ready to sell this one now or whatever you know what i mean yeah so well
+and our big our big pain point right now with with the maintenance side
+is ori our office ladies every day going in and typing up
+on a google docs well that's that's fine yeah she sent the google docs and then sent it to the guys
+but if that could all be uniform that everybody has the same information and so that way when mario
+is sick that day and billy has to fill in for mario on his route they go it's all in there dude
+what he did the day before what he did last week in that house all in there instead of being like
+oh here here take this and oh you need this sheet and oh i sent that to you and then they're like
+what they don't even know because it's too much moving parts and that's that's a big issue for us
+it's she'll spend 30 minutes writing everything up but she can only send it to one guy i mean she
+could send it to others but it's like it needs to be on something that everybody has that app
+that all the guys have so that way when she sends out she goes hey instead of a text message to
+everybody it's just in an app hey i got a photo an email from a customer i just sent it out to you
+guys she wants that trim or whatever you know that would make things a lot easier we tried that with
+service time it's too complicated it's not simple it's not simple not yeah that's the other thing
+yeah because we you notice it has to be easy and fast and simple yeah because these guys just they're
+young but they don't yeah barely pay attention to what you're telling them so let me let me let me
+actually this brain's racing and it's it's it's moving but so here's here's your location here's
+your guys are getting the location they're about to hit location they're you know a mile out or
+five miles out whatever a mile out or they're in the driveway it hits geofencing boom it tells them
+everything about that property and it just pops up on the on the app you know but he has to be
+dispatched en route because like the thing is you don't want to be driving by that property
+to go to this property and all of a sudden you get a geofence of this property thinking it's that
+property so obviously it has to be something where it's dispatched i left here i'm going to
+38 wildlife trail and now i'm at 38 wildlife trail boom it pings it i'm here now all of a sudden
+that whole job site comes back up it tells them everything that they already knew that they need
+it or it even tells them what they need before they leave this job site hey make sure you have
+this this this this before that job site i don't know i'm just you know well yeah they dispatch to
+it and then when they hit that that geofence or whatever then by the time they get out and
+okay and they open it up the app's already popped up the job okay we got a triple boost from the
+thing oh hey mr so-and-so okay so today here's what i got and it just it's not an extra click
+into a thing into a thing and they go i can't figure it out they just hit dispatch and when
+they arrive in the geofence the information is already about what that job is and then when
+they go start job and that'll close that out and then when they're when they get to the backyard
+they can just pull it out pop it open it's already photo click boom of before and after done move on
+and then dispatch to the next one so it's almost like a step process yeah easy easy like super easy
+you know yeah dummies dummy pre-fit yeah it's just you got to click this or back you know not oh
+there's four options i don't know which one i should use like no just yeah dispatch that's all
+you can do yeah exit out of the app that leaves you now you're not in the apps you gotta go back
+to the app and dispatch you know so yeah that would be nice so before they close out they
+before they start the job they take a picture they have to take pictures
+not necessarily start okay but but because usually we'll have gone out there before
+to do an estimate typically and take photos that would be the before yeah that'll go that'll link
+into mr podlogger's thing or whatever and then when they get out there they can't close that job
+out in the app without taking at least three after photos front back whatever whatever it's set up to
+then they go okay cool and then on the back end or he sees oh they're done oh it looks beautiful
+and that can even if the customer wants to have that they can they maybe not even maybe they don't
+have to have an app it could just be like a login link to our website that it all tracks to you know
+that it goes login with your last name and your your whatever and they can just go in and see it
+they don't have to download the app you just go online and like because i know there's i've seen
+stuff where you can do that i think actually service type does that like they don't have to
+have the app to see that but there's like a separate place that they can go into service type
+customer can log in and it'll pull up all of their receipts and all of their stuff that would be
+cool you know so they don't actually have to have the app yeah they just log into their own little
+thing through our website linked to the app that has all their info
+so that would be sweet would you would it be beneficial to have your actual website itself
+linked to like the app the back end the front end to where you could actually go to a dashboard
+and actually update like let's just say your actual customer facing website it actually has
+it to where you could actually update you could put text on there you can throw images on there
+but it's super user friendly for you so that you actually don't and then it also has a scheduler
+to where that scheduler goes right into scheduling you know and you could just also say hey i want
+to i want to be available monday from a from two to five that's it on monday for quotes that's it
+right thursday from seven a.m to two p.m that's it those are only days i'm quoting
+right and then it allows that to schedule you a quote i do yeah i think you should have
+customer facing abilities like that okay perfect but it has to be approved like okay when they oh
+your your request has been sent sends it to the office they go you know as long as everything's
+been uploaded and there's no scheduling conflicts prove it yep wednesday march 9th and whatever
+works and you send it and it'll notify them yep and they'll send it to their phone or something
+or whatever and then there'll be like a user back end that me or office can get into an update or
+add information to or whatever that's linked from the website to the app so that way whatever they
+do in the app gets automatically loaded to that customer yeah but we can go back in there in the
+back end and say oh yeah we need to we need to do this this or that add this to it or add more
+information to that customer or whatever okay yeah that would be cool so i want to make it
+i want to make it as as seamless and as efficient for you and for your for for you
+your your staff and make it make it to where it's easy where it's just it's it's dummy proof
+really and uh and and then also like you know if all these things can be married together as one
+it's less disconnected so it makes the process a lot smoother from start to finish so yeah and i
+guess you know i don't know how how you do it on the back end with like apps and stuff but it's
+like when you open the app you click landscape professional landscape maintenance profession
+or whatever and whichever one you click you know it'll go this way and this side of the app
+that'll have all the stuff for like estimating favors or whatever this side of the app that'll
+have all the stuff for install for maintenance and and mowing and this and that so i think that'll
+be easier landscape professional lawn maintenance professional
+homeowner or just we're just talking about roles yeah roles and then accessibility
+to this side or whatever they want so they don't even see that side they don't get lost in something
+they don't want to be in yeah depending on what they choose or they could do both you know like
+oh i do landscaping and or you need to you need to
+probably would need two licenses if you're going to do both so that way they don't combo you
+yeah two licenses one i would have one for landscaping and maintenance a lot of a lot of
+places do both that's the thing they have a landscape division and a maintenance division
+this is like the same company but separate almost yeah so then you have to like figure out how
+you have to separate licenses or something you know if you want both of those okay
+you have any other questions there's so much this is so cool though i mean it sounds like
+just to wrap up in my head the real big takeaways are you're asking yourself there's a lot of a lot
+of opportunity to make this thing the situation make it easier for you guys to do what they do
+any of us mistakes because they have these checklists of things that you clear
+there's a lot of opportunity that's really cool yeah that's really cool and i mean just like you
+were saying at the beginning we were thinking sort of saying it's just too much it's too much to get
+into certain features it's just complicated yeah it just it just seems like service time it started
+off as something possibly simple and then you know they got like they're like oh yeah we could build
+this out and then they got like way over here then there's like 50 million drop downs over here
+and then you're like how do i get back to this right i mean i'm wrong like we we're going over
+here but how do we make over here simple to where a user role is not 10 windows over and then three
+clicks down and then two two clicks over yeah and you're like oh i found it like here's the user
+roles man it took me like an hour to try to figure out where it was be the challenge yeah
+and that's where it's going to be tinkering with that going on it's too layered that's that's too
+many steps bingo whatever and cut this out or yeah that's that's just going to add a whole nother
+complication to it yeah yeah so and if we need to do like four or five different apps i mean
+you're right right right right yeah yeah
+no i'd like to do as much with one app as you can that can cover that yeah well i think i think
+it's just yeah you want to you want to do a diy or you want to be a pro you can utilize an app
+if that's possible yeah oh yeah i'm getting too convoluted
+but i think some of this yeah i guess some of it it does does it doesn't overlap
+and you said you said about the equipment i think that'd be a a great thing to also put in there
+i'm not because then you could inventory your equipment you could maintenance your equipment
+you could have a guy that just basically you know what i mean it's like hey this this ditch which
+has been out in the field it has not seen service for you know the past it was it was last service
+was at you know 250 hours and it's now at hours and so you know and i wonder if it could be like
+a thing but that's like a separate like like here's the main stuff and then once you get into it they
+go you know additional additional things is a little thing over here then it goes oh you want
+to put in equipment and if they want to do all that work they can if they don't they don't have
+to type of thing like if you want to go last service date you want to put all your equipment
+in you want to put all of your company you know job labor stuff in if you don't then just keep it
+simple you know but that could be like a separate you know here's the main thing but you can you
+could veer off if you want to but you don't have to to use this part of it yeah something like
+that where it's like oh i have to put all that crap never mind i don't want to put it all
+too much yeah i just want to yeah just kind of feel around see see how this works the interface
+has to be sounds like the big problem that they went into is because they're having to do one size
+fits all the interface is really cluttered and something there's a lot of has to be the interface
+has got to be real directed but that person who's logged in needs to see right knows otherwise
+they're gonna be like i don't know what to do yeah yeah yeah exactly so obviously there's a
+different layer of capability between the owner and the person that's out there breaking the
+leaves and stuff right he may not be able to manage all that and just you know figure it out
+yeah there's some real opportunity here i mean huge yeah obviously this is just a typical software
+engineer i mean service titan has got to to make them you know what the money they need
+kind of serves all these industries but the results of that it had to make this app
+it's hard to focus in on one thing that guy is using it for this one purpose hard to do both
+this is really good well i think we just yeah i think even just starting with the with the outdoor
+landscape and maintenance stuff yeah and then down the road if it turns it like people love this app
+there could be a spinoff for like construction or something i don't know you know but like i think
+there's so much of that you know because it's weird like people i mean you all probably do some
+element of yard work ever have at some point in the house or whatever it's like but but do you
+really like to do you want to it's like well yeah probably 95 percent of people do have done
+something in their yard at some point that they might have a purpose for so it's like that but
+but not a not a lot of people are going to like try to take on like building something attached
+to their house or whatever so but i think the landscaping and like plants and different things
+like that it like really fits abroad yeah then you start to get into niche stuff like oh i'm
+going to try to remodel my bathroom and this and that it's like yeah that's that gets a little bit
+overly complicated but yeah so i think the landscaping field landscaping and maintenance
+of properties could fit a homeowner and a professional and kind of just be cohesive in
+that sense you know and not get too convoluted on different things at least my opinion yeah
+because yeah i mean most of the customers we work for most of them not all of them but most of our
+maintenance customers they're out there in the yard with us when we're out there they're like oh
+yeah i just like to put around and pick up a little this and oh what do you guys think of that
+like they're like they're involved in the yard too and they do a little bit of their own stuff
+and they have us come out and do the main stuff so there's like a there's like a
+correlation right there a lot of our customers they like to like be out in the yard too
+you know so cool well i want to respect your time i know i know that this has been beneficial
+fruitful and definitely what you've already sent out prior to this meeting has been beneficial
+fruitful and i'm excited to see and get the drawing board and you know what it looks like
+and how it's going to come about and just you know next time we meet up have it have you you
+know when you go we probably here we can do it on my laptop or you know meet somewhere and just
+look at the functionality of it you know i think the first thing is build build the actual
+product i don't know if we'll have the full app but i mean we might be able to run the
+app not on the app store but for sure like the yeah the desktop version to where you know hey
+this is kind of the look and flow of it what you know what what it's looking like the capabilities
+of it you know and obviously it's not it's not something that's actually live it's on a
+server right now until we're ready to roll but i think you know yeah i think we put on the calendar
+and you know maybe a couple of a couple of weeks from now just you know we'll get back with you
+and just kind of see what see what we got and i sent you that both yeah yeah yeah and i forwarded
+it to him i forwarded it to him too yeah so he's been yeah i think it had a lot of what we talked
+about and then there's some other kind of nuanced things that yeah we discussed now that can be
+brought into that too but it seemed to cover a lot on that that's like oh this is a great
+starting point i think for some of that yeah and then if there's anything that pops up
+do a quick you know voice memo or whatever shoot it off to me oh rick dude yesterday
+had the biggest bottleneck of you know of the week and if we could encompass this
+this shoot stuff out to us you know what i mean the worst you're gonna get is a no
+that's the worst you know what i mean the more than likely we're gonna be like okay i hear you
+let's see what we can do you know yeah and same same with you if you're looking into it like i
+know he said something about this but i don't is this what he was talking about and you know
+i can kind of explain a little bit more about what what that is okay
+i'm good you good thanks yeah okay thanks for lunch

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireCustomerAuth } from "@/lib/portal-auth";
 import { getPortalInvoice } from "@/lib/portal-queries";
 import { INVOICE_STATUS_LABELS } from "@fieldservice/api-types/constants";
+import { PaymentConfirmation } from "./payment-confirmation";
 
 function statusColor(status: string): string {
   switch (status) {
@@ -87,12 +88,12 @@ export default async function PortalInvoiceDetailPage({
             {INVOICE_STATUS_LABELS[invoice.status] ?? invoice.status}
           </span>
           {showPayButton && (
-            <a
-              href={`/api/portal/invoices/${invoice.id}/checkout`}
-              className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-            >
-              Pay Now
-            </a>
+            <PaymentConfirmation
+              invoiceId={invoice.id}
+              invoiceNumber={invoice.invoiceNumber}
+              balanceDue={formatCurrency(invoice.balanceDue)}
+              dueDate={formatDate(invoice.dueDate)}
+            />
           )}
         </div>
       </div>

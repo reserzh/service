@@ -10,31 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { Search, Filter, FileText, Download } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { FileText } from "lucide-react";
 import { useCallback } from "react";
-import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { ListPagination } from "@/components/shared/list-pagination";
+import { ListToolbar, type FilterConfig } from "@/components/shared/list-toolbar";
 import { EmptyState } from "@/components/shared/empty-state";
 import { format } from "date-fns";
-
-const statusLabels: Record<string, string> = {
-  draft: "Draft",
-  sent: "Sent",
-  viewed: "Viewed",
-  approved: "Approved",
-  declined: "Declined",
-  expired: "Expired",
-};
 
 interface Estimate {
   id: string;
@@ -59,30 +41,25 @@ interface EstimateListProps {
   statusFilter?: string;
 }
 
-const allStatuses = ["draft", "sent", "viewed", "approved", "declined", "expired"];
+const estimateFilters: FilterConfig[] = [
+  {
+    key: "status",
+    label: "Status",
+    multi: true,
+    options: [
+      { value: "draft", label: "Draft" },
+      { value: "sent", label: "Sent" },
+      { value: "viewed", label: "Viewed" },
+      { value: "approved", label: "Approved" },
+      { value: "declined", label: "Declined" },
+      { value: "expired", label: "Expired" },
+    ],
+  },
+];
 
 export function EstimateList({ estimates, meta, searchQuery, statusFilter }: EstimateListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { search, handleChange: handleSearchChange, clearSearch } = useDebouncedSearch("/estimates", searchQuery);
-
-  const activeStatuses = statusFilter ? statusFilter.split(",") : [];
-
-  const updateParams = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      for (const [key, value] of Object.entries(updates)) {
-        if (value) {
-          params.set(key, value);
-        } else {
-          params.delete(key);
-        }
-      }
-      params.delete("page");
-      router.push(`/estimates?${params.toString()}`);
-    },
-    [router, searchParams]
-  );
 
   const goToPage = useCallback(
     (page: number) => {
@@ -93,80 +70,17 @@ export function EstimateList({ estimates, meta, searchQuery, statusFilter }: Est
     [router, searchParams]
   );
 
-  function toggleStatus(status: string) {
-    const current = new Set(activeStatuses);
-    if (current.has(status)) {
-      current.delete(status);
-    } else {
-      current.add(status);
-    }
-    const value = current.size > 0 ? Array.from(current).join(",") : undefined;
-    updateParams({ status: value });
-  }
-
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search estimates..."
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="mr-2 h-3.5 w-3.5" />
-              Status
-              {activeStatuses.length > 0 && (
-                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-xs">
-                  {activeStatuses.length}
-                </Badge>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            {allStatuses.map((s) => (
-              <DropdownMenuCheckboxItem
-                key={s}
-                checked={activeStatuses.includes(s)}
-                onCheckedChange={() => toggleStatus(s)}
-              >
-                {statusLabels[s] ?? s}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {(search || activeStatuses.length > 0) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              clearSearch();
-              if (activeStatuses.length > 0) {
-                router.push("/estimates");
-              }
-            }}
-          >
-            Clear
-          </Button>
-        )}
-
-        <div className="ml-auto">
-          <Button variant="outline" size="sm" asChild>
-            <a href={`/api/v1/estimates/export?${searchParams.toString()}`} download>
-              <Download className="mr-2 h-3.5 w-3.5" />
-              Export
-            </a>
-          </Button>
-        </div>
-      </div>
+      <ListToolbar
+        basePath="/estimates"
+        searchPlaceholder="Search estimates..."
+        searchQuery={searchQuery}
+        filters={estimateFilters}
+        activeFilters={{ status: statusFilter ?? "" }}
+        exportUrl="/api/v1/estimates/export"
+      />
 
       {/* Table */}
       <div className="rounded-md border">

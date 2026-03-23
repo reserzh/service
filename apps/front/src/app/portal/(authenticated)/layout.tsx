@@ -1,5 +1,5 @@
 import { requireCustomerAuth } from "@/lib/portal-auth";
-import { PortalSidebar } from "@/components/portal/portal-sidebar";
+import { PortalShell } from "@/components/portal/portal-shell";
 
 export default async function AuthenticatedPortalLayout({
   children,
@@ -8,12 +8,5 @@ export default async function AuthenticatedPortalLayout({
 }) {
   await requireCustomerAuth();
 
-  return (
-    <div className="flex h-screen">
-      <PortalSidebar />
-      <main className="flex-1 overflow-auto p-6">
-        {children}
-      </main>
-    </div>
-  );
+  return <PortalShell>{children}</PortalShell>;
 }

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldService Pro — Modern Field Service Management</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1e293b;
+    --navy-light: #334155;
+    --orange: #f97316;
+    --orange-dark: #ea580c;
+    --blue: #3b82f6;
+    --slate: #64748b;
+    --light: #f8fafc;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,.08), 0 4px 10px rgba(0,0,0,.04);
+    --shadow-xl: 0 20px 50px rgba(0,0,0,.1), 0 8px 20px rgba(0,0,0,.06);
+    --radius: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--navy);
+    line-height: 1.6;
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #0f172a 100%);
+    color: var(--white);
+    padding: 80px 40px 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 140%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(249,115,22,.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(59,130,246,.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(249,115,22,.15);
+    color: var(--orange);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--orange); }
+  .hero p {
+    font-size: 20px;
+    color: #94a3b8;
+    max-width: 640px;
+    margin: 0 auto 40px;
+    position: relative;
+  }
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background .2s;
+    position: relative;
+  }
+  .hero-cta:hover { background: var(--orange-dark); }
+
+  /* ── Container ── */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Section ── */
+  .section {
+    padding: 80px 0;
+  }
+  .section-alt {
+    background: var(--light);
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .section-header .label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .section-header h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .section-header p {
+    font-size: 18px;
+    color: var(--slate);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ── Feature Block (screenshot + text) ── */
+  .feature-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 80px;
+  }
+  .feature-block:last-child { margin-bottom: 0; }
+  .feature-block.reverse { direction: rtl; }
+  .feature-block.reverse > * { direction: ltr; }
+
+  .feature-text .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .feature-text h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .feature-text p {
+    font-size: 16px;
+    color: var(--slate);
+    margin-bottom: 20px;
+  }
+  .feature-text ul {
+    list-style: none;
+    padding: 0;
+  }
+  .feature-text ul li {
+    padding: 6px 0;
+    font-size: 15px;
+    color: var(--navy-light);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .feature-text ul li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.5 11.5L3 8l1-1 2.5 2.5L11 5l1 1-5.5 5.5z'/%3E%3C/svg%3E");
+    background-size: 14px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .feature-img {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+  }
+  .feature-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ── Stats Bar ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding: 60px 0;
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-item .number {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-item .desc {
+    font-size: 15px;
+    color: var(--slate);
+    font-weight: 500;
+  }
+
+  /* ── Feature Grid (small cards) ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .feature-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  .feature-card .icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(249,115,22,.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--orange);
+  }
+  .i { display: inline-block; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; width: 22px; height: 22px; }
+  .feature-card h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 14px;
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  /* ── Full-width screenshot ── */
+  .screenshot-full {
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+  }
+  .screenshot-full img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ── CTA Section ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--navy) 0%, #0f172a 100%);
+    color: var(--white);
+    text-align: center;
+    padding: 80px 40px;
+  }
+  .cta-section h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+  .cta-section p {
+    font-size: 18px;
+    color: #94a3b8;
+    max-width: 540px;
+    margin: 0 auto 32px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 13px;
+    color: var(--slate);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .feature-block { grid-template-columns: 1fr; gap: 32px; }
+    .feature-block.reverse { direction: ltr; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+    .hero { padding: 60px 24px 80px; }
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-smartphone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-credit-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+</svg>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-badge">Field Service Management</div>
+  <h1>Run Your Entire<br>Service Business with <span>One Platform</span></h1>
+  <p>From dispatch to invoicing, scheduling to customer portals — FieldService Pro gives HVAC, plumbing, and electrical companies everything they need to grow.</p>
+  <a href="#features" class="hero-cta">See How It Works &darr;</a>
+</section>
+
+<!-- ═══════ STATS ═══════ -->
+<div class="container">
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="number">35+</div>
+      <div class="desc">Built-in Features</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">7</div>
+      <div class="desc">Dashboard Themes</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">50+</div>
+      <div class="desc">API Endpoints</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">100%</div>
+      <div class="desc">Multi-Tenant Ready</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ DASHBOARD ═══════ -->
+<section class="section section-alt" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Command Center</div>
+      <h2>Your Business at a Glance</h2>
+      <p>A customizable dashboard that shows exactly what matters — revenue, jobs, team performance, and upcoming work.</p>
+    </div>
+    <div class="screenshot-full">
+      <img src="screenshots/01-dashboard.png" alt="FieldService Pro Dashboard">
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ DISPATCH ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="feature-block">
+      <div class="feature-text">
+        <div class="tag">Real-Time Operations</div>
+        <h3>Dispatch Board</h3>
+        <p>See every unassigned job and every technician's workload at once. Assign, reassign, and track jobs in real time.</p>
+        <ul>
+          <li>Live unassigned job queue with priority flags</li>
+          <li>Technician workload cards with completion tracking</li>
+          <li>Color-coded technicians for instant visual identification</li>
+          <li>Emergency job highlighting for critical calls</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/03-dispatch.png" alt="Dispatch Board">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SCHEDULE ═══════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="feature-block reverse">
+      <div class="feature-text">
+        <div class="tag">Capacity Planning</div>
+        <h3>Visual Schedule</h3>
+        <p>Week and day calendar views make it easy to plan technician routes, spot gaps, and avoid overbooking.</p>
+        <ul>
+          <li>Week and day view toggle</li>
+          <li>Color-coded jobs per technician</li>
+          <li>Click any slot to create a new job</li>
+          <li>Navigate forward/back with date range display</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/04-schedule.png" alt="Schedule View">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ JOBS ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="feature-block">
+      <div class="feature-text">
+        <div class="tag">Workflow Engine</div>
+        <h3>Job Management</h3>
+        <p>Track every job from first call to final invoice. Filter by status, priority, technician, or date range — find anything in seconds.</p>
+        <ul>
+          <li>Full lifecycle tracking: new &rarr; scheduled &rarr; dispatched &rarr; in progress &rarr; completed</li>
+          <li>Priority levels with emergency flagging</li>
+          <li>Automatic job numbering (JOB-0001, JOB-0002, ...)</li>
+          <li>Detailed job pages with notes, photos, checklists, and history</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/02-jobs.png" alt="Jobs List">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ESTIMATES ═══════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="feature-block reverse">
+      <div class="feature-text">
+        <div class="tag">Win More Business</div>
+        <h3>Good / Better / Best Estimates</h3>
+        <p>Present customers with multiple options to maximize close rates. Each option has its own line items, pricing, and recommended flag.</p>
+        <ul>
+          <li>Multi-option proposals (Good / Better / Best)</li>
+          <li>Star a recommended option to guide customer choice</li>
+          <li>Customer approval tracking with digital signatures</li>
+          <li>One-click convert approved estimates to jobs</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/06-estimates.png" alt="Estimates">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ INVOICES ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="feature-block">
+      <div class="feature-text">
+        <div class="tag">Get Paid Faster</div>
+        <h3>Invoicing &amp; Payments</h3>
+        <p>Generate invoices from jobs or from scratch, send them to customers, and collect payments online via Stripe.</p>
+        <ul>
+          <li>Status tracking: draft &rarr; sent &rarr; viewed &rarr; paid</li>
+          <li>Online payments via Stripe Checkout</li>
+          <li>Partial payment support with balance tracking</li>
+          <li>Overdue invoice alerts and automated reminders</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/07-invoices.png" alt="Invoices">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ AGREEMENTS ═══════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="feature-block reverse">
+      <div class="feature-text">
+        <div class="tag">Recurring Revenue</div>
+        <h3>Service Agreements</h3>
+        <p>Set up maintenance contracts with automatic visit scheduling, billing, and renewal — the key to predictable recurring revenue.</p>
+        <ul>
+          <li>Flexible billing cycles (monthly, quarterly, annual)</li>
+          <li>Automatic visit scheduling and job creation</li>
+          <li>Renewal reminders and auto-renewal option</li>
+          <li>Full agreement lifecycle: draft &rarr; active &rarr; completed</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/08-agreements.png" alt="Agreements">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CUSTOMERS ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="feature-block">
+      <div class="feature-text">
+        <div class="tag">360&deg; Customer View</div>
+        <h3>Customer Management</h3>
+        <p>A complete CRM built for field service — every customer's properties, equipment, job history, invoices, and estimates in one place.</p>
+        <ul>
+          <li>Residential and commercial customer types</li>
+          <li>Multi-property support per customer</li>
+          <li>Equipment tracking with serial numbers and warranty dates</li>
+          <li>Full service history with linked jobs, invoices, and estimates</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/05-customers.png" alt="Customers">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ REPORTS ═══════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="feature-block reverse">
+      <div class="feature-text">
+        <div class="tag">Business Intelligence</div>
+        <h3>Reports &amp; Analytics</h3>
+        <p>Make data-driven decisions with built-in reports covering revenue, job performance, invoicing, and technician productivity.</p>
+        <ul>
+          <li>Revenue reports with period-over-period analysis</li>
+          <li>Job completion metrics and status breakdowns</li>
+          <li>Accounts receivable aging reports</li>
+          <li>Technician productivity and utilization tracking</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/09-reports.png" alt="Reports">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ MORE FEATURES GRID ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">And Much More</div>
+      <h2>Everything You Need, Built In</h2>
+      <p>No third-party add-ons or workarounds — every feature integrates seamlessly.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-shield"/></svg></div>
+        <h4>Customer Portal</h4>
+        <p>Your customers log in to view jobs, approve estimates, pay invoices, and track service agreements — all self-service.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-globe"/></svg></div>
+        <h4>Tenant Websites</h4>
+        <p>Each business gets a built-in website builder with pages, themes, media library, and online booking forms.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-tag"/></svg></div>
+        <h4>Pricebook</h4>
+        <p>Maintain a catalog of services and materials with standardized pricing. Pull items directly into estimates and invoices.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-mail"/></svg></div>
+        <h4>Automated Communications</h4>
+        <p>Email templates triggered by events — invoice sent, estimate approved, job scheduled, agreement renewal — all automatic.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-smartphone"/></svg></div>
+        <h4>Mobile App</h4>
+        <p>React Native app for technicians with offline support, voice-to-text notes, photo capture, and field-ready high-contrast mode.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-settings"/></svg></div>
+        <h4>Fully Configurable</h4>
+        <p>Company profile, team roles (5 levels), services, tax rates, business hours, checklist templates, estimate templates, and 7 dashboard themes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-users"/></svg></div>
+        <h4>Team &amp; Roles</h4>
+        <p>Invite team members with role-based access control — Admin, Office Manager, Dispatcher, CSR, and Technician roles built in.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-credit-card"/></svg></div>
+        <h4>Stripe Payments</h4>
+        <p>Accept online payments through the customer portal via Stripe Checkout. Support for partial payments and automatic receipt emails.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon"><svg class="i"><use href="#i-code"/></svg></div>
+        <h4>REST API</h4>
+        <p>50+ versioned API endpoints power the mobile app and enable integrations. Built for extensibility from day one.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SETTINGS ═══════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Configuration</div>
+      <h2>Simple Setup, Deep Customization</h2>
+      <p>Get running in minutes with sensible defaults, then customize every aspect of your workflow.</p>
+    </div>
+    <div class="screenshot-full">
+      <img src="screenshots/10-settings.png" alt="Settings">
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ TEAM ═══════ -->
+<section class="section">
+  <div class="container">
+    <div class="feature-block">
+      <div class="feature-text">
+        <div class="tag">Access Control</div>
+        <h3>Team Management</h3>
+        <p>Invite your team and assign the right level of access. Five built-in roles ensure everyone sees exactly what they need.</p>
+        <ul>
+          <li><strong>Admin</strong> — Full access to everything</li>
+          <li><strong>Office Manager</strong> — Billing, customers, reports</li>
+          <li><strong>Dispatcher</strong> — Schedule and dispatch jobs</li>
+          <li><strong>CSR</strong> — Customer service and intake</li>
+          <li><strong>Technician</strong> — Field work and mobile access</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="screenshots/17-team.png" alt="Team Management">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CTA ═══════ -->
+<section class="cta-section">
+  <h2>Ready to Modernize Your Operations?</h2>
+  <p>FieldService Pro is the all-in-one platform built specifically for trade service businesses. Start your free trial today.</p>
+  <a href="#" class="hero-cta">Get Started Free</a>
+</section>
+
+<footer>
+  &copy; 2026 FieldService Pro. All rights reserved.
+</footer>
+
+</body>
+</html>

@@ -600,7 +600,7 @@ function OptionsStep({
                         placeholder="1"
                         placeholderTextColor="#A8A29E"
                         keyboardType="decimal-pad"
-                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-white dark:bg-stone-800"
+                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-stone-50 dark:bg-stone-800"
                       />
                     </View>
                     <View className="flex-1">
@@ -611,7 +611,7 @@ function OptionsStep({
                         placeholder="0.00"
                         placeholderTextColor="#A8A29E"
                         keyboardType="decimal-pad"
-                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-white dark:bg-stone-800"
+                        className="border border-stone-200 dark:border-stone-600 rounded-lg px-2 py-1.5 text-sm text-stone-900 dark:text-stone-50 bg-stone-50 dark:bg-stone-800"
                       />
                     </View>
                   </View>
@@ -632,7 +632,7 @@ function OptionsStep({
                       Haptics.selectionAsync();
                       updateItem(optIndex, itemIndex, { type: t.key });
                     }}
-                    className={`px-2.5 py-1 rounded-full ${
+                    className={`px-3 min-h-[44px] items-center justify-center rounded-full ${
                       item.type === t.key
                         ? "bg-orange-600"
                         : "bg-stone-200 dark:bg-stone-700"

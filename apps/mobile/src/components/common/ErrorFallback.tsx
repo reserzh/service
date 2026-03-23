@@ -16,7 +16,7 @@ export function ErrorFallback({ error, onRetry, message }: ErrorFallbackProps) {
         <View className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950 items-center justify-center mb-4">
           <AlertTriangle size={32} color="#ef4444" />
         </View>
-        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-white mb-2 text-center">
+        <Text className="text-xl font-heading-bold text-stone-900 dark:text-white mb-2 text-center">
           Something went wrong
         </Text>
         <Text className="text-sm text-stone-500 dark:text-stone-400 text-center mb-6">

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldService Pro — Internal Dev Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #334155;
+    --border: #475569;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #f97316;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --radius: 8px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 32px;
+    max-width: 960px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  header h1 span { color: var(--accent); }
+  header p {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .badge-red { background: rgba(239,68,68,.15); color: var(--red); }
+  .badge-yellow { background: rgba(234,179,8,.15); color: var(--yellow); }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 48px;
+  }
+  .section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section h2::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 20px 0 10px;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(71,85,105,.3);
+    vertical-align: top;
+  }
+  tbody tr:hover { background: rgba(255,255,255,.02); }
+
+  /* ── Code / Credential blocks ── */
+  code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  pre .comment { color: var(--text-dim); }
+  pre .key { color: var(--green); }
+  pre .val { color: var(--cyan); }
+  pre .cmd { color: var(--yellow); }
+  pre .flag { color: var(--purple); }
+
+  /* ── Credential Card ── */
+  .cred-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .cred-card .title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cred-card .title .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .cred-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 4px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .cred-row .label {
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .cred-row .value {
+    font-family: var(--mono);
+    color: var(--cyan);
+    word-break: break-all;
+  }
+
+  /* ── URL list ── */
+  .url-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .url-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+  }
+  .url-card .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 4px;
+  }
+  .url-card a {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .url-card a:hover { text-decoration: underline; }
+  .url-card .note {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ── Notes / Warnings ── */
+  .note-box {
+    border-left: 3px solid var(--yellow);
+    background: rgba(234,179,8,.06);
+    padding: 12px 18px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .note-box strong { color: var(--yellow); }
+
+  .danger-box {
+    border-left: 3px solid var(--red);
+    background: rgba(239,68,68,.06);
+    padding: 12px 18px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .danger-box strong { color: var(--red); }
+
+  /* ── Misc ── */
+  p { margin-bottom: 10px; font-size: 14px; }
+  a { color: var(--blue); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  .toc h3 { margin-top: 0; color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { font-size: 14px; margin-bottom: 4px; }
+  .toc a { color: var(--blue); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    body { padding: 16px; }
+    .url-grid { grid-template-columns: 1fr; }
+    .cred-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>FieldService Pro <span>Internal Dev Guide</span></h1>
+  <p>Local development addresses, test credentials, and quick reference. <span class="badge badge-red">INTERNAL ONLY</span> <span class="badge badge-yellow">DO NOT SHARE</span></p>
+</header>
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#urls">Local Development URLs</a></li>
+    <li><a href="#credentials">Test Credentials</a></li>
+    <li><a href="#env">Environment Variables</a></li>
+    <li><a href="#docker">Docker Quick Reference</a></li>
+    <li><a href="#database">Database Access</a></li>
+    <li><a href="#api">API Keys &amp; Services</a></li>
+    <li><a href="#seed">Seed Data Summary</a></li>
+    <li><a href="#commands">Useful Commands</a></li>
+    <li><a href="#architecture">Architecture Overview</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════ 1. URLS ═══════ -->
+<div class="section" id="urls">
+  <h2>Local Development URLs</h2>
+
+  <h3>Application</h3>
+  <div class="url-grid">
+    <div class="url-card">
+      <div class="label">Admin Dashboard (back)</div>
+      <a href="http://localhost:3200">http://localhost:3200</a>
+      <div class="note">Next.js 16 — apps/back/</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Public / Portal (front)</div>
+      <a href="http://localhost:3201">http://localhost:3201</a>
+      <div class="note">Next.js 16 — apps/front/</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Customer Portal Login</div>
+      <a href="http://localhost:3201/portal/login">http://localhost:3201/portal/login</a>
+      <div class="note">Customer-facing portal</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Tenant Website</div>
+      <a href="http://localhost:3201">http://localhost:3201</a>
+      <div class="note">Public homepage for tenant</div>
+    </div>
+  </div>
+
+  <h3>Supabase</h3>
+  <div class="url-grid">
+    <div class="url-card">
+      <div class="label">Supabase Studio</div>
+      <a href="http://localhost:54333">http://localhost:54333</a>
+      <div class="note">Database GUI, Auth admin, Storage</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Supabase API</div>
+      <a href="http://localhost:54331">http://localhost:54331</a>
+      <div class="note">REST + Realtime + Auth</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Inbucket (Email Testing)</div>
+      <a href="http://localhost:54334">http://localhost:54334</a>
+      <div class="note">Catches all auth emails locally</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Analytics</div>
+      <a href="http://localhost:54337">http://localhost:54337</a>
+      <div class="note">Supabase Analytics</div>
+    </div>
+  </div>
+
+  <h3>Database Direct</h3>
+  <div class="url-grid">
+    <div class="url-card">
+      <div class="label">PostgreSQL</div>
+      <a href="#">localhost:54332</a>
+      <div class="note">User: postgres / Pass: postgres / DB: postgres</div>
+    </div>
+    <div class="url-card">
+      <div class="label">Shadow DB (Migrations)</div>
+      <a href="#">localhost:54330</a>
+      <div class="note">Used by Drizzle for migration diffs</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 2. CREDENTIALS ═══════ -->
+<div class="section" id="credentials">
+  <h2>Test Credentials</h2>
+
+  <div class="danger-box">
+    <strong>Warning:</strong> These credentials are for local development only. Never use these in production or share outside the team.
+  </div>
+
+  <h3>Admin Dashboard Login</h3>
+  <div class="cred-card">
+    <div class="title"><div class="dot"></div> Admin User (full access)</div>
+    <div class="cred-row"><span class="label">Email</span><span class="value">admin@test.com</span></div>
+    <div class="cred-row"><span class="label">Password</span><span class="value">password123</span></div>
+    <div class="cred-row"><span class="label">Role</span><span class="value">admin</span></div>
+    <div class="cred-row"><span class="label">URL</span><span class="value">http://localhost:3200/login</span></div>
+  </div>
+
+  <h3>Other Test Users</h3>
+  <p>All users share the password: <code>password123</code></p>
+
+  <table>
+    <thead>
+      <tr><th>Email</th><th>Role</th><th>Name</th><th>Rate</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>admin@test.com</code></td>
+        <td>Admin</td>
+        <td>Admin User</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><code>jenny.clark@test.com</code></td>
+        <td>Office Manager</td>
+        <td>Jenny Clark</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><code>dave.dispatcher@test.com</code></td>
+        <td>Dispatcher</td>
+        <td>Dave Dispatcher</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><code>mike.johnson@test.com</code></td>
+        <td>Technician</td>
+        <td>Mike Johnson</td>
+        <td>$85/hr</td>
+      </tr>
+      <tr>
+        <td><code>sarah.williams@test.com</code></td>
+        <td>Technician</td>
+        <td>Sarah Williams</td>
+        <td>$90/hr</td>
+      </tr>
+      <tr>
+        <td><code>carlos.rodriguez@test.com</code></td>
+        <td>Technician</td>
+        <td>Carlos Rodriguez</td>
+        <td>$80/hr</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Test Tenant</h3>
+  <div class="cred-card">
+    <div class="title"><div class="dot"></div> Comfort Pro HVAC</div>
+    <div class="cred-row"><span class="label">Name</span><span class="value">Comfort Pro HVAC</span></div>
+    <div class="cred-row"><span class="label">Slug</span><span class="value">comfort-pro</span></div>
+    <div class="cred-row"><span class="label">Email</span><span class="value">info@comfortprohvac.com</span></div>
+  </div>
+
+  <h3>Sample Customers (Portal Invites)</h3>
+  <p>These customers exist in the seed data. Invite them via the admin dashboard to test the customer portal.</p>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Type</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Robert Anderson</td><td><code>r.anderson@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Patricia Martinez</td><td><code>p.martinez@email.com</code></td><td>Residential</td></tr>
+      <tr><td>James Taylor</td><td><code>j.taylor@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Michael Brown</td><td><code>m.brown@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Linda Thomas</td><td><code>l.thomas@email.com</code></td><td>Residential</td></tr>
+      <tr><td>William Garcia</td><td><code>w.garcia@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Elizabeth Davis</td><td><code>e.davis@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Barbara Wilson</td><td><code>b.wilson@email.com</code></td><td>Residential</td></tr>
+      <tr><td>Tom Reynolds</td><td><code>t.reynolds@email.com</code></td><td>Commercial</td></tr>
+      <tr><td>Susan Chen</td><td><code>s.chen@email.com</code></td><td>Commercial</td></tr>
+      <tr><td>Frank Mitchell</td><td><code>f.mitchell@email.com</code></td><td>Commercial</td></tr>
+      <tr><td>Karen Lopez</td><td><code>k.lopez@email.com</code></td><td>Commercial</td></tr>
+    </tbody>
+  </table>
+  <div class="note-box">
+    <strong>Note:</strong> No pre-created portal passwords exist. Invite a customer from the admin dashboard and check Inbucket (<a href="http://localhost:54334">localhost:54334</a>) for the invite email.
+  </div>
+</div>
+
+<!-- ═══════ 3. ENV VARS ═══════ -->
+<div class="section" id="env">
+  <h2>Environment Variables</h2>
+
+  <h3>apps/back/.env.local &amp; apps/front/.env.local</h3>
+  <pre><span class="comment"># Supabase</span>
+<span class="key">NEXT_PUBLIC_SUPABASE_URL</span>=<span class="val">http://localhost:54331</span>
+<span class="key">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>=<span class="val">sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH</span>
+<span class="key">SUPABASE_SERVICE_ROLE_KEY</span>=<span class="val">&lt;your-service-role-key&gt;</span>
+
+<span class="comment"># Database</span>
+<span class="key">DATABASE_URL</span>=<span class="val">postgresql://postgres:postgres@localhost:54332/postgres</span>
+
+<span class="comment"># App URL</span>
+<span class="key">NEXT_PUBLIC_APP_URL</span>=<span class="val">http://localhost:3200</span>
+
+<span class="comment"># Stripe (replace with real test keys from dashboard.stripe.com)</span>
+<span class="key">STRIPE_SECRET_KEY</span>=<span class="val">sk_test_placeholder</span>
+<span class="key">STRIPE_WEBHOOK_SECRET</span>=<span class="val">whsec_placeholder</span>
+<span class="key">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</span>=<span class="val">pk_test_placeholder</span>
+
+<span class="comment"># Email (replace with real key from resend.com)</span>
+<span class="key">RESEND_API_KEY</span>=<span class="val">re_placeholder</span></pre>
+
+  <h3>Docker Overrides (.env.docker)</h3>
+  <pre><span class="comment"># Docker uses host.docker.internal instead of localhost</span>
+<span class="key">DATABASE_URL</span>=<span class="val">postgresql://postgres:postgres@host.docker.internal:54332/postgres</span>
+<span class="key">NEXT_PUBLIC_BACK_URL</span>=<span class="val">http://host.docker.internal:3200</span></pre>
+</div>
+
+<!-- ═══════ 4. DOCKER ═══════ -->
+<div class="section" id="docker">
+  <h2>Docker Quick Reference</h2>
+
+  <div class="note-box">
+    <strong>Important:</strong> Node modules are NOT installed on the host. All dev commands (<code>pnpm dev</code>, <code>pnpm typecheck</code>, etc.) must run inside the Docker container.
+  </div>
+
+  <pre><span class="comment"># Start the container (auto-runs pnpm dev via entrypoint)</span>
+<span class="cmd">docker compose</span> <span class="flag">-f</span> /Users/john/WEB/SERVICE/docker-compose.yml <span class="flag">up -d</span>
+
+<span class="comment"># Check logs</span>
+<span class="cmd">docker logs</span> service-app <span class="flag">--tail 20</span>
+
+<span class="comment"># Exec into container</span>
+<span class="cmd">docker exec</span> <span class="flag">-it</span> service-app zsh
+
+<span class="comment"># Restart (fixes EADDRINUSE port conflicts)</span>
+<span class="cmd">docker restart</span> service-app
+
+<span class="comment"># Stop</span>
+<span class="cmd">docker compose</span> <span class="flag">-f</span> /Users/john/WEB/SERVICE/docker-compose.yml <span class="flag">down</span>
+
+<span class="comment"># Run Claude Code inside container (sandboxed yolo mode)</span>
+<span class="cmd">claude</span> <span class="flag">--dangerously-skip-permissions</span></pre>
+
+  <table>
+    <thead>
+      <tr><th>Property</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Container name</td><td><code>service-app</code></td></tr>
+      <tr><td>Ports exposed</td><td><code>3200</code> (back), <code>3201</code> (front)</td></tr>
+      <tr><td>Workdir</td><td><code>/workspace</code></td></tr>
+      <tr><td>Entrypoint command</td><td><code>pnpm dev</code> (Turbo runs both apps)</td></tr>
+      <tr><td>Node modules</td><td>Named Docker volumes (not on host)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════ 5. DATABASE ═══════ -->
+<div class="section" id="database">
+  <h2>Database Access</h2>
+
+  <div class="cred-card">
+    <div class="title"><div class="dot"></div> PostgreSQL (Supabase Local)</div>
+    <div class="cred-row"><span class="label">Host</span><span class="value">localhost</span></div>
+    <div class="cred-row"><span class="label">Port</span><span class="value">54332</span></div>
+    <div class="cred-row"><span class="label">User</span><span class="value">postgres</span></div>
+    <div class="cred-row"><span class="label">Password</span><span class="value">postgres</span></div>
+    <div class="cred-row"><span class="label">Database</span><span class="value">postgres</span></div>
+    <div class="cred-row"><span class="label">Schema</span><span class="value">fieldservice</span></div>
+    <div class="cred-row"><span class="label">Connection</span><span class="value">postgresql://postgres:postgres@localhost:54332/postgres</span></div>
+  </div>
+
+  <h3>Database Commands (run inside container)</h3>
+  <pre><span class="comment"># Generate Drizzle migrations</span>
+<span class="cmd">pnpm</span> db:generate
+
+<span class="comment"># Push schema to DB (used for dev sync)</span>
+<span class="cmd">pnpm</span> db:push
+
+<span class="comment"># Open Drizzle Studio</span>
+<span class="cmd">pnpm</span> db:studio
+
+<span class="comment"># Seed database with test data</span>
+<span class="cmd">pnpm</span> db:seed
+
+<span class="comment"># Run migrations</span>
+<span class="cmd">pnpm</span> db:migrate</pre>
+
+  <h3>Schema Modules (34 tables)</h3>
+  <p>Schema files in <code>packages/shared/src/db/schema/</code>:</p>
+  <table>
+    <thead><tr><th>Module</th><th>Key Tables</th></tr></thead>
+    <tbody>
+      <tr><td>tenants</td><td>tenants, tenant_settings, tenant_sequences</td></tr>
+      <tr><td>users</td><td>users</td></tr>
+      <tr><td>customers</td><td>customers, properties, equipment</td></tr>
+      <tr><td>jobs</td><td>jobs, job_line_items, job_photos, job_checklists, timesheets</td></tr>
+      <tr><td>estimates</td><td>estimates, estimate_options, estimate_option_line_items</td></tr>
+      <tr><td>invoices</td><td>invoices, invoice_line_items, payments</td></tr>
+      <tr><td>pricebook</td><td>pricebook_items, pricebook_categories</td></tr>
+      <tr><td>communications</td><td>communication_logs, email_templates</td></tr>
+      <tr><td>agreements</td><td>agreements, agreement_services, agreement_visits</td></tr>
+      <tr><td>portal</td><td>portal_invites</td></tr>
+      <tr><td>website</td><td>website_settings, website_pages, website_services, bookings</td></tr>
+      <tr><td>system</td><td>system config and metadata</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════ 6. API KEYS ═══════ -->
+<div class="section" id="api">
+  <h2>API Keys &amp; Services</h2>
+
+  <table>
+    <thead>
+      <tr><th>Service</th><th>Key Type</th><th>Local Value</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Supabase Anon</td>
+        <td>Public</td>
+        <td><code>sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH</code></td>
+        <td style="color:var(--green);">Live (local)</td>
+      </tr>
+      <tr>
+        <td>Supabase Service</td>
+        <td>Secret</td>
+        <td><code>&lt;your-service-role-key&gt;</code></td>
+        <td style="color:var(--green);">Live (local)</td>
+      </tr>
+      <tr>
+        <td>Stripe Secret</td>
+        <td>Test</td>
+        <td><code>sk_test_placeholder</code></td>
+        <td style="color:var(--yellow);">Placeholder</td>
+      </tr>
+      <tr>
+        <td>Stripe Publishable</td>
+        <td>Test</td>
+        <td><code>pk_test_placeholder</code></td>
+        <td style="color:var(--yellow);">Placeholder</td>
+      </tr>
+      <tr>
+        <td>Stripe Webhook</td>
+        <td>Test</td>
+        <td><code>whsec_placeholder</code></td>
+        <td style="color:var(--yellow);">Placeholder</td>
+      </tr>
+      <tr>
+        <td>Resend</td>
+        <td>API Key</td>
+        <td><code>re_placeholder</code></td>
+        <td style="color:var(--yellow);">Placeholder</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note-box">
+    <strong>Placeholders:</strong> Replace Stripe and Resend keys with real test keys from their dashboards. Supabase keys are real and work with the local Supabase instance.
+  </div>
+</div>
+
+<!-- ═══════ 7. SEED DATA ═══════ -->
+<div class="section" id="seed">
+  <h2>Seed Data Summary</h2>
+  <p>Run <code>pnpm db:seed</code> from inside the container to populate the database.</p>
+
+  <table>
+    <thead><tr><th>Entity</th><th>Count</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Tenant</td><td>1</td><td>Comfort Pro HVAC</td></tr>
+      <tr><td>Users</td><td>6</td><td>1 admin, 1 office mgr, 1 dispatcher, 3 technicians</td></tr>
+      <tr><td>Customers</td><td>12</td><td>8 residential, 4 commercial</td></tr>
+      <tr><td>Properties</td><td>14</td><td>Springfield, IL addresses</td></tr>
+      <tr><td>Equipment</td><td>10</td><td>HVAC units, refrigeration, with serial numbers</td></tr>
+      <tr><td>Jobs</td><td>11</td><td>3 completed, 1 in-progress, 2 dispatched, 2 scheduled, 3 new</td></tr>
+      <tr><td>Estimates</td><td>3</td><td>1 sent, 1 approved, 1 draft (multi-option)</td></tr>
+      <tr><td>Invoices</td><td>2</td><td>1 paid, 1 sent</td></tr>
+      <tr><td>Sequences</td><td>3</td><td>JOB, EST, INV prefixes initialized</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════ 8. COMMANDS ═══════ -->
+<div class="section" id="commands">
+  <h2>Useful Commands</h2>
+
+  <h3>Development (inside container)</h3>
+  <pre><span class="cmd">pnpm dev</span>                  <span class="comment"># Start all apps (Turbo)</span>
+<span class="cmd">pnpm dev</span> <span class="flag">--filter back</span>    <span class="comment"># Start only back</span>
+<span class="cmd">pnpm dev</span> <span class="flag">--filter front</span>   <span class="comment"># Start only front</span>
+<span class="cmd">pnpm typecheck</span>            <span class="comment"># TypeScript check all packages</span>
+<span class="cmd">pnpm build</span>                <span class="comment"># Build all</span>
+<span class="cmd">pnpm lint</span>                 <span class="comment"># Lint all</span></pre>
+
+  <h3>Supabase (on host machine)</h3>
+  <pre><span class="cmd">cd</span> /Users/john/WEB/SERVICE
+<span class="cmd">supabase start</span>            <span class="comment"># Start local Supabase</span>
+<span class="cmd">supabase stop</span>             <span class="comment"># Stop local Supabase</span>
+<span class="cmd">supabase status</span>           <span class="comment"># Show ports and URLs</span>
+<span class="cmd">supabase db reset</span>         <span class="comment"># Reset database to clean state</span></pre>
+
+  <h3>Mobile App (inside container at /workspace/apps/mobile)</h3>
+  <pre><span class="cmd">npx expo start</span>            <span class="comment"># Start Expo dev server</span>
+<span class="cmd">npx expo start</span> <span class="flag">--clear</span>    <span class="comment"># Clear cache and start</span></pre>
+</div>
+
+<!-- ═══════ 9. ARCHITECTURE ═══════ -->
+<div class="section" id="architecture">
+  <h2>Architecture Overview</h2>
+
+  <pre>SERVICE/
+├── apps/
+│   ├── back/           <span class="comment"># Admin Dashboard — Next.js 16, port 3200</span>
+│   │   ├── src/app/(auth)/         <span class="comment"># Login, register</span>
+│   │   ├── src/app/(dashboard)/    <span class="comment"># 35+ admin pages</span>
+│   │   ├── src/app/api/v1/         <span class="comment"># 50+ REST endpoints (mobile API)</span>
+│   │   ├── src/lib/services/       <span class="comment"># Business logic layer</span>
+│   │   ├── src/lib/auth/           <span class="comment"># Auth + RBAC (5 roles)</span>
+│   │   └── src/actions/            <span class="comment"># Server actions</span>
+│   ├── front/          <span class="comment"># Public Sites + Portal — Next.js 16, port 3201</span>
+│   │   ├── src/app/portal/         <span class="comment"># Customer portal (auth, dashboard, jobs, invoices, ...)</span>
+│   │   ├── src/app/api/portal/     <span class="comment"># Portal API routes</span>
+│   │   └── src/app/[slug]/         <span class="comment"># Tenant websites + booking</span>
+│   └── mobile/         <span class="comment"># Technician App — React Native / Expo</span>
+│       └── src/                    <span class="comment"># Offline-first, field mode, voice notes</span>
+├── packages/
+│   ├── api-types/      <span class="comment"># Shared enums, models, constants (zero dependencies)</span>
+│   └── shared/         <span class="comment"># Drizzle ORM schema, templates, website types</span>
+└── supabase/           <span class="comment"># Local Supabase config (config.toml)</span></pre>
+
+  <h3>Key Architecture Decisions</h3>
+  <table>
+    <thead><tr><th>Aspect</th><th>Approach</th></tr></thead>
+    <tbody>
+      <tr><td>Multi-tenancy</td><td>Shared DB with <code>tenant_id</code> on all tables + RLS</td></tr>
+      <tr><td>Auth</td><td>Supabase Auth — <code>requireAuth()</code> / <code>requireApiAuth()</code></td></tr>
+      <tr><td>Permissions</td><td>RBAC with 5 roles: admin, office_manager, dispatcher, csr, technician</td></tr>
+      <tr><td>Services</td><td>Business logic in <code>src/lib/services/</code>, shared by server actions + REST API</td></tr>
+      <tr><td>ORM</td><td>Drizzle ORM, schema namespace <code>fieldservice</code></td></tr>
+      <tr><td>Validation</td><td>Zod v4</td></tr>
+      <tr><td>Payments</td><td>Stripe Connect (Checkout for portal payments)</td></tr>
+      <tr><td>Email</td><td>Resend + template engine, Inbucket for local testing</td></tr>
+      <tr><td>Job Numbers</td><td>Tenant-scoped atomic sequences (<code>tenant_sequences</code> table)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr>
+
+<p style="text-align:center; color:var(--text-dim); font-size:12px; padding-bottom:24px;">
+  Last updated: February 2026 &nbsp;|&nbsp; FieldService Pro Internal Documentation
+</p>
+
+</body>
+</html>

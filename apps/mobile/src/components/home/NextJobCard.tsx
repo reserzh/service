@@ -172,7 +172,7 @@ export function NextJobCard({ job }: NextJobCardProps) {
 
       {/* Job info */}
       <Text
-        className="text-lg font-heading font-bold text-stone-900 dark:text-stone-50 mb-1"
+        className="text-lg font-heading-bold text-stone-900 dark:text-stone-50 mb-1"
         numberOfLines={1}
       >
         {job.summary}

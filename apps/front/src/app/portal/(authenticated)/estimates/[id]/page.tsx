@@ -159,6 +159,7 @@ export default async function PortalEstimateDetailPage({
           id: o.id,
           name: o.name,
           isRecommended: o.isRecommended,
+          total: o.total,
         }))}
         currentStatus={estimate.status}
       />

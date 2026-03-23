@@ -99,13 +99,13 @@ export function SignatureModal({ jobId, visible, onClose }: SignatureModalProps)
                 onPress={() => setSignerRole(role.value)}
                 className={`flex-1 items-center py-2.5 rounded-xl border ${
                   signerRole === role.value
-                    ? "bg-blue-50 border-blue-300"
+                    ? "bg-orange-50 border-orange-300"
                     : "bg-white border-stone-200"
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    signerRole === role.value ? "text-blue-700" : "text-stone-500"
+                    signerRole === role.value ? "text-orange-700" : "text-stone-500"
                   }`}
                 >
                   {role.label}

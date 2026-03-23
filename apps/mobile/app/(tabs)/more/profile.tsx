@@ -13,9 +13,12 @@ import {
   Fingerprint,
   Info,
   Star,
+  LogOut,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
+import { useSignOut } from "@/hooks/useAuth";
 import { useSettingsStore } from "@/stores/settings";
 import { usePerformanceStats } from "@/hooks/usePerformanceStats";
 import { Card } from "@/components/ui/Card";
@@ -41,6 +44,12 @@ const MAP_APP_OPTIONS = [
 export default function ProfileScreen() {
   const { user } = useAuthStore();
   const settings = useSettingsStore();
+  const signOut = useSignOut();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace("/(auth)/login");
+  };
   const { data: statsData, isLoading: statsLoading } = usePerformanceStats();
 
   useEffect(() => {
@@ -60,7 +69,7 @@ export default function ProfileScreen() {
           size="lg"
           color="#EA580C"
         />
-        <Text className="text-xl font-heading font-bold text-stone-900 dark:text-stone-50 mt-3">
+        <Text className="text-xl font-heading-bold text-stone-900 dark:text-stone-50 mt-3">
           {user.firstName} {user.lastName}
         </Text>
         <Badge
@@ -279,6 +288,19 @@ export default function ProfileScreen() {
             Built for field service professionals
           </Text>
         </Card>
+      </View>
+
+      {/* Sign Out */}
+      <View className="px-4 mt-6 mb-4">
+        <Pressable
+          onPress={handleSignOut}
+          className="flex-row items-center justify-center gap-2 rounded-xl bg-red-50 dark:bg-red-950 py-4 active:opacity-70"
+        >
+          <LogOut size={18} color="#ef4444" />
+          <Text className="text-base font-semibold text-red-600 dark:text-red-400">
+            Sign Out
+          </Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

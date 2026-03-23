@@ -22,7 +22,7 @@ export function EmptyState({
       <View className="w-20 h-20 rounded-full bg-stone-100 dark:bg-stone-800 items-center justify-center mb-4">
         {icon ?? <Inbox size={28} color="#A8A29E" />}
       </View>
-      <Text className="text-xl font-heading font-bold text-stone-900 dark:text-white text-center mb-1">
+      <Text className="text-xl font-heading-bold text-stone-900 dark:text-white text-center mb-1">
         {title}
       </Text>
       {description && (

@@ -20,10 +20,10 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(
           multiline
           numberOfLines={4}
           textAlignVertical="top"
-          className={`bg-white dark:bg-stone-800 border rounded-xl px-4 py-4 text-lg text-stone-900 dark:text-white min-h-[120px] ${
+          className={`bg-stone-50 dark:bg-stone-800 border rounded-xl px-4 py-4 text-lg text-stone-900 dark:text-white min-h-[120px] ${
             error
               ? "border-red-500"
-              : "border-stone-300 dark:border-stone-600 focus:border-blue-500"
+              : "border-stone-300 dark:border-stone-600 focus:border-orange-500"
           }`}
           placeholderTextColor="#A8A29E"
           {...props}

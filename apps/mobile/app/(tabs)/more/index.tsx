@@ -5,11 +5,8 @@ import {
   Users,
   FileText,
   Receipt,
-  UserCircle,
-  LogOut,
   ChevronRight,
 } from "lucide-react-native";
-import { useSignOut } from "@/hooks/useAuth";
 import { useAuthStore } from "@/stores/auth";
 import { Avatar } from "@/components/ui/Avatar";
 import { getInitials } from "@/lib/format";
@@ -50,12 +47,6 @@ function MenuItem({ icon, label, description, onPress, destructive }: MenuItemPr
 
 export default function MoreScreen() {
   const { user } = useAuthStore();
-  const signOut = useSignOut();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace("/(auth)/login");
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900" edges={["top"]}>
@@ -80,7 +71,7 @@ export default function MoreScreen() {
       </Pressable>
 
       {/* Menu items */}
-      <View className="rounded-xl overflow-hidden mx-4 mb-4">
+      <View className="rounded-xl overflow-hidden mx-4">
         <MenuItem
           icon={<Users size={24} color="#78716C" />}
           label="Customers"
@@ -98,22 +89,6 @@ export default function MoreScreen() {
           label="Invoices"
           description="View invoices and payment status"
           onPress={() => router.push("/(tabs)/more/invoices")}
-        />
-        <MenuItem
-          icon={<UserCircle size={24} color="#78716C" />}
-          label="Profile"
-          description="View your profile and settings"
-          onPress={() => router.push("/(tabs)/more/profile")}
-        />
-      </View>
-
-      <View className="rounded-xl overflow-hidden mx-4">
-        <MenuItem
-          icon={<LogOut size={24} color="#ef4444" />}
-          label="Sign Out"
-          description="Sign out of your account"
-          onPress={handleSignOut}
-          destructive
         />
       </View>
     </SafeAreaView>

@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { ClipboardList } from "lucide-react";
 import { requireCustomerAuth } from "@/lib/portal-auth";
 import { getPortalAgreements } from "@/lib/portal-queries";
 import { AGREEMENT_STATUS_LABELS } from "@fieldservice/api-types/constants";
 import type { AgreementStatus } from "@fieldservice/api-types/enums";
+import { EmptyState } from "@/components/portal/empty-state";
 
 function statusColor(status: AgreementStatus): string {
   switch (status) {
@@ -45,81 +47,120 @@ export default async function PortalAgreementsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Agreements</h1>
+      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Agreements</h1>
 
       {agreementList.length === 0 ? (
-        <p className="mt-6 text-gray-500">No agreements found.</p>
+        <EmptyState
+          icon={ClipboardList}
+          title="No agreements yet"
+          description="Your service agreements will appear here once they are created."
+        />
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Agreement Number
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Start Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  End Date
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Total Value
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {agreementList.map((agreement) => {
-                const status = agreement.status as AgreementStatus;
-                return (
-                  <tr
-                    key={agreement.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="whitespace-nowrap px-6 py-4 text-sm">
-                      <Link
-                        href={`/portal/agreements/${agreement.id}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        {agreement.agreementNumber}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      <Link
-                        href={`/portal/agreements/${agreement.id}`}
-                        className="hover:text-blue-600"
-                      >
-                        {agreement.name || "-"}
-                      </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(status)}`}
-                      >
-                        {AGREEMENT_STATUS_LABELS[status] ?? status}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
-                      {formatDate(agreement.startDate)}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
-                      {formatDate(agreement.endDate)}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(agreement.totalValue)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-3">
+            {agreementList.map((agreement) => {
+              const status = agreement.status as AgreementStatus;
+              return (
+                <Link
+                  key={agreement.id}
+                  href={`/portal/agreements/${agreement.id}`}
+                  className="block rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-blue-600">{agreement.agreementNumber}</span>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(status)}`}
+                    >
+                      {AGREEMENT_STATUS_LABELS[status] ?? status}
+                    </span>
+                  </div>
+                  {agreement.name && (
+                    <div className="text-sm text-gray-900 font-medium mb-1">{agreement.name}</div>
+                  )}
+                  <div className="text-sm text-gray-600">
+                    {formatDate(agreement.startDate)} &ndash; {formatDate(agreement.endDate)}
+                  </div>
+                  <div className="mt-2 text-sm font-semibold text-gray-900">
+                    {formatCurrency(agreement.totalValue)}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Agreement Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Start Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    End Date
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Total Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {agreementList.map((agreement) => {
+                  const status = agreement.status as AgreementStatus;
+                  return (
+                    <tr
+                      key={agreement.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                        <Link
+                          href={`/portal/agreements/${agreement.id}`}
+                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {agreement.agreementNumber}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <Link
+                          href={`/portal/agreements/${agreement.id}`}
+                          className="hover:text-blue-600"
+                        >
+                          {agreement.name || "-"}
+                        </Link>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(status)}`}
+                        >
+                          {AGREEMENT_STATUS_LABELS[status] ?? status}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                        {formatDate(agreement.startDate)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                        {formatDate(agreement.endDate)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900 text-right font-medium">
+                        {formatCurrency(agreement.totalValue)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

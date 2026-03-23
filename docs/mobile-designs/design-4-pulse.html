@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldService Pro — Pulse Design Concept</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #818CF8, #22D3EE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  p.page-subtitle {
+    color: #94A3B8;
+    font-size: 16px;
+    margin-bottom: 48px;
+    letter-spacing: -0.01em;
+  }
+  .phones-container {
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .phone-wrapper { text-align: center; }
+  .phone-label {
+    color: #CBD5E1;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-frame.light {
+    background: #F8FAFC;
+    box-shadow: 0 0 60px rgba(79,70,229,0.15), 0 0 120px rgba(6,182,212,0.08);
+  }
+  .phone-frame.dark {
+    background: #0F0B1A;
+    box-shadow: 0 0 60px rgba(129,140,248,0.2), 0 0 120px rgba(34,211,238,0.1);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .phone-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 50px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+
+  /* Screen tabs (top) */
+  .screen-tabs {
+    display: flex;
+    padding: 0 16px;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+  .screen-tab {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+  }
+  .light .screen-tab { color: #94A3B8; }
+  .light .screen-tab.active { color: #4F46E5; background: rgba(79,70,229,0.06); }
+  .dark .screen-tab { color: #475569; }
+  .dark .screen-tab.active { color: #818CF8; background: rgba(129,140,248,0.08); }
+  .screen-tab.active { position: relative; }
+  .screen-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+    border-radius: 1px;
+  }
+  .dark .screen-tab.active::after {
+    background: linear-gradient(90deg, #818CF8, #22D3EE);
+  }
+
+  /* Screen content area */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .screen-panel { display: none; padding: 0 16px 100px; }
+  .screen-panel.active { display: block; }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 84px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 10px;
+    flex-shrink: 0;
+  }
+  .light .tab-bar {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.04);
+  }
+  .dark .tab-bar {
+    background: rgba(15,11,26,0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .tab-item svg { width: 24px; height: 24px; }
+  .tab-item span { font-size: 10px; font-weight: 500; }
+  .light .tab-item svg { color: #94A3B8; }
+  .light .tab-item span { color: #94A3B8; }
+  .light .tab-item.active svg { color: #4F46E5; }
+  .light .tab-item.active span { color: #4F46E5; }
+  .dark .tab-item svg { color: #475569; }
+  .dark .tab-item span { color: #475569; }
+  .dark .tab-item.active svg { color: #818CF8; }
+  .dark .tab-item.active span { color: #818CF8; }
+  .tab-item.active::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+  }
+  .dark .tab-item.active::before {
+    background: linear-gradient(90deg, #818CF8, #22D3EE);
+  }
+
+  /* ===== LIGHT MODE STYLES ===== */
+  .light .status-bar .time { color: #0F172A; }
+  .light .status-bar .icons svg { color: #0F172A; }
+
+  /* Home */
+  .light .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 20px;
+  }
+  .light .home-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #4F46E5, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .light .notif-bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #F1F5F9;
+  }
+  .light .notif-bell svg { color: #64748B; width: 20px; height: 20px; }
+  .light .notif-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #4F46E5, #06B6D4);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .progress-ring-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 24px;
+  }
+  .progress-ring-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+  }
+  .progress-ring-wrap svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+  .progress-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .light .progress-ring-label .ring-num { font-size: 28px; font-weight: 700; color: #0F172A; letter-spacing: -0.02em; }
+  .light .progress-ring-label .ring-sub { font-size: 12px; color: #64748B; }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    flex: 1;
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+  .light .stat-card {
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.08);
+  }
+  .stat-card .stat-label { font-size: 12px; font-weight: 500; margin-bottom: 6px; }
+  .stat-card .stat-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 6px; }
+  .light .stat-card .stat-label { color: #64748B; }
+  .light .stat-card .stat-value { color: #0F172A; }
+  .mini-progress {
+    margin-top: 8px;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .light .mini-progress { background: #F1F5F9; }
+  .mini-progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4F46E5;
+    animation: pulse 2s infinite;
+  }
+  .dark .pulse-dot { background: #818CF8; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  .check-icon { color: #10B981; }
+
+  .next-job-card {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .light .next-job-card {
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.08);
+  }
+  .next-job-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #4F46E5, #06B6D4);
+    border-radius: 4px 0 0 4px;
+  }
+  .next-job-card .card-header { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .light .next-job-card .card-header {
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .next-job-card .job-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .next-job-card .job-customer { font-size: 13px; margin-bottom: 2px; }
+  .next-job-card .job-address { font-size: 13px; margin-bottom: 2px; }
+  .next-job-card .job-time { font-size: 13px; font-weight: 600; margin-top: 6px; }
+  .light .next-job-card .job-title { color: #0F172A; }
+  .light .next-job-card .job-customer { color: #64748B; }
+  .light .next-job-card .job-address { color: #64748B; }
+  .light .next-job-card .job-time { color: #4F46E5; }
+  .job-progress-bar {
+    margin-top: 12px;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .light .job-progress-bar { background: #F1F5F9; }
+
+  .activity-section { margin-bottom: 20px; }
+  .section-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .light .section-title { color: #0F172A; }
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .activity-item + .activity-item { border-top: 1px solid rgba(0,0,0,0.04); }
+  .dark .activity-item + .activity-item { border-top-color: rgba(255,255,255,0.06); }
+  .activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4F46E5, #06B6D4);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .dark .activity-dot { background: linear-gradient(135deg, #818CF8, #22D3EE); }
+  .activity-text { font-size: 14px; flex: 1; }
+  .activity-time { font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+  .light .activity-text { color: #0F172A; }
+  .light .activity-time { color: #94A3B8; }
+
+  /* Jobs list */
+  .jobs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 16px;
+  }
+  .jobs-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .light .jobs-title { color: #0F172A; }
+  .dark .jobs-title { color: #F1F5F9; }
+  .search-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+  }
+  .light .search-btn { background: #F1F5F9; }
+  .light .search-btn svg { color: #64748B; }
+  .dark .search-btn { background: rgba(255,255,255,0.06); }
+  .dark .search-btn svg { color: #94A3B8; }
+
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+  .filter-tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    background: none;
+  }
+  .light .filter-tab { color: #94A3B8; }
+  .light .filter-tab.active { color: #4F46E5; background: rgba(79,70,229,0.06); }
+  .dark .filter-tab { color: #475569; }
+  .dark .filter-tab.active { color: #818CF8; background: rgba(129,140,248,0.08); }
+  .filter-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+  }
+  .dark .filter-tab.active::after { background: linear-gradient(90deg, #818CF8, #22D3EE); }
+
+  .job-card {
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .light .job-card { background: #fff; box-shadow: 0 4px 16px rgba(79,70,229,0.08); }
+  .dark .job-card {
+    background: rgba(30,27,50,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .job-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .job-card-id { font-size: 12px; font-weight: 600; }
+  .light .job-card-id { color: #64748B; }
+  .dark .job-card-id { color: #94A3B8; }
+  .job-card-time { font-size: 12px; font-weight: 600; }
+  .light .job-card-time { color: #4F46E5; }
+  .dark .job-card-time { color: #818CF8; }
+  .job-card-title { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2px; }
+  .light .job-card-title { color: #0F172A; }
+  .dark .job-card-title { color: #F1F5F9; }
+  .job-card-info { font-size: 13px; }
+  .light .job-card-info { color: #64748B; }
+  .dark .job-card-info { color: #94A3B8; }
+  .job-card-status { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; margin-top: 6px; }
+  .status-scheduled { background: rgba(79,70,229,0.1); color: #4F46E5; }
+  .dark .status-scheduled { background: rgba(129,140,248,0.15); color: #818CF8; }
+  .status-in-progress { background: linear-gradient(135deg, rgba(79,70,229,0.15), rgba(6,182,212,0.15)); }
+  .light .status-in-progress { color: #4F46E5; }
+  .dark .status-in-progress { color: #818CF8; }
+  .status-completed { background: rgba(16,185,129,0.1); color: #10B981; }
+  .status-new { background: rgba(245,158,11,0.1); color: #F59E0B; }
+  .job-card-progress {
+    margin-top: 10px;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .light .job-card-progress { background: #F1F5F9; }
+  .dark .job-card-progress { background: rgba(255,255,255,0.06); }
+  .progress-fill-gradient {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #4F46E5, #06B6D4);
+  }
+  .dark .progress-fill-gradient { background: linear-gradient(90deg, #818CF8, #22D3EE); }
+  .progress-fill-green {
+    height: 100%;
+    border-radius: 2px;
+    background: #10B981;
+  }
+
+  /* Job Detail */
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 16px;
+  }
+  .back-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+  }
+  .light .back-arrow { background: #F1F5F9; }
+  .light .back-arrow svg { color: #0F172A; }
+  .dark .back-arrow { background: rgba(255,255,255,0.06); }
+  .dark .back-arrow svg { color: #F1F5F9; }
+  .detail-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .light .detail-title { color: #0F172A; }
+  .dark .detail-title { color: #F1F5F9; }
+
+  .gradient-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #4F46E5, #06B6D4);
+    margin-bottom: 20px;
+  }
+  .dark .gradient-badge { background: linear-gradient(135deg, #818CF8, #22D3EE); color: #0F0B1A; }
+
+  .detail-progress-section {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .light .detail-progress-section { background: #fff; box-shadow: 0 4px 16px rgba(79,70,229,0.08); }
+  .dark .detail-progress-section {
+    background: rgba(30,27,50,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .detail-progress-top { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .detail-ring { width: 56px; height: 56px; flex-shrink: 0; }
+  .detail-ring svg { width: 56px; height: 56px; transform: rotate(-90deg); }
+  .detail-ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .light .detail-ring-label { color: #0F172A; }
+  .dark .detail-ring-label { color: #F1F5F9; }
+  .progress-steps { display: flex; flex-direction: column; gap: 6px; }
+  .progress-step { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .step-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .step-pending .step-dot { background: #CBD5E1; }
+  .dark .step-pending .step-dot { background: #475569; }
+  .step-pending { opacity: 0.5; }
+  .light .progress-step { color: #0F172A; }
+  .dark .progress-step { color: #F1F5F9; }
+
+  .detail-card {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .light .detail-card { background: #fff; box-shadow: 0 4px 16px rgba(79,70,229,0.08); }
+  .dark .detail-card {
+    background: rgba(30,27,50,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .detail-card-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .light .detail-card-label { color: #94A3B8; }
+  .dark .detail-card-label { color: #64748B; }
+  .detail-card-value { font-size: 14px; font-weight: 500; line-height: 1.5; }
+  .light .detail-card-value { color: #0F172A; }
+  .dark .detail-card-value { color: #F1F5F9; }
+  .detail-card-value a { text-decoration: none; }
+  .light .detail-card-value a { color: #4F46E5; }
+  .dark .detail-card-value a { color: #818CF8; }
+
+  .line-items { margin-top: 4px; }
+  .line-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .line-item + .line-item { border-top: 1px solid rgba(0,0,0,0.04); }
+  .dark .line-item + .line-item { border-top-color: rgba(255,255,255,0.06); }
+  .line-item-total { font-weight: 700; border-top: 2px solid; }
+  .light .line-item-total { border-color: rgba(79,70,229,0.2); }
+  .dark .line-item-total { border-color: rgba(129,140,248,0.2); }
+  .light .line-item { color: #0F172A; }
+  .dark .line-item { color: #F1F5F9; }
+  .line-item .amount { font-weight: 600; }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .btn-start {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #4F46E5, #06B6D4);
+    cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+  .dark .btn-start { background: linear-gradient(135deg, #818CF8, #22D3EE); color: #0F0B1A; }
+  .btn-call {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    background: none;
+  }
+  .light .btn-call {
+    border: 2px solid transparent;
+    background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #4F46E5, #06B6D4);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    color: #4F46E5;
+  }
+  .dark .btn-call {
+    border: 2px solid transparent;
+    background-image: linear-gradient(rgba(30,27,50,0.7), rgba(30,27,50,0.7)), linear-gradient(135deg, #818CF8, #22D3EE);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    color: #818CF8;
+  }
+
+  /* ===== DARK MODE OVERRIDES ===== */
+  .dark .status-bar .time { color: #F1F5F9; }
+  .dark .status-bar .icons svg { color: #F1F5F9; }
+  .dark .home-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 20px; }
+  .dark .home-title {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #818CF8, #22D3EE);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .dark .notif-bell {
+    position: relative; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; background: rgba(255,255,255,0.06);
+  }
+  .dark .notif-bell svg { color: #94A3B8; width: 20px; height: 20px; }
+  .dark .notif-badge {
+    position: absolute; top: 4px; right: 4px; width: 18px; height: 18px;
+    border-radius: 9px; background: linear-gradient(135deg, #818CF8, #22D3EE);
+    color: #0F0B1A; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dark .progress-ring-label .ring-num { font-size: 28px; font-weight: 700; color: #F1F5F9; letter-spacing: -0.02em; }
+  .dark .progress-ring-label .ring-sub { font-size: 12px; color: #94A3B8; }
+  .dark .stat-card {
+    background: rgba(30,27,50,0.7);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: none;
+  }
+  .dark .stat-card .stat-label { color: #94A3B8; }
+  .dark .stat-card .stat-value { color: #F1F5F9; }
+  .dark .mini-progress { background: rgba(255,255,255,0.06); }
+  .dark .mini-progress-fill { background: linear-gradient(90deg, #818CF8, #22D3EE); }
+  .dark .next-job-card {
+    background: rgba(30,27,50,0.7);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: none;
+  }
+  .dark .next-job-card::before { background: linear-gradient(180deg, #818CF8, #22D3EE); }
+  .dark .next-job-card .card-header {
+    background: linear-gradient(90deg, #818CF8, #22D3EE);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .dark .next-job-card .job-title { color: #F1F5F9; }
+  .dark .next-job-card .job-customer { color: #94A3B8; }
+  .dark .next-job-card .job-address { color: #94A3B8; }
+  .dark .next-job-card .job-time { color: #818CF8; }
+  .dark .job-progress-bar { background: rgba(255,255,255,0.06); }
+  .dark .section-title { color: #F1F5F9; }
+  .dark .activity-text { color: #F1F5F9; }
+  .dark .activity-time { color: #64748B; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Pulse</h1>
+<p class="page-subtitle">Dynamic / Energetic &mdash; Glass-morphism &amp; Gradient Accents</p>
+
+<div class="phones-container">
+
+  <!-- ===== LIGHT MODE PHONE ===== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">Light Mode</div>
+    <div class="phone-frame light" id="phone-light">
+      <div class="phone-inner">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="icons">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="12" rx="2"/><path d="M22 11v4"/></svg>
+          </span>
+        </div>
+        <div class="screen-tabs">
+          <button class="screen-tab active" data-screen="home" data-phone="light">Home</button>
+          <button class="screen-tab" data-screen="jobs" data-phone="light">Job List</button>
+          <button class="screen-tab" data-screen="detail" data-phone="light">Job Detail</button>
+        </div>
+        <div class="screen-content">
+          <!-- HOME -->
+          <div class="screen-panel active" id="light-home">
+            <div class="home-header">
+              <span class="home-title">FieldService Pro</span>
+              <div class="notif-bell">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-badge">3</span>
+              </div>
+            </div>
+            <div class="progress-ring-container">
+              <div class="progress-ring-wrap">
+                <svg viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#F1F5F9" stroke-width="8"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad-light)" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="117"/>
+                  <defs><linearGradient id="grad-light" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+                </svg>
+                <div class="progress-ring-label">
+                  <span class="ring-num">5/8</span>
+                  <span class="ring-sub">Jobs Today</span>
+                </div>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card">
+                <div class="stat-label">Today</div>
+                <div class="stat-value">5</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:62%"></div></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Active</div>
+                <div class="stat-value">2 <span class="pulse-dot"></span></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Done</div>
+                <div class="stat-value">8 <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              </div>
+            </div>
+            <div class="next-job-card">
+              <div class="card-header">Next Job</div>
+              <div class="job-title">Job #1047 &mdash; HVAC Maintenance</div>
+              <div class="job-customer">Sarah Mitchell</div>
+              <div class="job-address">123 Oak Street</div>
+              <div class="job-time">10:30 AM</div>
+              <div class="job-progress-bar"><div class="mini-progress-fill" style="width:0%"></div></div>
+            </div>
+            <div class="activity-section">
+              <div class="section-title">Activity Feed</div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">Job #1045 completed</span>
+                <span class="activity-time">9:15 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">Invoice #2089 paid</span>
+                <span class="activity-time">8:45 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">New job #1048 assigned</span>
+                <span class="activity-time">8:30 AM</span>
+              </div>
+            </div>
+          </div>
+          <!-- JOBS -->
+          <div class="screen-panel" id="light-jobs">
+            <div class="jobs-header">
+              <span class="jobs-title">Jobs</span>
+              <button class="search-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+            </div>
+            <div class="filter-tabs">
+              <button class="filter-tab active">All (12)</button>
+              <button class="filter-tab">Today (5)</button>
+              <button class="filter-tab">Week (8)</button>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1047</span><span class="job-card-time">10:30 AM</span></div>
+              <div class="job-card-title">HVAC Maintenance</div>
+              <div class="job-card-info">Sarah Mitchell &bull; 123 Oak St</div>
+              <span class="job-card-status status-scheduled">Scheduled</span>
+              <div class="job-card-progress"><div class="progress-fill-gradient" style="width:0%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1046</span><span class="job-card-time">9:00 AM</span></div>
+              <div class="job-card-title">Plumbing Repair</div>
+              <div class="job-card-info">James Wilson &bull; 456 Elm Ave</div>
+              <span class="job-card-status status-in-progress">In Progress</span>
+              <div class="job-card-progress"><div class="progress-fill-gradient" style="width:40%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1045</span><span class="job-card-time">8:00 AM</span></div>
+              <div class="job-card-title">Electrical Inspection</div>
+              <div class="job-card-info">Maria Garcia &bull; 789 Pine Rd</div>
+              <span class="job-card-status status-completed">Completed</span>
+              <div class="job-card-progress"><div class="progress-fill-green" style="width:100%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1048</span><span class="job-card-time">1:00 PM</span></div>
+              <div class="job-card-title">AC Installation</div>
+              <div class="job-card-info">Robert Chen &bull; 321 Maple Dr</div>
+              <span class="job-card-status status-new">New</span>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1044</span><span class="job-card-time">Yesterday</span></div>
+              <div class="job-card-title">Furnace Repair</div>
+              <div class="job-card-info">Lisa Thompson &bull; 654 Cedar Ln</div>
+              <span class="job-card-status status-completed">Completed</span>
+              <div class="job-card-progress"><div class="progress-fill-green" style="width:100%"></div></div>
+            </div>
+          </div>
+          <!-- DETAIL -->
+          <div class="screen-panel" id="light-detail">
+            <div class="detail-header">
+              <button class="back-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+              <span class="detail-title">Job #1047</span>
+            </div>
+            <span class="gradient-badge">Scheduled</span>
+            <div class="detail-progress-section">
+              <div class="detail-progress-top">
+                <div class="detail-ring" style="position:relative">
+                  <svg viewBox="0 0 56 56">
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="#F1F5F9" stroke-width="5"/>
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="url(#grad-light)" stroke-width="5" stroke-linecap="round" stroke-dasharray="138" stroke-dashoffset="138"/>
+                  </svg>
+                  <div class="detail-ring-label">0%</div>
+                </div>
+                <div class="progress-steps">
+                  <div class="progress-step step-pending"><span class="step-dot"></span> Dispatched</div>
+                  <div class="progress-step step-pending"><span class="step-dot"></span> In Progress</div>
+                  <div class="progress-step step-pending"><span class="step-dot"></span> Completed</div>
+                </div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Customer</div>
+              <div class="detail-card-value">Sarah Mitchell<br><a href="#">(555) 234-5678</a><br><a href="#">sarah.mitchell@email.com</a></div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Location</div>
+              <div class="detail-card-value">123 Oak Street, Apt 4B<br>Springfield, IL 62701</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Service</div>
+              <div class="detail-card-value">HVAC Maintenance</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Schedule</div>
+              <div class="detail-card-value">Today, 10:30 AM &ndash; 12:00 PM</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Notes</div>
+              <div class="detail-card-value">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Line Items</div>
+              <div class="line-items">
+                <div class="line-item"><span>Filter replacement</span><span class="amount">$45.00</span></div>
+                <div class="line-item"><span>Labor (1.5 hrs)</span><span class="amount">$127.50</span></div>
+                <div class="line-item line-item-total"><span>Total</span><span class="amount">$172.50</span></div>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-start">Start Job</button>
+              <button class="btn-call">Call Customer</button>
+            </div>
+          </div>
+        </div>
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h8"/><path d="M8 17h4"/></svg>
+            <span>Jobs</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            <span>Schedule</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DARK MODE PHONE ===== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">Dark Mode</div>
+    <div class="phone-frame dark" id="phone-dark">
+      <div class="phone-inner">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="icons">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="12" rx="2"/><path d="M22 11v4"/></svg>
+          </span>
+        </div>
+        <div class="screen-tabs">
+          <button class="screen-tab active" data-screen="home" data-phone="dark">Home</button>
+          <button class="screen-tab" data-screen="jobs" data-phone="dark">Job List</button>
+          <button class="screen-tab" data-screen="detail" data-phone="dark">Job Detail</button>
+        </div>
+        <div class="screen-content">
+          <!-- HOME -->
+          <div class="screen-panel active" id="dark-home">
+            <div class="home-header">
+              <span class="home-title">FieldService Pro</span>
+              <div class="notif-bell">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-badge">3</span>
+              </div>
+            </div>
+            <div class="progress-ring-container">
+              <div class="progress-ring-wrap">
+                <svg viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad-dark)" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="117"/>
+                  <defs><linearGradient id="grad-dark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818CF8"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs>
+                </svg>
+                <div class="progress-ring-label">
+                  <span class="ring-num">5/8</span>
+                  <span class="ring-sub">Jobs Today</span>
+                </div>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card">
+                <div class="stat-label">Today</div>
+                <div class="stat-value">5</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:62%"></div></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Active</div>
+                <div class="stat-value">2 <span class="pulse-dot"></span></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Done</div>
+                <div class="stat-value">8 <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              </div>
+            </div>
+            <div class="next-job-card">
+              <div class="card-header">Next Job</div>
+              <div class="job-title">Job #1047 &mdash; HVAC Maintenance</div>
+              <div class="job-customer">Sarah Mitchell</div>
+              <div class="job-address">123 Oak Street</div>
+              <div class="job-time">10:30 AM</div>
+              <div class="job-progress-bar"><div class="mini-progress-fill" style="width:0%"></div></div>
+            </div>
+            <div class="activity-section">
+              <div class="section-title">Activity Feed</div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">Job #1045 completed</span>
+                <span class="activity-time">9:15 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">Invoice #2089 paid</span>
+                <span class="activity-time">8:45 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <span class="activity-text">New job #1048 assigned</span>
+                <span class="activity-time">8:30 AM</span>
+              </div>
+            </div>
+          </div>
+          <!-- JOBS -->
+          <div class="screen-panel" id="dark-jobs">
+            <div class="jobs-header">
+              <span class="jobs-title">Jobs</span>
+              <button class="search-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+            </div>
+            <div class="filter-tabs">
+              <button class="filter-tab active">All (12)</button>
+              <button class="filter-tab">Today (5)</button>
+              <button class="filter-tab">Week (8)</button>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1047</span><span class="job-card-time">10:30 AM</span></div>
+              <div class="job-card-title">HVAC Maintenance</div>
+              <div class="job-card-info">Sarah Mitchell &bull; 123 Oak St</div>
+              <span class="job-card-status status-scheduled">Scheduled</span>
+              <div class="job-card-progress"><div class="progress-fill-gradient" style="width:0%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1046</span><span class="job-card-time">9:00 AM</span></div>
+              <div class="job-card-title">Plumbing Repair</div>
+              <div class="job-card-info">James Wilson &bull; 456 Elm Ave</div>
+              <span class="job-card-status status-in-progress">In Progress</span>
+              <div class="job-card-progress"><div class="progress-fill-gradient" style="width:40%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1045</span><span class="job-card-time">8:00 AM</span></div>
+              <div class="job-card-title">Electrical Inspection</div>
+              <div class="job-card-info">Maria Garcia &bull; 789 Pine Rd</div>
+              <span class="job-card-status status-completed">Completed</span>
+              <div class="job-card-progress"><div class="progress-fill-green" style="width:100%"></div></div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1048</span><span class="job-card-time">1:00 PM</span></div>
+              <div class="job-card-title">AC Installation</div>
+              <div class="job-card-info">Robert Chen &bull; 321 Maple Dr</div>
+              <span class="job-card-status status-new">New</span>
+            </div>
+            <div class="job-card">
+              <div class="job-card-top"><span class="job-card-id">#1044</span><span class="job-card-time">Yesterday</span></div>
+              <div class="job-card-title">Furnace Repair</div>
+              <div class="job-card-info">Lisa Thompson &bull; 654 Cedar Ln</div>
+              <span class="job-card-status status-completed">Completed</span>
+              <div class="job-card-progress"><div class="progress-fill-green" style="width:100%"></div></div>
+            </div>
+          </div>
+          <!-- DETAIL -->
+          <div class="screen-panel" id="dark-detail">
+            <div class="detail-header">
+              <button class="back-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+              <span class="detail-title">Job #1047</span>
+            </div>
+            <span class="gradient-badge">Scheduled</span>
+            <div class="detail-progress-section">
+              <div class="detail-progress-top">
+                <div class="detail-ring" style="position:relative">
+                  <svg viewBox="0 0 56 56">
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5"/>
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="url(#grad-dark)" stroke-width="5" stroke-linecap="round" stroke-dasharray="138" stroke-dashoffset="138"/>
+                  </svg>
+                  <div class="detail-ring-label">0%</div>
+                </div>
+                <div class="progress-steps">
+                  <div class="progress-step step-pending"><span class="step-dot"></span> Dispatched</div>
+                  <div class="progress-step step-pending"><span class="step-dot"></span> In Progress</div>
+                  <div class="progress-step step-pending"><span class="step-dot"></span> Completed</div>
+                </div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Customer</div>
+              <div class="detail-card-value">Sarah Mitchell<br><a href="#">(555) 234-5678</a><br><a href="#">sarah.mitchell@email.com</a></div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Location</div>
+              <div class="detail-card-value">123 Oak Street, Apt 4B<br>Springfield, IL 62701</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Service</div>
+              <div class="detail-card-value">HVAC Maintenance</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Schedule</div>
+              <div class="detail-card-value">Today, 10:30 AM &ndash; 12:00 PM</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Notes</div>
+              <div class="detail-card-value">Annual maintenance check. Customer reports unusual noise from outdoor unit.</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-card-label">Line Items</div>
+              <div class="line-items">
+                <div class="line-item"><span>Filter replacement</span><span class="amount">$45.00</span></div>
+                <div class="line-item"><span>Labor (1.5 hrs)</span><span class="amount">$127.50</span></div>
+                <div class="line-item line-item-total"><span>Total</span><span class="amount">$172.50</span></div>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-start">Start Job</button>
+              <button class="btn-call">Call Customer</button>
+            </div>
+          </div>
+        </div>
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h8"/><path d="M8 17h4"/></svg>
+            <span>Jobs</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            <span>Schedule</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.screen-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const phone = tab.dataset.phone;
+    const screen = tab.dataset.screen;
+    const frame = document.getElementById('phone-' + phone);
+    frame.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    frame.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(phone + '-' + screen).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

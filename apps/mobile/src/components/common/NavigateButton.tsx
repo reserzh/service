@@ -54,12 +54,12 @@ export function NavigateButton({ address, latitude, longitude, size = "md" }: Na
     return (
       <Pressable
         onPress={handlePress}
-        className="flex-row items-center gap-1 bg-blue-50 dark:bg-blue-950 px-3 py-1.5 rounded-lg active:bg-blue-100 dark:active:bg-blue-900"
+        className="flex-row items-center gap-1 bg-orange-50 dark:bg-orange-950 px-3 py-1.5 rounded-lg active:bg-orange-100 dark:active:bg-orange-900"
         accessibilityLabel="Navigate to location"
         accessibilityRole="button"
       >
-        <Navigation size={14} color="#3b82f6" />
-        <Text className="text-xs font-medium text-blue-600 dark:text-blue-400">Navigate</Text>
+        <Navigation size={14} color="#EA580C" />
+        <Text className="text-xs font-medium text-orange-600 dark:text-orange-400">Navigate</Text>
       </Pressable>
     );
   }
@@ -67,7 +67,7 @@ export function NavigateButton({ address, latitude, longitude, size = "md" }: Na
   return (
     <Pressable
       onPress={handlePress}
-      className="flex-row items-center justify-center gap-2 bg-blue-600 px-4 py-3 rounded-xl active:bg-blue-700"
+      className="flex-row items-center justify-center gap-2 bg-orange-600 px-4 py-3 rounded-xl active:bg-orange-700"
       accessibilityLabel="Navigate to location"
       accessibilityRole="button"
     >

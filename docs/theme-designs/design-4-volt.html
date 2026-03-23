@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volt Neon — FieldService Pro Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: #09090b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    color: #e4e4e7;
+  }
+
+  h1.page-title {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa, #c084fc, #7c3aed);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+    text-shadow: none;
+  }
+
+  @keyframes shimmer {
+    to { background-position: 200% center; }
+  }
+
+  @keyframes neonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    color: #a78bfa;
+    margin-bottom: 48px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .frames-container {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .frame-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7c3aed;
+  }
+
+  .frame {
+    width: 680px;
+    height: 520px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    border: 1px solid;
+  }
+  .light.frame {
+    border-color: #ddd6fe;
+    box-shadow: 0 0 30px rgba(124,58,237,0.1), 0 20px 60px rgba(0,0,0,0.1);
+  }
+  .dark.frame {
+    border-color: rgba(124,58,237,0.3);
+    box-shadow: 0 0 30px rgba(124,58,237,0.2), 0 0 80px rgba(124,58,237,0.05), 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .light .sidebar {
+    background: #f5f3ff;
+    border-right: 1px solid #ddd6fe;
+  }
+  .dark .sidebar {
+    background: #0a0a0f;
+    border-right: 1px solid rgba(124,58,237,0.2);
+  }
+
+  .sidebar-logo {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 0 20px 18px;
+    margin-bottom: 14px;
+  }
+  .light .sidebar-logo {
+    color: #7c3aed;
+    border-bottom: 1px solid #ddd6fe;
+  }
+  .dark .sidebar-logo {
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-bottom: 1px solid rgba(124,58,237,0.2);
+    text-shadow: none;
+  }
+
+  .nav-group-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 10px 20px 4px;
+  }
+  .light .nav-group-label { color: #a78bfa; }
+  .dark .nav-group-label { color: rgba(167,139,250,0.4); }
+
+  .nav-item {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .light .nav-item { color: #6b7280; }
+  .dark .nav-item { color: rgba(228,228,231,0.4); }
+
+  .nav-item.active { font-weight: 700; }
+  .light .nav-item.active {
+    color: #7c3aed;
+    background: rgba(124,58,237,0.08);
+    border-left: 3px solid #7c3aed;
+  }
+  .dark .nav-item.active {
+    color: #a78bfa;
+    background: rgba(124,58,237,0.1);
+    border-left: 3px solid #7c3aed;
+    text-shadow: 0 0 12px rgba(124,58,237,0.5);
+  }
+
+  .nav-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    opacity: 0.35;
+  }
+  .nav-item.active .nav-icon { opacity: 1; }
+  .light .nav-icon { background: #a78bfa; }
+  .dark .nav-icon { background: #7c3aed; }
+  .dark .nav-item.active .nav-icon {
+    background: #a78bfa;
+    box-shadow: 0 0 8px rgba(167,139,250,0.5);
+  }
+
+  /* ── Main ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .light .main { background: #fafafa; }
+  .dark .main { background: #09090b; }
+
+  .topbar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .light .topbar { border-bottom: 1px solid #e5e7eb; }
+  .dark .topbar { border-bottom: 1px solid rgba(124,58,237,0.15); }
+
+  .search-box {
+    flex: 1;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid;
+    padding: 0 12px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 12px;
+  }
+  .light .search-box {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+    color: #7c3aed;
+  }
+  .dark .search-box {
+    background: #18181b;
+    border-color: rgba(124,58,237,0.2);
+    color: #a78bfa;
+  }
+
+  .topbar-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  .light .topbar-icon { background: #ddd6fe; }
+  .dark .topbar-icon { background: #27272a; }
+
+  .topbar-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  }
+  .dark .topbar-avatar {
+    box-shadow: 0 0 12px rgba(124,58,237,0.4);
+  }
+
+  .content {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+  }
+
+  .content-title {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .light .content-title { color: #18181b; }
+  .dark .content-title {
+    background: linear-gradient(90deg, #c084fc, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid;
+    position: relative;
+  }
+  .light .stat-card {
+    background: #fff;
+    border-color: #e5e7eb;
+  }
+  .dark .stat-card {
+    background: #18181b;
+    border-color: rgba(124,58,237,0.15);
+  }
+  .dark .stat-card:hover {
+    border-color: rgba(124,58,237,0.4);
+    box-shadow: 0 0 16px rgba(124,58,237,0.1);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .light .stat-label { color: #7c3aed; }
+  .dark .stat-label { color: #a78bfa; }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 900;
+  }
+  .light .stat-value { color: #18181b; }
+  .dark .stat-value { color: #fafafa; }
+
+  .stat-accent {
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .light .stat-accent { color: #7c3aed; }
+  .dark .stat-accent {
+    color: #a78bfa;
+    text-shadow: 0 0 8px rgba(167,139,250,0.3);
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .section-card {
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid;
+  }
+  .light .section-card {
+    background: #fff;
+    border-color: #e5e7eb;
+  }
+  .dark .section-card {
+    background: #18181b;
+    border-color: rgba(124,58,237,0.15);
+  }
+
+  .section-heading {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  .light .section-heading {
+    color: #7c3aed;
+    border-bottom: 2px solid #ddd6fe;
+  }
+  .dark .section-heading {
+    color: #a78bfa;
+    border-bottom: 2px solid rgba(124,58,237,0.3);
+    text-shadow: 0 0 8px rgba(167,139,250,0.3);
+  }
+
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 12px;
+  }
+  .list-item + .list-item { border-top: 1px solid; }
+  .light .list-item + .list-item { border-color: #f3f4f6; }
+  .dark .list-item + .list-item { border-color: #27272a; }
+
+  .list-item-title { font-weight: 600; }
+  .light .list-item-title { color: #18181b; }
+  .dark .list-item-title { color: #e4e4e7; }
+
+  .list-item-sub { font-size: 11px; margin-top: 2px; }
+  .light .list-item-sub { color: #9ca3af; }
+  .dark .list-item-sub { color: #52525b; }
+
+  .badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .badge-scheduled {
+    background: rgba(124,58,237,0.12);
+    color: #7c3aed;
+  }
+  .dark .badge-scheduled {
+    background: rgba(124,58,237,0.15);
+    color: #a78bfa;
+    box-shadow: 0 0 6px rgba(124,58,237,0.2);
+  }
+  .badge-progress {
+    background: rgba(16,185,129,0.12);
+    color: #10b981;
+  }
+  .dark .badge-progress {
+    box-shadow: 0 0 6px rgba(16,185,129,0.2);
+  }
+  .badge-new {
+    background: rgba(244,114,182,0.12);
+    color: #f472b6;
+  }
+  .dark .badge-new {
+    box-shadow: 0 0 6px rgba(244,114,182,0.2);
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Volt Neon</h1>
+<p class="page-subtitle">Electric glow &middot; Gradient brand text &middot; Neon on black</p>
+
+<div class="frames-container">
+  <!-- Light Mode -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Light Mode</span>
+    <div class="frame light">
+      <div class="sidebar">
+        <div class="sidebar-logo">⚡ FieldService</div>
+        <div class="nav-group-label">Main</div>
+        <div class="nav-item active"><div class="nav-icon"></div> Dashboard</div>
+        <div class="nav-group-label">Operations</div>
+        <div class="nav-item"><div class="nav-icon"></div> Jobs</div>
+        <div class="nav-item"><div class="nav-icon"></div> Schedule</div>
+        <div class="nav-item"><div class="nav-icon"></div> Dispatch</div>
+        <div class="nav-group-label">Customers</div>
+        <div class="nav-item"><div class="nav-icon"></div> Customers</div>
+        <div class="nav-item"><div class="nav-icon"></div> Properties</div>
+        <div class="nav-group-label">Financial</div>
+        <div class="nav-item"><div class="nav-icon"></div> Estimates</div>
+        <div class="nav-item"><div class="nav-icon"></div> Invoices</div>
+        <div class="nav-group-label">Insights</div>
+        <div class="nav-item"><div class="nav-icon"></div> Reports</div>
+        <div class="nav-group-label">Tools</div>
+        <div class="nav-item"><div class="nav-icon"></div> Equipment</div>
+        <div class="nav-group-label">System</div>
+        <div class="nav-item"><div class="nav-icon"></div> Settings</div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="search-box">⌘K Search…</div>
+          <div class="topbar-icon"></div>
+          <div class="topbar-avatar"></div>
+        </div>
+        <div class="content">
+          <div class="content-title">Dashboard</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Active Jobs</div>
+              <div class="stat-value">24</div>
+              <div class="stat-accent">▲ 12%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Revenue</div>
+              <div class="stat-value">$18.4k</div>
+              <div class="stat-accent">This week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Completion</div>
+              <div class="stat-value">92%</div>
+              <div class="stat-accent">▲ 3%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Techs Out</div>
+              <div class="stat-value">8</div>
+              <div class="stat-accent">of 12</div>
+            </div>
+          </div>
+          <div class="section-grid">
+            <div class="section-card">
+              <div class="section-heading">Today's Schedule</div>
+              <div class="list-item">
+                <div><div class="list-item-title">HVAC Install — Johnson</div><div class="list-item-sub">9:00 AM · Mike T.</div></div>
+                <span class="badge badge-scheduled">Scheduled</span>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Duct Repair — Smith</div><div class="list-item-sub">11:30 AM · Alex R.</div></div>
+                <span class="badge badge-progress">In Progress</span>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Filter Replace — Davis</div><div class="list-item-sub">2:00 PM · Sam K.</div></div>
+                <span class="badge badge-new">New</span>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-heading">Recent Activity</div>
+              <div class="list-item">
+                <div><div class="list-item-title">Invoice #1047 paid</div><div class="list-item-sub">$2,400 · 15 min ago</div></div>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Job #308 completed</div><div class="list-item-sub">Mike T. · 42 min ago</div></div>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Estimate #89 approved</div><div class="list-item-sub">$5,200 · 1 hr ago</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark Mode -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Dark Mode</span>
+    <div class="frame dark">
+      <div class="sidebar">
+        <div class="sidebar-logo">⚡ FieldService</div>
+        <div class="nav-group-label">Main</div>
+        <div class="nav-item active"><div class="nav-icon"></div> Dashboard</div>
+        <div class="nav-group-label">Operations</div>
+        <div class="nav-item"><div class="nav-icon"></div> Jobs</div>
+        <div class="nav-item"><div class="nav-icon"></div> Schedule</div>
+        <div class="nav-item"><div class="nav-icon"></div> Dispatch</div>
+        <div class="nav-group-label">Customers</div>
+        <div class="nav-item"><div class="nav-icon"></div> Customers</div>
+        <div class="nav-item"><div class="nav-icon"></div> Properties</div>
+        <div class="nav-group-label">Financial</div>
+        <div class="nav-item"><div class="nav-icon"></div> Estimates</div>
+        <div class="nav-item"><div class="nav-icon"></div> Invoices</div>
+        <div class="nav-group-label">Insights</div>
+        <div class="nav-item"><div class="nav-icon"></div> Reports</div>
+        <div class="nav-group-label">Tools</div>
+        <div class="nav-item"><div class="nav-icon"></div> Equipment</div>
+        <div class="nav-group-label">System</div>
+        <div class="nav-item"><div class="nav-icon"></div> Settings</div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="search-box">⌘K Search…</div>
+          <div class="topbar-icon"></div>
+          <div class="topbar-avatar"></div>
+        </div>
+        <div class="content">
+          <div class="content-title">Dashboard</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Active Jobs</div>
+              <div class="stat-value">24</div>
+              <div class="stat-accent">▲ 12%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Revenue</div>
+              <div class="stat-value">$18.4k</div>
+              <div class="stat-accent">This week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Completion</div>
+              <div class="stat-value">92%</div>
+              <div class="stat-accent">▲ 3%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Techs Out</div>
+              <div class="stat-value">8</div>
+              <div class="stat-accent">of 12</div>
+            </div>
+          </div>
+          <div class="section-grid">
+            <div class="section-card">
+              <div class="section-heading">Today's Schedule</div>
+              <div class="list-item">
+                <div><div class="list-item-title">HVAC Install — Johnson</div><div class="list-item-sub">9:00 AM · Mike T.</div></div>
+                <span class="badge badge-scheduled">Scheduled</span>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Duct Repair — Smith</div><div class="list-item-sub">11:30 AM · Alex R.</div></div>
+                <span class="badge badge-progress">In Progress</span>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Filter Replace — Davis</div><div class="list-item-sub">2:00 PM · Sam K.</div></div>
+                <span class="badge badge-new">New</span>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-heading">Recent Activity</div>
+              <div class="list-item">
+                <div><div class="list-item-title">Invoice #1047 paid</div><div class="list-item-sub">$2,400 · 15 min ago</div></div>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Job #308 completed</div><div class="list-item-sub">Mike T. · 42 min ago</div></div>
+              </div>
+              <div class="list-item">
+                <div><div class="list-item-title">Estimate #89 approved</div><div class="list-item-sub">$5,200 · 1 hr ago</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

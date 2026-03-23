@@ -68,7 +68,7 @@ export function BiometricLock({ visible, onUnlock }: BiometricLockProps) {
         </Text>
         <Pressable
           onPress={handleUnlock}
-          className="flex-row items-center gap-3 bg-blue-600 rounded-2xl px-8 py-4 active:bg-blue-700"
+          className="flex-row items-center gap-3 bg-orange-600 rounded-2xl px-8 py-4 active:bg-orange-700"
           accessibilityLabel={biometricLabel}
           accessibilityRole="button"
         >

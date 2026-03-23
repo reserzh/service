@@ -3,9 +3,9 @@ import { requireAuth } from "@/lib/auth";
 import { listCustomers } from "@/lib/services/customers";
 import { PageHeader } from "@/components/layout/page-header";
 import { CustomerList } from "./customer-list";
-import { CreateCustomerDialog } from "./create-customer-dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Customers",
@@ -28,12 +28,12 @@ export default async function CustomersPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <PageHeader title="Customers" description={`${result.meta.total} customers`}>
-        <CreateCustomerDialog>
-          <Button>
+        <Button asChild>
+          <Link href="/customers/new">
             <Plus className="mr-2 h-4 w-4" />
             Add Customer
-          </Button>
-        </CreateCustomerDialog>
+          </Link>
+        </Button>
       </PageHeader>
 
       <CustomerList

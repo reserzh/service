@@ -8,7 +8,7 @@ export default async function PortalJobsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Jobs</h1>
+      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Jobs</h1>
       <PortalJobsView jobs={jobs} />
     </div>
   );

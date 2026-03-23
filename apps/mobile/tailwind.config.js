@@ -8,10 +8,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // Body — Inter Tight (weights resolved via @font-face in global.css)
-        sans: ["InterTight"],
-        // Headings — Libre Baskerville (weights resolved via @font-face in global.css)
-        heading: ["LibreBaskerville"],
+        // Body — Inter Tight (RN requires exact registered font names per weight)
+        sans: ["InterTight_400Regular"],
+        "sans-medium": ["InterTight_500Medium"],
+        "sans-semibold": ["InterTight_600SemiBold"],
+        "sans-bold": ["InterTight_700Bold"],
+        "sans-extrabold": ["InterTight_800ExtraBold"],
+        // Headings — Libre Baskerville
+        heading: ["LibreBaskerville_400Regular"],
+        "heading-bold": ["LibreBaskerville_700Bold"],
       },
       colors: {
         // Signal design — warm stone + high-visibility orange

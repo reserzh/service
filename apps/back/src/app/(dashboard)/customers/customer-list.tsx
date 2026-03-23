@@ -10,13 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Search, Users, Download } from "lucide-react";
+import { Users } from "lucide-react";
 import { useCallback } from "react";
-import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search";
 import { ListPagination } from "@/components/shared/list-pagination";
+import { ListToolbar } from "@/components/shared/list-toolbar";
 import { EmptyState } from "@/components/shared/empty-state";
 
 interface Customer {
@@ -39,7 +37,6 @@ interface CustomerListProps {
 export function CustomerList({ customers, meta, searchQuery }: CustomerListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { search, handleChange, clearSearch } = useDebouncedSearch("/customers", searchQuery);
 
   const goToPage = useCallback(
     (page: number) => {
@@ -52,36 +49,13 @@ export function CustomerList({ customers, meta, searchQuery }: CustomerListProps
 
   return (
     <div className="space-y-4">
-      {/* Search */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search customers..."
-            value={search}
-            onChange={(e) => handleChange(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        {search && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearSearch}
-          >
-            Clear
-          </Button>
-        )}
-
-        <div className="ml-auto">
-          <Button variant="outline" size="sm" asChild>
-            <a href={`/api/v1/customers/export?${searchParams.toString()}`} download>
-              <Download className="mr-2 h-3.5 w-3.5" />
-              Export
-            </a>
-          </Button>
-        </div>
-      </div>
+      {/* Toolbar */}
+      <ListToolbar
+        basePath="/customers"
+        searchPlaceholder="Search customers..."
+        searchQuery={searchQuery}
+        exportUrl="/api/v1/customers/export"
+      />
 
       {/* Table */}
       <div className="rounded-md border">

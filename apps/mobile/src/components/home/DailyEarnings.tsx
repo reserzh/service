@@ -17,7 +17,7 @@ export function DailyEarnings({ earnings }: DailyEarningsProps) {
         <View className="mb-2">
           <DollarSign size={20} color="#22c55e" />
         </View>
-        <Text className="text-2xl font-heading font-bold text-stone-900 dark:text-white">
+        <Text className="text-2xl font-heading-bold text-stone-900 dark:text-white">
           {formatCurrency(earnings)}
         </Text>
         <Text className="text-xs text-stone-500 dark:text-stone-400">

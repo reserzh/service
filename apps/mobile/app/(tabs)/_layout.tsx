@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Tabs } from "expo-router";
 import { Home, Wrench, Calendar, Menu } from "lucide-react-native";
-import { Platform, View, useColorScheme } from "react-native";
+import { Platform, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 function AnimatedTabIcon({
   Icon,
@@ -20,7 +21,7 @@ function AnimatedTabIcon({
   focused: boolean;
 }) {
   const scale = useSharedValue(1);
-  const isDark = useColorScheme() === "dark";
+  const colors = useSignalColors();
 
   useEffect(() => {
     scale.value = withSpring(focused ? 1.15 : 1, {
@@ -42,7 +43,7 @@ function AnimatedTabIcon({
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: isDark ? "#FB923C" : "#EA580C",
+            backgroundColor: colors.accent,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -61,24 +62,23 @@ function AnimatedTabIcon({
 }
 
 export default function TabsLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const colors = useSignalColors();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: isDark ? "#FFFFFF" : "#1C1917",
-        tabBarInactiveTintColor: isDark ? "#A8A29E" : "#78716C",
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: isDark ? "#292524" : "#FFFFFF",
-          borderTopColor: isDark ? "#44403C" : "#F5F0EB",
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
           height: Platform.OS === "ios" ? 96 : 72,
           paddingBottom: Platform.OS === "ios" ? 28 : 8,
           paddingTop: 8,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowOpacity: 0.08,
           shadowRadius: 8,
           elevation: 8,
         },

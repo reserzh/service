@@ -120,7 +120,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
               onPress={() => setPhotoType(opt.value)}
               className={`flex-1 items-center rounded-lg border py-3.5 ${
                 photoType === opt.value
-                  ? "bg-blue-500 border-blue-500"
+                  ? "bg-orange-600 border-orange-600"
                   : "bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700"
               }`}
             >
