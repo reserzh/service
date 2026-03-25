@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -25,6 +25,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import type { SiteTheme } from "@fieldservice/shared/types";
+import { AIThemePreviewPanel } from "./ai-theme-preview";
 
 interface ThemeOption {
   name: string;
@@ -35,11 +36,13 @@ interface ThemeOption {
 interface AIStyleGeneratorProps {
   onApplyTheme: (theme: SiteTheme) => void;
   logoUrl?: string;
+  onPreviewActiveChange?: (active: boolean) => void;
 }
 
 export function AIStyleGenerator({
   onApplyTheme,
   logoUrl,
+  onPreviewActiveChange,
 }: AIStyleGeneratorProps) {
   // Input state
   const [description, setDescription] = useState("");
@@ -54,9 +57,16 @@ export function AIStyleGenerator({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Preview state
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   // Refinement state
   const [showRefine, setShowRefine] = useState(false);
   const [refinementPrompt, setRefinementPrompt] = useState("");
+
+  useEffect(() => {
+    onPreviewActiveChange?.(options !== null);
+  }, [options, onPreviewActiveChange]);
 
   const hasInput =
     description.trim() || inspirationUrls.length > 0 || logoFile || useCurrentLogo;
@@ -350,181 +360,204 @@ export function AIStyleGenerator({
           </>
         )}
 
-        {/* Results — 3 option cards */}
+        {/* Results — option cards + live preview */}
         {options && (
-          <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
-              {options.map((option, i) => {
-                const isSelected = selectedIndex === i;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setSelectedIndex(i)}
-                    className={cn(
-                      "relative rounded-lg border text-left transition-all hover:shadow-md",
-                      isSelected && "ring-2 ring-primary"
-                    )}
-                  >
-                    {/* Color accent stripe */}
-                    <div
-                      className="h-2 rounded-t-lg"
-                      style={{ backgroundColor: option.theme.primaryColor }}
-                    />
-                    <div className="p-3 space-y-3">
-                      <p className="font-semibold text-sm">{option.name}</p>
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left: option cards + refinement */}
+            <div className="flex-1 min-w-0 space-y-4">
+              <div className="space-y-3">
+                {options.map((option, i) => {
+                  const isSelected = selectedIndex === i;
+                  const isPreviewed = (hoveredIndex ?? selectedIndex ?? 0) === i;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedIndex(i)}
+                      onMouseEnter={() => setHoveredIndex(i)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                      className={cn(
+                        "relative w-full rounded-lg border text-left transition-all hover:shadow-md",
+                        isSelected && "ring-2 ring-primary",
+                        isPreviewed && !isSelected && "border-primary/50"
+                      )}
+                    >
+                      {/* Color accent stripe */}
+                      <div
+                        className="h-2 rounded-t-lg"
+                        style={{ backgroundColor: option.theme.primaryColor }}
+                      />
+                      <div className="p-3 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="font-semibold text-sm">{option.name}</p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={isSelected ? "default" : "outline"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleApply(i);
+                            }}
+                            className="shrink-0"
+                          >
+                            <Check className="mr-1 h-3 w-3" />
+                            Apply
+                          </Button>
+                        </div>
 
-                      {/* Color swatches */}
-                      <div className="flex gap-2">
-                        {[
-                          {
-                            color: option.theme.primaryColor,
-                            label: "Primary",
-                          },
-                          {
-                            color: option.theme.secondaryColor,
-                            label: "Secondary",
-                          },
-                          {
-                            color: option.theme.accentColor,
-                            label: "Accent",
-                          },
-                        ].map((swatch) => (
-                          <div key={swatch.label} className="text-center">
-                            <div
-                              className="h-8 w-8 rounded-full border mx-auto"
-                              style={{ backgroundColor: swatch.color }}
-                            />
-                            <span className="text-[10px] text-muted-foreground mt-1 block">
-                              {swatch.color}
-                            </span>
+                        <div className="flex items-center gap-4">
+                          {/* Color swatches */}
+                          <div className="flex gap-2">
+                            {[
+                              {
+                                color: option.theme.primaryColor,
+                                label: "Primary",
+                              },
+                              {
+                                color: option.theme.secondaryColor,
+                                label: "Secondary",
+                              },
+                              {
+                                color: option.theme.accentColor,
+                                label: "Accent",
+                              },
+                            ].map((swatch) => (
+                              <div key={swatch.label} className="text-center">
+                                <div
+                                  className="h-8 w-8 rounded-full border mx-auto"
+                                  style={{ backgroundColor: swatch.color }}
+                                />
+                                <span className="text-[10px] text-muted-foreground mt-1 block">
+                                  {swatch.color}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+
+                          {/* Font preview */}
+                          <div className="text-xs text-muted-foreground space-y-0.5">
+                            <p>
+                              Heading:{" "}
+                              <span className="font-medium text-foreground">
+                                {option.theme.fontHeading}
+                              </span>
+                            </p>
+                            <p>
+                              Body:{" "}
+                              <span className="font-medium text-foreground">
+                                {option.theme.fontBody}
+                              </span>
+                            </p>
+                            <p>
+                              Radius:{" "}
+                              <span className="font-medium text-foreground">
+                                {option.theme.borderRadius === "0"
+                                  ? "None"
+                                  : option.theme.borderRadius}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Reasoning */}
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {option.reasoning}
+                        </p>
                       </div>
+                    </button>
+                  );
+                })}
+              </div>
 
-                      {/* Font preview */}
-                      <div className="text-xs text-muted-foreground space-y-0.5">
-                        <p>
-                          Heading:{" "}
-                          <span className="font-medium text-foreground">
-                            {option.theme.fontHeading}
-                          </span>
-                        </p>
-                        <p>
-                          Body:{" "}
-                          <span className="font-medium text-foreground">
-                            {option.theme.fontBody}
-                          </span>
-                        </p>
-                        <p>
-                          Radius:{" "}
-                          <span className="font-medium text-foreground">
-                            {option.theme.borderRadius === "0"
-                              ? "None"
-                              : option.theme.borderRadius}
-                          </span>
-                        </p>
-                      </div>
-
-                      {/* Reasoning */}
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        {option.reasoning}
-                      </p>
-
-                      {/* Apply button */}
-                      <Button
-                        type="button"
-                        size="sm"
-                        className="w-full"
-                        variant={isSelected ? "default" : "outline"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleApply(i);
-                        }}
-                      >
-                        <Check className="mr-1 h-3 w-3" />
-                        Apply
-                      </Button>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Refinement */}
-            {showRefine && selectedIndex !== null ? (
-              <div className="space-y-2 rounded-lg border p-3">
-                <Label htmlFor="ai-refine">
-                  Refine &ldquo;{options[selectedIndex].name}&rdquo;
-                </Label>
-                <Textarea
-                  id="ai-refine"
-                  placeholder="e.g., make the accent color warmer, use a serif heading font..."
-                  value={refinementPrompt}
-                  onChange={(e) => setRefinementPrompt(e.target.value)}
-                  maxLength={500}
-                  rows={2}
-                />
+              {/* Refinement */}
+              {showRefine && selectedIndex !== null ? (
+                <div className="space-y-2 rounded-lg border p-3">
+                  <Label htmlFor="ai-refine">
+                    Refine &ldquo;{options[selectedIndex].name}&rdquo;
+                  </Label>
+                  <Textarea
+                    id="ai-refine"
+                    placeholder="e.g., make the accent color warmer, use a serif heading font..."
+                    value={refinementPrompt}
+                    onChange={(e) => setRefinementPrompt(e.target.value)}
+                    maxLength={500}
+                    rows={2}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleRefine}
+                      disabled={!refinementPrompt.trim() || isGenerating}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Refining...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Send
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setShowRefine(false);
+                        setRefinementPrompt("");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
                 <div className="flex gap-2">
                   <Button
                     type="button"
+                    variant="outline"
                     size="sm"
-                    onClick={handleRefine}
-                    disabled={!refinementPrompt.trim() || isGenerating}
+                    onClick={() => {
+                      if (selectedIndex === null) {
+                        showToast.error("Select an option first to refine it");
+                        return;
+                      }
+                      setShowRefine(true);
+                    }}
                   >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Refining...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Send
-                      </>
-                    )}
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Refine
                   </Button>
                   <Button
                     type="button"
-                    size="sm"
                     variant="ghost"
-                    onClick={() => {
-                      setShowRefine(false);
-                      setRefinementPrompt("");
-                    }}
+                    size="sm"
+                    onClick={handleStartOver}
                   >
-                    Cancel
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Start Over
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (selectedIndex === null) {
-                      showToast.error("Select an option first to refine it");
-                      return;
-                    }
-                    setShowRefine(true);
-                  }}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Refine
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleStartOver}
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Start Over
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Right: live preview (desktop) */}
+            <div className="hidden lg:block lg:w-[420px] xl:w-[480px] shrink-0 sticky top-4 self-start">
+              <AIThemePreviewPanel
+                theme={options[hoveredIndex ?? selectedIndex ?? 0].theme}
+              />
+            </div>
+
+            {/* Mobile: preview below */}
+            <div className="lg:hidden">
+              <AIThemePreviewPanel
+                theme={options[hoveredIndex ?? selectedIndex ?? 0].theme}
+              />
+            </div>
           </div>
         )}
       </CardContent>
