@@ -1,7 +1,8 @@
-import { View, Text, Pressable, useColorScheme } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { router } from "expo-router";
 import { Clock, FileText, Users, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface QuickAction {
   icon: React.ReactNode;
@@ -15,8 +16,8 @@ interface QuickActionsProps {
 
 // Signal design — warm orange-tinted quick actions with bold labels
 export function QuickActions({ onClockIn }: QuickActionsProps) {
-  const isDark = useColorScheme() === "dark";
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const colors = useSignalColors();
+  const accent = colors.accent;
 
   const actions: QuickAction[] = [
     {

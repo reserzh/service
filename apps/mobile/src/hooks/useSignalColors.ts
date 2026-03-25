@@ -1,4 +1,6 @@
 import { useColorScheme } from "react-native";
+import { useSettingsStore } from "@/stores/settings";
+import { lightenHex, isValidHex } from "@/lib/colorUtils";
 
 export interface SignalColors {
   accent: string;
@@ -38,5 +40,18 @@ const darkColors: SignalColors = {
 
 export function useSignalColors(): SignalColors {
   const scheme = useColorScheme();
-  return scheme === "dark" ? darkColors : lightColors;
+  const tenantAccent = useSettingsStore((s) => s.tenantAccentColor);
+
+  const base = scheme === "dark" ? darkColors : lightColors;
+
+  if (!tenantAccent || !isValidHex(tenantAccent)) return base;
+
+  const lightAccent = tenantAccent;
+  const darkAccent = lightenHex(tenantAccent);
+
+  return {
+    ...base,
+    accent: scheme === "dark" ? darkAccent : lightAccent,
+    accentMuted: scheme === "dark" ? lightAccent : darkAccent,
+  };
 }

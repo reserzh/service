@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import { AlertCircle, RotateCcw } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface QueryErrorStateProps {
   message?: string;
@@ -8,6 +9,7 @@ interface QueryErrorStateProps {
 }
 
 export function QueryErrorState({ message, onRetry }: QueryErrorStateProps) {
+  const colors = useSignalColors();
   return (
     <View className="items-center py-12 px-8">
       <View className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950 items-center justify-center mb-3">
@@ -25,7 +27,7 @@ export function QueryErrorState({ message, onRetry }: QueryErrorStateProps) {
           variant="outline"
           size="sm"
           onPress={onRetry}
-          icon={<RotateCcw size={14} color="#EA580C" />}
+          icon={<RotateCcw size={14} color={colors.accent} />}
         />
       )}
     </View>

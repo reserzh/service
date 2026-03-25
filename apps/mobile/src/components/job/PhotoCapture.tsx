@@ -7,6 +7,7 @@ import { Camera } from "lucide-react-native";
 import { Button } from "@/components/ui/Button";
 import { useUploadPhoto } from "@/hooks/usePhotos";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { PhotoType } from "@/types/models";
 
 const PHOTO_TYPE_OPTIONS: { value: PhotoType; label: string }[] = [
@@ -20,6 +21,7 @@ interface PhotoCaptureProps {
 }
 
 export function PhotoCapture({ jobId }: PhotoCaptureProps) {
+  const colors = useSignalColors();
   const uploadPhoto = useUploadPhoto();
   const { isOffline } = useNetworkStatus();
   const [caption, setCaption] = useState("");
@@ -173,7 +175,7 @@ export function PhotoCapture({ jobId }: PhotoCaptureProps) {
       variant="outline"
       size="sm"
       onPress={showActionSheet}
-      icon={<Camera size={14} color="#EA580C" />}
+      icon={<Camera size={14} color={colors.accent} />}
     />
   );
 }

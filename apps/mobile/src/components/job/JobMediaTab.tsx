@@ -9,6 +9,7 @@ import { PhotoCapture } from "./PhotoCapture";
 import { SignatureList } from "./SignatureList";
 import { SignatureModal } from "./SignatureModal";
 import { PhotoComparisonSlider } from "@/components/PhotoComparisonSlider";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { JobWithRelations } from "@/types/models";
 import { SUPABASE_URL } from "@/lib/constants";
 
@@ -19,6 +20,7 @@ interface JobMediaTabProps {
 }
 
 export function JobMediaTab({ job }: JobMediaTabProps) {
+  const colors = useSignalColors();
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
 
@@ -93,7 +95,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
                 variant="outline"
                 size="sm"
                 onPress={() => setShowComparison(!showComparison)}
-                icon={<ArrowLeftRight size={14} color="#EA580C" />}
+                icon={<ArrowLeftRight size={14} color={colors.accent} />}
               />
             )}
             <PhotoCapture jobId={job.id} />
@@ -130,7 +132,7 @@ export function JobMediaTab({ job }: JobMediaTabProps) {
             variant="outline"
             size="sm"
             onPress={() => setShowSignatureModal(true)}
-            icon={<PenTool size={14} color="#EA580C" />}
+            icon={<PenTool size={14} color={colors.accent} />}
           />
         </View>
         <SignatureList signatures={job.signatures} />

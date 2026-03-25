@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dailyReportsApi, type DailyReportInput } from "@/api/endpoints/daily-reports";
 import Toast from "react-native-toast-message";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface ClockOutPromptProps {
   visible: boolean;
@@ -13,6 +14,7 @@ interface ClockOutPromptProps {
 }
 
 export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptProps) {
+  const colors = useSignalColors();
   const [materialRequests, setMaterialRequests] = useState("");
   const [equipmentIssues, setEquipmentIssues] = useState("");
   const [officeNotes, setOfficeNotes] = useState("");
@@ -116,7 +118,7 @@ export function ClockOutPrompt({ visible, onSkip, onSubmitted }: ClockOutPromptP
           {/* Office Notes */}
           <View className="mb-6">
             <View className="flex-row items-center gap-2 mb-1.5">
-              <MessageSquare size={16} color="#EA580C" />
+              <MessageSquare size={16} color={colors.accent} />
               <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Notes for office?
               </Text>

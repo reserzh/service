@@ -34,6 +34,7 @@ import { OfflineBanner } from "@/components/common/OfflineBanner";
 import { useSyncQueueStore } from "@/stores/syncQueue";
 import { startSyncListeners } from "@/lib/syncProcessor";
 import { useTradeTypeSync } from "@/hooks/useTradeType";
+import { useBrandingSync } from "@/hooks/useBrandingSync";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -74,6 +75,7 @@ function DarkModeEnforcer() {
 function AuthProvider({ children }: { children: React.ReactNode }) {
   useAuthInit();
   useTradeTypeSync();
+  useBrandingSync();
 
   useEffect(() => {
     const cleanup = setupNotificationHandler();

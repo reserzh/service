@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import { Ruler, Droplets, Trees, Triangle, Lock, AlertTriangle } from "lucide-react-native";
 import { Card } from "@/components/ui/Card";
 import { useSettingsStore } from "@/stores/settings";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { PropertyMetadata } from "@fieldservice/api-types/constants";
 
 interface Props {
@@ -18,6 +19,7 @@ function formatArea(sqft: number): string {
 }
 
 export function PropertyDetailsCard({ lotSizeSqft, lawnAreaSqft, propertyMetadata }: Props) {
+  const colors = useSignalColors();
   const tradeType = useSettingsStore((s) => s.tradeType);
   const isLandscaping = tradeType === "landscaping";
   const meta = propertyMetadata ?? {};
@@ -81,7 +83,7 @@ export function PropertyDetailsCard({ lotSizeSqft, lawnAreaSqft, propertyMetadat
             )}
             {meta.irrigationType && meta.irrigationType !== "none" && (
               <View className="flex-row items-center gap-1.5">
-                <Droplets size={iconSize} color="#EA580C" />
+                <Droplets size={iconSize} color={colors.accent} />
                 <Text className={`${textSize} text-stone-700 dark:text-stone-300`}>
                   {meta.irrigationType.charAt(0).toUpperCase() + meta.irrigationType.slice(1)}
                 </Text>

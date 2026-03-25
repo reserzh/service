@@ -1,8 +1,9 @@
-import { View, Text, Pressable, useColorScheme } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { Clock, MapPin } from "lucide-react-native";
 import { JobStatusBadge } from "./JobStatusBadge";
 import { JobPriorityBadge } from "./JobPriorityBadge";
 import { formatTimeRange } from "@/lib/format";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { Job } from "@/types/models";
 
 interface JobCardProps {
@@ -17,8 +18,8 @@ interface JobCardProps {
 
 // Signal design — warm cards with orange top border, bold text, high contrast
 export function JobCard({ job, onPress }: JobCardProps) {
-  const isDark = useColorScheme() === "dark";
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const colors = useSignalColors();
+  const accent = colors.accent;
   const customerName = job.customerFirstName
     ? `${job.customerFirstName} ${job.customerLastName}`
     : "";

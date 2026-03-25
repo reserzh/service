@@ -1,4 +1,4 @@
-import { View, Text, FlatList, RefreshControl, useColorScheme } from "react-native";
+import { View, Text, Image, FlatList, RefreshControl, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -6,7 +6,9 @@ import { format } from "date-fns";
 import { ClipboardList, CheckCircle2, MapPin, DollarSign } from "lucide-react-native";
 import { useJobStats } from "@/hooks/useJobStats";
 import { useAuthStore } from "@/stores/auth";
+import { useSettingsStore } from "@/stores/settings";
 import { useTimeTrackingStore } from "@/stores/timeTracking";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import { JobCard } from "@/components/job/JobCard";
 import { NextJobCard } from "@/components/home/NextJobCard";
 import { QuickActions } from "@/components/home/QuickActions";
@@ -20,9 +22,13 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function HomeScreen() {
   const { user } = useAuthStore();
+  const logoUrl = useSettingsStore((s) => s.logoUrl);
+  const companyName = useSettingsStore((s) => s.companyName);
+  const [logoError, setLogoError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { stats, jobs, isLoading, isError, refetch } = useJobStats();
   const restoreTimeTracking = useTimeTrackingStore((s) => s.restore);
+  const colors = useSignalColors();
   const isDark = useColorScheme() === "dark";
 
   useEffect(() => {
@@ -75,8 +81,7 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
-  // Signal accent color
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const accent = colors.accent;
 
   return (
     <SafeAreaView className="flex-1 bg-orange-50/50 dark:bg-stone-900" edges={["top"]}>
@@ -89,6 +94,17 @@ export default function HomeScreen() {
         }
         ListHeaderComponent={
           <View className="pt-2 pb-4">
+            {/* Company Logo */}
+            {logoUrl && !logoError && (
+              <Image
+                source={{ uri: logoUrl }}
+                style={{ width: 40, height: 40, borderRadius: 8, marginBottom: 8 }}
+                resizeMode="contain"
+                accessibilityLabel={companyName ? `${companyName} logo` : "Company logo"}
+                onError={() => setLogoError(true)}
+              />
+            )}
+
             {/* Greeting — Signal: extra bold */}
             <Text className="text-3xl font-heading-bold text-stone-900 dark:text-stone-50 mb-1">
               {getGreeting()}, {user?.firstName || "Tech"}
@@ -221,12 +237,13 @@ function StatCard({
   isDark: boolean;
   green?: boolean;
 }) {
+  const colors = useSignalColors();
   return (
     <View
       className="bg-white dark:bg-stone-800 rounded-xl p-4"
       style={{
         borderTopWidth: 3,
-        borderTopColor: green ? "#16A34A" : (isDark ? "#FB923C" : "#EA580C"),
+        borderTopColor: green ? "#16A34A" : colors.accent,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,

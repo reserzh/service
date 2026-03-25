@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { View, FlatList, RefreshControl, useColorScheme } from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Wrench } from "lucide-react-native";
@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 import { AnimatedListItem } from "@/components/ui/AnimatedListItem";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 const FILTERS = [
   { key: "active", label: "Active" },
@@ -28,8 +29,8 @@ export default function JobListScreen() {
   const [filter, setFilter] = useState("active");
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const isDark = useColorScheme() === "dark";
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const colors = useSignalColors();
+  const accent = colors.accent;
 
   const params = useMemo(
     () => ({

@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { CheckSquare, Square, PackageCheck, Package, ChevronDown, ChevronRight } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, Layout } from "react-native-reanimated";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { JobChecklistItem } from "@/types/models";
 
 interface JobChecklistProps {
@@ -182,9 +183,10 @@ function ChecklistItemRow({
   iconSize: number;
   isEquipment: boolean;
 }) {
+  const colors = useSignalColors();
   const CheckedIcon = isEquipment ? PackageCheck : CheckSquare;
   const UncheckedIcon = isEquipment ? Package : Square;
-  const checkedColor = isEquipment ? "#EA580C" : "#10b981";
+  const checkedColor = isEquipment ? colors.accent : "#10b981";
   const a11yChecked = isEquipment ? "packed" : "completed";
   const a11yUnchecked = isEquipment ? "not packed" : "not completed";
 

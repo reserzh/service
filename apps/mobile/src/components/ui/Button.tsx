@@ -1,5 +1,6 @@
 import { Pressable, Text, ActivityIndicator, type ViewStyle } from "react-native";
 import * as Haptics from "expo-haptics";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface ButtonProps {
   title: string;
@@ -59,6 +60,7 @@ export function Button({
   className = "",
   style,
 }: ButtonProps) {
+  const colors = useSignalColors();
   const isDisabled = disabled || loading;
 
   const handlePress = () => {
@@ -78,7 +80,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "outline" || variant === "ghost" ? "#EA580C" : "#ffffff"}
+          color={variant === "outline" || variant === "ghost" ? colors.accent : "#ffffff"}
         />
       ) : (
         <>

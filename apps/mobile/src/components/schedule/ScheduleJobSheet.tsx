@@ -6,6 +6,7 @@ import { Eye, Phone, Navigation, Calendar } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { Linking } from "react-native";
 import { JobStatusBadge } from "@/components/job/JobStatusBadge";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import { formatTimeRange } from "@/lib/format";
 import type { Job } from "@/types/models";
 
@@ -15,6 +16,7 @@ interface ScheduleJobSheetProps {
 }
 
 export function ScheduleJobSheet({ job, sheetRef }: ScheduleJobSheetProps) {
+  const colors = useSignalColors();
   const handleClose = useCallback(() => {
     sheetRef.current?.close();
   }, [sheetRef]);
@@ -23,7 +25,7 @@ export function ScheduleJobSheet({ job, sheetRef }: ScheduleJobSheetProps) {
 
   const actions = [
     {
-      icon: <Eye size={18} color="#EA580C" />,
+      icon: <Eye size={18} color={colors.accent} />,
       label: "View Job",
       onPress: () => {
         handleClose();

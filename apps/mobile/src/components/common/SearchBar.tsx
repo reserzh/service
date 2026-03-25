@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, TextInput, Pressable } from "react-native";
 import { Search, X } from "lucide-react-native";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface SearchBarProps {
   value: string;
@@ -15,6 +16,7 @@ export function SearchBar({
   placeholder = "Search...",
 }: SearchBarProps) {
   const [focused, setFocused] = useState(false);
+  const colors = useSignalColors();
 
   return (
     <View
@@ -27,10 +29,10 @@ export function SearchBar({
         shadowRadius: 6,
         elevation: 2,
         borderLeftWidth: focused ? 3 : 0,
-        borderLeftColor: "#EA580C",
+        borderLeftColor: colors.accent,
       }}
     >
-      <Search size={22} color={focused ? "#EA580C" : "#A8A29E"} />
+      <Search size={22} color={focused ? colors.accent : "#A8A29E"} />
       <TextInput
         value={value}
         onChangeText={onChangeText}

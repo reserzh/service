@@ -21,6 +21,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useSignOut } from "@/hooks/useAuth";
 import { useSettingsStore } from "@/stores/settings";
 import { usePerformanceStats } from "@/hooks/usePerformanceStats";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
@@ -42,6 +43,7 @@ const MAP_APP_OPTIONS = [
 ];
 
 export default function ProfileScreen() {
+  const colors = useSignalColors();
   const { user } = useAuthStore();
   const settings = useSettingsStore();
   const signOut = useSignOut();
@@ -67,7 +69,7 @@ export default function ProfileScreen() {
         <Avatar
           initials={getInitials(user.firstName, user.lastName)}
           size="lg"
-          color="#EA580C"
+          color={colors.accent}
         />
         <Text className="text-xl font-heading-bold text-stone-900 dark:text-stone-50 mt-3">
           {user.firstName} {user.lastName}
@@ -95,7 +97,7 @@ export default function ProfileScreen() {
           ) : stats ? (
             <View className="gap-3">
               <MetricRow
-                icon={<Briefcase size={16} color="#EA580C" />}
+                icon={<Briefcase size={16} color={colors.accent} />}
                 label="Jobs Completed"
                 value={String(stats.jobsCompleted)}
               />
@@ -151,7 +153,7 @@ export default function ProfileScreen() {
             Notifications
           </Text>
           <ToggleRow
-            icon={<Bell size={16} color="#EA580C" />}
+            icon={<Bell size={16} color={colors.accent} />}
             label="Job Assigned"
             value={settings.notifyJobAssigned}
             onToggle={(v) => {
@@ -341,6 +343,7 @@ function ToggleRow({
   value: boolean;
   onToggle: (v: boolean) => void;
 }) {
+  const colors = useSignalColors();
   return (
     <View className="flex-row items-center justify-between py-2.5 border-b border-stone-100 dark:border-stone-700 last:border-0">
       <View className="flex-row items-center gap-2">
@@ -351,7 +354,7 @@ function ToggleRow({
         value={value}
         onValueChange={onToggle}
         trackColor={{ false: "#D6D3D1", true: "#FDBA74" }}
-        thumbColor={value ? "#EA580C" : "#f4f4f5"}
+        thumbColor={value ? colors.accent : "#f4f4f5"}
       />
     </View>
   );

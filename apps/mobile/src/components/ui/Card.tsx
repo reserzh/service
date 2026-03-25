@@ -1,4 +1,5 @@
-import { View, Pressable, useColorScheme, type ViewStyle } from "react-native";
+import { View, Pressable, type ViewStyle } from "react-native";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface CardProps {
   children: React.ReactNode;
@@ -20,10 +21,10 @@ const shadowStyle: ViewStyle = {
 };
 
 export function Card({ children, onPress, className = "", style, accent = false }: CardProps) {
-  const colorScheme = useColorScheme();
+  const colors = useSignalColors();
 
   const accentStyle: ViewStyle = accent
-    ? { borderTopWidth: 3, borderTopColor: colorScheme === "dark" ? "#FB923C" : "#EA580C" }
+    ? { borderTopWidth: 3, borderTopColor: colors.accent }
     : {};
 
   const combinedStyle: ViewStyle[] = [

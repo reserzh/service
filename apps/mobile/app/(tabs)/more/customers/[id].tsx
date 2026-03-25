@@ -13,6 +13,7 @@ import {
 } from "lucide-react-native";
 import { useCustomer } from "@/hooks/useCustomers";
 import { useJobs } from "@/hooks/useJobs";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
@@ -24,6 +25,7 @@ import { formatPhone, getInitials, formatCustomerName, formatDate, formatAddress
 import type { Property, Equipment, Job, JobStatus } from "@/types/models";
 
 export default function CustomerDetailScreen() {
+  const colors = useSignalColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, isError, refetch } = useCustomer(id);
   const customer = data?.data;
@@ -61,7 +63,7 @@ export default function CustomerDetailScreen() {
         <Avatar
           initials={getInitials(customer.firstName, customer.lastName)}
           size="lg"
-          color="#EA580C"
+          color={colors.accent}
         />
         <Text className="text-xl font-heading-bold text-stone-900 dark:text-stone-50 mt-3">
           {formatCustomerName(customer)}

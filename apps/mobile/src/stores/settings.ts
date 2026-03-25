@@ -5,6 +5,12 @@ import type { TradeType } from "@fieldservice/api-types/constants";
 type MapApp = "default" | "google" | "waze";
 type DarkModeOverride = "system" | "light" | "dark";
 
+interface BrandingData {
+  companyName: string;
+  logoUrl: string | null;
+  accentColor: string | null;
+}
+
 interface SettingsState {
   preferredMapApp: MapApp;
   darkModeOverride: DarkModeOverride;
@@ -13,6 +19,9 @@ interface SettingsState {
   notifyNewEstimate: boolean;
   biometricLockEnabled: boolean;
   tradeType: TradeType | null;
+  companyName: string | null;
+  logoUrl: string | null;
+  tenantAccentColor: string | null;
   setPreferredMapApp: (app: MapApp) => void;
   setDarkModeOverride: (mode: DarkModeOverride) => void;
   setNotifyJobAssigned: (enabled: boolean) => void;
@@ -20,6 +29,7 @@ interface SettingsState {
   setNotifyNewEstimate: (enabled: boolean) => void;
   setBiometricLockEnabled: (enabled: boolean) => void;
   setTradeType: (tradeType: TradeType | null) => void;
+  setBranding: (branding: BrandingData) => void;
   restore: () => Promise<void>;
 }
 
@@ -34,6 +44,9 @@ async function persist(state: Partial<SettingsState>) {
     notifyNewEstimate: state.notifyNewEstimate,
     biometricLockEnabled: state.biometricLockEnabled,
     tradeType: state.tradeType,
+    companyName: state.companyName,
+    logoUrl: state.logoUrl,
+    tenantAccentColor: state.tenantAccentColor,
   };
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
@@ -47,6 +60,9 @@ function createSettingsStore() {
     notifyNewEstimate: true,
     biometricLockEnabled: true,
     tradeType: null,
+    companyName: null,
+    logoUrl: null,
+    tenantAccentColor: null,
 
     setPreferredMapApp: (preferredMapApp: MapApp) => {
       set({ preferredMapApp });
@@ -76,6 +92,14 @@ function createSettingsStore() {
       set({ tradeType });
       persist(get());
     },
+    setBranding: (branding: BrandingData) => {
+      set({
+        companyName: branding.companyName,
+        logoUrl: branding.logoUrl,
+        tenantAccentColor: branding.accentColor,
+      });
+      persist(get());
+    },
 
     restore: async () => {
       try {
@@ -90,6 +114,9 @@ function createSettingsStore() {
             notifyNewEstimate: data.notifyNewEstimate ?? true,
             biometricLockEnabled: data.biometricLockEnabled ?? true,
             tradeType: data.tradeType ?? null,
+            companyName: data.companyName ?? null,
+            logoUrl: data.logoUrl ?? null,
+            tenantAccentColor: data.tenantAccentColor ?? null,
           });
         }
       } catch (_e) {

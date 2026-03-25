@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { PendingSyncBadge } from "@/components/ui/PendingSyncBadge";
 import { useAddJobLineItem } from "@/hooks/useJobs";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import { formatCurrency } from "@/lib/format";
 import type { JobWithRelations } from "@/types/models";
 
@@ -22,6 +23,7 @@ const LINE_ITEM_TYPES: { key: string; label: string }[] = [
 ];
 
 export function WorkLineItemSection({ job }: WorkLineItemSectionProps) {
+  const colors = useSignalColors();
   const addLineItem = useAddJobLineItem();
   const { isOffline } = useNetworkStatus();
   const [showLineItemInput, setShowLineItemInput] = useState(false);
@@ -66,7 +68,7 @@ export function WorkLineItemSection({ job }: WorkLineItemSectionProps) {
             onPress={() => setShowLineItemInput(!showLineItemInput)}
             className="flex-row items-center gap-1"
           >
-            <Plus size={14} color="#EA580C" />
+            <Plus size={14} color={colors.accent} />
             <Text className="text-sm font-medium text-orange-600 dark:text-orange-400">Add</Text>
           </Pressable>
         </View>

@@ -2,6 +2,7 @@ import { Pressable, Text, Linking, Platform } from "react-native";
 import { Navigation } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSettingsStore } from "@/stores/settings";
+import { useSignalColors } from "@/hooks/useSignalColors";
 
 interface NavigateButtonProps {
   address: string;
@@ -12,6 +13,7 @@ interface NavigateButtonProps {
 
 export function NavigateButton({ address, latitude, longitude, size = "md" }: NavigateButtonProps) {
   const preferredMapApp = useSettingsStore((s) => s.preferredMapApp);
+  const colors = useSignalColors();
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -58,7 +60,7 @@ export function NavigateButton({ address, latitude, longitude, size = "md" }: Na
         accessibilityLabel="Navigate to location"
         accessibilityRole="button"
       >
-        <Navigation size={14} color="#EA580C" />
+        <Navigation size={14} color={colors.accent} />
         <Text className="text-xs font-medium text-orange-600 dark:text-orange-400">Navigate</Text>
       </Pressable>
     );

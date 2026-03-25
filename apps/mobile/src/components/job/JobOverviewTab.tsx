@@ -89,6 +89,7 @@ function BudgetProgressCard({ jobId }: { jobId: string }) {
 }
 
 export function JobOverviewTab({ job }: JobOverviewTabProps) {
+  const colors = useSignalColors();
   const address = formatAddress(job.property);
 
   const handleCall = (phone: string) => {
@@ -180,7 +181,7 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         <Animated.View className="mb-3" entering={FadeInDown.delay(200).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
-              <Clock size={16} color="#EA580C" />
+              <Clock size={16} color={colors.accent} />
               <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Schedule
               </Text>
@@ -197,7 +198,7 @@ export function JobOverviewTab({ job }: JobOverviewTabProps) {
         <Animated.View className="mb-3" entering={FadeInDown.delay(280).duration(400).springify()}>
           <Card>
             <View className="flex-row items-center gap-2 mb-2">
-              <Users size={16} color="#EA580C" />
+              <Users size={16} color={colors.accent} />
               <Text className="text-sm font-medium text-stone-500 uppercase tracking-wide">
                 Crew
               </Text>

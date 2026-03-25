@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Linking, useColorScheme } from "react-native";
+import { View, Text, Pressable, Linking } from "react-native";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -19,6 +19,7 @@ import { formatTimeRange } from "@/lib/format";
 import { startLocationTracking } from "@/lib/locationTracking";
 import { useUpdateJobStatus } from "@/hooks/useJobs";
 import { propertiesApi } from "@/api/endpoints/properties";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { Job, JobStatus } from "@/types/models";
 
 interface NextJobCardProps {
@@ -36,8 +37,8 @@ interface NextJobCardProps {
 export function NextJobCard({ job }: NextJobCardProps) {
   const [countdown, setCountdown] = useState("");
   const updateStatus = useUpdateJobStatus();
-  const isDark = useColorScheme() === "dark";
-  const accent = isDark ? "#FB923C" : "#EA580C";
+  const colors = useSignalColors();
+  const accent = colors.accent;
 
   // Fetch property history for access info
   const { data: historyData } = useQuery({
@@ -250,7 +251,7 @@ export function NextJobCard({ job }: NextJobCardProps) {
             style={{
               minHeight: 52,
               borderWidth: 2,
-              borderColor: isDark ? "#FB923C" : "#EA580C",
+              borderColor: colors.accent,
             }}
             accessibilityLabel="Call customer"
             accessibilityRole="button"

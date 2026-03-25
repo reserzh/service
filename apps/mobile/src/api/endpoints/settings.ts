@@ -21,11 +21,20 @@ interface TenantSettingsResponse {
   [key: string]: unknown;
 }
 
+interface BrandingResponse {
+  companyName: string;
+  logoUrl: string | null;
+  accentColor: string | null;
+}
+
 export const settingsApi = {
   getCompany() {
     return api.get<ApiResponse<CompanyProfile>>("/settings/company");
   },
   getTenantSettings() {
     return api.get<ApiResponse<TenantSettingsResponse>>("/settings");
+  },
+  getBranding() {
+    return api.get<ApiResponse<BrandingResponse>>("/branding");
   },
 };

@@ -8,6 +8,7 @@ import { PendingSyncBadge } from "@/components/ui/PendingSyncBadge";
 import { useAddJobNote } from "@/hooks/useJobs";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { useVoiceNote } from "@/hooks/useVoiceNote";
+import { useSignalColors } from "@/hooks/useSignalColors";
 import type { JobWithRelations } from "@/types/models";
 
 interface WorkNoteSectionProps {
@@ -15,6 +16,7 @@ interface WorkNoteSectionProps {
 }
 
 export function WorkNoteSection({ job }: WorkNoteSectionProps) {
+  const colors = useSignalColors();
   const addNote = useAddJobNote();
   const { isOffline } = useNetworkStatus();
   const [noteText, setNoteText] = useState("");
@@ -56,7 +58,7 @@ export function WorkNoteSection({ job }: WorkNoteSectionProps) {
           onPress={() => setShowNoteInput(!showNoteInput)}
           className="flex-row items-center gap-1"
         >
-          <Plus size={14} color="#EA580C" />
+          <Plus size={14} color={colors.accent} />
           <Text className="text-sm font-medium text-orange-600 dark:text-orange-400">Add</Text>
         </Pressable>
       </View>
