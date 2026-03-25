@@ -20,6 +20,12 @@ interface OfflineMutationOptions<TVariables> {
     queryClient: QueryClient,
     variables: TVariables
   ) => void;
+  /** Called after successful online mutation, before cache invalidation */
+  onSuccess?: (
+    queryClient: QueryClient,
+    variables: TVariables,
+    result: unknown
+  ) => void;
 }
 
 /**
@@ -56,6 +62,11 @@ export function useOfflineMutation<TVariables>(
       // Online — execute immediately
       try {
         const result = await options.mutationFn(variables);
+
+        // Let caller merge result into cache before invalidation
+        if (options.onSuccess) {
+          options.onSuccess(queryClient, variables, result);
+        }
 
         // Invalidate caches to get server truth
         for (const key of keys) {

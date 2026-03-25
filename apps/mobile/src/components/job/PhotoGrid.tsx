@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, Pressable, Modal, Dimensions, Alert } from "react-native";
 import { Image } from "expo-image";
-import { X, Trash2 } from "lucide-react-native";
+import { X, Trash2, ImageOff } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 import { useDeletePhoto } from "@/hooks/usePhotos";
 import { PendingSyncBadge } from "@/components/ui/PendingSyncBadge";
 import { formatRelativeTime } from "@/lib/format";
 import { SUPABASE_URL } from "@/lib/constants";
+import { photoUriCache } from "@/lib/photoUriCache";
 import type { JobPhoto } from "@/types/models";
 
 interface OfflinePhoto extends JobPhoto {
@@ -31,12 +32,23 @@ function getPhotoUrl(photo: OfflinePhoto): string {
   if (photo._offlineUri) {
     return photo._offlineUri;
   }
+  // Fall back to cached local URI from a recent upload (survives cache invalidation)
+  const cached = photoUriCache.get(photo.id);
+  if (cached) {
+    return cached;
+  }
   return `${SUPABASE_URL}/storage/v1/object/public/job-photos/${photo.storagePath}`;
 }
 
 export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<OfflinePhoto | null>(null);
+  const [failedIds, setFailedIds] = useState<Set<string>>(() => new Set());
   const deletePhoto = useDeletePhoto();
+
+  // Clear failed state when photos change (e.g., after refetch resolves a transient error)
+  useEffect(() => {
+    setFailedIds(new Set());
+  }, [photos]);
 
   const handleLongPress = (photo: OfflinePhoto) => {
     // Don't allow deleting pending offline photos from server
@@ -81,12 +93,25 @@ export function PhotoGrid({ photos, jobId }: PhotoGridProps) {
           onLongPress={() => handleLongPress(photo)}
           className="rounded-lg overflow-hidden bg-stone-200 dark:bg-stone-700"
         >
-          <Image
-            source={{ uri: getPhotoUrl(photo) }}
-            style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
-            contentFit="cover"
-            transition={200}
-          />
+          {failedIds.has(photo.id) ? (
+            <View
+              style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
+              className="items-center justify-center bg-stone-200 dark:bg-stone-700"
+            >
+              <ImageOff size={24} color="#A8A29E" />
+            </View>
+          ) : (
+            <Image
+              source={{ uri: getPhotoUrl(photo) }}
+              style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
+              contentFit="cover"
+              transition={200}
+              recyclingKey={photo.id}
+              onError={() =>
+                setFailedIds((prev) => new Set(prev).add(photo.id))
+              }
+            />
+          )}
           {/* Type badge */}
           {photo.photoType && photo.photoType !== "general" && (
             <View
