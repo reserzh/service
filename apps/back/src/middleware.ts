@@ -51,6 +51,13 @@ export async function middleware(request: NextRequest) {
     if (!result.allowed) return rateLimitResponse(result.resetMs);
   }
 
+  // Rate limit portal invite acceptance (brute-force protection)
+  if (pathname === "/api/v1/portal/accept-invite" && request.method === "POST") {
+    const ip = getClientIp(request);
+    const result = await checkRateLimit(`portal-invite:${ip}`, RATE_LIMITS.auth);
+    if (!result.allowed) return rateLimitResponse(result.resetMs);
+  }
+
   // General API rate limit
   if (pathname.startsWith("/api/v1/") && !pathname.startsWith("/api/v1/public/")) {
     const ip = getClientIp(request);

@@ -18,3 +18,50 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
+
+/* Portal theme utilities — reference CSS variables for interactive states */
+.portal-btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  transition: filter 150ms ease;
+}
+.portal-btn-primary:hover {
+  filter: brightness(0.9);
+}
+.portal-btn-primary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.portal-btn-primary:disabled {
+  opacity: 0.5;
+  filter: none;
+}
+
+.portal-link {
+  color: var(--color-primary);
+  transition: filter 150ms ease;
+}
+.portal-link:hover {
+  filter: brightness(0.75);
+}
+
+.portal-link-hover:hover {
+  color: var(--color-primary);
+}
+
+.portal-focus:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.portal-nav-active {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+.portal-selected {
+  border-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}

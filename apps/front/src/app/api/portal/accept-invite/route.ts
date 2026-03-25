@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { and, eq } from "drizzle-orm";
-import { createClient } from "@supabase/supabase-js";
-import { db } from "@/lib/db";
-import { customerPortalTokens, customers } from "@fieldservice/shared/db/schema";
 import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/rate-limit";
 
-const acceptInviteSchema = z.object({
-  token: z.string().min(1),
-  password: z.string().min(8),
-});
-
+/**
+ * Proxies accept-invite requests to the back app, which holds the
+ * SUPABASE_SERVICE_ROLE_KEY. This keeps the service role key out of
+ * the front app's environment.
+ */
 export async function POST(req: NextRequest) {
   try {
+    // Origin validation: ensure request comes from our own domain
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+    if (origin && host && !origin.includes(host.split(":")[0])) {
+      return NextResponse.json(
+        { error: { message: "Invalid request origin." } },
+        { status: 403 }
+      );
+    }
+
     // Rate limit: 5 invite attempts per minute per IP (brute-force protection)
     const ip = getClientIp(req);
     const rl = checkRateLimit(`portal-invite:${ip}`, RATE_LIMITS.portalInvite);
@@ -23,117 +28,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:3200";
     const body = await req.json();
-    const parsed = acceptInviteSchema.safeParse(body);
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: { message: "Invalid request data", issues: parsed.error.issues } },
-        { status: 400 }
-      );
-    }
-
-    const { token, password } = parsed.data;
-
-    // Look up the token
-    const [tokenRecord] = await db
-      .select()
-      .from(customerPortalTokens)
-      .where(eq(customerPortalTokens.token, token))
-      .limit(1);
-
-    if (!tokenRecord) {
-      return NextResponse.json(
-        { error: { message: "Invalid or expired invitation link." } },
-        { status: 400 }
-      );
-    }
-
-    // Check if token is already used
-    if (tokenRecord.usedAt) {
-      return NextResponse.json(
-        { error: { message: "This invitation has already been used." } },
-        { status: 400 }
-      );
-    }
-
-    // Check if token is expired
-    if (new Date(tokenRecord.expiresAt) < new Date()) {
-      return NextResponse.json(
-        { error: { message: "This invitation link has expired." } },
-        { status: 400 }
-      );
-    }
-
-    // Look up the customer
-    const [customer] = await db
-      .select()
-      .from(customers)
-      .where(and(eq(customers.id, tokenRecord.customerId), eq(customers.tenantId, tokenRecord.tenantId)))
-      .limit(1);
-
-    if (!customer?.email) {
-      return NextResponse.json(
-        { error: { message: "Customer does not have an email address on file." } },
-        { status: 400 }
-      );
-    }
-
-    // Create Supabase admin client
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    // Create auth user
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: customer.email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        role: "customer_portal",
-        customer_id: customer.id,
-        tenant_id: tokenRecord.tenantId,
-      },
+    const res = await fetch(`${backendUrl}/api/v1/portal/accept-invite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
-    if (authError) {
-      // If user already exists, try to update their password instead
-      if (authError.message?.includes("already been registered")) {
-        return NextResponse.json(
-          { error: { message: "An account with this email already exists. Please sign in instead." } },
-          { status: 409 }
-        );
-      }
-      console.error("Supabase auth error:", authError);
-      return NextResponse.json(
-        { error: { message: "Failed to create account. Please try again." } },
-        { status: 500 }
-      );
-    }
-
-    // Update customer with supabase user ID and enable portal access
-    await db
-      .update(customers)
-      .set({
-        supabaseUserId: authData.user.id,
-        portalAccessEnabled: true,
-        updatedAt: new Date(),
-      })
-      .where(and(eq(customers.id, customer.id), eq(customers.tenantId, tokenRecord.tenantId)));
-
-    // Mark token as used
-    await db
-      .update(customerPortalTokens)
-      .set({ usedAt: new Date() })
-      .where(eq(customerPortalTokens.id, tokenRecord.id));
-
-    return NextResponse.json(
-      { data: { email: customer.email, customerId: customer.id } },
-      { status: 200 }
-    );
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    console.error("Accept invite error:", error);
+    console.error("Accept invite proxy error:", error instanceof Error ? error.message : "Unknown error");
     return NextResponse.json(
       { error: { message: "Failed to process invitation." } },
       { status: 500 }

@@ -68,7 +68,7 @@ export default async function PortalAgreementsPage() {
                   className="block rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-blue-600">{agreement.agreementNumber}</span>
+                    <span className="text-sm font-medium portal-link">{agreement.agreementNumber}</span>
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(status)}`}
                     >
@@ -125,7 +125,7 @@ export default async function PortalAgreementsPage() {
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
                         <Link
                           href={`/portal/agreements/${agreement.id}`}
-                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                          className="font-medium portal-link hover:underline"
                         >
                           {agreement.agreementNumber}
                         </Link>
@@ -133,7 +133,7 @@ export default async function PortalAgreementsPage() {
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <Link
                           href={`/portal/agreements/${agreement.id}`}
-                          className="hover:text-blue-600"
+                          className="portal-link-hover"
                         >
                           {agreement.name || "-"}
                         </Link>

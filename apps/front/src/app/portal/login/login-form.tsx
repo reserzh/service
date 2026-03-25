@@ -81,7 +81,7 @@ export function LoginForm() {
             setResetSent(false);
             setShowForgot(false);
           }}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          className="text-sm portal-link"
         >
           Back to sign in
         </button>
@@ -112,7 +112,7 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm portal-focus"
             placeholder="you@example.com"
           />
         </div>
@@ -120,7 +120,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+          className="w-full rounded-md portal-btn-primary px-4 py-2 text-sm font-semibold shadow-sm"
         >
           {loading ? "Sending..." : "Send Reset Link"}
         </button>
@@ -131,7 +131,7 @@ export function LoginForm() {
             setShowForgot(false);
             setError(null);
           }}
-          className="w-full text-sm text-blue-600 hover:text-blue-800"
+          className="w-full text-sm portal-link"
         >
           Back to sign in
         </button>
@@ -157,7 +157,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm portal-focus"
           placeholder="you@example.com"
         />
       </div>
@@ -173,7 +173,7 @@ export function LoginForm() {
               setShowForgot(true);
               setError(null);
             }}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm portal-link"
           >
             Forgot password?
           </button>
@@ -184,7 +184,7 @@ export function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm portal-focus"
           placeholder="Enter your password"
         />
       </div>
@@ -192,7 +192,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+        className="w-full rounded-md portal-btn-primary px-4 py-2 text-sm font-semibold shadow-sm"
       >
         {loading ? "Signing in..." : "Sign In"}
       </button>

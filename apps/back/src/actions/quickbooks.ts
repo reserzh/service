@@ -16,6 +16,15 @@ import { tenants } from "@fieldservice/shared/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getActionErrorMessage } from "@/lib/api/errors";
+import { z } from "zod";
+
+const qbSettingsSchema = z.object({
+  incomeAccountId: z.string().optional(),
+  expenseAccountId: z.string().optional(),
+  taxStrategy: z.enum(["global", "per_line", "none"]).optional(),
+  syncEstimates: z.boolean().optional(),
+  defaultPaymentMethodId: z.string().optional(),
+}).strict();
 
 export type QBActionState = {
   error?: string;
@@ -36,19 +45,19 @@ export async function disconnectQuickBooksAction(): Promise<QBActionState> {
   }
 }
 
-export async function updateQBSettingsAction(settings: {
-  incomeAccountId?: string;
-  expenseAccountId?: string;
-  taxStrategy?: "global" | "per_line" | "none";
-  syncEstimates?: boolean;
-  defaultPaymentMethodId?: string;
-}): Promise<QBActionState> {
+export async function updateQBSettingsAction(settings: z.infer<typeof qbSettingsSchema>): Promise<QBActionState> {
   try {
     const ctx = await requireAuth();
     assertPermission(ctx, "integrations", "manage");
 
+    // Validate input to reject unknown keys
+    const parsed = qbSettingsSchema.safeParse(settings);
+    if (!parsed.success) {
+      return { error: "Invalid settings data" };
+    }
+
     // Atomic JSON merge to avoid read-modify-write race conditions
-    const qbPatch = JSON.stringify(settings);
+    const qbPatch = JSON.stringify(parsed.data);
     await db
       .update(tenants)
       .set({

@@ -2,12 +2,13 @@ import { requireAuth } from "@/lib/auth";
 import { getSiteSettings } from "@/lib/services/website";
 import { listPages } from "@/lib/services/website";
 import { listBookingRequests } from "@/lib/services/bookings";
+import { isAIConfigured } from "@/lib/ai/client";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Globe, FileText, CalendarCheck, ExternalLink } from "lucide-react";
+import { Globe, FileText, CalendarCheck, ExternalLink, Import } from "lucide-react";
 
 export default async function WebsiteOverviewPage() {
   const ctx = await requireAuth();
@@ -114,6 +115,14 @@ export default async function WebsiteOverviewPage() {
           <Link href="/website/services">
             <Button variant="outline">Manage Services</Button>
           </Link>
+          {isAIConfigured() && (
+            <Link href="/website/import">
+              <Button variant="outline">
+                <Import className="mr-2 h-4 w-4" />
+                Import from Existing Site
+              </Button>
+            </Link>
+          )}
           {settings?.isPublished && siteUrl && (
             <a href={`https://${siteUrl}`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline">

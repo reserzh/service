@@ -22,7 +22,7 @@ export function PaymentConfirmation({
       <button
         type="button"
         onClick={() => setShowConfirm(true)}
-        className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+        className="inline-flex items-center rounded-md portal-btn-primary px-4 py-2 text-sm font-medium transition-colors"
       >
         Pay Now
       </button>
@@ -64,7 +64,7 @@ export function PaymentConfirmation({
         <div className="mt-5 flex gap-3">
           <a
             href={`/api/portal/invoices/${invoiceId}/checkout`}
-            className="flex-1 inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="flex-1 inline-flex items-center justify-center rounded-md portal-btn-primary px-4 py-2.5 text-sm font-semibold transition-colors"
           >
             Proceed to Payment
           </a>

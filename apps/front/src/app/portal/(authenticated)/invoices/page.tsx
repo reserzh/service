@@ -57,7 +57,7 @@ export default async function PortalInvoicesPage() {
                 className={`block rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow ${inv.status === "overdue" ? "border-red-200 bg-red-50" : ""}`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-blue-600">{inv.invoiceNumber}</span>
+                  <span className="text-sm font-medium portal-link">{inv.invoiceNumber}</span>
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(inv.status)}`}
                   >
@@ -108,7 +108,7 @@ export default async function PortalInvoicesPage() {
                     <td className="px-6 py-4 text-sm">
                       <Link
                         href={`/portal/invoices/${inv.id}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                        className="font-medium portal-link hover:underline"
                       >
                         {inv.invoiceNumber}
                       </Link>

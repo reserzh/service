@@ -96,7 +96,7 @@ function JobTable({ jobs }: { jobs: PortalJob[] }) {
               <td className="whitespace-nowrap px-6 py-4 text-sm">
                 <Link
                   href={`/portal/jobs/${job.id}`}
-                  className="font-medium text-blue-600 hover:text-blue-800"
+                  className="font-medium portal-link"
                 >
                   #{job.jobNumber}
                 </Link>
@@ -104,7 +104,7 @@ function JobTable({ jobs }: { jobs: PortalJob[] }) {
               <td className="px-6 py-4 text-sm text-gray-900">
                 <Link
                   href={`/portal/jobs/${job.id}`}
-                  className="hover:text-blue-600"
+                  className="portal-link-hover"
                 >
                   {job.summary || "-"}
                 </Link>
@@ -255,7 +255,7 @@ function PropertyCard({ group }: { group: PropertyGroup }) {
                   <td className="whitespace-nowrap px-6 py-3 text-sm">
                     <Link
                       href={`/portal/jobs/${job.id}`}
-                      className="font-medium text-blue-600 hover:text-blue-800"
+                      className="font-medium portal-link"
                     >
                       #{job.jobNumber}
                     </Link>
@@ -263,7 +263,7 @@ function PropertyCard({ group }: { group: PropertyGroup }) {
                   <td className="px-6 py-3 text-sm text-gray-900">
                     <Link
                       href={`/portal/jobs/${job.id}`}
-                      className="hover:text-blue-600"
+                      className="portal-link-hover"
                     >
                       {job.summary || "-"}
                     </Link>
@@ -361,7 +361,7 @@ export function PortalJobsView({ jobs }: PortalJobsViewProps) {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm portal-focus"
         >
           {STATUS_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>

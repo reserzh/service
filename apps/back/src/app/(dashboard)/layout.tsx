@@ -22,6 +22,8 @@ export default async function DashboardLayout({
     .select({
       settings: tenants.settings,
       onboardingCompleted: tenants.onboardingCompleted,
+      name: tenants.name,
+      logoUrl: tenants.logoUrl,
     })
     .from(tenants)
     .where(eq(tenants.id, user.tenantId))
@@ -49,7 +51,11 @@ export default async function DashboardLayout({
         className="min-h-screen bg-background text-foreground"
       >
         <SidebarProvider>
-          <AppSidebar user={userProps} />
+          <AppSidebar
+            user={userProps}
+            companyName={tenantRow?.name ?? undefined}
+            logoUrl={tenantRow?.logoUrl ?? undefined}
+          />
           <SidebarInset>
             <Topbar user={userProps} />
             <main className="flex-1 overflow-auto p-6">{children}</main>

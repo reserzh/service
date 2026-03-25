@@ -96,7 +96,10 @@ export default async function PortalEstimateDetailPage({
                   {option.name}
                 </h2>
                 {option.isRecommended && (
-                  <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                  <span
+                    className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                    style={{ backgroundColor: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: 'var(--color-primary)' }}
+                  >
                     Recommended
                   </span>
                 )}

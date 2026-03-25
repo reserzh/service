@@ -25,9 +25,11 @@ const navItems = [
 interface PortalSidebarProps {
   open?: boolean;
   onClose?: () => void;
+  companyName?: string;
+  logoUrl?: string;
 }
 
-export function PortalSidebar({ open, onClose }: PortalSidebarProps) {
+export function PortalSidebar({ open, onClose, companyName, logoUrl }: PortalSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -40,9 +42,14 @@ export function PortalSidebar({ open, onClose }: PortalSidebarProps) {
   const sidebarContent = (
     <>
       <div className="border-b px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">
-          Customer Portal
-        </h1>
+        <div className="flex items-center gap-3">
+          {logoUrl && (
+            <img src={logoUrl} alt="" className="h-8 w-auto" />
+          )}
+          <h1 className="text-lg font-semibold text-gray-900">
+            {companyName || "Customer Portal"}
+          </h1>
+        </div>
         {onClose && (
           <button
             onClick={onClose}
@@ -64,7 +71,7 @@ export function PortalSidebar({ open, onClose }: PortalSidebarProps) {
               onClick={onClose}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                 isActive
-                  ? "bg-gray-100 font-medium text-gray-900"
+                  ? "portal-nav-active font-medium"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
@@ -81,7 +88,7 @@ export function PortalSidebar({ open, onClose }: PortalSidebarProps) {
           onClick={onClose}
           className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
             pathname === "/portal/profile"
-              ? "bg-gray-100 font-medium text-gray-900"
+              ? "portal-nav-active font-medium"
               : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
           }`}
         >

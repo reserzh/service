@@ -19,6 +19,8 @@ import { updateSiteSettingsAction } from "@/actions/website";
 import { showToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Check, Save } from "lucide-react";
+import { AIStyleGenerator } from "./ai-style-generator";
+import type { SiteTheme } from "@fieldservice/shared/types";
 
 type SiteSettings = {
   id: string;
@@ -180,7 +182,7 @@ const THEME_PRESETS: ThemePreset[] = [
   },
 ];
 
-export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
+export function ThemeEditorForm({ settings, aiConfigured = false }: { settings: SiteSettings; aiConfigured?: boolean }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(settings?.isPublished ?? false);
@@ -229,6 +231,15 @@ export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
     setFontHeading(preset.fontHeading);
     setFontBody(preset.fontBody);
     setBorderRadius(preset.borderRadius);
+  };
+
+  const handleApplyAITheme = (theme: SiteTheme) => {
+    setPrimaryColor(theme.primaryColor);
+    setSecondaryColor(theme.secondaryColor);
+    setAccentColor(theme.accentColor);
+    setFontHeading(theme.fontHeading);
+    setFontBody(theme.fontBody);
+    setBorderRadius(theme.borderRadius);
   };
 
   const handleSave = async () => {
@@ -289,6 +300,14 @@ export function ThemeEditorForm({ settings }: { settings: SiteSettings }) {
           <Switch checked={isPublished} onCheckedChange={setIsPublished} />
         </CardContent>
       </Card>
+
+      {/* AI Style Generator */}
+      {aiConfigured && (
+        <AIStyleGenerator
+          onApplyTheme={handleApplyAITheme}
+          logoUrl={settings?.branding?.logoUrl}
+        />
+      )}
 
       {/* Theme Presets */}
       <Card>

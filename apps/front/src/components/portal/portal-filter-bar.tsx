@@ -42,7 +42,7 @@ export function PortalFilterBar({
       <select
         value={currentStatus}
         onChange={(e) => updateParams("status", e.target.value)}
-        className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm portal-focus"
       >
         <option value="">All Statuses</option>
         {statusOptions.map((opt) => (
@@ -56,7 +56,7 @@ export function PortalFilterBar({
         <select
           value={currentSort}
           onChange={(e) => updateParams("sort", e.target.value)}
-          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm portal-focus"
         >
           <option value="">Newest First</option>
           {sortOptions.map((opt) => (
@@ -71,7 +71,7 @@ export function PortalFilterBar({
         <button
           type="button"
           onClick={() => router.push(basePath)}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          className="text-sm portal-link"
         >
           Clear filters
         </button>

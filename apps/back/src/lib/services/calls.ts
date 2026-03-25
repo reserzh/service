@@ -126,9 +126,9 @@ export async function listCalls(ctx: UserContext, params: ListCallsParams = {}) 
         jobSummary: jobs.summary,
       })
       .from(calls)
-      .leftJoin(customers, eq(calls.customerId, customers.id))
-      .leftJoin(users, eq(calls.userId, users.id))
-      .leftJoin(jobs, eq(calls.jobId, jobs.id))
+      .leftJoin(customers, and(eq(calls.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
+      .leftJoin(users, and(eq(calls.userId, users.id), eq(users.tenantId, ctx.tenantId)))
+      .leftJoin(jobs, and(eq(calls.jobId, jobs.id), eq(jobs.tenantId, ctx.tenantId)))
       .where(and(...conditions))
       .orderBy(desc(calls.createdAt))
       .limit(pageSize)
@@ -188,9 +188,9 @@ export async function getCall(ctx: UserContext, callId: string) {
       jobSummary: jobs.summary,
     })
     .from(calls)
-    .leftJoin(customers, eq(calls.customerId, customers.id))
-    .leftJoin(users, eq(calls.userId, users.id))
-    .leftJoin(jobs, eq(calls.jobId, jobs.id))
+    .leftJoin(customers, and(eq(calls.customerId, customers.id), eq(customers.tenantId, ctx.tenantId)))
+    .leftJoin(users, and(eq(calls.userId, users.id), eq(users.tenantId, ctx.tenantId)))
+    .leftJoin(jobs, and(eq(calls.jobId, jobs.id), eq(jobs.tenantId, ctx.tenantId)))
     .where(and(eq(calls.id, callId), eq(calls.tenantId, ctx.tenantId)))
     .limit(1);
 

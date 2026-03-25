@@ -22,11 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title, description };
 }
 
-/** Defense-in-depth: re-sanitize CSS at render time in case DB contains unsanitized values */
+/** Defense-in-depth: re-sanitize CSS at render time in case DB contains unsanitized values.
+ *  Order matters: decode CSS escapes first (normalize), block dangerous patterns, then escape < last. */
 function sanitizeCssAtRender(css: string): string {
-  let s = css.replace(/</g, "\\3c ");
-  s = s.replace(/\\([0-9a-fA-F]{1,6})\s?/g, (_m, hex) => String.fromCodePoint(parseInt(hex, 16)));
+  // Step 1: Decode CSS escape sequences to normalize obfuscated payloads
+  let s = css.replace(/\\([0-9a-fA-F]{1,6})\s?/g, (_m, hex) => String.fromCodePoint(parseInt(hex, 16)));
   s = s.replace(/\\([a-zA-Z(])/g, "$1");
+  // Step 2: Block dangerous patterns on the normalized string
   s = s.replace(/@import\b/gi, "/* blocked */");
   s = s.replace(/@charset\b/gi, "/* blocked */");
   s = s.replace(/@font-face\b/gi, "/* blocked */");
@@ -35,6 +37,9 @@ function sanitizeCssAtRender(css: string): string {
   s = s.replace(/-moz-binding\s*:/gi, "/* blocked */:");
   s = s.replace(/behavior\s*:/gi, "/* blocked */:");
   s = s.replace(/url\s*\(/gi, "/* blocked */(");
+  s = s.replace(/@keyframes\b/gi, "/* blocked */");
+  // Step 3: Escape < LAST to prevent </style> breakout (must come after decode)
+  s = s.replace(/</g, "\\3c ");
   return s;
 }
 
