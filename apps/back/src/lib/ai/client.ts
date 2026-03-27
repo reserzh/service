@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "@/lib/env";
 
-export const AI_MODEL = "claude-sonnet-4-20250514";
+export const AI_MODEL = "claude-sonnet-4-6";
 
 let _client: Anthropic | undefined;
 

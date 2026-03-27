@@ -68,6 +68,31 @@ export function AIStyleGenerator({
     onPreviewActiveChange?.(options !== null);
   }, [options, onPreviewActiveChange]);
 
+  // Load Google Fonts for generated theme options
+  useEffect(() => {
+    if (!options) return;
+    const fonts = new Set<string>();
+    for (const opt of options) {
+      fonts.add(opt.theme.fontHeading);
+      fonts.add(opt.theme.fontBody);
+    }
+    const families = [...fonts]
+      .map((f) => `family=${f.replace(/ /g, "+")}:wght@400;600;700`)
+      .join("&");
+    const linkId = "ai-theme-google-fonts";
+    let link = document.getElementById(linkId) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.id = linkId;
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
+    }
+    link.href = `https://fonts.googleapis.com/css2?${families}&display=swap`;
+    return () => {
+      link?.remove();
+    };
+  }, [options]);
+
   const hasInput =
     description.trim() || inspirationUrls.length > 0 || logoFile || useCurrentLogo;
 
@@ -434,17 +459,23 @@ export function AIStyleGenerator({
                             ))}
                           </div>
 
-                          {/* Font preview */}
+                          {/* Font preview — rendered in actual fonts */}
                           <div className="text-xs text-muted-foreground space-y-0.5">
                             <p>
                               Heading:{" "}
-                              <span className="font-medium text-foreground">
+                              <span
+                                className="font-medium text-foreground"
+                                style={{ fontFamily: `"${option.theme.fontHeading}", system-ui, sans-serif` }}
+                              >
                                 {option.theme.fontHeading}
                               </span>
                             </p>
                             <p>
                               Body:{" "}
-                              <span className="font-medium text-foreground">
+                              <span
+                                className="font-medium text-foreground"
+                                style={{ fontFamily: `"${option.theme.fontBody}", system-ui, sans-serif` }}
+                              >
                                 {option.theme.fontBody}
                               </span>
                             </p>
@@ -549,6 +580,7 @@ export function AIStyleGenerator({
             <div className="hidden lg:block lg:w-[420px] xl:w-[480px] shrink-0 sticky top-4 self-start">
               <AIThemePreviewPanel
                 theme={options[hoveredIndex ?? selectedIndex ?? 0].theme}
+                variant={hoveredIndex ?? selectedIndex ?? 0}
               />
             </div>
 
@@ -556,6 +588,7 @@ export function AIStyleGenerator({
             <div className="lg:hidden">
               <AIThemePreviewPanel
                 theme={options[hoveredIndex ?? selectedIndex ?? 0].theme}
+                variant={hoveredIndex ?? selectedIndex ?? 0}
               />
             </div>
           </div>
