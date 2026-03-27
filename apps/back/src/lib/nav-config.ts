@@ -223,7 +223,7 @@ export const settingsNavItems: SettingsNavItem[] = [
   // General
   { label: "Industry", href: "/settings/industry", icon: Factory, section: "General" },
   { label: "Company Profile", href: "/settings/company", icon: Building2, section: "General" },
-  { label: "Site Theme", href: "/website/theme", icon: Palette, section: "General" },
+  { label: "Site Theme", href: "/settings/dashboard", icon: Palette, section: "General" },
   // Services
   { label: "Services & Pricing", href: "/settings/services", icon: Wrench, section: "Services" },
   { label: "Pricebook", href: "/settings/pricebook", icon: BookOpen, section: "Services" },
