@@ -24,17 +24,20 @@ export async function middleware(request: NextRequest) {
   let tenantSlug: string | null = null;
   let customDomain: string | null = null;
 
-  // Check if this is a subdomain of the platform
-  if (hostname.endsWith(`.${PLATFORM_DOMAIN}`)) {
+  // Query param or cookie override — works in all environments for easy tenant previewing
+  const tenantParam = url.searchParams.get("tenant") || request.cookies.get("x-tenant-slug")?.value;
+
+  if (tenantParam) {
+    tenantSlug = tenantParam;
+  } else if (hostname.endsWith(`.${PLATFORM_DOMAIN}`)) {
     tenantSlug = hostname.replace(`.${PLATFORM_DOMAIN}`, "");
   } else if (hostname === PLATFORM_DOMAIN || hostname === `www.${PLATFORM_DOMAIN}`) {
     // Main platform domain — no tenant
     return new NextResponse("Platform homepage", { status: 200 });
   } else if (hostname.startsWith("localhost")) {
-    // Local dev — use query param or default
+    // Local dev — use header, cookie, or default
     tenantSlug =
       request.headers.get("x-tenant-slug") ||
-      url.searchParams.get("tenant") ||
       (process.env.NEXT_PUBLIC_DEFAULT_TENANT_SLUG ?? "demo");
   } else {
     // Custom domain
@@ -53,8 +56,8 @@ export async function middleware(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  // Persist tenant slug in a cookie for local dev so internal links work
-  if (hostname.startsWith("localhost") && tenantSlug && tenantSlug !== "demo") {
+  // Persist tenant slug in a cookie so internal links work after ?tenant= override
+  if (url.searchParams.get("tenant") && tenantSlug) {
     response.headers.set("Set-Cookie", `x-tenant-slug=${tenantSlug}; Path=/; SameSite=Lax`);
   }
 
